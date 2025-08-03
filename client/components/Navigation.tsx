@@ -9,7 +9,6 @@ import {
   Crown,
   Gift,
   Phone,
-  Trophy,
   Plus
 } from 'lucide-react';
 import { useState } from 'react';
@@ -18,15 +17,29 @@ export default function Navigation() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Mock user state - in production, this would come from auth context
+  const [user] = useState({
+    isLoggedIn: true,
+    isAdmin: true, // Set to false to test non-admin view
+    username: 'coinkrazy00@gmail.com'
+  });
+
   const navItems = [
     { path: '/', label: 'Home', icon: Crown },
     { path: '/games', label: 'Games', icon: Coins },
-    { path: '/sportsbook', label: 'Sportsbook', icon: Trophy },
     { path: '/store', label: 'Store', icon: Plus },
-    { path: '/login', label: 'Login', icon: Users },
-    { path: '/register', label: 'Sign Up', icon: Gift },
-    { path: '/admin', label: 'Admin', icon: Settings },
+    { path: '/login', label: 'Login', icon: Users, hideWhenLoggedIn: true },
+    { path: '/register', label: 'Sign Up', icon: Gift, hideWhenLoggedIn: true },
+    { path: '/dashboard', label: 'Dashboard', icon: Users, requiresLogin: true },
+    { path: '/admin', label: 'Admin', icon: Settings, adminOnly: true },
   ];
+
+  const filteredNavItems = navItems.filter(item => {
+    if (item.hideWhenLoggedIn && user.isLoggedIn) return false;
+    if (item.requiresLogin && !user.isLoggedIn) return false;
+    if (item.adminOnly && (!user.isLoggedIn || !user.isAdmin)) return false;
+    return true;
+  });
 
   return (
     <nav className="bg-card/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">

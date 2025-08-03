@@ -197,15 +197,23 @@ export default function Admin() {
         </div>
 
         {/* Admin Tools Tabs */}
-        <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+        <Tabs defaultValue="ai-manager" className="w-full">
+          <TabsList className="grid w-full grid-cols-8">
+            <TabsTrigger value="ai-manager">
+              <Bot className="w-4 h-4 mr-2" />
+              AI Manager
+            </TabsTrigger>
+            <TabsTrigger value="store">
+              <Store className="w-4 h-4 mr-2" />
+              Gold Store
+            </TabsTrigger>
             <TabsTrigger value="users">
               <Users className="w-4 h-4 mr-2" />
-              User Management
+              Users
             </TabsTrigger>
             <TabsTrigger value="games">
               <Settings className="w-4 h-4 mr-2" />
-              Game Control
+              Games
             </TabsTrigger>
             <TabsTrigger value="payments">
               <CreditCard className="w-4 h-4 mr-2" />

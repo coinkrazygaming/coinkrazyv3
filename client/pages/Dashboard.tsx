@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import {
+import { 
   Coins,
   Crown,
   CreditCard,
@@ -28,46 +28,68 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   RotateCcw,
-  Lock
+  Lock,
+  XCircle,
+  FileText,
+  Camera,
+  User,
+  MapPin,
+  Phone
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const [user] = useState({
     username: 'player123',
     email: 'player123@email.com',
     joinDate: '2024-01-15',
-    kycStatus: 'verified',
+    kycStatus: 'verified', // 'pending', 'verified', 'rejected', 'not_started'
     vipLevel: 'Gold',
     gcBalance: 125000,
-    scBalance: 450
+    scBalance: 450,
+    isKycRequired: true, // Always require KYC for SC withdrawals
+    kycDocuments: {
+      idFront: true,
+      idBack: true,
+      selfie: true,
+      addressProof: true
+    }
   });
 
   const [transactions] = useState([
-    { id: 1, type: 'deposit', amount: 500, currency: 'GC', method: 'Credit Card', status: 'completed', date: '2024-03-20 14:30' },
-    { id: 2, type: 'win', amount: 1250, currency: 'GC', method: 'Josey Duck Game', status: 'completed', date: '2024-03-20 13:45' },
-    { id: 3, type: 'withdrawal', amount: 150, currency: 'SC', method: 'Bank Transfer', status: 'pending', date: '2024-03-20 12:15' },
-    { id: 4, type: 'bonus', amount: 100000, currency: 'GC', method: 'Welcome Bonus', status: 'completed', date: '2024-03-15 10:00' },
-    { id: 5, type: 'bonus', amount: 50, currency: 'SC', method: 'Welcome Bonus', status: 'completed', date: '2024-03-15 10:00' }
+    { id: 1, type: 'deposit', amount: 500, currency: 'GC', method: 'Credit Card', status: 'completed', date: '2024-03-20 14:30', txHash: 'tx_1234567890' },
+    { id: 2, type: 'win', amount: 1250, currency: 'GC', method: 'Josey Duck Game', status: 'completed', date: '2024-03-20 13:45', txHash: 'tx_0987654321' },
+    { id: 3, type: 'withdrawal', amount: 150, currency: 'SC', method: 'Bank Transfer', status: 'completed', date: '2024-03-20 12:15', txHash: 'tx_1122334455' },
+    { id: 4, type: 'bonus', amount: 100000, currency: 'GC', method: 'Welcome Bonus', status: 'completed', date: '2024-03-15 10:00', txHash: 'tx_5544332211' },
+    { id: 5, type: 'bonus', amount: 50, currency: 'SC', method: 'Welcome Bonus', status: 'completed', date: '2024-03-15 10:00', txHash: 'tx_9988776655' }
   ]);
 
   const [coinPackages] = useState([
-    { id: 1, name: 'Starter Pack', gc: 50000, sc: 25, price: 9.99, popular: false },
-    { id: 2, name: 'Popular Pack', gc: 125000, sc: 75, price: 19.99, popular: true },
-    { id: 3, name: 'Premium Pack', gc: 300000, sc: 200, price: 49.99, popular: false },
-    { id: 4, name: 'VIP Pack', gc: 750000, sc: 500, price: 99.99, popular: false }
+    { id: 1, name: 'Starter Pack', gc: 50000, sc: 25, price: 9.99, popular: false, savings: 0 },
+    { id: 2, name: 'Popular Pack', gc: 125000, sc: 75, price: 19.99, popular: true, savings: 25 },
+    { id: 3, name: 'Premium Pack', gc: 300000, sc: 200, price: 49.99, popular: false, savings: 50 },
+    { id: 4, name: 'VIP Pack', gc: 750000, sc: 500, price: 99.99, popular: false, savings: 100 }
   ]);
 
   const [withdrawalData, setWithdrawalData] = useState({
     amount: '',
     method: 'bank',
-    accountInfo: ''
+    accountInfo: '',
+    routingNumber: '',
+    accountNumber: '',
+    accountType: 'checking'
   });
+
+  const [showKycModal, setShowKycModal] = useState(false);
+  const [kycUploadStep, setKycUploadStep] = useState(1);
 
   const [liveStats, setLiveStats] = useState({
     todayWins: 2450,
     bestGame: 'Josey Duck Game',
     playTime: '2h 34m',
-    rank: 156
+    rank: 156,
+    totalWithdrawn: 1250,
+    lifetimeWinnings: 8945
   });
 
   useEffect(() => {
@@ -82,9 +104,69 @@ export default function Dashboard() {
   }, []);
 
   const handleWithdrawal = () => {
-    if (withdrawalData.amount && parseFloat(withdrawalData.amount) <= user.scBalance) {
-      console.log('Processing withdrawal:', withdrawalData);
-      // Process withdrawal
+    const amount = parseFloat(withdrawalData.amount);
+    
+    // Validation checks
+    if (!amount || amount < 100) {
+      alert('Minimum withdrawal amount is 100 Sweeps Coins');
+      return;
+    }
+    
+    if (amount > user.scBalance) {
+      alert('Insufficient Sweeps Coin balance');
+      return;
+    }
+    
+    if (user.kycStatus !== 'verified') {
+      setShowKycModal(true);
+      return;
+    }
+    
+    if (!withdrawalData.accountInfo || !withdrawalData.routingNumber || !withdrawalData.accountNumber) {
+      alert('Please fill in all banking information');
+      return;
+    }
+
+    // Process withdrawal
+    console.log('Processing withdrawal:', {
+      amount,
+      method: withdrawalData.method,
+      accountInfo: withdrawalData.accountInfo,
+      routingNumber: withdrawalData.routingNumber,
+      accountNumber: withdrawalData.accountNumber,
+      accountType: withdrawalData.accountType
+    });
+    
+    alert(`Withdrawal request for ${amount} SC submitted successfully!`);
+    setWithdrawalData({
+      amount: '',
+      method: 'bank',
+      accountInfo: '',
+      routingNumber: '',
+      accountNumber: '',
+      accountType: 'checking'
+    });
+  };
+
+  const canWithdraw = () => {
+    return user.kycStatus === 'verified' && user.scBalance >= 100;
+  };
+
+  const getKycStatusColor = () => {
+    switch (user.kycStatus) {
+      case 'verified': return 'text-green-500 bg-green-500/10 border-green-500/20';
+      case 'pending': return 'text-orange-500 bg-orange-500/10 border-orange-500/20';
+      case 'rejected': return 'text-red-500 bg-red-500/10 border-red-500/20';
+      default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
+    }
+  };
+
+  const getKycStatusIcon = () => {
+    switch (user.kycStatus) {
+      case 'verified': return <CheckCircle className="w-4 h-4" />;
+      case 'pending': return <Clock className="w-4 h-4" />;
+      case 'rejected': return <XCircle className="w-4 h-4" />;
+      default: return <AlertTriangle className="w-4 h-4" />;
     }
   };
 
@@ -101,9 +183,9 @@ export default function Dashboard() {
                   <Crown className="w-3 h-3 mr-1" />
                   {user.vipLevel} VIP
                 </Badge>
-                <Badge variant="outline" className="border-green-500 text-green-400">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  KYC Verified
+                <Badge className={`${getKycStatusColor()}`}>
+                  {getKycStatusIcon()}
+                  <span className="ml-1">KYC {user.kycStatus}</span>
                 </Badge>
               </div>
             </div>
@@ -132,7 +214,7 @@ export default function Dashboard() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -149,10 +231,10 @@ export default function Dashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Best Game</p>
-                  <p className="text-xl font-bold">{liveStats.bestGame}</p>
+                  <p className="text-sm text-muted-foreground">Total Withdrawn</p>
+                  <p className="text-xl font-bold text-casino-blue">${liveStats.totalWithdrawn}</p>
                 </div>
-                <Trophy className="w-6 h-6 text-gold-500" />
+                <Download className="w-6 h-6 text-casino-blue" />
               </div>
             </CardContent>
           </Card>
@@ -161,10 +243,10 @@ export default function Dashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Play Time</p>
-                  <p className="text-xl font-bold">{liveStats.playTime}</p>
+                  <p className="text-sm text-muted-foreground">Lifetime Winnings</p>
+                  <p className="text-xl font-bold text-gold-400">{liveStats.lifetimeWinnings.toLocaleString()}</p>
                 </div>
-                <Clock className="w-6 h-6 text-casino-blue" />
+                <Trophy className="w-6 h-6 text-gold-500" />
               </div>
             </CardContent>
           </Card>
@@ -286,6 +368,11 @@ export default function Dashboard() {
                           Most Popular
                         </Badge>
                       )}
+                      {pkg.savings > 0 && (
+                        <Badge className="absolute -top-2 right-2 bg-green-500 text-white">
+                          Save ${pkg.savings}
+                        </Badge>
+                      )}
                       <CardHeader className="text-center">
                         <CardTitle>{pkg.name}</CardTitle>
                       </CardHeader>
@@ -320,12 +407,24 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mt-8 p-4 bg-muted/20 rounded-lg">
-                  <h3 className="font-bold mb-2">Payment Methods</h3>
-                  <div className="flex gap-4 text-sm text-muted-foreground">
-                    <span>💳 Credit/Debit Cards</span>
-                    <span>🍎 Apple Pay</span>
-                    <span>📱 Google Pay</span>
-                    <span>🏦 Bank Transfer</span>
+                  <h3 className="font-bold mb-2">Secure Payment Methods</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-casino-blue" />
+                      <span>Credit/Debit Cards</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="w-4 h-4 text-green-500" />
+                      <span>Apple Pay</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="w-4 h-4 text-blue-500" />
+                      <span>Google Pay</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-gold-500" />
+                      <span>Bank Transfer</span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -339,10 +438,30 @@ export default function Dashboard() {
                 <CardHeader>
                   <CardTitle>Withdraw Sweeps Coins</CardTitle>
                   <p className="text-muted-foreground">
-                    Redeem your Sweeps Coins for real cash prizes
+                    Redeem your Sweeps Coins for real cash prizes (Minimum: 100 SC)
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* KYC Status Check */}
+                  {user.kycStatus !== 'verified' && (
+                    <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <AlertTriangle className="w-5 h-5 text-orange-500" />
+                        <span className="font-bold text-orange-400">KYC Verification Required</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        You must complete identity verification before withdrawing Sweeps Coins.
+                      </p>
+                      <Button 
+                        onClick={() => setShowKycModal(true)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white"
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Complete KYC Verification
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="bg-casino-blue/5 border border-casino-blue/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Crown className="w-5 h-5 text-casino-blue" />
@@ -356,14 +475,17 @@ export default function Dashboard() {
                     <label className="block text-sm font-medium mb-2">Withdrawal Amount (SC)</label>
                     <Input
                       type="number"
-                      placeholder="Enter amount"
+                      placeholder="Minimum 100 SC"
                       value={withdrawalData.amount}
                       onChange={(e) => setWithdrawalData(prev => ({ ...prev, amount: e.target.value }))}
+                      min="100"
                       max={user.scBalance}
                     />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Minimum withdrawal: 100 SC
-                    </p>
+                    {withdrawalData.amount && parseFloat(withdrawalData.amount) < 100 && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Minimum withdrawal amount is 100 Sweeps Coins
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -373,24 +495,60 @@ export default function Dashboard() {
                       value={withdrawalData.method}
                       onChange={(e) => setWithdrawalData(prev => ({ ...prev, method: e.target.value }))}
                     >
-                      <option value="bank">Bank Transfer</option>
+                      <option value="bank">Bank Transfer (ACH)</option>
                       <option value="paypal">PayPal</option>
-                      <option value="check">Paper Check</option>
+                      <option value="check">Paper Check (7-10 days)</option>
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Account Information</label>
-                    <Input
-                      placeholder="Enter account details"
-                      value={withdrawalData.accountInfo}
-                      onChange={(e) => setWithdrawalData(prev => ({ ...prev, accountInfo: e.target.value }))}
-                    />
-                  </div>
+                  {withdrawalData.method === 'bank' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Account Holder Name</label>
+                        <Input
+                          placeholder="Full name on account"
+                          value={withdrawalData.accountInfo}
+                          onChange={(e) => setWithdrawalData(prev => ({ ...prev, accountInfo: e.target.value }))}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Routing Number</label>
+                          <Input
+                            placeholder="9-digit routing number"
+                            value={withdrawalData.routingNumber}
+                            onChange={(e) => setWithdrawalData(prev => ({ ...prev, routingNumber: e.target.value }))}
+                            maxLength={9}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Account Number</label>
+                          <Input
+                            placeholder="Account number"
+                            value={withdrawalData.accountNumber}
+                            onChange={(e) => setWithdrawalData(prev => ({ ...prev, accountNumber: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Account Type</label>
+                        <select 
+                          className="w-full p-2 border border-border rounded-lg bg-background"
+                          value={withdrawalData.accountType}
+                          onChange={(e) => setWithdrawalData(prev => ({ ...prev, accountType: e.target.value }))}
+                        >
+                          <option value="checking">Checking Account</option>
+                          <option value="savings">Savings Account</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
 
                   <Button 
                     onClick={handleWithdrawal}
-                    disabled={!withdrawalData.amount || parseFloat(withdrawalData.amount) < 100}
+                    disabled={!canWithdraw() || !withdrawalData.amount || parseFloat(withdrawalData.amount) < 100}
                     className="w-full bg-casino-blue hover:bg-casino-blue-dark"
                   >
                     <Download className="w-4 h-4 mr-2" />
@@ -401,13 +559,25 @@ export default function Dashboard() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Withdrawal Information</CardTitle>
+                  <CardTitle>Withdrawal Requirements</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                      <span className="text-sm">KYC verification completed</span>
+                      {user.kycStatus === 'verified' ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      )}
+                      <span className="text-sm">Identity verification (KYC) completed</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {user.scBalance >= 100 ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      )}
+                      <span className="text-sm">Minimum 100 Sweeps Coins available</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-5 h-5 text-orange-500" />
@@ -453,6 +623,7 @@ export default function Dashboard() {
                         <th className="text-left p-2">Method</th>
                         <th className="text-left p-2">Status</th>
                         <th className="text-left p-2">Date</th>
+                        <th className="text-left p-2">TX Hash</th>
                         <th className="text-left p-2">Actions</th>
                       </tr>
                     </thead>
@@ -480,6 +651,7 @@ export default function Dashboard() {
                             </Badge>
                           </td>
                           <td className="p-2 text-sm">{tx.date}</td>
+                          <td className="p-2 text-xs font-mono text-muted-foreground">{tx.txHash}</td>
                           <td className="p-2">
                             <Button size="sm" variant="outline">
                               <Eye className="w-3 h-3" />
@@ -539,6 +711,54 @@ export default function Dashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* KYC Modal */}
+      {showKycModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-casino-blue" />
+                KYC Verification Required
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                To withdraw Sweeps Coins, you must complete identity verification as required by law.
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Upload government-issued ID</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Take verification selfie</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Verify address information</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Link to="/kyc" className="flex-1">
+                  <Button className="w-full bg-casino-blue hover:bg-casino-blue-dark">
+                    Start Verification
+                  </Button>
+                </Link>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowKycModal(false)}
+                >
+                  Later
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

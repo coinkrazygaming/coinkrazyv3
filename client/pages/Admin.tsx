@@ -245,6 +245,11 @@ export default function Admin() {
             <AIEmployeeManager />
           </TabsContent>
 
+          {/* Package Editor */}
+          <TabsContent value="package-editor" className="mt-6">
+            <PackageEditor />
+          </TabsContent>
+
           {/* Gold Coin Store Management */}
           <TabsContent value="store" className="mt-6">
             <div className="space-y-6">

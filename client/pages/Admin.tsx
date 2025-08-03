@@ -201,7 +201,7 @@ export default function Admin() {
 
         {/* Admin Tools Tabs */}
         <Tabs defaultValue="ai-manager" className="w-full">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="ai-manager">
               <Bot className="w-4 h-4 mr-2" />
               AI Manager
@@ -209,6 +209,10 @@ export default function Admin() {
             <TabsTrigger value="store">
               <Store className="w-4 h-4 mr-2" />
               Gold Store
+            </TabsTrigger>
+            <TabsTrigger value="package-editor">
+              <Edit className="w-4 h-4 mr-2" />
+              Package Editor
             </TabsTrigger>
             <TabsTrigger value="users">
               <Users className="w-4 h-4 mr-2" />

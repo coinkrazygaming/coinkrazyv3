@@ -140,7 +140,7 @@ export default function Navigation() {
             </div>
 
             {/* Wallet Balance (logged in users only) */}
-            {user.isLoggedIn && walletBalance && (
+            {user?.isLoggedIn && walletBalance && (
               <div className="relative">
                 <Button
                   variant="outline"

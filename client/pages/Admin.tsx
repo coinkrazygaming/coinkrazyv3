@@ -553,37 +553,7 @@ export default function Admin() {
 
           {/* Analytics */}
           <TabsContent value="analytics" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Revenue Analytics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <TrendingUp className="w-12 h-12 text-gold-500 mx-auto mb-4" />
-                      <p className="text-muted-foreground">Revenue charts and analytics dashboard</p>
-                      <p className="text-sm text-muted-foreground">Real-time integration with Recharts</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Player Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Users className="w-12 h-12 text-casino-blue mx-auto mb-4" />
-                      <p className="text-muted-foreground">Player activity heatmaps</p>
-                      <p className="text-sm text-muted-foreground">Real-time WebSocket updates</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <CasinoAnalytics />
           </TabsContent>
 
           {/* AI Assistant */}

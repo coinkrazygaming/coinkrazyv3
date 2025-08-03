@@ -259,7 +259,13 @@ export default function CoinKrazySpinner() {
           const newBalanceWithWin = newBalance + result.totalPayout;
           setBalance(newBalanceWithWin);
           setWinAnimations(result.paylines.map(line => ({ line: line.line, symbols: line.symbols })));
-          
+
+          // Track real SC wins (assuming 1 USD = 1 SC for this game)
+          const scWinAmount = result.totalPayout; // Convert USD to SC
+          if (user?.id && scWinAmount >= 0.01) {
+            trackSCWin(user.id, scWinAmount, 'CoinKrazy Spinner', 'coin-spinner');
+          }
+
           // Update win stats
           setGameStats(prev => ({
             ...prev,
@@ -268,7 +274,7 @@ export default function CoinKrazySpinner() {
             currentStreak: prev.currentStreak + 1,
             balance: newBalanceWithWin
           }));
-          
+
           // Play win sound effect
           if (soundEnabled) {
             // Audio would be implemented here

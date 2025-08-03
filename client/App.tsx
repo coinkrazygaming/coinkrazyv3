@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
+import AIAssistant from "./components/AIAssistant";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";

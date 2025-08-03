@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Gift,
   Shield,
   Coins,
@@ -23,42 +23,42 @@ import {
   Phone,
   FileText,
   Eye,
-  EyeOff
-} from 'lucide-react';
+  EyeOff,
+} from "lucide-react";
 
-const blockedStates = ['WA', 'ID', 'MT', 'NV', 'NY'];
+const blockedStates = ["WA", "ID", "MT", "NV", "NY"];
 
 export default function Register() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    ssn: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    ssn: "",
     agreeTerms: false,
     agreeMarketing: false,
-    verifyAge: false
+    verifyAge: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [kycDocuments, setKycDocuments] = useState({
     frontId: null,
     backId: null,
     selfie: null,
-    addressProof: null
+    addressProof: null,
   });
   const [registrationComplete, setRegistrationComplete] = useState(false);
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const isStateBlocked = (state: string) => {
@@ -68,11 +68,28 @@ export default function Register() {
   const validateStep = (step: number) => {
     switch (step) {
       case 1:
-        return formData.username && formData.email && formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
+        return (
+          formData.username &&
+          formData.email &&
+          formData.password &&
+          formData.confirmPassword &&
+          formData.password === formData.confirmPassword
+        );
       case 2:
-        return formData.firstName && formData.lastName && formData.dateOfBirth && formData.phone;
+        return (
+          formData.firstName &&
+          formData.lastName &&
+          formData.dateOfBirth &&
+          formData.phone
+        );
       case 3:
-        return formData.address && formData.city && formData.state && formData.zipCode && !isStateBlocked(formData.state);
+        return (
+          formData.address &&
+          formData.city &&
+          formData.state &&
+          formData.zipCode &&
+          !isStateBlocked(formData.state)
+        );
       case 4:
         return formData.agreeTerms && formData.verifyAge;
       default:
@@ -85,13 +102,13 @@ export default function Register() {
       if (currentStep === 4) {
         setRegistrationComplete(true);
       } else {
-        setCurrentStep(prev => prev + 1);
+        setCurrentStep((prev) => prev + 1);
       }
     }
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => prev - 1);
+    setCurrentStep((prev) => prev - 1);
   };
 
   if (registrationComplete) {
@@ -104,9 +121,10 @@ export default function Register() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Welcome to CoinKrazy!</h2>
             <p className="text-muted-foreground mb-8">
-              Your account has been created successfully. You've received your welcome bonus!
+              Your account has been created successfully. You've received your
+              welcome bonus!
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="text-center p-4 bg-card rounded-lg">
                 <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
@@ -116,7 +134,9 @@ export default function Register() {
               <div className="text-center p-4 bg-card rounded-lg">
                 <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
                 <div className="text-2xl font-bold text-casino-blue">50</div>
-                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                <div className="text-sm text-muted-foreground">
+                  Sweeps Coins
+                </div>
               </div>
               <div className="text-center p-4 bg-card rounded-lg">
                 <Star className="w-8 h-8 text-gold-500 mx-auto mb-2" />
@@ -126,7 +146,7 @@ export default function Register() {
             </div>
 
             <div className="space-y-4">
-              <Button 
+              <Button
                 size="lg"
                 className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
               >
@@ -148,8 +168,12 @@ export default function Register() {
       <div className="bg-gradient-to-r from-casino-blue/10 via-gold/5 to-casino-blue/10 py-8">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Join CoinKrazy</h1>
-            <p className="text-muted-foreground text-lg">Get your welcome bonus and start winning today!</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Join CoinKrazy
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Get your welcome bonus and start winning today!
+            </p>
           </div>
         </div>
       </div>
@@ -163,12 +187,20 @@ export default function Register() {
               <h2 className="text-2xl font-bold mb-4">Welcome Bonus Package</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">100,000</div>
-                  <div className="text-sm text-muted-foreground">Free Gold Coins</div>
+                  <div className="text-2xl font-bold text-gold-500 mb-1">
+                    100,000
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Free Gold Coins
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-casino-blue mb-1">50</div>
-                  <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                  <div className="text-2xl font-bold text-casino-blue mb-1">
+                    50
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Sweeps Coins
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gold-500 mb-1">7</div>
@@ -183,15 +215,21 @@ export default function Register() {
             <div className="flex items-center justify-between mb-4">
               {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    step <= currentStep ? 'bg-gold-500 text-black' : 'bg-muted text-muted-foreground'
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      step <= currentStep
+                        ? "bg-gold-500 text-black"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     {step < currentStep ? <Check className="w-4 h-4" /> : step}
                   </div>
                   {step < 4 && (
-                    <div className={`w-12 h-1 ${
-                      step < currentStep ? 'bg-gold-500' : 'bg-muted'
-                    }`} />
+                    <div
+                      className={`w-12 h-1 ${
+                        step < currentStep ? "bg-gold-500" : "bg-muted"
+                      }`}
+                    />
                   )}
                 </div>
               ))}
@@ -218,41 +256,53 @@ export default function Register() {
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Username</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Username
+                    </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         placeholder="Choose a username"
                         value={formData.username}
-                        onChange={(e) => handleInputChange('username', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("username", e.target.value)
+                        }
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email Address</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Email Address
+                    </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type="email"
                         placeholder="your@email.com"
                         value={formData.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Password</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Password
+                    </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         placeholder="Create a strong password"
                         value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("password", e.target.value)
+                        }
                         className="pl-10 pr-10"
                       />
                       <button
@@ -260,26 +310,38 @@ export default function Register() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Confirm Password</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Confirm Password
+                    </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type="password"
                         placeholder="Confirm your password"
                         value={formData.confirmPassword}
-                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("confirmPassword", e.target.value)
+                        }
                         className="pl-10"
                       />
                     </div>
-                    {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                      <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
-                    )}
+                    {formData.password &&
+                      formData.confirmPassword &&
+                      formData.password !== formData.confirmPassword && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Passwords do not match
+                        </p>
+                      )}
                   </div>
                 </div>
               )}
@@ -289,46 +351,64 @@ export default function Register() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">First Name</label>
+                      <label className="block text-sm font-medium mb-2">
+                        First Name
+                      </label>
                       <Input
                         placeholder="First name"
                         value={formData.firstName}
-                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("firstName", e.target.value)
+                        }
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Last Name</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Last Name
+                      </label>
                       <Input
                         placeholder="Last name"
                         value={formData.lastName}
-                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("lastName", e.target.value)
+                        }
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Date of Birth</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Date of Birth
+                    </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type="date"
                         value={formData.dateOfBirth}
-                        onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("dateOfBirth", e.target.value)
+                        }
                         className="pl-10"
                       />
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">Must be 18+ years old</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Must be 18+ years old
+                    </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Phone Number</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Phone Number
+                    </label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type="tel"
                         placeholder="(555) 123-4567"
                         value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
                         className="pl-10"
                       />
                     </div>
@@ -340,13 +420,17 @@ export default function Register() {
               {currentStep === 3 && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Street Address</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Street Address
+                    </label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         placeholder="123 Main Street"
                         value={formData.address}
-                        onChange={(e) => handleInputChange('address', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("address", e.target.value)
+                        }
                         className="pl-10"
                       />
                     </div>
@@ -354,33 +438,48 @@ export default function Register() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">City</label>
+                      <label className="block text-sm font-medium mb-2">
+                        City
+                      </label>
                       <Input
                         placeholder="City"
                         value={formData.city}
-                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("city", e.target.value)
+                        }
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">State</label>
+                      <label className="block text-sm font-medium mb-2">
+                        State
+                      </label>
                       <Input
                         placeholder="State"
                         value={formData.state}
-                        onChange={(e) => handleInputChange('state', e.target.value)}
-                        className={isStateBlocked(formData.state) ? 'border-red-500' : ''}
+                        onChange={(e) =>
+                          handleInputChange("state", e.target.value)
+                        }
+                        className={
+                          isStateBlocked(formData.state) ? "border-red-500" : ""
+                        }
                       />
                       {isStateBlocked(formData.state) && (
                         <p className="text-red-500 text-sm mt-1">
-                          Sorry, CoinKrazy is not available in {formData.state.toUpperCase()}
+                          Sorry, CoinKrazy is not available in{" "}
+                          {formData.state.toUpperCase()}
                         </p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">ZIP Code</label>
+                      <label className="block text-sm font-medium mb-2">
+                        ZIP Code
+                      </label>
                       <Input
                         placeholder="12345"
                         value={formData.zipCode}
-                        onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("zipCode", e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -388,11 +487,13 @@ export default function Register() {
                   <div className="bg-muted/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Shield className="w-5 h-5 text-casino-blue" />
-                      <span className="font-medium">State Compliance Check</span>
+                      <span className="font-medium">
+                        State Compliance Check
+                      </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      We verify your location to ensure compliance with local laws. 
-                      CoinKrazy is not available in: WA, ID, MT, NV, NY.
+                      We verify your location to ensure compliance with local
+                      laws. CoinKrazy is not available in: WA, ID, MT, NV, NY.
                     </p>
                   </div>
                 </div>
@@ -407,7 +508,9 @@ export default function Register() {
                         type="checkbox"
                         id="verifyAge"
                         checked={formData.verifyAge}
-                        onChange={(e) => handleInputChange('verifyAge', e.target.checked)}
+                        onChange={(e) =>
+                          handleInputChange("verifyAge", e.target.checked)
+                        }
                         className="mt-1"
                       />
                       <div>
@@ -425,7 +528,9 @@ export default function Register() {
                         type="checkbox"
                         id="agreeTerms"
                         checked={formData.agreeTerms}
-                        onChange={(e) => handleInputChange('agreeTerms', e.target.checked)}
+                        onChange={(e) =>
+                          handleInputChange("agreeTerms", e.target.checked)
+                        }
                         className="mt-1"
                       />
                       <div>
@@ -433,7 +538,8 @@ export default function Register() {
                           I agree to the Terms of Service and Privacy Policy
                         </label>
                         <p className="text-sm text-muted-foreground">
-                          By checking this box, you agree to our sweepstakes rules and responsible gaming policies
+                          By checking this box, you agree to our sweepstakes
+                          rules and responsible gaming policies
                         </p>
                       </div>
                     </div>
@@ -443,12 +549,15 @@ export default function Register() {
                         type="checkbox"
                         id="agreeMarketing"
                         checked={formData.agreeMarketing}
-                        onChange={(e) => handleInputChange('agreeMarketing', e.target.checked)}
+                        onChange={(e) =>
+                          handleInputChange("agreeMarketing", e.target.checked)
+                        }
                         className="mt-1"
                       />
                       <div>
                         <label htmlFor="agreeMarketing" className="font-medium">
-                          I want to receive bonus offers and promotions (optional)
+                          I want to receive bonus offers and promotions
+                          (optional)
                         </label>
                       </div>
                     </div>
@@ -457,7 +566,9 @@ export default function Register() {
                   <div className="bg-gold/5 border border-gold-500/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <FileText className="w-5 h-5 text-gold-500" />
-                      <span className="font-medium">Sweepstakes Legal Notice</span>
+                      <span className="font-medium">
+                        Sweepstakes Legal Notice
+                      </span>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p>• No purchase necessary to play or win</p>
@@ -472,19 +583,19 @@ export default function Register() {
 
               {/* Navigation Buttons */}
               <div className="flex justify-between pt-6">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 1}
                 >
                   Previous
                 </Button>
-                <Button 
+                <Button
                   onClick={nextStep}
                   disabled={!validateStep(currentStep)}
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
-                  {currentStep === 4 ? 'Create Account' : 'Next'}
+                  {currentStep === 4 ? "Create Account" : "Next"}
                 </Button>
               </div>
             </CardContent>
@@ -493,20 +604,29 @@ export default function Register() {
           {/* Legal Footer */}
           <div className="mt-8 text-center">
             <div className="flex flex-wrap justify-center gap-4 mb-4">
-              <Badge variant="outline" className="border-gold-500 text-gold-400">
+              <Badge
+                variant="outline"
+                className="border-gold-500 text-gold-400"
+              >
                 <Shield className="w-3 h-3 mr-1" />
                 18+ Only
               </Badge>
-              <Badge variant="outline" className="border-casino-blue text-casino-blue-light">
+              <Badge
+                variant="outline"
+                className="border-casino-blue text-casino-blue-light"
+              >
                 No Purchase Necessary
               </Badge>
-              <Badge variant="outline" className="border-green-500 text-green-400">
+              <Badge
+                variant="outline"
+                className="border-green-500 text-green-400"
+              >
                 Legal Sweepstakes
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-              CoinKrazy operates as a legal sweepstakes casino. Play responsibly. 
-              If you have a gambling problem, call 1-800-GAMBLER.
+              CoinKrazy operates as a legal sweepstakes casino. Play
+              responsibly. If you have a gambling problem, call 1-800-GAMBLER.
             </p>
           </div>
         </div>

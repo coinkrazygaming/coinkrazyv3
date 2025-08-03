@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
   Trophy,
   Plus,
   Minus,
@@ -17,8 +17,8 @@ import {
   CheckCircle,
   AlertTriangle,
   Zap,
-  Crown
-} from 'lucide-react';
+  Crown,
+} from "lucide-react";
 
 export interface GamePick {
   id: string;
@@ -26,12 +26,12 @@ export interface GamePick {
   homeTeam: string;
   awayTeam: string;
   sport: string;
-  betType: 'spread' | 'total' | 'moneyline';
+  betType: "spread" | "total" | "moneyline";
   selection: string;
   odds: number;
   line?: number;
   gameTime: string;
-  confidence: 'low' | 'medium' | 'high';
+  confidence: "low" | "medium" | "high";
 }
 
 export interface PickCard {
@@ -40,7 +40,7 @@ export interface PickCard {
   wagerAmount: number;
   potentialPayout: number;
   multiplier: number;
-  status: 'building' | 'saved' | 'placed' | 'won' | 'lost';
+  status: "building" | "saved" | "placed" | "won" | "lost";
   createdAt: string;
   placedAt?: string;
 }
@@ -56,53 +56,58 @@ interface GamePickCardProps {
 
 // Parlay multipliers based on number of picks
 const PARLAY_MULTIPLIERS = {
-  1: 1,      // Single bet - use actual odds
-  2: 3,      // 2-pick parlay = 3x
-  3: 5,      // 3-pick parlay = 5x  
-  4: 10,     // 4-pick parlay = 10x
-  5: 20,     // 5-pick parlay = 20x
-  6: 40,     // 6-pick parlay = 40x
-  7: 80,     // 7-pick parlay = 80x
-  8: 160     // 8-pick parlay = 160x
+  1: 1, // Single bet - use actual odds
+  2: 3, // 2-pick parlay = 3x
+  3: 5, // 3-pick parlay = 5x
+  4: 10, // 4-pick parlay = 10x
+  5: 20, // 5-pick parlay = 20x
+  6: 40, // 6-pick parlay = 40x
+  7: 80, // 7-pick parlay = 80x
+  8: 160, // 8-pick parlay = 160x
 };
 
-export default function GamePickCard({ 
-  pickCard, 
-  userBalance, 
-  onUpdateCard, 
-  onRemoveCard, 
+export default function GamePickCard({
+  pickCard,
+  userBalance,
+  onUpdateCard,
+  onRemoveCard,
   onPlaceBet,
-  onSaveToCart 
+  onSaveToCart,
 }: GamePickCardProps) {
-  const [wagerAmount, setWagerAmount] = useState<string>(pickCard.wagerAmount.toString() || '');
+  const [wagerAmount, setWagerAmount] = useState<string>(
+    pickCard.wagerAmount.toString() || "",
+  );
 
   useEffect(() => {
     const amount = parseFloat(wagerAmount) || 0;
-    const multiplier = PARLAY_MULTIPLIERS[Math.min(pickCard.picks.length, 8)] || 1;
+    const multiplier =
+      PARLAY_MULTIPLIERS[Math.min(pickCard.picks.length, 8)] || 1;
     const potentialPayout = amount * multiplier;
-    
+
     onUpdateCard({
       ...pickCard,
       wagerAmount: amount,
       multiplier,
-      potentialPayout
+      potentialPayout,
     });
   }, [wagerAmount, pickCard.picks.length]);
 
   const removePick = (pickId: string) => {
-    const updatedPicks = pickCard.picks.filter(pick => pick.id !== pickId);
+    const updatedPicks = pickCard.picks.filter((pick) => pick.id !== pickId);
     onUpdateCard({
       ...pickCard,
-      picks: updatedPicks
+      picks: updatedPicks,
     });
   };
 
   const canPlaceBet = () => {
     const amount = parseFloat(wagerAmount) || 0;
-    return amount > 0 && 
-           amount <= userBalance.gc && 
-           pickCard.picks.length > 0 &&
-           pickCard.status === 'building';
+    return (
+      amount > 0 &&
+      amount <= userBalance.gc &&
+      pickCard.picks.length > 0 &&
+      pickCard.status === "building"
+    );
   };
 
   const handlePlaceBet = () => {
@@ -116,29 +121,42 @@ export default function GamePickCard({
 
   const getPickTypeColor = (betType: string) => {
     switch (betType) {
-      case 'spread': return 'text-casino-blue';
-      case 'total': return 'text-gold-500';
-      case 'moneyline': return 'text-green-500';
-      default: return 'text-muted-foreground';
+      case "spread":
+        return "text-casino-blue";
+      case "total":
+        return "text-gold-500";
+      case "moneyline":
+        return "text-green-500";
+      default:
+        return "text-muted-foreground";
     }
   };
 
   const getConfidenceColor = (confidence: string) => {
     switch (confidence) {
-      case 'high': return 'text-green-500 bg-green-500/10 border-green-500/20';
-      case 'medium': return 'text-orange-500 bg-orange-500/10 border-orange-500/20';
-      case 'low': return 'text-red-500 bg-red-500/10 border-red-500/20';
-      default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
+      case "high":
+        return "text-green-500 bg-green-500/10 border-green-500/20";
+      case "medium":
+        return "text-orange-500 bg-orange-500/10 border-orange-500/20";
+      case "low":
+        return "text-red-500 bg-red-500/10 border-red-500/20";
+      default:
+        return "text-gray-500 bg-gray-500/10 border-gray-500/20";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'won': return 'text-green-500 bg-green-500/10 border-green-500/20';
-      case 'lost': return 'text-red-500 bg-red-500/10 border-red-500/20';
-      case 'placed': return 'text-casino-blue bg-casino-blue/10 border-casino-blue/20';
-      case 'saved': return 'text-orange-500 bg-orange-500/10 border-orange-500/20';
-      default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
+      case "won":
+        return "text-green-500 bg-green-500/10 border-green-500/20";
+      case "lost":
+        return "text-red-500 bg-red-500/10 border-red-500/20";
+      case "placed":
+        return "text-casino-blue bg-casino-blue/10 border-casino-blue/20";
+      case "saved":
+        return "text-orange-500 bg-orange-500/10 border-orange-500/20";
+      default:
+        return "text-gray-500 bg-gray-500/10 border-gray-500/20";
     }
   };
 
@@ -151,12 +169,17 @@ export default function GamePickCard({
   };
 
   return (
-    <Card className={`relative transition-all duration-300 ${
-      pickCard.status === 'building' ? 'border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10' :
-      pickCard.status === 'won' ? 'border-green-500/50 bg-gradient-to-br from-green-500/5 to-green-500/10' :
-      pickCard.status === 'lost' ? 'border-red-500/50 bg-gradient-to-br from-red-500/5 to-red-500/10' :
-      'border-border/50'
-    }`}>
+    <Card
+      className={`relative transition-all duration-300 ${
+        pickCard.status === "building"
+          ? "border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10"
+          : pickCard.status === "won"
+            ? "border-green-500/50 bg-gradient-to-br from-green-500/5 to-green-500/10"
+            : pickCard.status === "lost"
+              ? "border-red-500/50 bg-gradient-to-br from-red-500/5 to-red-500/10"
+              : "border-border/50"
+      }`}
+    >
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
@@ -164,7 +187,9 @@ export default function GamePickCard({
           </div>
           <div>
             <CardTitle className="text-lg">
-              {pickCard.picks.length === 1 ? 'Single Bet' : `${pickCard.picks.length}-Pick Parlay`}
+              {pickCard.picks.length === 1
+                ? "Single Bet"
+                : `${pickCard.picks.length}-Pick Parlay`}
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge className={`${getStatusColor(pickCard.status)} text-xs`}>
@@ -172,14 +197,15 @@ export default function GamePickCard({
               </Badge>
               {pickCard.picks.length > 1 && (
                 <Badge className="bg-gold-500 text-black text-xs">
-                  {PARLAY_MULTIPLIERS[Math.min(pickCard.picks.length, 8)]}x Multiplier
+                  {PARLAY_MULTIPLIERS[Math.min(pickCard.picks.length, 8)]}x
+                  Multiplier
                 </Badge>
               )}
             </div>
           </div>
         </div>
-        
-        {pickCard.status === 'building' && (
+
+        {pickCard.status === "building" && (
           <Button
             size="sm"
             variant="ghost"
@@ -201,13 +227,17 @@ export default function GamePickCard({
                   <Badge className="bg-casino-blue text-white text-xs">
                     Pick {index + 1}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">{pick.sport}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {pick.sport}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className={`${getConfidenceColor(pick.confidence)} text-xs`}>
+                  <Badge
+                    className={`${getConfidenceColor(pick.confidence)} text-xs`}
+                  >
                     {pick.confidence}
                   </Badge>
-                  {pickCard.status === 'building' && (
+                  {pickCard.status === "building" && (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -219,13 +249,15 @@ export default function GamePickCard({
                   )}
                 </div>
               </div>
-              
+
               <div className="space-y-1">
                 <div className="font-medium text-sm">
                   {pick.awayTeam} @ {pick.homeTeam}
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className={`font-bold ${getPickTypeColor(pick.betType)}`}>
+                  <div
+                    className={`font-bold ${getPickTypeColor(pick.betType)}`}
+                  >
                     {pick.selection}
                   </div>
                   <div className="text-sm font-mono">
@@ -241,7 +273,7 @@ export default function GamePickCard({
         </div>
 
         {/* Wager Input */}
-        {pickCard.status === 'building' && (
+        {pickCard.status === "building" && (
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -298,18 +330,22 @@ export default function GamePickCard({
             </div>
             {pickCard.picks.length > 1 && (
               <div className="text-xs text-green-400 mt-2">
-                🔥 {pickCard.picks.length}-pick parlay! All picks must win to cash out.
+                🔥 {pickCard.picks.length}-pick parlay! All picks must win to
+                cash out.
               </div>
             )}
           </div>
         )}
 
         {/* Action Buttons */}
-        {pickCard.status === 'building' && (
+        {pickCard.status === "building" && (
           <div className="flex gap-3">
-            <Button 
+            <Button
               onClick={handlePlaceBet}
-              disabled={!canPlaceBet() && (parseFloat(wagerAmount) || 0) <= userBalance.gc}
+              disabled={
+                !canPlaceBet() &&
+                (parseFloat(wagerAmount) || 0) <= userBalance.gc
+              }
               className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold"
             >
               {(parseFloat(wagerAmount) || 0) > userBalance.gc ? (
@@ -324,8 +360,8 @@ export default function GamePickCard({
                 </>
               )}
             </Button>
-            
-            <Button 
+
+            <Button
               variant="outline"
               onClick={() => onSaveToCart(pickCard)}
               className="px-6"
@@ -336,27 +372,29 @@ export default function GamePickCard({
         )}
 
         {/* Bet Status Info */}
-        {pickCard.status !== 'building' && (
+        {pickCard.status !== "building" && (
           <div className="text-center p-4 bg-muted/20 rounded-lg">
-            {pickCard.status === 'placed' && (
+            {pickCard.status === "placed" && (
               <div className="flex items-center justify-center gap-2 text-casino-blue">
                 <Clock className="w-4 h-4" />
                 <span>Bet placed - waiting for games to complete</span>
               </div>
             )}
-            {pickCard.status === 'won' && (
+            {pickCard.status === "won" && (
               <div className="flex items-center justify-center gap-2 text-green-500">
                 <Trophy className="w-4 h-4" />
-                <span>Winner! Payout: {pickCard.potentialPayout.toLocaleString()} GC</span>
+                <span>
+                  Winner! Payout: {pickCard.potentialPayout.toLocaleString()} GC
+                </span>
               </div>
             )}
-            {pickCard.status === 'lost' && (
+            {pickCard.status === "lost" && (
               <div className="flex items-center justify-center gap-2 text-red-500">
                 <X className="w-4 h-4" />
                 <span>Better luck next time!</span>
               </div>
             )}
-            {pickCard.status === 'saved' && (
+            {pickCard.status === "saved" && (
               <div className="flex items-center justify-center gap-2 text-orange-500">
                 <Target className="w-4 h-4" />
                 <span>Saved to cart - fund your account to place this bet</span>

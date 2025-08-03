@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { trackSCWin } from '../../utils/scWinTracker';
-import { useAuth } from '../../hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Settings, 
-  Volume2, 
+import { useState, useEffect, useRef } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { trackSCWin } from "../../utils/scWinTracker";
+import { useAuth } from "../../hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Settings,
+  Volume2,
   VolumeX,
   Coins,
   Crown,
@@ -18,12 +18,17 @@ import {
   Zap,
   Heart,
   Diamond,
-  Gift
-} from 'lucide-react';
+  Gift,
+} from "lucide-react";
 
 interface SpinResult {
   symbols: string[];
-  paylines: Array<{ line: number; symbols: string[]; multiplier: number; payout: number }>;
+  paylines: Array<{
+    line: number;
+    symbols: string[];
+    multiplier: number;
+    payout: number;
+  }>;
   totalPayout: number;
   isWin: boolean;
 }
@@ -38,14 +43,14 @@ interface GameStats {
 }
 
 const SYMBOLS = {
-  '🪙': { value: 500, name: 'CoinKrazy Logo', rarity: 'legendary' },
-  '👑': { value: 200, name: 'Crown', rarity: 'epic' },
-  '💎': { value: 100, name: 'Diamond', rarity: 'rare' },
-  '🎰': { value: 50, name: 'Slot Machine', rarity: 'uncommon' },
-  '🍀': { value: 25, name: 'Lucky Clover', rarity: 'common' },
-  '⭐': { value: 15, name: 'Star', rarity: 'common' },
-  '🎯': { value: 10, name: 'Target', rarity: 'common' },
-  '🎲': { value: 5, name: 'Dice', rarity: 'common' }
+  "🪙": { value: 500, name: "CoinKrazy Logo", rarity: "legendary" },
+  "👑": { value: 200, name: "Crown", rarity: "epic" },
+  "💎": { value: 100, name: "Diamond", rarity: "rare" },
+  "🎰": { value: 50, name: "Slot Machine", rarity: "uncommon" },
+  "🍀": { value: 25, name: "Lucky Clover", rarity: "common" },
+  "⭐": { value: 15, name: "Star", rarity: "common" },
+  "🎯": { value: 10, name: "Target", rarity: "common" },
+  "🎲": { value: 5, name: "Dice", rarity: "common" },
 };
 
 const PAYLINES = [
@@ -73,24 +78,24 @@ const PAYLINES = [
   [1, 0, 2, 0, 1], // Diamond
   [1, 2, 0, 2, 1], // Reverse diamond
   [0, 1, 1, 0, 2], // Complex 1
-  [2, 1, 1, 2, 0]  // Complex 2
+  [2, 1, 1, 2, 0], // Complex 2
 ];
 
 export default function CoinKrazySpinner() {
   const { user } = useAuth();
   const [reels, setReels] = useState<string[][]>([
-    ['🎲', '🎯', '⭐'],
-    ['🍀', '🎰', '💎'],
-    ['👑', '🪙', '🍀'],
-    ['⭐', '🎯', '🎰'],
-    ['🎲', '💎', '👑']
+    ["🎲", "🎯", "⭐"],
+    ["🍀", "🎰", "💎"],
+    ["👑", "🪙", "🍀"],
+    ["⭐", "🎯", "🎰"],
+    ["🎲", "💎", "👑"],
   ]);
-  
+
   const [isSpinning, setIsSpinning] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [bet, setBet] = useState(1.00);
-  const [balance, setBalance] = useState(1000.00);
+  const [bet, setBet] = useState(1.0);
+  const [balance, setBalance] = useState(1000.0);
   const [lastResult, setLastResult] = useState<SpinResult | null>(null);
   const [gameStats, setGameStats] = useState<GameStats>({
     totalSpins: 0,
@@ -98,10 +103,12 @@ export default function CoinKrazySpinner() {
     totalWon: 0,
     biggestWin: 0,
     currentStreak: 0,
-    balance: 1000.00
+    balance: 1000.0,
   });
-  
-  const [winAnimations, setWinAnimations] = useState<Array<{ line: number; symbols: string[] }>>([]);
+
+  const [winAnimations, setWinAnimations] = useState<
+    Array<{ line: number; symbols: string[] }>
+  >([]);
   const [jackpotWin, setJackpotWin] = useState(false);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
@@ -112,7 +119,7 @@ export default function CoinKrazySpinner() {
         spin();
       }, 2000);
     }
-    
+
     return () => {
       if (autoPlayRef.current) {
         clearTimeout(autoPlayRef.current);
@@ -122,50 +129,62 @@ export default function CoinKrazySpinner() {
 
   const getRandomSymbol = () => {
     const symbolKeys = Object.keys(SYMBOLS);
-    const weights = symbolKeys.map(symbol => {
+    const weights = symbolKeys.map((symbol) => {
       const rarity = SYMBOLS[symbol as keyof typeof SYMBOLS].rarity;
       switch (rarity) {
-        case 'legendary': return 1;
-        case 'epic': return 3;
-        case 'rare': return 8;
-        case 'uncommon': return 15;
-        case 'common': return 25;
-        default: return 10;
+        case "legendary":
+          return 1;
+        case "epic":
+          return 3;
+        case "rare":
+          return 8;
+        case "uncommon":
+          return 15;
+        case "common":
+          return 25;
+        default:
+          return 10;
       }
     });
-    
+
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
     let random = Math.random() * totalWeight;
-    
+
     for (let i = 0; i < symbolKeys.length; i++) {
       random -= weights[i];
       if (random <= 0) {
         return symbolKeys[i];
       }
     }
-    
+
     return symbolKeys[symbolKeys.length - 1];
   };
 
   const generateReels = (): string[][] => {
     return Array.from({ length: 5 }, () =>
-      Array.from({ length: 3 }, () => getRandomSymbol())
+      Array.from({ length: 3 }, () => getRandomSymbol()),
     );
   };
 
   const checkWinningLines = (newReels: string[][]): SpinResult => {
-    const winningLines: Array<{ line: number; symbols: string[]; multiplier: number; payout: number }> = [];
+    const winningLines: Array<{
+      line: number;
+      symbols: string[];
+      multiplier: number;
+      payout: number;
+    }> = [];
     let totalPayout = 0;
 
     PAYLINES.forEach((payline, lineIndex) => {
       const lineSymbols = payline.map((row, col) => newReels[col][row]);
-      
+
       // Check for matching symbols
       let matchCount = 1;
       const firstSymbol = lineSymbols[0];
-      
+
       for (let i = 1; i < lineSymbols.length; i++) {
-        if (lineSymbols[i] === firstSymbol || lineSymbols[i] === '🪙') { // 🪙 is wild
+        if (lineSymbols[i] === firstSymbol || lineSymbols[i] === "🪙") {
+          // 🪙 is wild
           matchCount++;
         } else {
           break;
@@ -173,36 +192,43 @@ export default function CoinKrazySpinner() {
       }
 
       if (matchCount >= 3) {
-        const symbolValue = SYMBOLS[firstSymbol as keyof typeof SYMBOLS]?.value || 1;
+        const symbolValue =
+          SYMBOLS[firstSymbol as keyof typeof SYMBOLS]?.value || 1;
         let multiplier = 1;
-        
+
         switch (matchCount) {
-          case 3: multiplier = 1; break;
-          case 4: multiplier = 5; break;
-          case 5: multiplier = 20; break;
+          case 3:
+            multiplier = 1;
+            break;
+          case 4:
+            multiplier = 5;
+            break;
+          case 5:
+            multiplier = 20;
+            break;
         }
 
         // Bonus multipliers for special symbols
-        if (firstSymbol === '🪙') multiplier *= 10; // CoinKrazy logo bonus
-        if (firstSymbol === '👑') multiplier *= 3;  // Crown bonus
-        if (firstSymbol === '💎') multiplier *= 2;  // Diamond bonus
+        if (firstSymbol === "🪙") multiplier *= 10; // CoinKrazy logo bonus
+        if (firstSymbol === "👑") multiplier *= 3; // Crown bonus
+        if (firstSymbol === "💎") multiplier *= 2; // Diamond bonus
 
         const linePayout = (bet * symbolValue * multiplier) / 100;
-        
+
         winningLines.push({
           line: lineIndex,
           symbols: lineSymbols.slice(0, matchCount),
           multiplier,
-          payout: linePayout
+          payout: linePayout,
         });
-        
+
         totalPayout += linePayout;
       }
     });
 
     // Jackpot check - 5 CoinKrazy logos
-    const middleRow = newReels.map(reel => reel[1]);
-    if (middleRow.every(symbol => symbol === '🪙')) {
+    const middleRow = newReels.map((reel) => reel[1]);
+    if (middleRow.every((symbol) => symbol === "🪙")) {
       totalPayout += bet * 1000; // Jackpot multiplier
       setJackpotWin(true);
       setTimeout(() => setJackpotWin(false), 5000);
@@ -212,27 +238,27 @@ export default function CoinKrazySpinner() {
       symbols: newReels.flat(),
       paylines: winningLines,
       totalPayout,
-      isWin: totalPayout > 0
+      isWin: totalPayout > 0,
     };
   };
 
   const spin = async () => {
     if (isSpinning || balance < bet) return;
-    
+
     setIsSpinning(true);
     setLastResult(null);
     setWinAnimations([]);
-    
+
     // Deduct bet from balance
     const newBalance = balance - bet;
     setBalance(newBalance);
-    
+
     // Update stats
-    setGameStats(prev => ({
+    setGameStats((prev) => ({
       ...prev,
       totalSpins: prev.totalSpins + 1,
       totalBet: prev.totalBet + bet,
-      balance: newBalance
+      balance: newBalance,
     }));
 
     // Simulate spinning animation
@@ -244,35 +270,45 @@ export default function CoinKrazySpinner() {
     const spinInterval = setInterval(() => {
       setReels(generateReels());
       currentInterval++;
-      
+
       if (currentInterval >= totalIntervals) {
         clearInterval(spinInterval);
-        
+
         // Final result
         const finalReels = generateReels();
         const result = checkWinningLines(finalReels);
-        
+
         setReels(finalReels);
         setLastResult(result);
-        
+
         if (result.isWin) {
           const newBalanceWithWin = newBalance + result.totalPayout;
           setBalance(newBalanceWithWin);
-          setWinAnimations(result.paylines.map(line => ({ line: line.line, symbols: line.symbols })));
+          setWinAnimations(
+            result.paylines.map((line) => ({
+              line: line.line,
+              symbols: line.symbols,
+            })),
+          );
 
           // Track real SC wins (assuming 1 USD = 1 SC for this game)
           const scWinAmount = result.totalPayout; // Convert USD to SC
           if (user?.id && scWinAmount >= 0.01) {
-            trackSCWin(user.id, scWinAmount, 'CoinKrazy Spinner', 'coin-spinner');
+            trackSCWin(
+              user.id,
+              scWinAmount,
+              "CoinKrazy Spinner",
+              "coin-spinner",
+            );
           }
 
           // Update win stats
-          setGameStats(prev => ({
+          setGameStats((prev) => ({
             ...prev,
             totalWon: prev.totalWon + result.totalPayout,
             biggestWin: Math.max(prev.biggestWin, result.totalPayout),
             currentStreak: prev.currentStreak + 1,
-            balance: newBalanceWithWin
+            balance: newBalanceWithWin,
           }));
 
           // Play win sound effect
@@ -280,13 +316,13 @@ export default function CoinKrazySpinner() {
             // Audio would be implemented here
           }
         } else {
-          setGameStats(prev => ({
+          setGameStats((prev) => ({
             ...prev,
             currentStreak: 0,
-            balance: newBalance
+            balance: newBalance,
           }));
         }
-        
+
         setIsSpinning(false);
       }
     }, intervalDuration);
@@ -295,20 +331,26 @@ export default function CoinKrazySpinner() {
   const getSymbolRarityColor = (symbol: string) => {
     const rarity = SYMBOLS[symbol as keyof typeof SYMBOLS]?.rarity;
     switch (rarity) {
-      case 'legendary': return 'text-yellow-400 animate-pulse';
-      case 'epic': return 'text-purple-400';
-      case 'rare': return 'text-blue-400';
-      case 'uncommon': return 'text-green-400';
-      case 'common': return 'text-gray-300';
-      default: return 'text-gray-300';
+      case "legendary":
+        return "text-yellow-400 animate-pulse";
+      case "epic":
+        return "text-purple-400";
+      case "rare":
+        return "text-blue-400";
+      case "uncommon":
+        return "text-green-400";
+      case "common":
+        return "text-gray-300";
+      default:
+        return "text-gray-300";
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -331,8 +373,12 @@ export default function CoinKrazySpinner() {
       {jackpotWin && (
         <Card className="bg-gradient-to-r from-yellow-500/20 to-gold-500/20 border-yellow-500 animate-pulse">
           <CardContent className="p-6 text-center">
-            <div className="text-4xl font-bold text-yellow-400 mb-2">🎊 JACKPOT! 🎊</div>
-            <div className="text-xl text-gold-400">Congratulations! You hit the CoinKrazy Jackpot!</div>
+            <div className="text-4xl font-bold text-yellow-400 mb-2">
+              🎊 JACKPOT! 🎊
+            </div>
+            <div className="text-xl text-gold-400">
+              Congratulations! You hit the CoinKrazy Jackpot!
+            </div>
           </CardContent>
         </Card>
       )}
@@ -354,7 +400,7 @@ export default function CoinKrazySpinner() {
                             h-20 bg-gradient-to-b from-gray-700 to-gray-800 rounded-lg 
                             flex items-center justify-center text-4xl border-2 border-gray-600
                             transition-all duration-200 hover:border-gold-500/50
-                            ${isSpinning ? 'animate-pulse' : ''}
+                            ${isSpinning ? "animate-pulse" : ""}
                             ${getSymbolRarityColor(symbol)}
                           `}
                         >
@@ -374,7 +420,7 @@ export default function CoinKrazySpinner() {
                         className="absolute inset-0 bg-gold-500/20 animate-pulse rounded-lg"
                         style={{
                           animationDelay: `${index * 200}ms`,
-                          animationDuration: '1s'
+                          animationDuration: "1s",
                         }}
                       />
                     ))}
@@ -383,7 +429,10 @@ export default function CoinKrazySpinner() {
 
                 {/* Paylines Display */}
                 <div className="text-center mb-4">
-                  <Badge variant="outline" className="text-gold-400 border-gold-500">
+                  <Badge
+                    variant="outline"
+                    className="text-gold-400 border-gold-500"
+                  >
                     25 Active Paylines
                   </Badge>
                 </div>
@@ -394,21 +443,21 @@ export default function CoinKrazySpinner() {
                 <div className="flex items-center gap-4">
                   <div className="space-y-1">
                     <label className="text-sm font-medium">Bet Amount</label>
-                    <select 
+                    <select
                       value={bet}
                       onChange={(e) => setBet(parseFloat(e.target.value))}
                       disabled={isSpinning}
                       className="w-24 p-2 rounded border bg-background"
                     >
                       <option value={0.25}>$0.25</option>
-                      <option value={0.50}>$0.50</option>
-                      <option value={1.00}>$1.00</option>
-                      <option value={2.50}>$2.50</option>
-                      <option value={5.00}>$5.00</option>
-                      <option value={10.00}>$10.00</option>
-                      <option value={25.00}>$25.00</option>
-                      <option value={50.00}>$50.00</option>
-                      <option value={100.00}>$100.00</option>
+                      <option value={0.5}>$0.50</option>
+                      <option value={1.0}>$1.00</option>
+                      <option value={2.5}>$2.50</option>
+                      <option value={5.0}>$5.00</option>
+                      <option value={10.0}>$10.00</option>
+                      <option value={25.0}>$25.00</option>
+                      <option value={50.0}>$50.00</option>
+                      <option value={100.0}>$100.00</option>
                     </select>
                   </div>
 
@@ -417,7 +466,11 @@ export default function CoinKrazySpinner() {
                     variant="outline"
                     size="sm"
                   >
-                    {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                    {soundEnabled ? (
+                      <Volume2 className="w-4 h-4" />
+                    ) : (
+                      <VolumeX className="w-4 h-4" />
+                    )}
                   </Button>
 
                   <Button
@@ -426,7 +479,11 @@ export default function CoinKrazySpinner() {
                     size="sm"
                     disabled={isSpinning}
                   >
-                    {autoPlay ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+                    {autoPlay ? (
+                      <Pause className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Play className="w-4 h-4 mr-2" />
+                    )}
                     Auto Play
                   </Button>
                 </div>
@@ -437,16 +494,17 @@ export default function CoinKrazySpinner() {
                   size="lg"
                   className={`
                     px-8 py-4 text-lg font-bold min-w-[120px]
-                    ${isSpinning 
-                      ? 'bg-gray-500 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black'
+                    ${
+                      isSpinning
+                        ? "bg-gray-500 cursor-not-allowed"
+                        : "bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black"
                     }
                   `}
                 >
                   {isSpinning ? (
                     <RotateCcw className="w-5 h-5 animate-spin" />
                   ) : (
-                    'SPIN'
+                    "SPIN"
                   )}
                 </Button>
               </div>
@@ -462,18 +520,20 @@ export default function CoinKrazySpinner() {
                     <Trophy className="w-5 h-5 text-gold-400" />
                     <span className="font-bold text-green-400">WIN!</span>
                     <span className="text-sm text-muted-foreground">
-                      {lastResult.paylines.length} winning line{lastResult.paylines.length !== 1 ? 's' : ''}
+                      {lastResult.paylines.length} winning line
+                      {lastResult.paylines.length !== 1 ? "s" : ""}
                     </span>
                   </div>
                   <div className="text-xl font-bold text-green-400">
                     +{formatCurrency(lastResult.totalPayout)}
                   </div>
                 </div>
-                
+
                 <div className="mt-2 space-y-1">
                   {lastResult.paylines.map((line, index) => (
                     <div key={index} className="text-sm text-muted-foreground">
-                      Line {line.line + 1}: {line.symbols.join(' ')} × {line.multiplier} = {formatCurrency(line.payout)}
+                      Line {line.line + 1}: {line.symbols.join(" ")} ×{" "}
+                      {line.multiplier} = {formatCurrency(line.payout)}
                     </div>
                   ))}
                 </div>
@@ -513,15 +573,21 @@ export default function CoinKrazySpinner() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Total Bet:</span>
-                <span className="font-medium">{formatCurrency(gameStats.totalBet)}</span>
+                <span className="font-medium">
+                  {formatCurrency(gameStats.totalBet)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Total Won:</span>
-                <span className="font-medium text-green-400">{formatCurrency(gameStats.totalWon)}</span>
+                <span className="font-medium text-green-400">
+                  {formatCurrency(gameStats.totalWon)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Biggest Win:</span>
-                <span className="font-medium text-gold-400">{formatCurrency(gameStats.biggestWin)}</span>
+                <span className="font-medium text-gold-400">
+                  {formatCurrency(gameStats.biggestWin)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Win Streak:</span>
@@ -529,7 +595,9 @@ export default function CoinKrazySpinner() {
               </div>
               <div className="flex justify-between border-t pt-2">
                 <span className="text-muted-foreground">Net:</span>
-                <span className={`font-bold ${gameStats.totalWon - gameStats.totalBet >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <span
+                  className={`font-bold ${gameStats.totalWon - gameStats.totalBet >= 0 ? "text-green-400" : "text-red-400"}`}
+                >
                   {formatCurrency(gameStats.totalWon - gameStats.totalBet)}
                 </span>
               </div>
@@ -544,10 +612,19 @@ export default function CoinKrazySpinner() {
             <CardContent>
               <div className="space-y-2 text-sm">
                 {Object.entries(SYMBOLS).map(([symbol, data]) => (
-                  <div key={symbol} className="flex items-center justify-between">
+                  <div
+                    key={symbol}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-2">
-                      <span className={`text-lg ${getSymbolRarityColor(symbol)}`}>{symbol}</span>
-                      <span className="text-xs text-muted-foreground">{data.name}</span>
+                      <span
+                        className={`text-lg ${getSymbolRarityColor(symbol)}`}
+                      >
+                        {symbol}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {data.name}
+                      </span>
                     </div>
                     <span className="font-medium">{data.value}x</span>
                   </div>

@@ -1,17 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Gamepad2, 
-  Coins, 
-  Crown, 
-  Trophy, 
-  Star, 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Gamepad2,
+  Coins,
+  Crown,
+  Trophy,
+  Star,
   Gift,
   PlayCircle,
   DollarSign,
   Shield,
-  Info
-} from 'lucide-react';
+  Info,
+} from "lucide-react";
 
 export default function HowToPlay() {
   return (
@@ -21,7 +21,8 @@ export default function HowToPlay() {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4">How to Play at CoinKrazy</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Your complete guide to playing and winning at CoinKrazy.com. Learn the basics, master the games, and maximize your rewards!
+            Your complete guide to playing and winning at CoinKrazy.com. Learn
+            the basics, master the games, and maximize your rewards!
           </p>
         </div>
       </div>
@@ -43,7 +44,8 @@ export default function HowToPlay() {
                 </div>
                 <h3 className="font-bold mb-2">Create Account</h3>
                 <p className="text-sm text-muted-foreground">
-                  Sign up for free and get your welcome bonus of Gold Coins and Sweeps Coins to start playing immediately.
+                  Sign up for free and get your welcome bonus of Gold Coins and
+                  Sweeps Coins to start playing immediately.
                 </p>
               </div>
               <div className="text-center">
@@ -52,7 +54,8 @@ export default function HowToPlay() {
                 </div>
                 <h3 className="font-bold mb-2">Choose Your Game</h3>
                 <p className="text-sm text-muted-foreground">
-                  Browse our collection of slots, scratch cards, table games, and more. Each game has different rules and payout structures.
+                  Browse our collection of slots, scratch cards, table games,
+                  and more. Each game has different rules and payout structures.
                 </p>
               </div>
               <div className="text-center">
@@ -61,7 +64,8 @@ export default function HowToPlay() {
                 </div>
                 <h3 className="font-bold mb-2">Start Playing</h3>
                 <p className="text-sm text-muted-foreground">
-                  Place your bets using Gold Coins for fun or Sweeps Coins for real prizes. Win big and redeem your rewards!
+                  Place your bets using Gold Coins for fun or Sweeps Coins for
+                  real prizes. Win big and redeem your rewards!
                 </p>
               </div>
             </div>
@@ -83,7 +87,9 @@ export default function HowToPlay() {
                   <Coins className="w-8 h-8 text-gold-500" />
                   <div>
                     <h3 className="font-bold text-lg">Gold Coins (GC)</h3>
-                    <Badge className="bg-gold-500 text-black">Entertainment Only</Badge>
+                    <Badge className="bg-gold-500 text-black">
+                      Entertainment Only
+                    </Badge>
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm">
@@ -93,13 +99,15 @@ export default function HowToPlay() {
                   <li>• Play any game in our casino</li>
                 </ul>
               </div>
-              
+
               <div className="p-6 bg-purple-500/5 border border-purple-500/20 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <Crown className="w-8 h-8 text-purple-500" />
                   <div>
                     <h3 className="font-bold text-lg">Sweeps Coins (SC)</h3>
-                    <Badge className="bg-purple-500 text-white">Real Prizes</Badge>
+                    <Badge className="bg-purple-500 text-white">
+                      Real Prizes
+                    </Badge>
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm">
@@ -129,7 +137,8 @@ export default function HowToPlay() {
                   Slot Machines
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Spin the reels and match symbols for wins. Features include wilds, scatters, free spins, and progressive jackpots.
+                  Spin the reels and match symbols for wins. Features include
+                  wilds, scatters, free spins, and progressive jackpots.
                 </p>
                 <ul className="text-xs space-y-1">
                   <li>• CoinKrazy Spinner (5 reels, 25 paylines)</li>
@@ -145,7 +154,8 @@ export default function HowToPlay() {
                   Scratch Cards
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Instant win games where you scratch to reveal symbols. Match winning combinations for immediate payouts.
+                  Instant win games where you scratch to reveal symbols. Match
+                  winning combinations for immediate payouts.
                 </p>
                 <ul className="text-xs space-y-1">
                   <li>• Lucky Scratch Gold</li>
@@ -161,7 +171,8 @@ export default function HowToPlay() {
                   Table Games
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Classic casino games including blackjack, roulette, baccarat, and poker variations.
+                  Classic casino games including blackjack, roulette, baccarat,
+                  and poker variations.
                 </p>
                 <ul className="text-xs space-y-1">
                   <li>• Blackjack (multiple variants)</li>
@@ -177,7 +188,8 @@ export default function HowToPlay() {
                   Bingo
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Number matching games with progressive jackpots and special patterns for bigger wins.
+                  Number matching games with progressive jackpots and special
+                  patterns for bigger wins.
                 </p>
                 <ul className="text-xs space-y-1">
                   <li>• 75-ball and 90-ball variants</li>
@@ -193,7 +205,8 @@ export default function HowToPlay() {
                   Sports Betting
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Bet on live sports events with competitive odds and multiple betting options.
+                  Bet on live sports events with competitive odds and multiple
+                  betting options.
                 </p>
                 <ul className="text-xs space-y-1">
                   <li>• Live sports events</li>
@@ -209,7 +222,8 @@ export default function HowToPlay() {
                   Mini Games
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Quick and fun arcade-style games with instant payouts and simple gameplay.
+                  Quick and fun arcade-style games with instant payouts and
+                  simple gameplay.
                 </p>
                 <ul className="text-xs space-y-1">
                   <li>• Wheel of Fortune</li>
@@ -267,7 +281,8 @@ export default function HowToPlay() {
           <CardContent>
             <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-6">
               <p className="mb-4">
-                At CoinKrazy, we promote responsible gaming and provide tools to help you stay in control:
+                At CoinKrazy, we promote responsible gaming and provide tools to
+                help you stay in control:
               </p>
               <ul className="space-y-2 text-sm">
                 <li>• Set deposit and loss limits</li>
@@ -277,7 +292,8 @@ export default function HowToPlay() {
                 <li>• 24/7 customer support</li>
               </ul>
               <p className="mt-4 text-sm text-muted-foreground">
-                Remember: Gaming should be fun and entertaining. Never bet more than you can afford to lose.
+                Remember: Gaming should be fun and entertaining. Never bet more
+                than you can afford to lose.
               </p>
             </div>
           </CardContent>

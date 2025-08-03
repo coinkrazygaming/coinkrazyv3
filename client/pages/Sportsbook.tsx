@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Trophy,
   TrendingUp,
   Plus,
@@ -22,15 +22,19 @@ import {
   X,
   CheckCircle,
   AlertCircle,
-  Coins
-} from 'lucide-react';
-import { sportsDataService, GameWithLines, BettingLine } from '@/services/sportsApi';
-import { Link } from 'react-router-dom';
+  Coins,
+} from "lucide-react";
+import {
+  sportsDataService,
+  GameWithLines,
+  BettingLine,
+} from "@/services/sportsApi";
+import { Link } from "react-router-dom";
 
 export interface BetSelection {
   gameId: string;
   game: GameWithLines;
-  betType: 'spread' | 'total' | 'moneyline';
+  betType: "spread" | "total" | "moneyline";
   selection: string;
   odds: number;
   line?: number;
@@ -40,33 +44,33 @@ export interface BetSelection {
 export interface BetSlip {
   id: string;
   selections: BetSelection[];
-  betType: 'single' | 'parlay';
+  betType: "single" | "parlay";
   totalOdds: number;
   potentialPayout: number;
   wagerAmount: number;
-  status: 'pending' | 'placed' | 'won' | 'lost';
+  status: "pending" | "placed" | "won" | "lost";
   timestamp: string;
 }
 
 export default function Sportsbook() {
   const [games, setGames] = useState<GameWithLines[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSport, setSelectedSport] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSport, setSelectedSport] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [betSlip, setBetSlip] = useState<BetSelection[]>([]);
-  const [wagerAmount, setWagerAmount] = useState<string>('');
+  const [wagerAmount, setWagerAmount] = useState<string>("");
   const [userBalance] = useState({ gc: 125000, sc: 450 }); // This would come from auth context
   const [showBetSlip, setShowBetSlip] = useState(false);
   const [liveBets, setLiveBets] = useState<BetSlip[]>([]);
 
   // Parlay odds multipliers
   const PARLAY_ODDS = {
-    1: 1,      // Single bet
-    2: 3,      // 2-pick parlay = 3x
-    3: 5,      // 3-pick parlay = 5x  
-    4: 10,     // 4-pick parlay = 10x
-    5: 20,     // 5-pick parlay = 20x
-    6: 40      // 6-pick parlay = 40x
+    1: 1, // Single bet
+    2: 3, // 2-pick parlay = 3x
+    3: 5, // 3-pick parlay = 5x
+    4: 10, // 4-pick parlay = 10x
+    5: 20, // 5-pick parlay = 20x
+    6: 40, // 6-pick parlay = 40x
   };
 
   useEffect(() => {
@@ -79,30 +83,39 @@ export default function Sportsbook() {
       const upcomingGames = await sportsDataService.getUpcomingGames();
       setGames(upcomingGames);
     } catch (error) {
-      console.error('Error loading games:', error);
+      console.error("Error loading games:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredGames = games.filter(game => {
-    const matchesSport = selectedSport === 'all' || game.sport.toLowerCase().includes(selectedSport);
-    const matchesSearch = game.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          game.awayTeam.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredGames = games.filter((game) => {
+    const matchesSport =
+      selectedSport === "all" ||
+      game.sport.toLowerCase().includes(selectedSport);
+    const matchesSearch =
+      game.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      game.awayTeam.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSport && matchesSearch;
   });
 
-  const addToBetSlip = (game: GameWithLines, betType: 'spread' | 'total' | 'moneyline', selection: string, odds: number, line?: number) => {
+  const addToBetSlip = (
+    game: GameWithLines,
+    betType: "spread" | "total" | "moneyline",
+    selection: string,
+    odds: number,
+    line?: number,
+  ) => {
     // Check if this game is already in bet slip
-    const existingIndex = betSlip.findIndex(bet => bet.gameId === game.id);
-    
+    const existingIndex = betSlip.findIndex((bet) => bet.gameId === game.id);
+
     const newSelection: BetSelection = {
       gameId: game.id,
       game,
       betType,
       selection,
       odds,
-      line
+      line,
     };
 
     if (existingIndex >= 0) {
@@ -114,12 +127,12 @@ export default function Sportsbook() {
       // Add new selection
       setBetSlip([...betSlip, newSelection]);
     }
-    
+
     setShowBetSlip(true);
   };
 
   const removeFromBetSlip = (gameId: string) => {
-    setBetSlip(betSlip.filter(bet => bet.gameId !== gameId));
+    setBetSlip(betSlip.filter((bet) => bet.gameId !== gameId));
   };
 
   const calculateParlay = () => {
@@ -129,11 +142,12 @@ export default function Sportsbook() {
     if (numPicks === 1) {
       // Single bet - use actual odds
       const bet = betSlip[0];
-      const decimalOdds = bet.odds > 0 ? (bet.odds / 100) + 1 : (100 / Math.abs(bet.odds)) + 1;
+      const decimalOdds =
+        bet.odds > 0 ? bet.odds / 100 + 1 : 100 / Math.abs(bet.odds) + 1;
       const wager = parseFloat(wagerAmount) || 0;
       return {
         totalOdds: decimalOdds,
-        potentialPayout: wager * decimalOdds
+        potentialPayout: wager * decimalOdds,
       };
     } else {
       // Parlay - use fixed multipliers
@@ -141,7 +155,7 @@ export default function Sportsbook() {
       const wager = parseFloat(wagerAmount) || 0;
       return {
         totalOdds: multiplier,
-        potentialPayout: wager * multiplier
+        potentialPayout: wager * multiplier,
       };
     }
   };
@@ -152,7 +166,7 @@ export default function Sportsbook() {
     const wager = parseFloat(wagerAmount);
     if (wager > userBalance.gc) {
       // Redirect to Gold Coin Store
-      window.location.href = '/store';
+      window.location.href = "/store";
       return;
     }
 
@@ -161,21 +175,21 @@ export default function Sportsbook() {
     const newBet: BetSlip = {
       id: Date.now().toString(),
       selections: [...betSlip],
-      betType: betSlip.length === 1 ? 'single' : 'parlay',
+      betType: betSlip.length === 1 ? "single" : "parlay",
       totalOdds,
       potentialPayout,
       wagerAmount: wager,
-      status: 'placed',
-      timestamp: new Date().toISOString()
+      status: "placed",
+      timestamp: new Date().toISOString(),
     };
 
     setLiveBets([newBet, ...liveBets]);
     setBetSlip([]);
-    setWagerAmount('');
+    setWagerAmount("");
     setShowBetSlip(false);
 
     // In production, this would make an API call to place the bet
-    console.log('Bet placed:', newBet);
+    console.log("Bet placed:", newBet);
   };
 
   const formatOdds = (odds: number): string => {
@@ -188,26 +202,38 @@ export default function Sportsbook() {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    let dateStr = '';
+    let dateStr = "";
     if (date.toDateString() === today.toDateString()) {
-      dateStr = 'Today';
+      dateStr = "Today";
     } else if (date.toDateString() === tomorrow.toDateString()) {
-      dateStr = 'Tomorrow';
+      dateStr = "Tomorrow";
     } else {
-      dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      dateStr = date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
     }
 
-    const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const timeStr = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
     return `${dateStr} ${timeStr}`;
   };
 
   const getSportIcon = (sport: string) => {
     switch (sport.toLowerCase()) {
-      case 'nfl': return '🏈';
-      case 'nba': return '🏀';
-      case 'mlb': return '⚾';
-      case 'nhl': return '🏒';
-      default: return '🏆';
+      case "nfl":
+        return "🏈";
+      case "nba":
+        return "🏀";
+      case "mlb":
+        return "⚾";
+      case "nhl":
+        return "🏒";
+      default:
+        return "🏆";
     }
   };
 
@@ -230,14 +256,18 @@ export default function Sportsbook() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">CoinKrazy Sportsbook</h1>
-              <p className="text-muted-foreground">Live odds on upcoming US sports games</p>
+              <p className="text-muted-foreground">
+                Live odds on upcoming US sports games
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-xl font-bold text-gold-400">{userBalance.gc.toLocaleString()}</div>
+                <div className="text-xl font-bold text-gold-400">
+                  {userBalance.gc.toLocaleString()}
+                </div>
                 <div className="text-sm text-muted-foreground">Gold Coins</div>
               </div>
-              <Button 
+              <Button
                 onClick={() => setShowBetSlip(!showBetSlip)}
                 className="relative bg-casino-blue hover:bg-casino-blue-dark"
               >
@@ -262,20 +292,24 @@ export default function Sportsbook() {
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <div className="flex items-center gap-2 flex-1">
                 <Search className="w-5 h-5 text-muted-foreground" />
-                <Input 
-                  placeholder="Search teams..." 
+                <Input
+                  placeholder="Search teams..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               <div className="flex gap-2">
-                {['all', 'nfl', 'nba', 'mlb', 'nhl'].map((sport) => (
+                {["all", "nfl", "nba", "mlb", "nhl"].map((sport) => (
                   <Button
                     key={sport}
-                    variant={selectedSport === sport ? 'default' : 'outline'}
+                    variant={selectedSport === sport ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedSport(sport)}
-                    className={selectedSport === sport ? 'bg-gold-500 text-black hover:bg-gold-600' : ''}
+                    className={
+                      selectedSport === sport
+                        ? "bg-gold-500 text-black hover:bg-gold-600"
+                        : ""
+                    }
                   >
                     {sport.toUpperCase()}
                   </Button>
@@ -291,17 +325,23 @@ export default function Sportsbook() {
                     <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-xl font-bold mb-2">No Games Found</h3>
                     <p className="text-muted-foreground">
-                      Try adjusting your search or check back later for more games.
+                      Try adjusting your search or check back later for more
+                      games.
                     </p>
                   </CardContent>
                 </Card>
               ) : (
                 filteredGames.map((game) => (
-                  <Card key={game.id} className="hover:shadow-lg transition-all duration-300">
+                  <Card
+                    key={game.id}
+                    className="hover:shadow-lg transition-all duration-300"
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{getSportIcon(game.sport)}</span>
+                          <span className="text-2xl">
+                            {getSportIcon(game.sport)}
+                          </span>
                           <div>
                             <Badge variant="outline">{game.sport}</Badge>
                             <div className="text-sm text-muted-foreground mt-1">
@@ -309,7 +349,7 @@ export default function Sportsbook() {
                             </div>
                           </div>
                         </div>
-                        {game.status === 'live' && (
+                        {game.status === "live" && (
                           <Badge className="bg-red-500 text-white animate-pulse">
                             <div className="w-2 h-2 bg-white rounded-full mr-2"></div>
                             LIVE
@@ -320,12 +360,20 @@ export default function Sportsbook() {
                       {/* Teams */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="text-center">
-                          <div className="font-bold text-lg">{game.awayTeam}</div>
-                          <div className="text-sm text-muted-foreground">Away</div>
+                          <div className="font-bold text-lg">
+                            {game.awayTeam}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Away
+                          </div>
                         </div>
                         <div className="text-center">
-                          <div className="font-bold text-lg">{game.homeTeam}</div>
-                          <div className="text-sm text-muted-foreground">Home</div>
+                          <div className="font-bold text-lg">
+                            {game.homeTeam}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Home
+                          </div>
                         </div>
                       </div>
 
@@ -340,17 +388,22 @@ export default function Sportsbook() {
                                 <Button
                                   variant="outline"
                                   className="flex flex-col h-auto p-3 hover:bg-casino-blue/10"
-                                  onClick={() => addToBetSlip(
-                                    game, 
-                                    'spread', 
-                                    `${game.awayTeam} ${game.bestLine!.spread.away > 0 ? '+' : ''}${game.bestLine!.spread.away}`, 
-                                    game.bestLine!.spread.awayOdds,
-                                    game.bestLine!.spread.away
-                                  )}
+                                  onClick={() =>
+                                    addToBetSlip(
+                                      game,
+                                      "spread",
+                                      `${game.awayTeam} ${game.bestLine!.spread.away > 0 ? "+" : ""}${game.bestLine!.spread.away}`,
+                                      game.bestLine!.spread.awayOdds,
+                                      game.bestLine!.spread.away,
+                                    )
+                                  }
                                 >
-                                  <div className="font-bold">{game.awayTeam}</div>
+                                  <div className="font-bold">
+                                    {game.awayTeam}
+                                  </div>
                                   <div className="text-lg text-casino-blue">
-                                    {game.bestLine.spread.away > 0 ? '+' : ''}{game.bestLine.spread.away}
+                                    {game.bestLine.spread.away > 0 ? "+" : ""}
+                                    {game.bestLine.spread.away}
                                   </div>
                                   <div className="text-sm text-muted-foreground">
                                     {formatOdds(game.bestLine.spread.awayOdds)}
@@ -359,17 +412,22 @@ export default function Sportsbook() {
                                 <Button
                                   variant="outline"
                                   className="flex flex-col h-auto p-3 hover:bg-casino-blue/10"
-                                  onClick={() => addToBetSlip(
-                                    game, 
-                                    'spread', 
-                                    `${game.homeTeam} ${game.bestLine!.spread.home > 0 ? '+' : ''}${game.bestLine!.spread.home}`, 
-                                    game.bestLine!.spread.homeOdds,
-                                    game.bestLine!.spread.home
-                                  )}
+                                  onClick={() =>
+                                    addToBetSlip(
+                                      game,
+                                      "spread",
+                                      `${game.homeTeam} ${game.bestLine!.spread.home > 0 ? "+" : ""}${game.bestLine!.spread.home}`,
+                                      game.bestLine!.spread.homeOdds,
+                                      game.bestLine!.spread.home,
+                                    )
+                                  }
                                 >
-                                  <div className="font-bold">{game.homeTeam}</div>
+                                  <div className="font-bold">
+                                    {game.homeTeam}
+                                  </div>
                                   <div className="text-lg text-casino-blue">
-                                    {game.bestLine.spread.home > 0 ? '+' : ''}{game.bestLine.spread.home}
+                                    {game.bestLine.spread.home > 0 ? "+" : ""}
+                                    {game.bestLine.spread.home}
                                   </div>
                                   <div className="text-sm text-muted-foreground">
                                     {formatOdds(game.bestLine.spread.homeOdds)}
@@ -382,21 +440,27 @@ export default function Sportsbook() {
                           {/* Total (Over/Under) */}
                           {game.bestLine.total && (
                             <div>
-                              <h4 className="font-bold mb-2">Total Points (O/U {game.bestLine.total.over})</h4>
+                              <h4 className="font-bold mb-2">
+                                Total Points (O/U {game.bestLine.total.over})
+                              </h4>
                               <div className="grid grid-cols-2 gap-2">
                                 <Button
                                   variant="outline"
                                   className="flex flex-col h-auto p-3 hover:bg-gold/10"
-                                  onClick={() => addToBetSlip(
-                                    game, 
-                                    'total', 
-                                    `Over ${game.bestLine!.total.over}`, 
-                                    game.bestLine!.total.overOdds,
-                                    game.bestLine!.total.over
-                                  )}
+                                  onClick={() =>
+                                    addToBetSlip(
+                                      game,
+                                      "total",
+                                      `Over ${game.bestLine!.total.over}`,
+                                      game.bestLine!.total.overOdds,
+                                      game.bestLine!.total.over,
+                                    )
+                                  }
                                 >
                                   <div className="font-bold">Over</div>
-                                  <div className="text-lg text-gold-500">{game.bestLine.total.over}</div>
+                                  <div className="text-lg text-gold-500">
+                                    {game.bestLine.total.over}
+                                  </div>
                                   <div className="text-sm text-muted-foreground">
                                     {formatOdds(game.bestLine.total.overOdds)}
                                   </div>
@@ -404,16 +468,20 @@ export default function Sportsbook() {
                                 <Button
                                   variant="outline"
                                   className="flex flex-col h-auto p-3 hover:bg-gold/10"
-                                  onClick={() => addToBetSlip(
-                                    game, 
-                                    'total', 
-                                    `Under ${game.bestLine!.total.under}`, 
-                                    game.bestLine!.total.underOdds,
-                                    game.bestLine!.total.under
-                                  )}
+                                  onClick={() =>
+                                    addToBetSlip(
+                                      game,
+                                      "total",
+                                      `Under ${game.bestLine!.total.under}`,
+                                      game.bestLine!.total.underOdds,
+                                      game.bestLine!.total.under,
+                                    )
+                                  }
                                 >
                                   <div className="font-bold">Under</div>
-                                  <div className="text-lg text-gold-500">{game.bestLine.total.under}</div>
+                                  <div className="text-lg text-gold-500">
+                                    {game.bestLine.total.under}
+                                  </div>
                                   <div className="text-sm text-muted-foreground">
                                     {formatOdds(game.bestLine.total.underOdds)}
                                   </div>
@@ -430,14 +498,18 @@ export default function Sportsbook() {
                                 <Button
                                   variant="outline"
                                   className="flex flex-col h-auto p-3 hover:bg-green-500/10"
-                                  onClick={() => addToBetSlip(
-                                    game, 
-                                    'moneyline', 
-                                    game.awayTeam, 
-                                    game.bestLine!.moneyline.away
-                                  )}
+                                  onClick={() =>
+                                    addToBetSlip(
+                                      game,
+                                      "moneyline",
+                                      game.awayTeam,
+                                      game.bestLine!.moneyline.away,
+                                    )
+                                  }
                                 >
-                                  <div className="font-bold">{game.awayTeam}</div>
+                                  <div className="font-bold">
+                                    {game.awayTeam}
+                                  </div>
                                   <div className="text-lg text-green-500">
                                     {formatOdds(game.bestLine.moneyline.away)}
                                   </div>
@@ -445,14 +517,18 @@ export default function Sportsbook() {
                                 <Button
                                   variant="outline"
                                   className="flex flex-col h-auto p-3 hover:bg-green-500/10"
-                                  onClick={() => addToBetSlip(
-                                    game, 
-                                    'moneyline', 
-                                    game.homeTeam, 
-                                    game.bestLine!.moneyline.home
-                                  )}
+                                  onClick={() =>
+                                    addToBetSlip(
+                                      game,
+                                      "moneyline",
+                                      game.homeTeam,
+                                      game.bestLine!.moneyline.home,
+                                    )
+                                  }
                                 >
-                                  <div className="font-bold">{game.homeTeam}</div>
+                                  <div className="font-bold">
+                                    {game.homeTeam}
+                                  </div>
                                   <div className="text-lg text-green-500">
                                     {formatOdds(game.bestLine.moneyline.home)}
                                   </div>
@@ -488,18 +564,23 @@ export default function Sportsbook() {
                     <div className="text-center py-8">
                       <Target className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                       <p className="text-muted-foreground">No bets selected</p>
-                      <p className="text-sm text-muted-foreground">Click on odds to add bets</p>
+                      <p className="text-sm text-muted-foreground">
+                        Click on odds to add bets
+                      </p>
                     </div>
                   ) : (
                     <>
                       {/* Bet Type Indicator */}
                       <div className="text-center">
                         <Badge className="bg-gold-500 text-black">
-                          {betSlip.length === 1 ? 'Single Bet' : `${betSlip.length}-Pick Parlay`}
+                          {betSlip.length === 1
+                            ? "Single Bet"
+                            : `${betSlip.length}-Pick Parlay`}
                         </Badge>
                         {betSlip.length > 1 && (
                           <div className="text-sm text-muted-foreground mt-1">
-                            Pays {PARLAY_ODDS[Math.min(betSlip.length, 6)]}x your wager
+                            Pays {PARLAY_ODDS[Math.min(betSlip.length, 6)]}x
+                            your wager
                           </div>
                         )}
                       </div>
@@ -507,9 +588,14 @@ export default function Sportsbook() {
                       {/* Selected Bets */}
                       <div className="space-y-3">
                         {betSlip.map((bet, index) => (
-                          <div key={`${bet.gameId}-${index}`} className="p-3 bg-muted/20 rounded-lg">
+                          <div
+                            key={`${bet.gameId}-${index}`}
+                            className="p-3 bg-muted/20 rounded-lg"
+                          >
                             <div className="flex items-center justify-between mb-2">
-                              <div className="font-bold text-sm">{bet.selection}</div>
+                              <div className="font-bold text-sm">
+                                {bet.selection}
+                              </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -530,7 +616,9 @@ export default function Sportsbook() {
 
                       {/* Wager Amount */}
                       <div>
-                        <label className="block text-sm font-medium mb-2">Wager Amount (GC)</label>
+                        <label className="block text-sm font-medium mb-2">
+                          Wager Amount (GC)
+                        </label>
                         <Input
                           type="number"
                           placeholder="Enter amount"
@@ -550,7 +638,8 @@ export default function Sportsbook() {
                           <div className="flex justify-between">
                             <span>Potential Payout:</span>
                             <span className="font-bold text-green-400">
-                              {calculateParlay().potentialPayout.toLocaleString()} GC
+                              {calculateParlay().potentialPayout.toLocaleString()}{" "}
+                              GC
                             </span>
                           </div>
                           <div className="text-xs text-muted-foreground">
@@ -560,12 +649,12 @@ export default function Sportsbook() {
                       )}
 
                       {/* Place Bet Button */}
-                      <Button 
+                      <Button
                         onClick={placeBet}
                         disabled={!wagerAmount || betSlip.length === 0}
                         className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                       >
-                        {parseFloat(wagerAmount || '0') > userBalance.gc ? (
+                        {parseFloat(wagerAmount || "0") > userBalance.gc ? (
                           <>
                             <ShoppingCart className="w-4 h-4 mr-2" />
                             Buy More Coins
@@ -578,9 +667,12 @@ export default function Sportsbook() {
                         )}
                       </Button>
 
-                      {parseFloat(wagerAmount || '0') > userBalance.gc && (
+                      {parseFloat(wagerAmount || "0") > userBalance.gc && (
                         <p className="text-center text-sm text-orange-500">
-                          Insufficient balance. <Link to="/store" className="underline">Buy more Gold Coins</Link>
+                          Insufficient balance.{" "}
+                          <Link to="/store" className="underline">
+                            Buy more Gold Coins
+                          </Link>
                         </p>
                       )}
                     </>
@@ -600,13 +692,24 @@ export default function Sportsbook() {
                     {liveBets.slice(0, 5).map((bet) => (
                       <div key={bet.id} className="p-3 bg-muted/20 rounded-lg">
                         <div className="flex items-center justify-between mb-1">
-                          <Badge variant={bet.betType === 'single' ? 'default' : 'secondary'}>
-                            {bet.betType === 'single' ? 'Single' : `${bet.selections.length}-Pick`}
+                          <Badge
+                            variant={
+                              bet.betType === "single" ? "default" : "secondary"
+                            }
+                          >
+                            {bet.betType === "single"
+                              ? "Single"
+                              : `${bet.selections.length}-Pick`}
                           </Badge>
-                          <Badge variant={
-                            bet.status === 'won' ? 'default' :
-                            bet.status === 'lost' ? 'destructive' : 'secondary'
-                          }>
+                          <Badge
+                            variant={
+                              bet.status === "won"
+                                ? "default"
+                                : bet.status === "lost"
+                                  ? "destructive"
+                                  : "secondary"
+                            }
+                          >
                             {bet.status}
                           </Badge>
                         </div>

@@ -1,22 +1,25 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Coins, 
-  Trophy, 
-  Users, 
-  Zap, 
-  Shield, 
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Coins,
+  Trophy,
+  Users,
+  Zap,
+  Shield,
   Gift,
   Play,
   Star,
   TrendingUp,
   Crown,
-  RefreshCw
-} from 'lucide-react';
-import { analyticsService, type RealTimeData } from '../services/realTimeAnalytics';
+  RefreshCw,
+} from "lucide-react";
+import {
+  analyticsService,
+  type RealTimeData,
+} from "../services/realTimeAnalytics";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
@@ -24,40 +27,59 @@ export default function Index() {
 
   useEffect(() => {
     // Subscribe to real-time analytics updates
-    const unsubscribe = analyticsService.subscribe('homepage', (data: RealTimeData) => {
-      setRealTimeData(data);
-      setIsLoading(false);
-    });
+    const unsubscribe = analyticsService.subscribe(
+      "homepage",
+      (data: RealTimeData) => {
+        setRealTimeData(data);
+        setIsLoading(false);
+      },
+    );
 
     return unsubscribe;
   }, []);
 
   // Real game data instead of mock data
   const featuredGames = [
-    { 
-      name: "CoinKrazy Spinner", 
-      rtp: "96.8%", 
-      jackpot: realTimeData ? `$${Math.floor(realTimeData.jackpotTotal * 0.4).toLocaleString()}` : "$125,847", 
-      players: realTimeData ? Math.floor(realTimeData.playersOnline * 0.15) : 423 
+    {
+      name: "CoinKrazy Spinner",
+      rtp: "96.8%",
+      jackpot: realTimeData
+        ? `$${Math.floor(realTimeData.jackpotTotal * 0.4).toLocaleString()}`
+        : "$125,847",
+      players: realTimeData
+        ? Math.floor(realTimeData.playersOnline * 0.15)
+        : 423,
     },
-    { 
-      name: "Lucky Scratch Gold", 
-      rtp: "97.2%", 
-      jackpot: realTimeData ? `$${Math.floor(realTimeData.jackpotTotal * 0.3).toLocaleString()}` : "$89,234", 
-      players: realTimeData ? Math.floor(realTimeData.playersOnline * 0.11) : 312 
+    {
+      name: "Lucky Scratch Gold",
+      rtp: "97.2%",
+      jackpot: realTimeData
+        ? `$${Math.floor(realTimeData.jackpotTotal * 0.3).toLocaleString()}`
+        : "$89,234",
+      players: realTimeData
+        ? Math.floor(realTimeData.playersOnline * 0.11)
+        : 312,
     },
-    { 
-      name: "Wheel of Fortune", 
-      rtp: "96.5%", 
-      jackpot: realTimeData ? `$${Math.floor(realTimeData.jackpotTotal * 0.2).toLocaleString()}` : "$67,891", 
-      players: realTimeData ? Math.floor(realTimeData.playersOnline * 0.10) : 289 
+    {
+      name: "Wheel of Fortune",
+      rtp: "96.5%",
+      jackpot: realTimeData
+        ? `$${Math.floor(realTimeData.jackpotTotal * 0.2).toLocaleString()}`
+        : "$67,891",
+      players: realTimeData
+        ? Math.floor(realTimeData.playersOnline * 0.1)
+        : 289,
     },
-    { 
-      name: "Number Rush Bingo", 
-      rtp: "96.9%", 
-      jackpot: realTimeData ? `$${Math.floor(realTimeData.jackpotTotal * 0.1).toLocaleString()}` : "$156,782", 
-      players: realTimeData ? Math.floor(realTimeData.playersOnline * 0.20) : 567 
-    }
+    {
+      name: "Number Rush Bingo",
+      rtp: "96.9%",
+      jackpot: realTimeData
+        ? `$${Math.floor(realTimeData.jackpotTotal * 0.1).toLocaleString()}`
+        : "$156,782",
+      players: realTimeData
+        ? Math.floor(realTimeData.playersOnline * 0.2)
+        : 567,
+    },
   ];
 
   const formatSCAmount = (amount: number) => {
@@ -74,7 +96,7 @@ export default function Index() {
       <div className="relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-casino-blue/20 via-gold/10 to-casino-blue/20 animate-pulse"></div>
-        
+
         {/* Hero Content */}
         <div className="relative container mx-auto px-4 py-24">
           <div className="text-center space-y-8">
@@ -87,11 +109,17 @@ export default function Index() {
                 Where Fun Meets Fortune™
               </p>
               <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-                <Badge variant="outline" className="border-gold-500 text-gold-400">
+                <Badge
+                  variant="outline"
+                  className="border-gold-500 text-gold-400"
+                >
                   <Shield className="w-3 h-3 mr-1" />
                   18+ Only
                 </Badge>
-                <Badge variant="outline" className="border-casino-blue text-casino-blue-light">
+                <Badge
+                  variant="outline"
+                  className="border-casino-blue text-casino-blue-light"
+                >
                   <Zap className="w-3 h-3 mr-1" />
                   Sweepstakes Legal
                 </Badge>
@@ -107,13 +135,13 @@ export default function Index() {
                     <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="text-2xl font-bold text-foreground">
-                      {realTimeData?.playersOnline.toLocaleString() || '...'}
+                      {realTimeData?.playersOnline.toLocaleString() || "..."}
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">Players Online</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <TrendingUp className="w-5 h-5 text-gold-500" />
@@ -121,18 +149,21 @@ export default function Index() {
                     <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="text-2xl font-bold text-foreground">
-                      {realTimeData?.totalSCWonToday ? formatSCAmount(realTimeData.totalSCWonToday) : '...'}
+                      {realTimeData?.totalSCWonToday
+                        ? formatSCAmount(realTimeData.totalSCWonToday)
+                        : "..."}
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">SC Won Today</p>
                 {realTimeData?.totalSCWonToday && (
                   <p className="text-xs text-green-400">
-                    ({formatUSDAmount(realTimeData.totalSCWonToday * 1000)} USD equiv.)
+                    ({formatUSDAmount(realTimeData.totalSCWonToday * 1000)} USD
+                    equiv.)
                   </p>
                 )}
               </div>
-              
+
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Crown className="w-5 h-5 text-gold-500" />
@@ -140,7 +171,7 @@ export default function Index() {
                     <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="text-2xl font-bold text-foreground">
-                      {realTimeData?.activeGames || '700+'}
+                      {realTimeData?.activeGames || "700+"}
                     </span>
                   )}
                 </div>
@@ -159,8 +190,8 @@ export default function Index() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/games">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold px-8 py-6 text-lg shadow-lg shadow-gold-500/25"
                 >
                   <Play className="w-5 h-5 mr-2" />
@@ -168,8 +199,8 @@ export default function Index() {
                 </Button>
               </Link>
               <Link to="/register">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="lg"
                   className="border-casino-blue text-casino-blue-light hover:bg-casino-blue/10 px-8 py-6 text-lg"
                 >
@@ -186,12 +217,17 @@ export default function Index() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Featured Games</h2>
-          <p className="text-muted-foreground text-lg">Experience our most popular slots and games</p>
+          <p className="text-muted-foreground text-lg">
+            Experience our most popular slots and games
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredGames.map((game, index) => (
-            <Card key={index} className="group hover:shadow-lg hover:shadow-gold-500/10 transition-all duration-300 border-border/50 hover:border-gold-500/50">
+            <Card
+              key={index}
+              className="group hover:shadow-lg hover:shadow-gold-500/10 transition-all duration-300 border-border/50 hover:border-gold-500/50"
+            >
               <CardContent className="p-6">
                 <div className="aspect-square bg-gradient-to-br from-casino-blue/20 to-gold/20 rounded-lg mb-4 flex items-center justify-center">
                   <Coins className="w-12 h-12 text-gold-500" />
@@ -200,16 +236,22 @@ export default function Index() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">RTP:</span>
-                    <span className="text-green-400 font-medium">{game.rtp}</span>
+                    <span className="text-green-400 font-medium">
+                      {game.rtp}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Jackpot:</span>
-                    <span className="text-gold-400 font-bold">{game.jackpot}</span>
+                    <span className="text-gold-400 font-bold">
+                      {game.jackpot}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Playing:</span>
                     <div className="flex items-center gap-1">
-                      <span className="text-casino-blue-light">{game.players} players</span>
+                      <span className="text-casino-blue-light">
+                        {game.players} players
+                      </span>
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
@@ -228,42 +270,58 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Game Categories</h2>
-            <p className="text-muted-foreground text-lg">Choose your adventure</p>
+            <p className="text-muted-foreground text-lg">
+              Choose your adventure
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { 
-                title: "Slots", 
-                count: realTimeData ? `${Math.floor(realTimeData.activeGames * 0.7)}+` : "700+", 
-                icon: Coins, 
-                color: "gold" 
+              {
+                title: "Slots",
+                count: realTimeData
+                  ? `${Math.floor(realTimeData.activeGames * 0.7)}+`
+                  : "700+",
+                icon: Coins,
+                color: "gold",
               },
-              { 
-                title: "Live Poker", 
-                count: realTimeData ? `${Math.floor(realTimeData.playersOnline * 0.02)}` : "24/7", 
-                icon: Trophy, 
-                color: "casino-blue" 
+              {
+                title: "Live Poker",
+                count: realTimeData
+                  ? `${Math.floor(realTimeData.playersOnline * 0.02)}`
+                  : "24/7",
+                icon: Trophy,
+                color: "casino-blue",
               },
-              { 
-                title: "Bingo Rooms", 
-                count: realTimeData ? `${Math.floor(realTimeData.activeGames * 0.1)}+` : "10+", 
-                icon: Star, 
-                color: "gold" 
+              {
+                title: "Bingo Rooms",
+                count: realTimeData
+                  ? `${Math.floor(realTimeData.activeGames * 0.1)}+`
+                  : "10+",
+                icon: Star,
+                color: "gold",
               },
-              { 
-                title: "Sportsbook", 
-                count: "Live", 
-                icon: TrendingUp, 
-                color: "casino-blue" 
-              }
+              {
+                title: "Sportsbook",
+                count: "Live",
+                icon: TrendingUp,
+                color: "casino-blue",
+              },
             ].map((category, index) => (
               <Link key={index} to="/games" className="group">
                 <Card className="text-center p-8 hover:shadow-lg transition-all duration-300 border-border/50 hover:border-gold-500/50">
-                  <category.icon className={`w-12 h-12 mx-auto mb-4 ${category.color === 'gold' ? 'text-gold-500' : 'text-casino-blue'}`} />
+                  <category.icon
+                    className={`w-12 h-12 mx-auto mb-4 ${category.color === "gold" ? "text-gold-500" : "text-casino-blue"}`}
+                  />
                   <h3 className="text-xl font-bold mb-2">{category.title}</h3>
-                  <p className="text-muted-foreground mb-4">{category.count} Games</p>
-                  <Button variant="outline" size="sm" className="group-hover:bg-primary group-hover:text-primary-foreground">
+                  <p className="text-muted-foreground mb-4">
+                    {category.count} Games
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="group-hover:bg-primary group-hover:text-primary-foreground"
+                  >
                     Explore
                   </Button>
                 </Card>
@@ -279,23 +337,26 @@ export default function Index() {
           <CardContent className="text-center p-12">
             <h2 className="text-4xl font-bold mb-4">Ready to Win Big?</h2>
             <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of players winning real cash prizes daily. Start with free Gold Coins and unlock Sweeps Coins for real rewards.
+              Join thousands of players winning real cash prizes daily. Start
+              with free Gold Coins and unlock Sweeps Coins for real rewards.
             </p>
             {realTimeData && (
               <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                 <p className="text-green-400 font-bold">
-                  🎉 Today's Winners: {realTimeData.totalSCWonToday.toFixed(2)} SC Won 
-                  ({formatUSDAmount(realTimeData.totalSCWonToday * 1000)} USD equivalent)
+                  🎉 Today's Winners: {realTimeData.totalSCWonToday.toFixed(2)}{" "}
+                  SC Won ({formatUSDAmount(realTimeData.totalSCWonToday * 1000)}{" "}
+                  USD equivalent)
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {realTimeData.playersOnline.toLocaleString()} players online right now!
+                  {realTimeData.playersOnline.toLocaleString()} players online
+                  right now!
                 </p>
               </div>
             )}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/register">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold px-8 py-6 text-lg"
                 >
                   <Crown className="w-5 h-5 mr-2" />

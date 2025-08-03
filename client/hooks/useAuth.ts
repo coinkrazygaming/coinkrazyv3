@@ -1,5 +1,5 @@
-import { useState, useEffect, createContext, useContext } from 'react';
-import { analyticsService } from '../services/realTimeAnalytics';
+import { useState, useEffect, createContext, useContext } from "react";
+import { analyticsService } from "../services/realTimeAnalytics";
 
 interface User {
   id: string;
@@ -44,9 +44,9 @@ const useMockAuth = () => {
     // Simulate loading user from localStorage or API
     const loadUser = async () => {
       setIsLoading(true);
-      
+
       // Check if user was previously logged in
-      const savedUser = localStorage.getItem('coinkrazy_user');
+      const savedUser = localStorage.getItem("coinkrazy_user");
       if (savedUser) {
         try {
           const userData = JSON.parse(savedUser);
@@ -55,35 +55,35 @@ const useMockAuth = () => {
           setUser({
             ...userData,
             isAdmin,
-            isLoggedIn: true
+            isLoggedIn: true,
           });
         } catch (error) {
-          console.error('Error loading saved user:', error);
-          localStorage.removeItem('coinkrazy_user');
+          console.error("Error loading saved user:", error);
+          localStorage.removeItem("coinkrazy_user");
         }
       } else {
         // Default mock user for demo (remove in production)
         const mockUser: User = {
-          id: 'user_admin_001',
-          username: 'coinkrazy00@gmail.com',
-          email: 'coinkrazy00@gmail.com',
+          id: "user_admin_001",
+          username: "coinkrazy00@gmail.com",
+          email: "coinkrazy00@gmail.com",
           isLoggedIn: true,
           isAdmin: true, // Set based on real admin check
           goldCoins: 125000,
           sweepsCoins: 45.67,
           level: 25,
-          joinDate: new Date('2024-01-15'),
-          lastLogin: new Date()
+          joinDate: new Date("2024-01-15"),
+          lastLogin: new Date(),
         };
-        
+
         // Verify admin status
         const isAdmin = await analyticsService.checkAdminStatus(mockUser.id);
         mockUser.isAdmin = isAdmin;
-        
+
         setUser(mockUser);
-        localStorage.setItem('coinkrazy_user', JSON.stringify(mockUser));
+        localStorage.setItem("coinkrazy_user", JSON.stringify(mockUser));
       }
-      
+
       setIsLoading(false);
     };
 
@@ -92,17 +92,20 @@ const useMockAuth = () => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
+
     try {
       // In production, this would be an API call
       // const response = await fetch('/api/auth/login', { ... });
-      
+
       // Mock login logic
       if (email && password) {
         const isAdmin = await analyticsService.checkAdminStatus(email);
-        
+
         const newUser: User = {
-          id: email === 'coinkrazy00@gmail.com' ? 'user_admin_001' : `user_${Date.now()}`,
+          id:
+            email === "coinkrazy00@gmail.com"
+              ? "user_admin_001"
+              : `user_${Date.now()}`,
           username: email,
           email,
           isLoggedIn: true,
@@ -110,20 +113,20 @@ const useMockAuth = () => {
           goldCoins: 125000,
           sweepsCoins: 45.67,
           level: 25,
-          joinDate: new Date('2024-01-15'),
-          lastLogin: new Date()
+          joinDate: new Date("2024-01-15"),
+          lastLogin: new Date(),
         };
-        
+
         setUser(newUser);
-        localStorage.setItem('coinkrazy_user', JSON.stringify(newUser));
+        localStorage.setItem("coinkrazy_user", JSON.stringify(newUser));
         setIsLoading(false);
         return true;
       }
-      
+
       setIsLoading(false);
       return false;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       setIsLoading(false);
       return false;
     }
@@ -131,25 +134,25 @@ const useMockAuth = () => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('coinkrazy_user');
+    localStorage.removeItem("coinkrazy_user");
   };
 
   const checkAdminStatus = async (): Promise<boolean> => {
     if (!user) return false;
-    
+
     try {
       const isAdmin = await analyticsService.checkAdminStatus(user.id);
-      
+
       // Update user object if admin status changed
       if (isAdmin !== user.isAdmin) {
         const updatedUser = { ...user, isAdmin };
         setUser(updatedUser);
-        localStorage.setItem('coinkrazy_user', JSON.stringify(updatedUser));
+        localStorage.setItem("coinkrazy_user", JSON.stringify(updatedUser));
       }
-      
+
       return isAdmin;
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      console.error("Error checking admin status:", error);
       return false;
     }
   };
@@ -159,7 +162,7 @@ const useMockAuth = () => {
     login,
     logout,
     checkAdminStatus,
-    isLoading
+    isLoading,
   };
 };
 

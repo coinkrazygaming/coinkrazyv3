@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { 
+import { Link } from "react-router-dom";
+import {
   Crown,
   Shield,
   Phone,
@@ -7,9 +7,9 @@ import {
   MapPin,
   Facebook,
   Twitter,
-  Instagram
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+  Instagram,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function Footer() {
   return (
@@ -26,11 +26,12 @@ export default function Footer() {
                 CoinKrazy
               </span>
             </div>
-            <p className="text-muted-foreground">
-              Where Fun Meets Fortune™
-            </p>
+            <p className="text-muted-foreground">Where Fun Meets Fortune™</p>
             <div className="flex gap-2">
-              <Badge variant="outline" className="border-gold-500 text-gold-400">
+              <Badge
+                variant="outline"
+                className="border-gold-500 text-gold-400"
+              >
                 <Shield className="w-3 h-3 mr-1" />
                 18+ Only
               </Badge>
@@ -42,14 +43,14 @@ export default function Footer() {
             <h3 className="font-bold mb-4">Quick Links</h3>
             <div className="space-y-2">
               {[
-                { label: 'Home', path: '/' },
-                { label: 'Games', path: '/games' },
-                { label: 'Sign Up', path: '/register' },
-                { label: 'How to Play', path: '/how-to-play' }
+                { label: "Home", path: "/" },
+                { label: "Games", path: "/games" },
+                { label: "Sign Up", path: "/register" },
+                { label: "How to Play", path: "/how-to-play" },
               ].map((link) => (
-                <Link 
-                  key={link.path} 
-                  to={link.path} 
+                <Link
+                  key={link.path}
+                  to={link.path}
                   className="block text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {link.label}
@@ -71,10 +72,16 @@ export default function Footer() {
                 <span>coinkrazy00@gmail.com</span>
               </div>
               <div className="space-y-1">
-                <Link to="/support" className="block text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/support"
+                  className="block text-muted-foreground hover:text-foreground"
+                >
                   Help Center
                 </Link>
-                <Link to="/contact" className="block text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/contact"
+                  className="block text-muted-foreground hover:text-foreground"
+                >
                   Contact Us
                 </Link>
               </div>
@@ -86,14 +93,14 @@ export default function Footer() {
             <h3 className="font-bold mb-4">Legal</h3>
             <div className="space-y-2">
               {[
-                'Terms of Service',
-                'Privacy Policy', 
-                'Responsible Gaming',
-                'Sweepstakes Rules'
+                "Terms of Service",
+                "Privacy Policy",
+                "Responsible Gaming",
+                "Sweepstakes Rules",
               ].map((item) => (
-                <Link 
-                  key={item} 
-                  to={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                <Link
+                  key={item}
+                  to={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
                   className="block text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {item}
@@ -109,23 +116,32 @@ export default function Footer() {
             <div className="text-sm text-muted-foreground">
               © 2024 CoinKrazy.com. All rights reserved.
             </div>
-            
+
             {/* Social Links */}
             <div className="flex items-center gap-4">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Instagram className="w-5 h-5" />
               </a>
             </div>
 
             <div className="text-sm text-muted-foreground text-center md:text-right max-w-md">
-              No purchase necessary. Must be 18+ years old. Void where prohibited. 
-              Play responsibly.
+              No purchase necessary. Must be 18+ years old. Void where
+              prohibited. Play responsibly.
             </div>
           </div>
         </div>

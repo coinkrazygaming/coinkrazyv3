@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Coins,
   Crown,
   Palette,
@@ -27,8 +27,8 @@ import {
   Star,
   Gift,
   Zap,
-  Bot
-} from 'lucide-react';
+  Bot,
+} from "lucide-react";
 
 export interface CoinPackage {
   id: string;
@@ -57,7 +57,7 @@ export interface CoinPackage {
       style: string;
     };
     icon: string;
-    layout: 'compact' | 'expanded' | 'premium';
+    layout: "compact" | "expanded" | "premium";
     animation: string;
     shadow: {
       color: string;
@@ -74,138 +74,140 @@ export interface CoinPackage {
 }
 
 export default function PackageEditor() {
-  const [selectedPackage, setSelectedPackage] = useState<CoinPackage | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<CoinPackage | null>(
+    null,
+  );
   const [isCreating, setIsCreating] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   const [packages, setPackages] = useState<CoinPackage[]>([
     {
-      id: 'starter',
-      name: 'Starter Pack',
-      description: 'Perfect for new players to get started',
+      id: "starter",
+      name: "Starter Pack",
+      description: "Perfect for new players to get started",
       goldCoins: 50000,
       sweepsCoins: 25,
       price: 9.99,
       originalPrice: 12.99,
       popular: false,
       featured: false,
-      bonus: '25 Free SC + Welcome Bonus',
+      bonus: "25 Free SC + Welcome Bonus",
       savings: 3,
       design: {
-        backgroundColor: '#1e293b',
-        textColor: '#ffffff',
-        accentColor: '#f59e0b',
+        backgroundColor: "#1e293b",
+        textColor: "#ffffff",
+        accentColor: "#f59e0b",
         gradient: {
-          from: '#1e293b',
-          to: '#334155',
-          direction: 'to-br'
+          from: "#1e293b",
+          to: "#334155",
+          direction: "to-br",
         },
         border: {
-          color: '#f59e0b',
+          color: "#f59e0b",
           width: 2,
-          style: 'solid'
+          style: "solid",
         },
-        icon: '🌟',
-        layout: 'compact',
-        animation: 'none',
+        icon: "🌟",
+        layout: "compact",
+        animation: "none",
         shadow: {
-          color: '#f59e0b',
+          color: "#f59e0b",
           blur: 10,
-          opacity: 0.3
-        }
+          opacity: 0.3,
+        },
       },
       analytics: {
         conversions: 1247,
         views: 8934,
         revenue: 12459.53,
-        clickRate: 13.9
-      }
+        clickRate: 13.9,
+      },
     },
     {
-      id: 'popular',
-      name: 'Popular Pack',
-      description: 'Our most popular choice for active players',
+      id: "popular",
+      name: "Popular Pack",
+      description: "Our most popular choice for active players",
       goldCoins: 125000,
       sweepsCoins: 75,
       price: 19.99,
       originalPrice: 29.99,
       popular: true,
       featured: true,
-      bonus: '75 Free SC + VIP Status',
+      bonus: "75 Free SC + VIP Status",
       savings: 10,
       design: {
-        backgroundColor: '#0f172a',
-        textColor: '#ffffff',
-        accentColor: '#3b82f6',
+        backgroundColor: "#0f172a",
+        textColor: "#ffffff",
+        accentColor: "#3b82f6",
         gradient: {
-          from: '#0f172a',
-          to: '#1e293b',
-          direction: 'to-br'
+          from: "#0f172a",
+          to: "#1e293b",
+          direction: "to-br",
         },
         border: {
-          color: '#3b82f6',
+          color: "#3b82f6",
           width: 3,
-          style: 'solid'
+          style: "solid",
         },
-        icon: '👑',
-        layout: 'expanded',
-        animation: 'pulse',
+        icon: "👑",
+        layout: "expanded",
+        animation: "pulse",
         shadow: {
-          color: '#3b82f6',
+          color: "#3b82f6",
           blur: 15,
-          opacity: 0.4
-        }
+          opacity: 0.4,
+        },
       },
       analytics: {
         conversions: 3456,
         views: 15678,
         revenue: 69078.44,
-        clickRate: 22.1
-      }
-    }
+        clickRate: 22.1,
+      },
+    },
   ]);
 
   const createNewPackage = () => {
     const newPackage: CoinPackage = {
       id: `package-${Date.now()}`,
-      name: 'New Package',
-      description: 'Customize this package',
+      name: "New Package",
+      description: "Customize this package",
       goldCoins: 100000,
       sweepsCoins: 50,
       price: 14.99,
       popular: false,
       featured: false,
-      bonus: 'Bonus description',
+      bonus: "Bonus description",
       design: {
-        backgroundColor: '#1e293b',
-        textColor: '#ffffff',
-        accentColor: '#f59e0b',
+        backgroundColor: "#1e293b",
+        textColor: "#ffffff",
+        accentColor: "#f59e0b",
         gradient: {
-          from: '#1e293b',
-          to: '#334155',
-          direction: 'to-br'
+          from: "#1e293b",
+          to: "#334155",
+          direction: "to-br",
         },
         border: {
-          color: '#f59e0b',
+          color: "#f59e0b",
           width: 2,
-          style: 'solid'
+          style: "solid",
         },
-        icon: '💎',
-        layout: 'compact',
-        animation: 'none',
+        icon: "💎",
+        layout: "compact",
+        animation: "none",
         shadow: {
-          color: '#f59e0b',
+          color: "#f59e0b",
           blur: 10,
-          opacity: 0.3
-        }
+          opacity: 0.3,
+        },
       },
       analytics: {
         conversions: 0,
         views: 0,
         revenue: 0,
-        clickRate: 0
-      }
+        clickRate: 0,
+      },
     };
 
     setPackages([...packages, newPackage]);
@@ -215,77 +217,87 @@ export default function PackageEditor() {
 
   const updatePackage = (updates: Partial<CoinPackage>) => {
     if (!selectedPackage) return;
-    
+
     const updatedPackage = { ...selectedPackage, ...updates };
     setSelectedPackage(updatedPackage);
-    setPackages(packages.map(pkg => pkg.id === selectedPackage.id ? updatedPackage : pkg));
+    setPackages(
+      packages.map((pkg) =>
+        pkg.id === selectedPackage.id ? updatedPackage : pkg,
+      ),
+    );
   };
 
-  const updateDesign = (designUpdates: Partial<CoinPackage['design']>) => {
+  const updateDesign = (designUpdates: Partial<CoinPackage["design"]>) => {
     if (!selectedPackage) return;
-    
+
     const updatedDesign = { ...selectedPackage.design, ...designUpdates };
     updatePackage({ design: updatedDesign });
   };
 
   const generateAISuggestions = async () => {
     setIsGeneratingAI(true);
-    
+
     // Simulate AI generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const suggestions = [
       "Consider adding a limited-time offer badge to increase urgency",
       "The gradient could be more vibrant - try gold to amber for premium feel",
       "Popular packages perform 23% better with crown icons",
       "Adding a subtle animation increases click rates by 15%",
       "Price point optimization: $19.99 shows 18% higher conversion than $20.00",
-      "Consider bundling with 7-day VIP access for premium packages"
+      "Consider bundling with 7-day VIP access for premium packages",
     ];
-    
+
     setAiSuggestions(suggestions);
     setIsGeneratingAI(false);
   };
 
   const applyAIOptimization = async () => {
     if (!selectedPackage) return;
-    
+
     setIsGeneratingAI(true);
-    
+
     // Simulate AI optimization
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     // Apply AI-suggested optimizations
     const optimizedDesign = {
       ...selectedPackage.design,
       gradient: {
-        from: '#fbbf24',
-        to: '#f59e0b',
-        direction: 'to-br'
+        from: "#fbbf24",
+        to: "#f59e0b",
+        direction: "to-br",
       },
-      accentColor: '#f59e0b',
-      animation: 'pulse',
+      accentColor: "#f59e0b",
+      animation: "pulse",
       shadow: {
-        color: '#f59e0b',
+        color: "#f59e0b",
         blur: 20,
-        opacity: 0.5
-      }
+        opacity: 0.5,
+      },
     };
-    
-    updatePackage({ 
+
+    updatePackage({
       design: optimizedDesign,
-      bonus: selectedPackage.bonus + ' + AI Optimized'
+      bonus: selectedPackage.bonus + " + AI Optimized",
     });
-    
+
     setIsGeneratingAI(false);
   };
 
-  const previewStyles = selectedPackage ? {
-    background: `linear-gradient(${selectedPackage.design.gradient.direction}, ${selectedPackage.design.gradient.from}, ${selectedPackage.design.gradient.to})`,
-    color: selectedPackage.design.textColor,
-    border: `${selectedPackage.design.border.width}px ${selectedPackage.design.border.style} ${selectedPackage.design.border.color}`,
-    boxShadow: `0 0 ${selectedPackage.design.shadow.blur}px ${selectedPackage.design.shadow.color}${Math.round(selectedPackage.design.shadow.opacity * 255).toString(16).padStart(2, '0')}`
-  } : {};
+  const previewStyles = selectedPackage
+    ? {
+        background: `linear-gradient(${selectedPackage.design.gradient.direction}, ${selectedPackage.design.gradient.from}, ${selectedPackage.design.gradient.to})`,
+        color: selectedPackage.design.textColor,
+        border: `${selectedPackage.design.border.width}px ${selectedPackage.design.border.style} ${selectedPackage.design.border.color}`,
+        boxShadow: `0 0 ${selectedPackage.design.shadow.blur}px ${selectedPackage.design.shadow.color}${Math.round(
+          selectedPackage.design.shadow.opacity * 255,
+        )
+          .toString(16)
+          .padStart(2, "0")}`,
+      }
+    : {};
 
   return (
     <div className="space-y-6">
@@ -297,16 +309,23 @@ export default function PackageEditor() {
             Package Editor
           </CardTitle>
           <div className="flex gap-2">
-            <Button 
+            <Button
               onClick={generateAISuggestions}
               disabled={isGeneratingAI}
               variant="outline"
               className="border-purple-500 text-purple-400"
             >
-              {isGeneratingAI ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Bot className="w-4 h-4 mr-2" />}
+              {isGeneratingAI ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Bot className="w-4 h-4 mr-2" />
+              )}
               AI Suggestions
             </Button>
-            <Button onClick={createNewPackage} className="bg-gold-500 hover:bg-gold-600 text-black">
+            <Button
+              onClick={createNewPackage}
+              className="bg-gold-500 hover:bg-gold-600 text-black"
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Package
             </Button>
@@ -315,10 +334,10 @@ export default function PackageEditor() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {packages.map((pkg) => (
-              <Card 
-                key={pkg.id} 
+              <Card
+                key={pkg.id}
                 className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                  selectedPackage?.id === pkg.id ? 'ring-2 ring-gold-500' : ''
+                  selectedPackage?.id === pkg.id ? "ring-2 ring-gold-500" : ""
                 }`}
                 onClick={() => setSelectedPackage(pkg)}
               >
@@ -326,18 +345,30 @@ export default function PackageEditor() {
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-bold">{pkg.name}</h3>
                     <div className="flex gap-1">
-                      {pkg.popular && <Badge className="bg-gold-500 text-black text-xs">Popular</Badge>}
-                      {pkg.featured && <Badge variant="outline" className="text-xs">Featured</Badge>}
+                      {pkg.popular && (
+                        <Badge className="bg-gold-500 text-black text-xs">
+                          Popular
+                        </Badge>
+                      )}
+                      {pkg.featured && (
+                        <Badge variant="outline" className="text-xs">
+                          Featured
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Gold Coins:</span>
-                      <span className="font-bold text-gold-400">{pkg.goldCoins.toLocaleString()}</span>
+                      <span className="font-bold text-gold-400">
+                        {pkg.goldCoins.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Sweeps Coins:</span>
-                      <span className="font-bold text-casino-blue">{pkg.sweepsCoins}</span>
+                      <span className="font-bold text-casino-blue">
+                        {pkg.sweepsCoins}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Price:</span>
@@ -345,7 +376,9 @@ export default function PackageEditor() {
                     </div>
                     <div className="flex justify-between">
                       <span>Conversions:</span>
-                      <span className="font-bold text-green-500">{pkg.analytics.conversions}</span>
+                      <span className="font-bold text-green-500">
+                        {pkg.analytics.conversions}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -367,17 +400,24 @@ export default function PackageEditor() {
           <CardContent>
             <div className="space-y-3">
               {aiSuggestions.map((suggestion, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 bg-muted/20 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 bg-muted/20 rounded-lg"
+                >
                   <Wand2 className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   <span className="text-sm">{suggestion}</span>
                 </div>
               ))}
-              <Button 
+              <Button
                 onClick={applyAIOptimization}
                 disabled={isGeneratingAI || !selectedPackage}
                 className="w-full bg-purple-500 hover:bg-purple-600 text-white"
               >
-                {isGeneratingAI ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Zap className="w-4 h-4 mr-2" />}
+                {isGeneratingAI ? (
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Zap className="w-4 h-4 mr-2" />
+                )}
                 Apply AI Optimization
               </Button>
             </div>
@@ -418,84 +458,125 @@ export default function PackageEditor() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Package Name</label>
-                      <Input 
+                      <label className="block text-sm font-medium mb-2">
+                        Package Name
+                      </label>
+                      <Input
                         value={selectedPackage.name}
-                        onChange={(e) => updatePackage({ name: e.target.value })}
+                        onChange={(e) =>
+                          updatePackage({ name: e.target.value })
+                        }
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium mb-2">Description</label>
-                      <Input 
+                      <label className="block text-sm font-medium mb-2">
+                        Description
+                      </label>
+                      <Input
                         value={selectedPackage.description}
-                        onChange={(e) => updatePackage({ description: e.target.value })}
+                        onChange={(e) =>
+                          updatePackage({ description: e.target.value })
+                        }
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2">Gold Coins</label>
-                        <Input 
+                        <label className="block text-sm font-medium mb-2">
+                          Gold Coins
+                        </label>
+                        <Input
                           type="number"
                           value={selectedPackage.goldCoins}
-                          onChange={(e) => updatePackage({ goldCoins: parseInt(e.target.value) || 0 })}
+                          onChange={(e) =>
+                            updatePackage({
+                              goldCoins: parseInt(e.target.value) || 0,
+                            })
+                          }
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Sweeps Coins</label>
-                        <Input 
+                        <label className="block text-sm font-medium mb-2">
+                          Sweeps Coins
+                        </label>
+                        <Input
                           type="number"
                           value={selectedPackage.sweepsCoins}
-                          onChange={(e) => updatePackage({ sweepsCoins: parseInt(e.target.value) || 0 })}
+                          onChange={(e) =>
+                            updatePackage({
+                              sweepsCoins: parseInt(e.target.value) || 0,
+                            })
+                          }
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2">Price ($)</label>
-                        <Input 
+                        <label className="block text-sm font-medium mb-2">
+                          Price ($)
+                        </label>
+                        <Input
                           type="number"
                           step="0.01"
                           value={selectedPackage.price}
-                          onChange={(e) => updatePackage({ price: parseFloat(e.target.value) || 0 })}
+                          onChange={(e) =>
+                            updatePackage({
+                              price: parseFloat(e.target.value) || 0,
+                            })
+                          }
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Original Price ($)</label>
-                        <Input 
+                        <label className="block text-sm font-medium mb-2">
+                          Original Price ($)
+                        </label>
+                        <Input
                           type="number"
                           step="0.01"
-                          value={selectedPackage.originalPrice || ''}
-                          onChange={(e) => updatePackage({ originalPrice: parseFloat(e.target.value) || undefined })}
+                          value={selectedPackage.originalPrice || ""}
+                          onChange={(e) =>
+                            updatePackage({
+                              originalPrice:
+                                parseFloat(e.target.value) || undefined,
+                            })
+                          }
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Bonus Description</label>
-                      <Input 
+                      <label className="block text-sm font-medium mb-2">
+                        Bonus Description
+                      </label>
+                      <Input
                         value={selectedPackage.bonus}
-                        onChange={(e) => updatePackage({ bonus: e.target.value })}
+                        onChange={(e) =>
+                          updatePackage({ bonus: e.target.value })
+                        }
                         placeholder="e.g., 75 Free SC + VIP Status"
                       />
                     </div>
 
                     <div className="flex gap-4">
                       <label className="flex items-center gap-2">
-                        <input 
+                        <input
                           type="checkbox"
                           checked={selectedPackage.popular}
-                          onChange={(e) => updatePackage({ popular: e.target.checked })}
+                          onChange={(e) =>
+                            updatePackage({ popular: e.target.checked })
+                          }
                         />
                         <span className="text-sm">Popular</span>
                       </label>
                       <label className="flex items-center gap-2">
-                        <input 
+                        <input
                           type="checkbox"
                           checked={selectedPackage.featured}
-                          onChange={(e) => updatePackage({ featured: e.target.checked })}
+                          onChange={(e) =>
+                            updatePackage({ featured: e.target.checked })
+                          }
                         />
                         <span className="text-sm">Featured</span>
                       </label>
@@ -512,12 +593,31 @@ export default function PackageEditor() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Icon</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Icon
+                      </label>
                       <div className="grid grid-cols-6 gap-2">
-                        {['💎', '👑', '🌟', '🔥', '⚡', '🎯', '🚀', '💰', '🏆', '🎁', '✨', '🍀'].map((icon) => (
+                        {[
+                          "💎",
+                          "👑",
+                          "🌟",
+                          "🔥",
+                          "⚡",
+                          "🎯",
+                          "🚀",
+                          "💰",
+                          "🏆",
+                          "🎁",
+                          "✨",
+                          "🍀",
+                        ].map((icon) => (
                           <Button
                             key={icon}
-                            variant={selectedPackage.design.icon === icon ? 'default' : 'outline'}
+                            variant={
+                              selectedPackage.design.icon === icon
+                                ? "default"
+                                : "outline"
+                            }
                             className="text-2xl h-12"
                             onClick={() => updateDesign({ icon })}
                           >
@@ -529,33 +629,45 @@ export default function PackageEditor() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2">Background Color</label>
+                        <label className="block text-sm font-medium mb-2">
+                          Background Color
+                        </label>
                         <div className="flex gap-2">
-                          <Input 
+                          <Input
                             type="color"
                             value={selectedPackage.design.backgroundColor}
-                            onChange={(e) => updateDesign({ backgroundColor: e.target.value })}
+                            onChange={(e) =>
+                              updateDesign({ backgroundColor: e.target.value })
+                            }
                             className="w-16 h-10 p-1"
                           />
-                          <Input 
+                          <Input
                             value={selectedPackage.design.backgroundColor}
-                            onChange={(e) => updateDesign({ backgroundColor: e.target.value })}
+                            onChange={(e) =>
+                              updateDesign({ backgroundColor: e.target.value })
+                            }
                             className="flex-1"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Accent Color</label>
+                        <label className="block text-sm font-medium mb-2">
+                          Accent Color
+                        </label>
                         <div className="flex gap-2">
-                          <Input 
+                          <Input
                             type="color"
                             value={selectedPackage.design.accentColor}
-                            onChange={(e) => updateDesign({ accentColor: e.target.value })}
+                            onChange={(e) =>
+                              updateDesign({ accentColor: e.target.value })
+                            }
                             className="w-16 h-10 p-1"
                           />
-                          <Input 
+                          <Input
                             value={selectedPackage.design.accentColor}
-                            onChange={(e) => updateDesign({ accentColor: e.target.value })}
+                            onChange={(e) =>
+                              updateDesign({ accentColor: e.target.value })
+                            }
                             className="flex-1"
                           />
                         </div>
@@ -563,36 +675,57 @@ export default function PackageEditor() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Gradient</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Gradient
+                      </label>
                       <div className="grid grid-cols-3 gap-2">
                         <div>
-                          <Input 
+                          <Input
                             type="color"
                             value={selectedPackage.design.gradient.from}
-                            onChange={(e) => updateDesign({ 
-                              gradient: { ...selectedPackage.design.gradient, from: e.target.value }
-                            })}
+                            onChange={(e) =>
+                              updateDesign({
+                                gradient: {
+                                  ...selectedPackage.design.gradient,
+                                  from: e.target.value,
+                                },
+                              })
+                            }
                             className="w-full h-10 p-1"
                           />
-                          <label className="text-xs text-muted-foreground">From</label>
+                          <label className="text-xs text-muted-foreground">
+                            From
+                          </label>
                         </div>
                         <div>
-                          <Input 
+                          <Input
                             type="color"
                             value={selectedPackage.design.gradient.to}
-                            onChange={(e) => updateDesign({ 
-                              gradient: { ...selectedPackage.design.gradient, to: e.target.value }
-                            })}
+                            onChange={(e) =>
+                              updateDesign({
+                                gradient: {
+                                  ...selectedPackage.design.gradient,
+                                  to: e.target.value,
+                                },
+                              })
+                            }
                             className="w-full h-10 p-1"
                           />
-                          <label className="text-xs text-muted-foreground">To</label>
+                          <label className="text-xs text-muted-foreground">
+                            To
+                          </label>
                         </div>
                         <div>
-                          <select 
+                          <select
                             value={selectedPackage.design.gradient.direction}
-                            onChange={(e) => updateDesign({ 
-                              gradient: { ...selectedPackage.design.gradient, direction: e.target.value }
-                            })}
+                            onChange={(e) =>
+                              updateDesign({
+                                gradient: {
+                                  ...selectedPackage.design.gradient,
+                                  direction: e.target.value,
+                                },
+                              })
+                            }
                             className="w-full h-10 px-2 border border-border rounded"
                           >
                             <option value="to-r">Right</option>
@@ -604,16 +737,22 @@ export default function PackageEditor() {
                             <option value="to-tr">Top Right</option>
                             <option value="to-tl">Top Left</option>
                           </select>
-                          <label className="text-xs text-muted-foreground">Direction</label>
+                          <label className="text-xs text-muted-foreground">
+                            Direction
+                          </label>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Animation</label>
-                      <select 
+                      <label className="block text-sm font-medium mb-2">
+                        Animation
+                      </label>
+                      <select
                         value={selectedPackage.design.animation}
-                        onChange={(e) => updateDesign({ animation: e.target.value })}
+                        onChange={(e) =>
+                          updateDesign({ animation: e.target.value })
+                        }
                         className="w-full p-2 border border-border rounded"
                       >
                         <option value="none">None</option>
@@ -635,13 +774,21 @@ export default function PackageEditor() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Layout Style</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Layout Style
+                      </label>
                       <div className="grid grid-cols-3 gap-2">
-                        {['compact', 'expanded', 'premium'].map((layout) => (
+                        {["compact", "expanded", "premium"].map((layout) => (
                           <Button
                             key={layout}
-                            variant={selectedPackage.design.layout === layout ? 'default' : 'outline'}
-                            onClick={() => updateDesign({ layout: layout as any })}
+                            variant={
+                              selectedPackage.design.layout === layout
+                                ? "default"
+                                : "outline"
+                            }
+                            onClick={() =>
+                              updateDesign({ layout: layout as any })
+                            }
                             className="capitalize"
                           >
                             {layout}
@@ -651,46 +798,76 @@ export default function PackageEditor() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Border Width</label>
-                      <Input 
+                      <label className="block text-sm font-medium mb-2">
+                        Border Width
+                      </label>
+                      <Input
                         type="range"
                         min="0"
                         max="5"
                         value={selectedPackage.design.border.width}
-                        onChange={(e) => updateDesign({ 
-                          border: { ...selectedPackage.design.border, width: parseInt(e.target.value) }
-                        })}
+                        onChange={(e) =>
+                          updateDesign({
+                            border: {
+                              ...selectedPackage.design.border,
+                              width: parseInt(e.target.value),
+                            },
+                          })
+                        }
                       />
-                      <div className="text-sm text-muted-foreground">{selectedPackage.design.border.width}px</div>
+                      <div className="text-sm text-muted-foreground">
+                        {selectedPackage.design.border.width}px
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Shadow Blur</label>
-                      <Input 
+                      <label className="block text-sm font-medium mb-2">
+                        Shadow Blur
+                      </label>
+                      <Input
                         type="range"
                         min="0"
                         max="30"
                         value={selectedPackage.design.shadow.blur}
-                        onChange={(e) => updateDesign({ 
-                          shadow: { ...selectedPackage.design.shadow, blur: parseInt(e.target.value) }
-                        })}
+                        onChange={(e) =>
+                          updateDesign({
+                            shadow: {
+                              ...selectedPackage.design.shadow,
+                              blur: parseInt(e.target.value),
+                            },
+                          })
+                        }
                       />
-                      <div className="text-sm text-muted-foreground">{selectedPackage.design.shadow.blur}px</div>
+                      <div className="text-sm text-muted-foreground">
+                        {selectedPackage.design.shadow.blur}px
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Shadow Opacity</label>
-                      <Input 
+                      <label className="block text-sm font-medium mb-2">
+                        Shadow Opacity
+                      </label>
+                      <Input
                         type="range"
                         min="0"
                         max="1"
                         step="0.1"
                         value={selectedPackage.design.shadow.opacity}
-                        onChange={(e) => updateDesign({ 
-                          shadow: { ...selectedPackage.design.shadow, opacity: parseFloat(e.target.value) }
-                        })}
+                        onChange={(e) =>
+                          updateDesign({
+                            shadow: {
+                              ...selectedPackage.design.shadow,
+                              opacity: parseFloat(e.target.value),
+                            },
+                          })
+                        }
                       />
-                      <div className="text-sm text-muted-foreground">{(selectedPackage.design.shadow.opacity * 100).toFixed(0)}%</div>
+                      <div className="text-sm text-muted-foreground">
+                        {(selectedPackage.design.shadow.opacity * 100).toFixed(
+                          0,
+                        )}
+                        %
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -705,20 +882,36 @@ export default function PackageEditor() {
                   <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-500">{selectedPackage.analytics.conversions}</div>
-                        <div className="text-sm text-muted-foreground">Conversions</div>
+                        <div className="text-2xl font-bold text-green-500">
+                          {selectedPackage.analytics.conversions}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Conversions
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold">{selectedPackage.analytics.views}</div>
-                        <div className="text-sm text-muted-foreground">Views</div>
+                        <div className="text-2xl font-bold">
+                          {selectedPackage.analytics.views}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Views
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-gold-500">${selectedPackage.analytics.revenue.toLocaleString()}</div>
-                        <div className="text-sm text-muted-foreground">Revenue</div>
+                        <div className="text-2xl font-bold text-gold-500">
+                          ${selectedPackage.analytics.revenue.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Revenue
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-casino-blue">{selectedPackage.analytics.clickRate}%</div>
-                        <div className="text-sm text-muted-foreground">Click Rate</div>
+                        <div className="text-2xl font-bold text-casino-blue">
+                          {selectedPackage.analytics.clickRate}%
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Click Rate
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -739,12 +932,17 @@ export default function PackageEditor() {
               <CardContent>
                 <div className="space-y-4">
                   {/* Package Preview */}
-                  <div 
+                  <div
                     className={`relative p-6 rounded-lg text-center transition-all duration-300 ${
-                      selectedPackage.design.animation === 'pulse' ? 'animate-pulse' :
-                      selectedPackage.design.animation === 'bounce' ? 'animate-bounce' :
-                      selectedPackage.design.animation === 'spin' ? 'animate-spin' :
-                      selectedPackage.design.animation === 'ping' ? 'animate-ping' : ''
+                      selectedPackage.design.animation === "pulse"
+                        ? "animate-pulse"
+                        : selectedPackage.design.animation === "bounce"
+                          ? "animate-bounce"
+                          : selectedPackage.design.animation === "spin"
+                            ? "animate-spin"
+                            : selectedPackage.design.animation === "ping"
+                              ? "animate-ping"
+                              : ""
                     }`}
                     style={previewStyles}
                   >
@@ -758,40 +956,58 @@ export default function PackageEditor() {
                         Featured
                       </Badge>
                     )}
-                    
-                    <div className="text-4xl mb-3">{selectedPackage.design.icon}</div>
-                    <h3 className="font-bold text-lg mb-2">{selectedPackage.name}</h3>
-                    <p className="text-sm opacity-80 mb-4">{selectedPackage.description}</p>
-                    
+
+                    <div className="text-4xl mb-3">
+                      {selectedPackage.design.icon}
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">
+                      {selectedPackage.name}
+                    </h3>
+                    <p className="text-sm opacity-80 mb-4">
+                      {selectedPackage.description}
+                    </p>
+
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center justify-center gap-2">
                         <Coins className="w-4 h-4" />
-                        <span className="font-bold">{selectedPackage.goldCoins.toLocaleString()}</span>
+                        <span className="font-bold">
+                          {selectedPackage.goldCoins.toLocaleString()}
+                        </span>
                       </div>
                       <div className="text-xs opacity-70">Gold Coins</div>
-                      
+
                       <div className="flex items-center justify-center gap-2">
                         <Crown className="w-4 h-4" />
-                        <span className="font-bold">{selectedPackage.sweepsCoins}</span>
+                        <span className="font-bold">
+                          {selectedPackage.sweepsCoins}
+                        </span>
                       </div>
                       <div className="text-xs opacity-70">Sweeps Coins</div>
                     </div>
-                    
+
                     <div className="mb-4">
-                      <div className="text-2xl font-bold">${selectedPackage.price}</div>
+                      <div className="text-2xl font-bold">
+                        ${selectedPackage.price}
+                      </div>
                       {selectedPackage.originalPrice && (
-                        <div className="text-sm line-through opacity-60">${selectedPackage.originalPrice}</div>
+                        <div className="text-sm line-through opacity-60">
+                          ${selectedPackage.originalPrice}
+                        </div>
                       )}
                     </div>
-                    
-                    <div className="text-xs text-green-400 mb-4">{selectedPackage.bonus}</div>
-                    
+
+                    <div className="text-xs text-green-400 mb-4">
+                      {selectedPackage.bonus}
+                    </div>
+
                     <Button className="w-full">Purchase</Button>
                   </div>
 
                   {/* Save Button */}
-                  <Button 
-                    onClick={() => console.log('Saving package:', selectedPackage)}
+                  <Button
+                    onClick={() =>
+                      console.log("Saving package:", selectedPackage)
+                    }
                     className="w-full bg-green-500 hover:bg-green-600 text-white"
                   >
                     <Save className="w-4 h-4 mr-2" />

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Target,
   Users,
@@ -15,13 +15,13 @@ import {
   VolumeX,
   Settings,
   TrendingUp,
-  Plus
-} from 'lucide-react';
+  Plus,
+} from "lucide-react";
 
 interface BingoRoom {
   id: string;
   name: string;
-  type: '30-ball' | '75-ball' | '90-ball';
+  type: "30-ball" | "75-ball" | "90-ball";
   nextGame: string;
   pot: number;
   players: number;
@@ -38,74 +38,81 @@ interface BingoCard {
 
 export default function Bingo() {
   const [selectedRoom, setSelectedRoom] = useState<BingoRoom | null>(null);
-  const [gameState, setGameState] = useState<'waiting' | 'active' | 'ended'>('waiting');
+  const [gameState, setGameState] = useState<"waiting" | "active" | "ended">(
+    "waiting",
+  );
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [playerCards, setPlayerCards] = useState<BingoCard[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoMark, setAutoMark] = useState(true);
-  
+
   const [rooms] = useState<BingoRoom[]>([
-    { 
-      id: '1', 
-      name: 'Golden Room', 
-      type: '90-ball', 
-      nextGame: '2 min', 
-      pot: 15450, 
-      players: 234, 
+    {
+      id: "1",
+      name: "Golden Room",
+      type: "90-ball",
+      nextGame: "2 min",
+      pot: 15450,
+      players: 234,
       ticketPrice: { gc: 1000, sc: 5 },
-      icon: '🏆',
-      featured: true
+      icon: "🏆",
+      featured: true,
     },
-    { 
-      id: '2', 
-      name: 'Silver Room', 
-      type: '75-ball', 
-      nextGame: '5 min', 
-      pot: 8750, 
-      players: 167, 
+    {
+      id: "2",
+      name: "Silver Room",
+      type: "75-ball",
+      nextGame: "5 min",
+      pot: 8750,
+      players: 167,
       ticketPrice: { gc: 500, sc: 2 },
-      icon: '🥈',
-      featured: false
+      icon: "🥈",
+      featured: false,
     },
-    { 
-      id: '3', 
-      name: 'Bronze Room', 
-      type: '30-ball', 
-      nextGame: '1 min', 
-      pot: 4250, 
-      players: 89, 
+    {
+      id: "3",
+      name: "Bronze Room",
+      type: "30-ball",
+      nextGame: "1 min",
+      pot: 4250,
+      players: 89,
       ticketPrice: { gc: 250, sc: 1 },
-      icon: '🥉',
-      featured: false
+      icon: "🥉",
+      featured: false,
     },
-    { 
-      id: '4', 
-      name: 'Speed Bingo', 
-      type: '30-ball', 
-      nextGame: '30 sec', 
-      pot: 2100, 
-      players: 156, 
+    {
+      id: "4",
+      name: "Speed Bingo",
+      type: "30-ball",
+      nextGame: "30 sec",
+      pot: 2100,
+      players: 156,
       ticketPrice: { gc: 100, sc: 0 },
-      icon: '⚡',
-      featured: false
-    }
+      icon: "⚡",
+      featured: false,
+    },
   ]);
 
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameTimer, setGameTimer] = useState(120);
 
   useEffect(() => {
-    if (gameState === 'active') {
+    if (gameState === "active") {
       const interval = setInterval(() => {
         // Simulate calling numbers
-        const availableNumbers = Array.from({ length: 90 }, (_, i) => i + 1)
-          .filter(n => !calledNumbers.includes(n));
-        
+        const availableNumbers = Array.from(
+          { length: 90 },
+          (_, i) => i + 1,
+        ).filter((n) => !calledNumbers.includes(n));
+
         if (availableNumbers.length > 0 && Math.random() > 0.7) {
-          const newNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+          const newNumber =
+            availableNumbers[
+              Math.floor(Math.random() * availableNumbers.length)
+            ];
           setCurrentNumber(newNumber);
-          setCalledNumbers(prev => [...prev, newNumber]);
-          
+          setCalledNumbers((prev) => [...prev, newNumber]);
+
           if (soundEnabled) {
             // Play sound effect
             console.log(`Called: ${newNumber}`);
@@ -118,11 +125,11 @@ export default function Bingo() {
   }, [gameState, calledNumbers, soundEnabled]);
 
   useEffect(() => {
-    if (gameState === 'waiting') {
+    if (gameState === "waiting") {
       const countdown = setInterval(() => {
-        setGameTimer(prev => {
+        setGameTimer((prev) => {
           if (prev <= 1) {
-            setGameState('active');
+            setGameState("active");
             setGameTimer(300); // 5 minutes game time
             return 300;
           }
@@ -131,11 +138,11 @@ export default function Bingo() {
       }, 1000);
 
       return () => clearInterval(countdown);
-    } else if (gameState === 'active') {
+    } else if (gameState === "active") {
       const countdown = setInterval(() => {
-        setGameTimer(prev => {
+        setGameTimer((prev) => {
           if (prev <= 1) {
-            setGameState('ended');
+            setGameState("ended");
             return 0;
           }
           return prev - 1;
@@ -146,33 +153,38 @@ export default function Bingo() {
     }
   }, [gameState]);
 
-  const generateBingoCard = (type: '30-ball' | '75-ball' | '90-ball'): BingoCard => {
+  const generateBingoCard = (
+    type: "30-ball" | "75-ball" | "90-ball",
+  ): BingoCard => {
     let numbers: (number | null)[];
-    
+
     switch (type) {
-      case '30-ball':
-        numbers = Array.from({ length: 9 }, (_, i) => Math.floor(Math.random() * 30) + 1);
+      case "30-ball":
+        numbers = Array.from(
+          { length: 9 },
+          (_, i) => Math.floor(Math.random() * 30) + 1,
+        );
         break;
-      case '75-ball':
+      case "75-ball":
         numbers = Array.from({ length: 25 }, (_, i) => {
           if (i === 12) return null; // Free space
           const col = Math.floor(i / 5);
-          return Math.floor(Math.random() * 15) + (col * 15) + 1;
+          return Math.floor(Math.random() * 15) + col * 15 + 1;
         });
         break;
-      case '90-ball':
+      case "90-ball":
         numbers = Array.from({ length: 27 }, (_, i) => {
           if (Math.random() > 0.5) return null;
           const col = i % 9;
-          return Math.floor(Math.random() * 10) + (col * 10) + 1;
+          return Math.floor(Math.random() * 10) + col * 10 + 1;
         });
         break;
     }
-    
+
     return {
       id: Date.now().toString(),
       numbers,
-      marked: new Array(numbers.length).fill(false)
+      marked: new Array(numbers.length).fill(false),
     };
   };
 
@@ -181,31 +193,37 @@ export default function Bingo() {
     setPlayerCards([generateBingoCard(room.type)]);
     setCalledNumbers([]);
     setCurrentNumber(null);
-    setGameState('waiting');
+    setGameState("waiting");
     setGameTimer(120);
   };
 
   const buyExtraCard = () => {
     if (selectedRoom) {
-      setPlayerCards(prev => [...prev, generateBingoCard(selectedRoom.type)]);
+      setPlayerCards((prev) => [...prev, generateBingoCard(selectedRoom.type)]);
     }
   };
 
   const markNumber = (cardId: string, index: number) => {
-    setPlayerCards(prev => prev.map(card => {
-      if (card.id === cardId && card.numbers[index] && calledNumbers.includes(card.numbers[index]!)) {
-        const newMarked = [...card.marked];
-        newMarked[index] = !newMarked[index];
-        return { ...card, marked: newMarked };
-      }
-      return card;
-    }));
+    setPlayerCards((prev) =>
+      prev.map((card) => {
+        if (
+          card.id === cardId &&
+          card.numbers[index] &&
+          calledNumbers.includes(card.numbers[index]!)
+        ) {
+          const newMarked = [...card.marked];
+          newMarked[index] = !newMarked[index];
+          return { ...card, marked: newMarked };
+        }
+        return card;
+      }),
+    );
   };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   if (!selectedRoom) {
@@ -215,8 +233,12 @@ export default function Bingo() {
         <div className="bg-gradient-to-r from-casino-blue/10 via-gold/5 to-casino-blue/10 py-12">
           <div className="container mx-auto px-4">
             <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Live Bingo Rooms</h1>
-              <p className="text-muted-foreground text-lg">Join thousands of players in real-time bingo action</p>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                Live Bingo Rooms
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Join thousands of players in real-time bingo action
+              </p>
             </div>
           </div>
         </div>
@@ -225,9 +247,14 @@ export default function Bingo() {
           {/* Room Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rooms.map((room) => (
-              <Card key={room.id} className={`hover:shadow-xl transition-all duration-300 ${
-                room.featured ? 'border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10' : 'border-border/50 hover:border-casino-blue/50'
-              }`}>
+              <Card
+                key={room.id}
+                className={`hover:shadow-xl transition-all duration-300 ${
+                  room.featured
+                    ? "border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10"
+                    : "border-border/50 hover:border-casino-blue/50"
+                }`}
+              >
                 {room.featured && (
                   <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-gold-500 text-black">
                     <Star className="w-3 h-3 mr-1" />
@@ -245,33 +272,43 @@ export default function Bingo() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Next Game:</span>
-                      <span className="font-bold text-casino-blue">{room.nextGame}</span>
+                      <span className="font-bold text-casino-blue">
+                        {room.nextGame}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Prize Pool:</span>
-                      <span className="text-gold-400 font-bold">${room.pot.toLocaleString()}</span>
+                      <span className="text-gold-400 font-bold">
+                        ${room.pot.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Players:</span>
                       <span className="font-bold">{room.players}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Ticket Cost:</span>
+                      <span className="text-muted-foreground">
+                        Ticket Cost:
+                      </span>
                       <div className="text-sm">
-                        <span className="text-gold-400">{room.ticketPrice.gc} GC</span>
+                        <span className="text-gold-400">
+                          {room.ticketPrice.gc} GC
+                        </span>
                         {room.ticketPrice.sc > 0 && (
-                          <span className="text-casino-blue ml-2">+ {room.ticketPrice.sc} SC</span>
+                          <span className="text-casino-blue ml-2">
+                            + {room.ticketPrice.sc} SC
+                          </span>
                         )}
                       </div>
                     </div>
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     onClick={() => enterRoom(room)}
                     className={`w-full ${
-                      room.featured 
-                        ? 'bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold'
-                        : 'bg-casino-blue hover:bg-casino-blue-dark'
+                      room.featured
+                        ? "bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                        : "bg-casino-blue hover:bg-casino-blue-dark"
                     }`}
                   >
                     <Target className="w-4 h-4 mr-2" />
@@ -333,24 +370,32 @@ export default function Bingo() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-casino-blue">
                   {formatTime(gameTimer)}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {gameState === 'waiting' ? 'Next Game' : gameState === 'active' ? 'Time Left' : 'Game Over'}
+                  {gameState === "waiting"
+                    ? "Next Game"
+                    : gameState === "active"
+                      ? "Time Left"
+                      : "Game Over"}
                 </div>
               </div>
-              
+
               <div className="flex gap-2">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => setSoundEnabled(!soundEnabled)}
                 >
-                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  {soundEnabled ? (
+                    <Volume2 className="w-4 h-4" />
+                  ) : (
+                    <VolumeX className="w-4 h-4" />
+                  )}
                 </Button>
                 <Button size="sm" variant="outline">
                   <Settings className="w-4 h-4" />
@@ -375,19 +420,21 @@ export default function Bingo() {
               <CardContent>
                 {currentNumber && (
                   <div className="text-center mb-4 p-4 bg-gold-500/10 border border-gold-500/20 rounded-lg">
-                    <div className="text-3xl font-bold text-gold-400">{currentNumber}</div>
+                    <div className="text-3xl font-bold text-gold-400">
+                      {currentNumber}
+                    </div>
                     <div className="text-sm text-muted-foreground">Latest</div>
                   </div>
                 )}
-                
+
                 <div className="grid grid-cols-5 gap-1 text-xs">
-                  {Array.from({ length: 90 }, (_, i) => i + 1).map(num => (
+                  {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => (
                     <div
                       key={num}
                       className={`w-8 h-8 flex items-center justify-center rounded text-xs font-bold ${
                         calledNumbers.includes(num)
-                          ? 'bg-gold-500 text-black'
-                          : 'bg-muted text-muted-foreground'
+                          ? "bg-gold-500 text-black"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {num}
@@ -401,12 +448,14 @@ export default function Bingo() {
           {/* Bingo Cards */}
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Your Cards ({playerCards.length})</h2>
+              <h2 className="text-xl font-bold">
+                Your Cards ({playerCards.length})
+              </h2>
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={buyExtraCard}
-                  disabled={gameState === 'active'}
+                  disabled={gameState === "active"}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Buy Extra Card
@@ -418,7 +467,9 @@ export default function Bingo() {
                     checked={autoMark}
                     onChange={(e) => setAutoMark(e.target.checked)}
                   />
-                  <label htmlFor="autoMark" className="text-sm">Auto Mark</label>
+                  <label htmlFor="autoMark" className="text-sm">
+                    Auto Mark
+                  </label>
                 </div>
               </div>
             </div>
@@ -427,10 +478,15 @@ export default function Bingo() {
               {playerCards.map((card) => (
                 <Card key={card.id} className="bg-card/50">
                   <CardContent className="p-4">
-                    <div className={`grid gap-1 ${
-                      selectedRoom.type === '30-ball' ? 'grid-cols-3' :
-                      selectedRoom.type === '75-ball' ? 'grid-cols-5' : 'grid-cols-9'
-                    }`}>
+                    <div
+                      className={`grid gap-1 ${
+                        selectedRoom.type === "30-ball"
+                          ? "grid-cols-3"
+                          : selectedRoom.type === "75-ball"
+                            ? "grid-cols-5"
+                            : "grid-cols-9"
+                      }`}
+                    >
                       {card.numbers.map((number, index) => (
                         <button
                           key={index}
@@ -438,15 +494,15 @@ export default function Bingo() {
                           disabled={!number || !calledNumbers.includes(number)}
                           className={`w-12 h-12 flex items-center justify-center rounded font-bold text-sm transition-all ${
                             number === null
-                              ? 'bg-gold-500 text-black' // Free space
+                              ? "bg-gold-500 text-black" // Free space
                               : card.marked[index]
-                              ? 'bg-casino-blue text-white'
-                              : calledNumbers.includes(number)
-                              ? 'bg-green-500 text-white animate-pulse'
-                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                ? "bg-casino-blue text-white"
+                                : calledNumbers.includes(number)
+                                  ? "bg-green-500 text-white animate-pulse"
+                                  : "bg-muted text-muted-foreground hover:bg-muted/80"
                           }`}
                         >
-                          {number || 'FREE'}
+                          {number || "FREE"}
                         </button>
                       ))}
                     </div>

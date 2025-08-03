@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   TrendingUp,
   Users,
   DollarSign,
@@ -21,8 +21,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Globe
-} from 'lucide-react';
+  Globe,
+} from "lucide-react";
 
 interface MetricData {
   value: number;
@@ -40,22 +40,59 @@ interface GamePerformance {
 }
 
 export default function Analytics() {
-  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('24h');
+  const [timeRange, setTimeRange] = useState<"24h" | "7d" | "30d" | "90d">(
+    "24h",
+  );
   const [liveMetrics, setLiveMetrics] = useState({
     activeUsers: 2847,
     revenue24h: 45230,
     totalBets: 156789,
     avgSessionTime: 28.5,
     conversionRate: 12.3,
-    newRegistrations: 234
+    newRegistrations: 234,
   });
 
   const [performanceData, setPerformanceData] = useState<GamePerformance[]>([
-    { name: 'Josey Duck Game', provider: 'CoinKrazy', revenue: 18750, plays: 1234, rtp: 96.8, players: 723 },
-    { name: 'Sweet Bonanza', provider: 'Pragmatic Play', revenue: 15430, plays: 987, rtp: 96.48, players: 567 },
-    { name: 'Gates of Olympus', provider: 'Pragmatic Play', revenue: 12890, plays: 856, rtp: 96.5, players: 445 },
-    { name: 'Colin Shots', provider: 'CoinKrazy', revenue: 11250, plays: 743, rtp: 97.2, players: 398 },
-    { name: 'Wolf Gold', provider: 'Pragmatic Play', revenue: 9870, plays: 654, rtp: 96.01, players: 334 }
+    {
+      name: "Josey Duck Game",
+      provider: "CoinKrazy",
+      revenue: 18750,
+      plays: 1234,
+      rtp: 96.8,
+      players: 723,
+    },
+    {
+      name: "Sweet Bonanza",
+      provider: "Pragmatic Play",
+      revenue: 15430,
+      plays: 987,
+      rtp: 96.48,
+      players: 567,
+    },
+    {
+      name: "Gates of Olympus",
+      provider: "Pragmatic Play",
+      revenue: 12890,
+      plays: 856,
+      rtp: 96.5,
+      players: 445,
+    },
+    {
+      name: "Colin Shots",
+      provider: "CoinKrazy",
+      revenue: 11250,
+      plays: 743,
+      rtp: 97.2,
+      players: 398,
+    },
+    {
+      name: "Wolf Gold",
+      provider: "Pragmatic Play",
+      revenue: 9870,
+      plays: 654,
+      rtp: 96.01,
+      players: 334,
+    },
   ]);
 
   const [userMetrics] = useState({
@@ -63,8 +100,8 @@ export default function Analytics() {
     activeToday: 2847,
     newToday: 234,
     returningRate: 68.5,
-    avgLifetimeValue: 287.50,
-    churnRate: 8.2
+    avgLifetimeValue: 287.5,
+    churnRate: 8.2,
   });
 
   const [revenueData] = useState({
@@ -72,18 +109,24 @@ export default function Analytics() {
     gcRevenue: 567234,
     scRevenue: 325613,
     withdrawals: 234567,
-    netRevenue: 658280
+    netRevenue: 658280,
   });
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setLiveMetrics(prev => ({
+      setLiveMetrics((prev) => ({
         ...prev,
         activeUsers: prev.activeUsers + Math.floor(Math.random() * 20) - 10,
         revenue24h: prev.revenue24h + Math.floor(Math.random() * 1000),
         totalBets: prev.totalBets + Math.floor(Math.random() * 50),
-        avgSessionTime: Math.max(15, Math.min(45, prev.avgSessionTime + (Math.random() - 0.5) * 2)),
-        conversionRate: Math.max(8, Math.min(20, prev.conversionRate + (Math.random() - 0.5) * 0.5))
+        avgSessionTime: Math.max(
+          15,
+          Math.min(45, prev.avgSessionTime + (Math.random() - 0.5) * 2),
+        ),
+        conversionRate: Math.max(
+          8,
+          Math.min(20, prev.conversionRate + (Math.random() - 0.5) * 0.5),
+        ),
       }));
     }, 5000);
 
@@ -91,9 +134,9 @@ export default function Analytics() {
   }, []);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(value);
   };
 
@@ -109,17 +152,23 @@ export default function Analytics() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-              <p className="text-muted-foreground">Real-time platform performance and insights</p>
+              <p className="text-muted-foreground">
+                Real-time platform performance and insights
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex bg-card rounded-lg p-1">
-                {(['24h', '7d', '30d', '90d'] as const).map((range) => (
+                {(["24h", "7d", "30d", "90d"] as const).map((range) => (
                   <Button
                     key={range}
                     size="sm"
-                    variant={timeRange === range ? 'default' : 'ghost'}
+                    variant={timeRange === range ? "default" : "ghost"}
                     onClick={() => setTimeRange(range)}
-                    className={timeRange === range ? 'bg-gold-500 text-black hover:bg-gold-600' : ''}
+                    className={
+                      timeRange === range
+                        ? "bg-gold-500 text-black hover:bg-gold-600"
+                        : ""
+                    }
                   >
                     {range}
                   </Button>
@@ -142,7 +191,9 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Active Users</p>
-                  <p className="text-2xl font-bold">{liveMetrics.activeUsers.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">
+                    {liveMetrics.activeUsers.toLocaleString()}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-casino-blue" />
               </div>
@@ -158,7 +209,9 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Revenue 24h</p>
-                  <p className="text-2xl font-bold">{formatCurrency(liveMetrics.revenue24h)}</p>
+                  <p className="text-2xl font-bold">
+                    {formatCurrency(liveMetrics.revenue24h)}
+                  </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-gold-500" />
               </div>
@@ -174,7 +227,9 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Bets</p>
-                  <p className="text-2xl font-bold">{liveMetrics.totalBets.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">
+                    {liveMetrics.totalBets.toLocaleString()}
+                  </p>
                 </div>
                 <Activity className="w-8 h-8 text-purple-500" />
               </div>
@@ -190,7 +245,9 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Avg Session</p>
-                  <p className="text-2xl font-bold">{liveMetrics.avgSessionTime.toFixed(1)}m</p>
+                  <p className="text-2xl font-bold">
+                    {liveMetrics.avgSessionTime.toFixed(1)}m
+                  </p>
                 </div>
                 <Clock className="w-8 h-8 text-green-500" />
               </div>
@@ -206,7 +263,9 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Conversion</p>
-                  <p className="text-2xl font-bold">{formatPercentage(liveMetrics.conversionRate)}</p>
+                  <p className="text-2xl font-bold">
+                    {formatPercentage(liveMetrics.conversionRate)}
+                  </p>
                 </div>
                 <Target className="w-8 h-8 text-orange-500" />
               </div>
@@ -222,7 +281,9 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">New Users</p>
-                  <p className="text-2xl font-bold">{liveMetrics.newRegistrations}</p>
+                  <p className="text-2xl font-bold">
+                    {liveMetrics.newRegistrations}
+                  </p>
                 </div>
                 <Globe className="w-8 h-8 text-blue-500" />
               </div>
@@ -270,8 +331,12 @@ export default function Analytics() {
                   <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
                     <div className="text-center">
                       <BarChart3 className="w-12 h-12 text-gold-500 mx-auto mb-4" />
-                      <p className="text-muted-foreground">Real-time revenue chart</p>
-                      <p className="text-sm text-muted-foreground">Integration with Recharts</p>
+                      <p className="text-muted-foreground">
+                        Real-time revenue chart
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Integration with Recharts
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -285,8 +350,12 @@ export default function Analytics() {
                   <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
                     <div className="text-center">
                       <Activity className="w-12 h-12 text-casino-blue mx-auto mb-4" />
-                      <p className="text-muted-foreground">Live activity visualization</p>
-                      <p className="text-sm text-muted-foreground">WebSocket real-time updates</p>
+                      <p className="text-muted-foreground">
+                        Live activity visualization
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        WebSocket real-time updates
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -316,13 +385,24 @@ export default function Analytics() {
                     </thead>
                     <tbody>
                       {performanceData.map((game, index) => (
-                        <tr key={index} className="border-b border-border/50 hover:bg-muted/50">
+                        <tr
+                          key={index}
+                          className="border-b border-border/50 hover:bg-muted/50"
+                        >
                           <td className="p-2 font-medium">{game.name}</td>
-                          <td className="p-2 text-muted-foreground">{game.provider}</td>
-                          <td className="p-2 text-gold-400 font-bold">{formatCurrency(game.revenue)}</td>
+                          <td className="p-2 text-muted-foreground">
+                            {game.provider}
+                          </td>
+                          <td className="p-2 text-gold-400 font-bold">
+                            {formatCurrency(game.revenue)}
+                          </td>
                           <td className="p-2">{game.plays.toLocaleString()}</td>
                           <td className="p-2">
-                            <Badge variant={game.rtp > 96.5 ? 'default' : 'secondary'}>
+                            <Badge
+                              variant={
+                                game.rtp > 96.5 ? "default" : "secondary"
+                              }
+                            >
                               {formatPercentage(game.rtp)}
                             </Badge>
                           </td>
@@ -330,7 +410,9 @@ export default function Analytics() {
                           <td className="p-2">
                             <div className="flex items-center gap-1">
                               <TrendingUp className="w-4 h-4 text-green-500" />
-                              <span className="text-green-500 text-sm">+{(Math.random() * 20).toFixed(1)}%</span>
+                              <span className="text-green-500 text-sm">
+                                +{(Math.random() * 20).toFixed(1)}%
+                              </span>
                             </div>
                           </td>
                         </tr>
@@ -348,21 +430,27 @@ export default function Analytics() {
               <Card>
                 <CardContent className="p-6 text-center">
                   <Users className="w-12 h-12 text-casino-blue mx-auto mb-4" />
-                  <div className="text-3xl font-bold mb-2">{userMetrics.totalUsers.toLocaleString()}</div>
+                  <div className="text-3xl font-bold mb-2">
+                    {userMetrics.totalUsers.toLocaleString()}
+                  </div>
                   <div className="text-muted-foreground">Total Users</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
                   <Activity className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                  <div className="text-3xl font-bold mb-2">{formatPercentage(userMetrics.returningRate)}</div>
+                  <div className="text-3xl font-bold mb-2">
+                    {formatPercentage(userMetrics.returningRate)}
+                  </div>
                   <div className="text-muted-foreground">Returning Rate</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
                   <DollarSign className="w-12 h-12 text-gold-500 mx-auto mb-4" />
-                  <div className="text-3xl font-bold mb-2">{formatCurrency(userMetrics.avgLifetimeValue)}</div>
+                  <div className="text-3xl font-bold mb-2">
+                    {formatCurrency(userMetrics.avgLifetimeValue)}
+                  </div>
                   <div className="text-muted-foreground">Avg LTV</div>
                 </CardContent>
               </Card>
@@ -377,7 +465,9 @@ export default function Analytics() {
                   <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
                     <div className="text-center">
                       <PieChart className="w-12 h-12 text-casino-blue mx-auto mb-4" />
-                      <p className="text-muted-foreground">Acquisition channel breakdown</p>
+                      <p className="text-muted-foreground">
+                        Acquisition channel breakdown
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -391,7 +481,9 @@ export default function Analytics() {
                   <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
                     <div className="text-center">
                       <TrendingUp className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                      <p className="text-muted-foreground">Cohort retention analysis</p>
+                      <p className="text-muted-foreground">
+                        Cohort retention analysis
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -405,36 +497,56 @@ export default function Analytics() {
               <Card className="bg-gradient-to-br from-gold/10 to-gold/5">
                 <CardContent className="p-4 text-center">
                   <DollarSign className="w-8 h-8 text-gold-500 mx-auto mb-2" />
-                  <div className="text-xl font-bold">{formatCurrency(revenueData.totalRevenue)}</div>
-                  <div className="text-sm text-muted-foreground">Total Revenue</div>
+                  <div className="text-xl font-bold">
+                    {formatCurrency(revenueData.totalRevenue)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Total Revenue
+                  </div>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5">
                 <CardContent className="p-4 text-center">
                   <Coins className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-                  <div className="text-xl font-bold">{formatCurrency(revenueData.gcRevenue)}</div>
-                  <div className="text-sm text-muted-foreground">GC Revenue</div>
+                  <div className="text-xl font-bold">
+                    {formatCurrency(revenueData.gcRevenue)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    GC Revenue
+                  </div>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-casino-blue/10 to-casino-blue/5">
                 <CardContent className="p-4 text-center">
                   <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
-                  <div className="text-xl font-bold">{formatCurrency(revenueData.scRevenue)}</div>
-                  <div className="text-sm text-muted-foreground">SC Revenue</div>
+                  <div className="text-xl font-bold">
+                    {formatCurrency(revenueData.scRevenue)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    SC Revenue
+                  </div>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5">
                 <CardContent className="p-4 text-center">
                   <Download className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                  <div className="text-xl font-bold">{formatCurrency(revenueData.withdrawals)}</div>
-                  <div className="text-sm text-muted-foreground">Withdrawals</div>
+                  <div className="text-xl font-bold">
+                    {formatCurrency(revenueData.withdrawals)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Withdrawals
+                  </div>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
                 <CardContent className="p-4 text-center">
                   <TrendingUp className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <div className="text-xl font-bold">{formatCurrency(revenueData.netRevenue)}</div>
-                  <div className="text-sm text-muted-foreground">Net Revenue</div>
+                  <div className="text-xl font-bold">
+                    {formatCurrency(revenueData.netRevenue)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Net Revenue
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -447,8 +559,12 @@ export default function Analytics() {
                 <div className="h-80 bg-muted/20 rounded-lg flex items-center justify-center">
                   <div className="text-center">
                     <BarChart3 className="w-16 h-16 text-gold-500 mx-auto mb-4" />
-                    <p className="text-muted-foreground">Comprehensive revenue analytics</p>
-                    <p className="text-sm text-muted-foreground">GC vs SC performance comparison</p>
+                    <p className="text-muted-foreground">
+                      Comprehensive revenue analytics
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      GC vs SC performance comparison
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -462,8 +578,13 @@ export default function Analytics() {
                 <CardContent className="p-6 text-center">
                   <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
                   <div className="text-2xl font-bold text-green-400">98.9%</div>
-                  <div className="text-sm text-muted-foreground">RTP Compliance</div>
-                  <Badge variant="outline" className="border-green-500 text-green-400 mt-2">
+                  <div className="text-sm text-muted-foreground">
+                    RTP Compliance
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="border-green-500 text-green-400 mt-2"
+                  >
                     Compliant
                   </Badge>
                 </CardContent>
@@ -473,8 +594,13 @@ export default function Analytics() {
                 <CardContent className="p-6 text-center">
                   <Eye className="w-12 h-12 text-blue-500 mx-auto mb-4" />
                   <div className="text-2xl font-bold text-blue-400">24/7</div>
-                  <div className="text-sm text-muted-foreground">AI Monitoring</div>
-                  <Badge variant="outline" className="border-blue-500 text-blue-400 mt-2">
+                  <div className="text-sm text-muted-foreground">
+                    AI Monitoring
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="border-blue-500 text-blue-400 mt-2"
+                  >
                     Active
                   </Badge>
                 </CardContent>
@@ -484,8 +610,13 @@ export default function Analytics() {
                 <CardContent className="p-6 text-center">
                   <AlertTriangle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
                   <div className="text-2xl font-bold text-orange-400">3</div>
-                  <div className="text-sm text-muted-foreground">Active Alerts</div>
-                  <Badge variant="outline" className="border-orange-500 text-orange-400 mt-2">
+                  <div className="text-sm text-muted-foreground">
+                    Active Alerts
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="border-orange-500 text-orange-400 mt-2"
+                  >
                     Review
                   </Badge>
                 </CardContent>

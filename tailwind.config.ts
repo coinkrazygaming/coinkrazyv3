@@ -57,6 +57,28 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // CoinKrazy Brand Colors
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          50: "hsl(var(--gold-50))",
+          100: "hsl(var(--gold-100))",
+          200: "hsl(var(--gold-200))",
+          300: "hsl(var(--gold-300))",
+          400: "hsl(var(--gold-400))",
+          500: "hsl(var(--gold-500))",
+          600: "hsl(var(--gold-600))",
+          700: "hsl(var(--gold-700))",
+          800: "hsl(var(--gold-800))",
+          900: "hsl(var(--gold-900))",
+          foreground: "hsl(var(--gold-foreground))",
+        },
+        casino: {
+          blue: "hsl(var(--casino-blue))",
+          "blue-dark": "hsl(var(--casino-blue-dark))",
+          "blue-light": "hsl(var(--casino-blue-light))",
+          white: "hsl(var(--casino-white))",
+          black: "hsl(var(--casino-black))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

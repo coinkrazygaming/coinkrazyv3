@@ -241,7 +241,7 @@ export default function Navigation() {
                   <Users className="w-3 h-3 mr-1" />
                   {realTimeData ? realTimeData.playersOnline.toLocaleString() : '...'} Online
                 </Badge>
-                {user.isLoggedIn && walletBalance && (
+                {user?.isLoggedIn && walletBalance && (
                   <div className="text-xs text-muted-foreground">
                     Balance: {formatCurrency(walletBalance.usdBalance, currentCurrency)}
                   </div>

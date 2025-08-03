@@ -77,6 +77,7 @@ const PAYLINES = [
 ];
 
 export default function CoinKrazySpinner() {
+  const { user } = useAuth();
   const [reels, setReels] = useState<string[][]>([
     ['🎲', '🎯', '⭐'],
     ['🍀', '🎰', '💎'],

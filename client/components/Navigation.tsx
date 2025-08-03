@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { analyticsService, type RealTimeData, type UserWalletBalance } from '../services/realTimeAnalytics';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Navigation() {
   const location = useLocation();

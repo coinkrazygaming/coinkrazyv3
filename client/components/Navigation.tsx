@@ -26,13 +26,8 @@ export default function Navigation() {
   const [showWalletCurrency, setShowWalletCurrency] = useState(false);
   const [currentCurrency, setCurrentCurrency] = useState<'USD' | 'BTC' | 'ETH'>('USD');
 
-  // Real user state - replace with actual auth context
-  const [user] = useState({
-    isLoggedIn: true,
-    isAdmin: true, // This should come from real auth
-    username: 'coinkrazy00@gmail.com',
-    userId: 'user_1'
-  });
+  // Real user authentication state
+  const { user, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
     // Subscribe to real-time analytics data

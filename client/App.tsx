@@ -49,6 +49,8 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/store" element={<Store />} />
+            <Route path="/sportsbook" element={<Sportsbook />} />
             <Route path="/bingo" element={<Bingo />} />
             <Route path="/poker" element={<Poker />} />
             <Route path="/analytics" element={<Analytics />} />

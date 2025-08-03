@@ -36,7 +36,7 @@ export default function Navigation() {
     });
 
     // Load wallet balance if user is logged in
-    if (user.isLoggedIn) {
+    if (user?.isLoggedIn) {
       loadWalletBalance();
       const walletInterval = setInterval(loadWalletBalance, 5000); // Update every 5 seconds
       return () => {
@@ -46,7 +46,7 @@ export default function Navigation() {
     }
 
     return unsubscribe;
-  }, [user.isLoggedIn, user.userId]);
+  }, [user?.isLoggedIn, user?.id]);
 
   const loadWalletBalance = async () => {
     try {

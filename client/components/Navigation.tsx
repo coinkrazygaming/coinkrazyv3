@@ -49,8 +49,10 @@ export default function Navigation() {
   }, [user?.isLoggedIn, user?.id]);
 
   const loadWalletBalance = async () => {
+    if (!user?.id) return;
+
     try {
-      const balance = await analyticsService.getUserWalletBalance(user.userId);
+      const balance = await analyticsService.getUserWalletBalance(user.id);
       setWalletBalance(balance);
     } catch (error) {
       console.error('Failed to load wallet balance:', error);

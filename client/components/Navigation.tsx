@@ -1,14 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Coins, 
-  Users, 
-  Settings, 
+import {
+  Coins,
+  Users,
+  Settings,
   Menu,
   Crown,
   Gift,
-  Phone
+  Phone,
+  Trophy,
+  Plus
 } from 'lucide-react';
 import { useState } from 'react';
 

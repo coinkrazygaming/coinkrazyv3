@@ -70,9 +70,9 @@ export default function Navigation() {
   ];
 
   const filteredNavItems = navItems.filter(item => {
-    if (item.hideWhenLoggedIn && user.isLoggedIn) return false;
-    if (item.requiresLogin && !user.isLoggedIn) return false;
-    if (item.adminOnly && (!user.isLoggedIn || !user.isAdmin)) return false;
+    if (item.hideWhenLoggedIn && user?.isLoggedIn) return false;
+    if (item.requiresLogin && !user?.isLoggedIn) return false;
+    if (item.adminOnly && (!user?.isLoggedIn || !user?.isAdmin)) return false;
     return true;
   });
 

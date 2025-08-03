@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { 
+import {
   Coins,
   Crown,
   CreditCard,
@@ -27,7 +27,8 @@ import {
   Plus,
   ArrowUpRight,
   ArrowDownLeft,
-  RotateCcw
+  RotateCcw,
+  Lock
 } from 'lucide-react';
 
 export default function Dashboard() {

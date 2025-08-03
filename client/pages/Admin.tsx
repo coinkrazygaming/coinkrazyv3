@@ -233,6 +233,110 @@ export default function Admin() {
             </TabsTrigger>
           </TabsList>
 
+          {/* AI Employee Manager */}
+          <TabsContent value="ai-manager" className="mt-6">
+            <AIEmployeeManager />
+          </TabsContent>
+
+          {/* Gold Coin Store Management */}
+          <TabsContent value="store" className="mt-6">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Store className="w-5 h-5 text-gold-500" />
+                    Gold Coin Store Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="text-center p-6">
+                      <Coins className="w-12 h-12 text-gold-500 mx-auto mb-4" />
+                      <h3 className="font-bold mb-2">Package Editor</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Create and edit Gold Coin packages with AI-assisted visual builder
+                      </p>
+                      <Button className="bg-gold-500 hover:bg-gold-600 text-black">
+                        <Edit className="w-4 h-4 mr-2" />
+                        Open Editor
+                      </Button>
+                    </Card>
+
+                    <Card className="text-center p-6">
+                      <CreditCard className="w-12 h-12 text-casino-blue mx-auto mb-4" />
+                      <h3 className="font-bold mb-2">Payment Settings</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Configure payment processors and security settings
+                      </p>
+                      <Button variant="outline">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Configure
+                      </Button>
+                    </Card>
+
+                    <Card className="text-center p-6">
+                      <BarChart3 className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                      <h3 className="font-bold mb-2">Sales Analytics</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        View detailed sales metrics and performance data
+                      </p>
+                      <Button variant="outline">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Reports
+                      </Button>
+                    </Card>
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="font-bold text-lg mb-4">Current Packages</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border">
+                            <th className="text-left p-2">Package</th>
+                            <th className="text-left p-2">Gold Coins</th>
+                            <th className="text-left p-2">Sweeps Coins</th>
+                            <th className="text-left p-2">Price</th>
+                            <th className="text-left p-2">Status</th>
+                            <th className="text-left p-2">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { name: 'Starter Pack', gc: 50000, sc: 25, price: 9.99, status: 'active' },
+                            { name: 'Popular Pack', gc: 125000, sc: 75, price: 19.99, status: 'active' },
+                            { name: 'Premium Pack', gc: 300000, sc: 200, price: 49.99, status: 'active' },
+                            { name: 'VIP Pack', gc: 750000, sc: 500, price: 99.99, status: 'active' }
+                          ].map((pkg, index) => (
+                            <tr key={index} className="border-b border-border/50 hover:bg-muted/50">
+                              <td className="p-2 font-medium">{pkg.name}</td>
+                              <td className="p-2">{pkg.gc.toLocaleString()}</td>
+                              <td className="p-2">{pkg.sc}</td>
+                              <td className="p-2">${pkg.price}</td>
+                              <td className="p-2">
+                                <Badge variant="default">Active</Badge>
+                              </td>
+                              <td className="p-2">
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="outline">
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                  <Button size="sm" variant="outline">
+                                    <Eye className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* User Management */}
           <TabsContent value="users" className="mt-6">
             <Card>

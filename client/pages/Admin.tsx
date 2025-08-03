@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { 
+import AIEmployeeManager from '@/components/AIEmployeeManager';
+import {
   Shield,
   Users,
   Settings,
@@ -31,7 +32,9 @@ import {
   Upload,
   Play,
   Pause,
-  RotateCcw
+  RotateCcw,
+  Store,
+  Coins
 } from 'lucide-react';
 
 // Mock data

@@ -259,7 +259,10 @@ export default function Admin() {
                       <p className="text-sm text-muted-foreground mb-4">
                         Create and edit Gold Coin packages with AI-assisted visual builder
                       </p>
-                      <Button className="bg-gold-500 hover:bg-gold-600 text-black">
+                      <Button
+                        className="bg-gold-500 hover:bg-gold-600 text-black"
+                        onClick={() => window.open('/admin?tab=package-editor', '_blank')}
+                      >
                         <Edit className="w-4 h-4 mr-2" />
                         Open Editor
                       </Button>

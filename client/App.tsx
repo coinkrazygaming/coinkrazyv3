@@ -22,6 +22,7 @@ import Poker from "./pages/Poker";
 import Analytics from "./pages/Analytics";
 import Compliance from "./pages/Compliance";
 import Admin from "./pages/Admin";
+import HowToPlay from "./pages/HowToPlay";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

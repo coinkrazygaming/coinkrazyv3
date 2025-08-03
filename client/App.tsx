@@ -17,6 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import Bingo from "./pages/Bingo";
 import Poker from "./pages/Poker";
 import Analytics from "./pages/Analytics";
+import Compliance from "./pages/Compliance";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 

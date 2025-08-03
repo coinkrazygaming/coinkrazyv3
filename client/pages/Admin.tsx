@@ -485,70 +485,7 @@ export default function Admin() {
 
           {/* Payment Management */}
           <TabsContent value="payments" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment & Withdrawal Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left p-2">User</th>
-                        <th className="text-left p-2">Type</th>
-                        <th className="text-left p-2">Amount</th>
-                        <th className="text-left p-2">Currency</th>
-                        <th className="text-left p-2">Status</th>
-                        <th className="text-left p-2">Date</th>
-                        <th className="text-left p-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mockTransactions.map((tx) => (
-                        <tr key={tx.id} className="border-b border-border/50 hover:bg-muted/50">
-                          <td className="p-2 font-medium">{tx.user}</td>
-                          <td className="p-2">
-                            <Badge variant={tx.type === 'withdrawal' ? 'destructive' : 'default'}>
-                              {tx.type}
-                            </Badge>
-                          </td>
-                          <td className="p-2 font-mono">{tx.amount}</td>
-                          <td className="p-2">
-                            <Badge variant={tx.currency === 'SC' ? 'default' : 'secondary'}>
-                              {tx.currency}
-                            </Badge>
-                          </td>
-                          <td className="p-2">
-                            <Badge 
-                              variant={
-                                tx.status === 'completed' ? 'default' :
-                                tx.status === 'pending' ? 'secondary' : 'destructive'
-                              }
-                            >
-                              {tx.status}
-                            </Badge>
-                          </td>
-                          <td className="p-2 text-sm">{tx.date}</td>
-                          <td className="p-2">
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="text-green-500">
-                                <CheckCircle className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="outline" className="text-red-500">
-                                <XCircle className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="outline">
-                                <Eye className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            <CasinoBanking />
           </TabsContent>
 
           {/* Analytics */}

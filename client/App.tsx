@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 

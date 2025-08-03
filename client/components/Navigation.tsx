@@ -9,20 +9,57 @@ import {
   Crown,
   Gift,
   Phone,
-  Plus
+  Plus,
+  Wallet,
+  RefreshCw,
+  ChevronDown
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { analyticsService, type RealTimeData, type UserWalletBalance } from '../services/realTimeAnalytics';
 
 export default function Navigation() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
+  const [walletBalance, setWalletBalance] = useState<UserWalletBalance | null>(null);
+  const [showWalletCurrency, setShowWalletCurrency] = useState(false);
+  const [currentCurrency, setCurrentCurrency] = useState<'USD' | 'BTC' | 'ETH'>('USD');
 
-  // Mock user state - in production, this would come from auth context
+  // Real user state - replace with actual auth context
   const [user] = useState({
     isLoggedIn: true,
-    isAdmin: true, // Set to false to test non-admin view
-    username: 'coinkrazy00@gmail.com'
+    isAdmin: true, // This should come from real auth
+    username: 'coinkrazy00@gmail.com',
+    userId: 'user_1'
   });
+
+  useEffect(() => {
+    // Subscribe to real-time analytics data
+    const unsubscribe = analyticsService.subscribe('navigation', (data: RealTimeData) => {
+      setRealTimeData(data);
+    });
+
+    // Load wallet balance if user is logged in
+    if (user.isLoggedIn) {
+      loadWalletBalance();
+      const walletInterval = setInterval(loadWalletBalance, 5000); // Update every 5 seconds
+      return () => {
+        clearInterval(walletInterval);
+        unsubscribe();
+      };
+    }
+
+    return unsubscribe;
+  }, [user.isLoggedIn, user.userId]);
+
+  const loadWalletBalance = async () => {
+    try {
+      const balance = await analyticsService.getUserWalletBalance(user.userId);
+      setWalletBalance(balance);
+    } catch (error) {
+      console.error('Failed to load wallet balance:', error);
+    }
+  };
 
   const navItems = [
     { path: '/', label: 'Home', icon: Crown },
@@ -40,6 +77,24 @@ export default function Navigation() {
     if (item.adminOnly && (!user.isLoggedIn || !user.isAdmin)) return false;
     return true;
   });
+
+  const formatCurrency = (amount: number, currency: string) => {
+    switch (currency) {
+      case 'BTC':
+        return `₿${(amount / 45000).toFixed(6)}`; // Rough BTC conversion
+      case 'ETH':
+        return `Ξ${(amount / 2500).toFixed(4)}`; // Rough ETH conversion
+      default:
+        return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+  };
+
+  const toggleCurrency = () => {
+    const currencies: ('USD' | 'BTC' | 'ETH')[] = ['USD', 'BTC', 'ETH'];
+    const currentIndex = currencies.indexOf(currentCurrency);
+    const nextIndex = (currentIndex + 1) % currencies.length;
+    setCurrentCurrency(currencies[nextIndex]);
+  };
 
   return (
     <nav className="bg-card/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
@@ -78,16 +133,92 @@ export default function Navigation() {
 
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Real-time Players Online */}
             <div className="flex items-center gap-2 text-sm">
               <Badge variant="outline" className="border-gold-500 text-gold-400">
                 <Users className="w-3 h-3 mr-1" />
-                2,847 Online
+                {realTimeData ? realTimeData.playersOnline.toLocaleString() : '...'} Online
               </Badge>
             </div>
+
+            {/* Wallet Balance (logged in users only) */}
+            {user.isLoggedIn && walletBalance && (
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowWalletCurrency(!showWalletCurrency)}
+                  className="border-casino-blue text-casino-blue hover:bg-casino-blue/10"
+                >
+                  <Wallet className="w-3 h-3 mr-1" />
+                  {currentCurrency === 'USD' 
+                    ? formatCurrency(walletBalance.usdBalance, currentCurrency)
+                    : currentCurrency === 'BTC'
+                    ? formatCurrency(walletBalance.usdBalance, 'BTC')
+                    : formatCurrency(walletBalance.usdBalance, 'ETH')
+                  }
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                </Button>
+
+                {/* Currency Toggle Dropdown */}
+                {showWalletCurrency && (
+                  <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-lg shadow-lg p-2 min-w-[200px] z-50">
+                    <div className="space-y-2">
+                      <div className="text-xs text-muted-foreground font-medium border-b border-border pb-1">
+                        Wallet Balance
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gold-400">Gold Coins:</span>
+                          <span className="font-medium">{walletBalance.goldCoins.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-purple-400">Sweeps Coins:</span>
+                          <span className="font-medium">{walletBalance.sweepsCoins.toFixed(2)} SC</span>
+                        </div>
+                        <div className="border-t border-border pt-1 mt-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={toggleCurrency}
+                            className="w-full justify-between text-xs"
+                          >
+                            <span>USD Balance:</span>
+                            <span className="font-medium">{formatCurrency(walletBalance.usdBalance, 'USD')}</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={toggleCurrency}
+                            className="w-full justify-between text-xs"
+                          >
+                            <span>BTC Equivalent:</span>
+                            <span className="font-medium">{formatCurrency(walletBalance.usdBalance, 'BTC')}</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={toggleCurrency}
+                            className="w-full justify-between text-xs"
+                          >
+                            <span>ETH Equivalent:</span>
+                            <span className="font-medium">{formatCurrency(walletBalance.usdBalance, 'ETH')}</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Contact Phone */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="w-4 h-4" />
               <span>319-473-0416</span>
             </div>
+
+            {/* Play Now Button */}
             <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
               Play Now
             </Button>
@@ -106,6 +237,19 @@ export default function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/50">
             <div className="space-y-2">
+              {/* Mobile real-time stats */}
+              <div className="px-3 py-2 text-center">
+                <Badge variant="outline" className="border-gold-500 text-gold-400 mb-2">
+                  <Users className="w-3 h-3 mr-1" />
+                  {realTimeData ? realTimeData.playersOnline.toLocaleString() : '...'} Online
+                </Badge>
+                {user.isLoggedIn && walletBalance && (
+                  <div className="text-xs text-muted-foreground">
+                    Balance: {formatCurrency(walletBalance.usdBalance, currentCurrency)}
+                  </div>
+                )}
+              </div>
+
               {filteredNavItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
@@ -131,6 +275,14 @@ export default function Navigation() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Click outside to close wallet dropdown */}
+        {showWalletCurrency && (
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setShowWalletCurrency(false)}
+          />
         )}
       </div>
     </nav>

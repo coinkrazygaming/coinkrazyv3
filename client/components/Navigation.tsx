@@ -19,6 +19,7 @@ export default function Navigation() {
   const navItems = [
     { path: '/', label: 'Home', icon: Crown },
     { path: '/games', label: 'Games', icon: Coins },
+    { path: '/login', label: 'Login', icon: Users },
     { path: '/register', label: 'Sign Up', icon: Gift },
     { path: '/admin', label: 'Admin', icon: Settings },
   ];

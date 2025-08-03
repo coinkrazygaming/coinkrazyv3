@@ -5,6 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import AIEmployeeManager from '@/components/AIEmployeeManager';
+import CasinoAnalytics from '@/components/CasinoAnalytics';
+import CasinoBanking from '@/components/CasinoBanking';
+import PackageEditor from '@/components/PackageEditor';
 import {
   Shield,
   Users,

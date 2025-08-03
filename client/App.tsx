@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Store from "./pages/Store";
 import Sportsbook from "./pages/Sportsbook";
+import PickCards from "./pages/PickCards";
 import Bingo from "./pages/Bingo";
 import Poker from "./pages/Poker";
 import Analytics from "./pages/Analytics";

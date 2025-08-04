@@ -54,7 +54,6 @@ import {
   ArrowLeft,
   Info,
   Gift,
-  Zap,
   Flame,
   Sparkles,
   Gem,

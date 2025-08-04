@@ -406,7 +406,7 @@ export default function GamePickCard({
               <div className="flex items-center justify-center gap-2 text-green-500">
                 <Trophy className="w-4 h-4" />
                 <span>
-                  Winner! Payout: {pickCard.potentialPayout.toLocaleString()} {props.isSportsBetting ? 'SC' : 'GC'}
+                  Winner! Payout: {pickCard.potentialPayout.toLocaleString()} {isSportsBetting ? 'SC' : 'GC'}
                 </span>
               </div>
             )}

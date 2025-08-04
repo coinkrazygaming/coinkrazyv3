@@ -57,8 +57,8 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.4).toLocaleString()}`
         : "$125,847",
-      players: realTimeData
-        ? Math.floor(realTimeData.playersOnline * 0.15)
+      players: playerCount > 0
+        ? Math.floor(playerCount * 0.15)
         : 423,
     },
     {
@@ -67,8 +67,8 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.3).toLocaleString()}`
         : "$89,234",
-      players: realTimeData
-        ? Math.floor(realTimeData.playersOnline * 0.11)
+      players: playerCount > 0
+        ? Math.floor(playerCount * 0.11)
         : 312,
     },
     {
@@ -77,8 +77,8 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.2).toLocaleString()}`
         : "$67,891",
-      players: realTimeData
-        ? Math.floor(realTimeData.playersOnline * 0.1)
+      players: playerCount > 0
+        ? Math.floor(playerCount * 0.1)
         : 289,
     },
     {
@@ -87,8 +87,8 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.1).toLocaleString()}`
         : "$156,782",
-      players: realTimeData
-        ? Math.floor(realTimeData.playersOnline * 0.2)
+      players: playerCount > 0
+        ? Math.floor(playerCount * 0.2)
         : 567,
     },
   ];
@@ -146,7 +146,7 @@ export default function Index() {
                     <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="text-2xl font-bold text-foreground">
-                      {realTimeData?.playersOnline.toLocaleString() || "..."}
+                      {playerCount > 0 ? playerCount.toLocaleString() : "..."}
                     </span>
                   )}
                 </div>
@@ -298,8 +298,8 @@ export default function Index() {
               },
               {
                 title: "Live Poker",
-                count: realTimeData
-                  ? `${Math.floor(realTimeData.playersOnline * 0.02)}`
+                count: playerCount > 0
+                  ? `${Math.floor(playerCount * 0.02)}`
                   : "24/7",
                 icon: Trophy,
                 color: "casino-blue",
@@ -359,7 +359,7 @@ export default function Index() {
                   USD equivalent)
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {realTimeData.playersOnline.toLocaleString()} players online
+                  {playerCount > 0 ? playerCount.toLocaleString() : 0} players online
                   right now!
                 </p>
               </div>

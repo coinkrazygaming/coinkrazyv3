@@ -52,6 +52,7 @@ interface GamePickCardProps {
   onRemoveCard: (cardId: string) => void;
   onPlaceBet: (card: PickCard) => void;
   onSaveToCart: (card: PickCard) => void;
+  isSportsBetting?: boolean;
 }
 
 // Parlay multipliers based on number of picks
@@ -102,18 +103,20 @@ export default function GamePickCard({
 
   const canPlaceBet = () => {
     const amount = parseFloat(wagerAmount) || 0;
+    const availableBalance = props.isSportsBetting ? userBalance.sc : userBalance.gc;
     return (
       amount > 0 &&
-      amount <= userBalance.gc &&
+      amount <= availableBalance &&
       pickCard.picks.length > 0 &&
       pickCard.status === "building"
     );
   };
 
   const handlePlaceBet = () => {
+    const availableBalance = props.isSportsBetting ? userBalance.sc : userBalance.gc;
     if (canPlaceBet()) {
       onPlaceBet(pickCard);
-    } else if ((parseFloat(wagerAmount) || 0) > userBalance.gc) {
+    } else if ((parseFloat(wagerAmount) || 0) > availableBalance) {
       // Insufficient funds - save to cart and redirect to store
       onSaveToCart(pickCard);
     }
@@ -277,10 +280,14 @@ export default function GamePickCard({
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Wager Amount (Gold Coins)
+                Wager Amount ({props.isSportsBetting ? 'Sweeps Coins' : 'Gold Coins'})
               </label>
               <div className="relative">
-                <Coins className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gold-500" />
+                {props.isSportsBetting ? (
+                  <Crown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-casino-blue" />
+                ) : (
+                  <Coins className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gold-500" />
+                )}
                 <Input
                   type="number"
                   placeholder="Enter wager amount"
@@ -288,29 +295,43 @@ export default function GamePickCard({
                   onChange={(e) => setWagerAmount(e.target.value)}
                   className="pl-10"
                   min="1"
-                  max={userBalance.gc}
+                  max={props.isSportsBetting ? userBalance.sc : userBalance.gc}
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
-                <span>Available: {userBalance.gc.toLocaleString()} GC</span>
-                <span>Minimum: 1 GC</span>
+                <span>Available: {props.isSportsBetting ? userBalance.sc.toLocaleString() + ' SC' : userBalance.gc.toLocaleString() + ' GC'}</span>
+                <span>Minimum: {props.isSportsBetting ? '1 SC' : '1 GC'}</span>
               </div>
             </div>
 
             {/* Quick Bet Amounts */}
             <div className="flex gap-2">
-              {[100, 500, 1000, 5000].map((amount) => (
-                <Button
-                  key={amount}
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setWagerAmount(amount.toString())}
-                  disabled={amount > userBalance.gc}
-                  className="text-xs"
-                >
-                  {amount}
-                </Button>
-              ))}
+              {props.isSportsBetting ?
+                [1, 5, 10, 25].map((amount) => (
+                  <Button
+                    key={amount}
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setWagerAmount(amount.toString())}
+                    disabled={amount > userBalance.sc}
+                    className="text-xs"
+                  >
+                    {amount} SC
+                  </Button>
+                )) :
+                [100, 500, 1000, 5000].map((amount) => (
+                  <Button
+                    key={amount}
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setWagerAmount(amount.toString())}
+                    disabled={amount > userBalance.gc}
+                    className="text-xs"
+                  >
+                    {amount}
+                  </Button>
+                ))
+              }
             </div>
           </div>
         )}
@@ -321,11 +342,11 @@ export default function GamePickCard({
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium">Potential Payout:</span>
               <span className="text-2xl font-bold text-green-400">
-                {pickCard.potentialPayout.toLocaleString()} GC
+                {pickCard.potentialPayout.toLocaleString()} {props.isSportsBetting ? 'SC' : 'GC'}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Wager: {pickCard.wagerAmount.toLocaleString()} GC</span>
+              <span>Wager: {pickCard.wagerAmount.toLocaleString()} {props.isSportsBetting ? 'SC' : 'GC'}</span>
               <span>Multiplier: {pickCard.multiplier}x</span>
             </div>
             {pickCard.picks.length > 1 && (
@@ -344,14 +365,14 @@ export default function GamePickCard({
               onClick={handlePlaceBet}
               disabled={
                 !canPlaceBet() &&
-                (parseFloat(wagerAmount) || 0) <= userBalance.gc
+                (parseFloat(wagerAmount) || 0) <= (props.isSportsBetting ? userBalance.sc : userBalance.gc)
               }
               className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold"
             >
-              {(parseFloat(wagerAmount) || 0) > userBalance.gc ? (
+              {(parseFloat(wagerAmount) || 0) > (props.isSportsBetting ? userBalance.sc : userBalance.gc) ? (
                 <>
                   <Plus className="w-4 h-4 mr-2" />
-                  Buy More Coins
+                  {props.isSportsBetting ? 'Buy More SC' : 'Buy More Coins'}
                 </>
               ) : (
                 <>
@@ -384,7 +405,7 @@ export default function GamePickCard({
               <div className="flex items-center justify-center gap-2 text-green-500">
                 <Trophy className="w-4 h-4" />
                 <span>
-                  Winner! Payout: {pickCard.potentialPayout.toLocaleString()} GC
+                  Winner! Payout: {pickCard.potentialPayout.toLocaleString()} {props.isSportsBetting ? 'SC' : 'GC'}
                 </span>
               </div>
             )}

@@ -576,14 +576,12 @@ class SportsDataService {
    * Get live scores and update game status
    */
   async getLiveScores(): Promise<any> {
-    try {
-      // Implementation for live scores would go here
-      // This would typically use WebSocket connections for real-time updates
-      return {};
-    } catch (error) {
-      console.error("Error fetching live scores:", error);
-      return {};
-    }
+    // Return mock live scores data to avoid external API calls
+    // In production, this would connect to live data feeds
+    return {
+      message: "Live scores unavailable in demo mode",
+      games: []
+    };
   }
 }
 

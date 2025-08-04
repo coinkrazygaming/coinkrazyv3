@@ -347,7 +347,7 @@ export default function GamePickCard({
               </span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Wager: {pickCard.wagerAmount.toLocaleString()} {props.isSportsBetting ? 'SC' : 'GC'}</span>
+              <span>Wager: {pickCard.wagerAmount.toLocaleString()} {isSportsBetting ? 'SC' : 'GC'}</span>
               <span>Multiplier: {pickCard.multiplier}x</span>
             </div>
             {pickCard.picks.length > 1 && (

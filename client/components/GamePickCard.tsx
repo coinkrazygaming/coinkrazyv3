@@ -300,8 +300,8 @@ export default function GamePickCard({
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
-                <span>Available: {props.isSportsBetting ? userBalance.sc.toLocaleString() + ' SC' : userBalance.gc.toLocaleString() + ' GC'}</span>
-                <span>Minimum: {props.isSportsBetting ? '1 SC' : '1 GC'}</span>
+                <span>Available: {isSportsBetting ? userBalance.sc.toLocaleString() + ' SC' : userBalance.gc.toLocaleString() + ' GC'}</span>
+                <span>Minimum: {isSportsBetting ? '1 SC' : '1 GC'}</span>
               </div>
             </div>
 

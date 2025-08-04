@@ -192,7 +192,13 @@ export default function PickCards() {
   };
 
   const handlePlaceBet = (card: PickCard) => {
-    if (card.wagerAmount > userBalance.gc) {
+    // For sports betting, check SC balance; otherwise check GC balance
+    const isSportsBetting = card.picks.some(pick =>
+      ['NFL', 'NBA', 'MLB', 'NHL'].includes(pick.sport)
+    );
+    const availableBalance = isSportsBetting ? userBalance.sc : userBalance.gc;
+
+    if (card.wagerAmount > availableBalance) {
       // Insufficient funds - redirect to store
       navigate("/store");
       return;
@@ -273,6 +279,12 @@ export default function PickCards() {
                   {userBalance.gc.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">Gold Coins</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold text-casino-blue">
+                  {userBalance.sc.toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
               </div>
               <Button
                 onClick={createNewCard}
@@ -460,6 +472,9 @@ export default function PickCards() {
                     onRemoveCard={handleRemoveCard}
                     onPlaceBet={handlePlaceBet}
                     onSaveToCart={handleSaveToCart}
+                    isSportsBetting={card.picks.some(pick =>
+                      ['NFL', 'NBA', 'MLB', 'NHL'].includes(pick.sport)
+                    )}
                   />
                 ))}
               </div>

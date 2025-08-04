@@ -168,84 +168,12 @@ export default function Navigation() {
               </Badge>
             </div>
 
-            {/* Wallet Balance (logged in users only) */}
-            {user?.isLoggedIn && walletBalance && (
-              <div className="relative">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowWalletCurrency(!showWalletCurrency)}
-                  className="border-casino-blue text-casino-blue hover:bg-casino-blue/10"
-                >
-                  <Wallet className="w-3 h-3 mr-1" />
-                  {currentCurrency === "USD"
-                    ? formatCurrency(walletBalance.usdBalance, currentCurrency)
-                    : currentCurrency === "BTC"
-                      ? formatCurrency(walletBalance.usdBalance, "BTC")
-                      : formatCurrency(walletBalance.usdBalance, "ETH")}
-                  <ChevronDown className="w-3 h-3 ml-1" />
-                </Button>
-
-                {/* Currency Toggle Dropdown */}
-                {showWalletCurrency && (
-                  <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-lg shadow-lg p-2 min-w-[200px] z-50">
-                    <div className="space-y-2">
-                      <div className="text-xs text-muted-foreground font-medium border-b border-border pb-1">
-                        Wallet Balance
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gold-400">Gold Coins:</span>
-                          <span className="font-medium">
-                            {walletBalance.goldCoins.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-purple-400">Sweeps Coins:</span>
-                          <span className="font-medium">
-                            {walletBalance.sweepsCoins.toFixed(2)} SC
-                          </span>
-                        </div>
-                        <div className="border-t border-border pt-1 mt-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={toggleCurrency}
-                            className="w-full justify-between text-xs"
-                          >
-                            <span>USD Balance:</span>
-                            <span className="font-medium">
-                              {formatCurrency(walletBalance.usdBalance, "USD")}
-                            </span>
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={toggleCurrency}
-                            className="w-full justify-between text-xs"
-                          >
-                            <span>BTC Equivalent:</span>
-                            <span className="font-medium">
-                              {formatCurrency(walletBalance.usdBalance, "BTC")}
-                            </span>
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={toggleCurrency}
-                            className="w-full justify-between text-xs"
-                          >
-                            <span>ETH Equivalent:</span>
-                            <span className="font-medium">
-                              {formatCurrency(walletBalance.usdBalance, "ETH")}
-                            </span>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+            {/* Enhanced Wallet Balance (logged in users only) */}
+            {user?.isLoggedIn && (
+              <WalletBalance
+                userId={user.id || 'user-1'}
+                compact={true}
+              />
             )}
 
             {/* Contact Phone */}

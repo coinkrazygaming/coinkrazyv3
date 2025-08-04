@@ -281,7 +281,7 @@ export default function GamePickCard({
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Wager Amount ({props.isSportsBetting ? 'Sweeps Coins' : 'Gold Coins'})
+                Wager Amount ({isSportsBetting ? 'Sweeps Coins' : 'Gold Coins'})
               </label>
               <div className="relative">
                 {props.isSportsBetting ? (

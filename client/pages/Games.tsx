@@ -508,7 +508,7 @@ export default function Games() {
           onValueChange={setSelectedCategory}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
             <TabsTrigger value="featured">
               <Star className="w-4 h-4 mr-2" />
               Featured
@@ -517,6 +517,10 @@ export default function Games() {
               <Coins className="w-4 h-4 mr-2" />
               Slots
             </TabsTrigger>
+            <TabsTrigger value="table">
+              <Heart className="w-4 h-4 mr-2" />
+              Table Games
+            </TabsTrigger>
             <TabsTrigger value="live">
               <Users className="w-4 h-4 mr-2" />
               Live Games
@@ -524,6 +528,10 @@ export default function Games() {
             <TabsTrigger value="bingo">
               <Target className="w-4 h-4 mr-2" />
               Bingo
+            </TabsTrigger>
+            <TabsTrigger value="mini">
+              <Gamepad2 className="w-4 h-4 mr-2" />
+              Mini Games
             </TabsTrigger>
             <TabsTrigger value="sports">
               <Trophy className="w-4 h-4 mr-2" />

@@ -34,6 +34,8 @@ import TableGames from "@/components/games/TableGames";
 import BingoHall from "@/components/games/BingoHall";
 import MiniGames from "@/components/games/MiniGames";
 import SlotsIntegration from "@/components/games/SlotsIntegration";
+import { playerCountService } from "@/services/playerCountService";
+import { gamesTrackingService, PlatformStats } from "@/services/gamesTrackingService";
 
 // Import the BetSelection interface from the original Sportsbook
 interface BetSelection {
@@ -145,7 +147,7 @@ const slotGames = [
     jackpot: "$234,789",
     players: 356,
     category: "slots",
-    image: "👽",
+    image: "���",
   },
 
   // Custom CoinKrazy games
@@ -266,22 +268,34 @@ export default function Games() {
   const [showBetSlip, setShowBetSlip] = useState(false);
   const [userBalance] = useState({ gc: 125000, sc: 450 });
 
-  // Live updating stats
+  // Real-time stats from services
   const [liveStats, setLiveStats] = useState({
-    totalPlayers: 4567,
-    activeGames: 342,
-    totalPayout: 892847,
+    totalPlayers: 0,
+    activeGames: 0,
+    totalPayout: 0,
   });
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveStats((prev) => ({
-        totalPlayers: prev.totalPlayers + Math.floor(Math.random() * 20) - 10,
-        activeGames: prev.activeGames + Math.floor(Math.random() * 6) - 3,
-        totalPayout: prev.totalPayout + Math.floor(Math.random() * 5000),
+    // Subscribe to real-time player count
+    const unsubscribePlayers = playerCountService.subscribeToPlayerCount((count) => {
+      setLiveStats(prev => ({ ...prev, totalPlayers: count }));
+    });
+
+    // Subscribe to platform stats for games and payouts
+    const unsubscribeStats = gamesTrackingService.subscribeToStats((stats) => {
+      setPlatformStats(stats);
+      setLiveStats(prev => ({
+        ...prev,
+        activeGames: stats.totalGamesAvailable,
+        totalPayout: Math.round(stats.totalSCWonToday * 1000) // Convert SC to USD equivalent
       }));
-    }, 3000);
-    return () => clearInterval(interval);
+    });
+
+    return () => {
+      unsubscribePlayers();
+      unsubscribeStats();
+    };
   }, []);
 
   // Load sports games when sports tab is selected

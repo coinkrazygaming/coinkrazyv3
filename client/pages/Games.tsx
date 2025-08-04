@@ -618,74 +618,9 @@ export default function Games() {
             </div>
           </TabsContent>
 
+          {/* Slots */}
           <TabsContent value="slots" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredGames.map((game) => (
-                <Card
-                  key={game.id}
-                  className="group hover:shadow-xl hover:shadow-gold-500/20 transition-all duration-300 border-border/50 hover:border-gold-500/50 overflow-hidden"
-                >
-                  <div className="relative">
-                    <div className="aspect-video bg-gradient-to-br from-casino-blue/20 to-gold/20 flex items-center justify-center text-6xl">
-                      {game.image}
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-white hover:bg-black/20"
-                      onClick={() => toggleFavorite(game.id)}
-                    >
-                      <Heart
-                        className={`w-4 h-4 ${favorites.includes(game.id) ? "fill-red-500 text-red-500" : ""}`}
-                      />
-                    </Button>
-                  </div>
-
-                  <CardContent className="p-4">
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-gold-400 transition-colors">
-                      {game.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {game.provider}
-                    </p>
-
-                    <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">RTP:</span>
-                        <span className="text-green-400 font-medium">
-                          {game.rtp}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Jackpot:</span>
-                        <span className="text-gold-400 font-bold">
-                          {game.jackpot}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Playing:</span>
-                        <span className="text-casino-blue-light">
-                          {game.players} players
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        className="flex-1 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-                        size="sm"
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Play {currencyMode}
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <SlotsIntegration />
           </TabsContent>
 
           {/* Live Games */}

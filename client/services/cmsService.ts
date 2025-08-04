@@ -9,7 +9,7 @@ export interface CmsPage {
     author: string;
     publishDate: Date;
     lastModified: Date;
-    status: 'draft' | 'published' | 'archived';
+    status: "draft" | "published" | "archived";
     featured: boolean;
     template: string;
   };
@@ -30,13 +30,21 @@ export interface CmsPage {
 
 export interface CmsContent {
   id: string;
-  type: 'text' | 'image' | 'video' | 'component' | 'code' | 'gallery' | 'form' | 'embed';
+  type:
+    | "text"
+    | "image"
+    | "video"
+    | "component"
+    | "code"
+    | "gallery"
+    | "form"
+    | "embed";
   data: any;
   style: {
     className?: string;
     customCSS?: string;
-    layout?: 'full' | 'container' | 'narrow';
-    spacing?: 'none' | 'small' | 'medium' | 'large';
+    layout?: "full" | "container" | "narrow";
+    spacing?: "none" | "small" | "medium" | "large";
   };
   order: number;
   isVisible: boolean;
@@ -47,11 +55,11 @@ export interface CmsTemplate {
   name: string;
   description: string;
   preview: string;
-  category: 'page' | 'component' | 'layout' | 'form';
+  category: "page" | "component" | "layout" | "form";
   structure: CmsContent[];
   variables: {
     [key: string]: {
-      type: 'text' | 'image' | 'color' | 'number' | 'boolean';
+      type: "text" | "image" | "color" | "number" | "boolean";
       default: any;
       label: string;
     };
@@ -100,7 +108,16 @@ export interface CmsForm {
 
 export interface CmsFormField {
   id: string;
-  type: 'text' | 'email' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'file' | 'number' | 'date';
+  type:
+    | "text"
+    | "email"
+    | "textarea"
+    | "select"
+    | "checkbox"
+    | "radio"
+    | "file"
+    | "number"
+    | "date";
   label: string;
   placeholder?: string;
   required: boolean;
@@ -131,7 +148,7 @@ export interface CmsMenuItem {
   icon?: string;
   order: number;
   parentId?: string;
-  target: '_self' | '_blank';
+  target: "_self" | "_blank";
   isVisible: boolean;
   requireAuth: boolean;
   children?: CmsMenuItem[];
@@ -165,7 +182,7 @@ export interface CmsSettings {
   cache: {
     enabled: boolean;
     ttl: number;
-    strategy: 'memory' | 'redis' | 'file';
+    strategy: "memory" | "redis" | "file";
   };
 }
 
@@ -193,118 +210,150 @@ class CmsService {
   private initializeDefaults() {
     // Initialize default settings
     this.settings = {
-      siteName: 'CoinKrazy',
-      siteDescription: 'The Ultimate Sweepstakes Casino Platform',
-      siteUrl: 'https://coinkrazy.com',
-      logo: '/logo.png',
-      favicon: '/favicon.ico',
-      defaultLanguage: 'en',
-      timezone: 'UTC',
+      siteName: "CoinKrazy",
+      siteDescription: "The Ultimate Sweepstakes Casino Platform",
+      siteUrl: "https://coinkrazy.com",
+      logo: "/logo.png",
+      favicon: "/favicon.ico",
+      defaultLanguage: "en",
+      timezone: "UTC",
       maintenance: {
         enabled: false,
-        message: 'Site is under maintenance. Please check back soon.',
-        allowedIPs: []
+        message: "Site is under maintenance. Please check back soon.",
+        allowedIPs: [],
       },
       analytics: {
-        customScripts: []
+        customScripts: [],
       },
       social: {
-        twitter: '@CoinKrazy',
-        discord: 'discord.gg/coinkrazy'
+        twitter: "@CoinKrazy",
+        discord: "discord.gg/coinkrazy",
       },
       cache: {
         enabled: true,
         ttl: 3600,
-        strategy: 'memory'
-      }
+        strategy: "memory",
+      },
     };
 
     // Create default templates
     this.createDefaultTemplates();
-    
+
     // Create default pages
     this.createDefaultPages();
-    
+
     // Setup default navigation
     this.setupDefaultNavigation();
   }
 
   private createDefaultTemplates() {
     const landingPageTemplate: CmsTemplate = {
-      id: 'landing-page',
-      name: 'Landing Page',
-      description: 'Hero section with CTA buttons',
-      preview: '/templates/landing-page.jpg',
-      category: 'page',
+      id: "landing-page",
+      name: "Landing Page",
+      description: "Hero section with CTA buttons",
+      preview: "/templates/landing-page.jpg",
+      category: "page",
       structure: [
         {
-          id: 'hero-section',
-          type: 'component',
+          id: "hero-section",
+          type: "component",
           data: {
-            component: 'HeroSection',
+            component: "HeroSection",
             props: {
-              title: '{{heroTitle}}',
-              subtitle: '{{heroSubtitle}}',
-              backgroundImage: '{{heroBackground}}',
-              ctaText: '{{ctaText}}',
-              ctaUrl: '{{ctaUrl}}'
-            }
+              title: "{{heroTitle}}",
+              subtitle: "{{heroSubtitle}}",
+              backgroundImage: "{{heroBackground}}",
+              ctaText: "{{ctaText}}",
+              ctaUrl: "{{ctaUrl}}",
+            },
           },
-          style: { layout: 'full' },
+          style: { layout: "full" },
           order: 1,
-          isVisible: true
-        }
+          isVisible: true,
+        },
       ],
       variables: {
-        heroTitle: { type: 'text', default: 'Welcome to CoinKrazy', label: 'Hero Title' },
-        heroSubtitle: { type: 'text', default: 'Where Fun Meets Fortune', label: 'Hero Subtitle' },
-        heroBackground: { type: 'image', default: '/hero-bg.jpg', label: 'Background Image' },
-        ctaText: { type: 'text', default: 'Get Started', label: 'CTA Button Text' },
-        ctaUrl: { type: 'text', default: '/register', label: 'CTA Button URL' }
-      }
+        heroTitle: {
+          type: "text",
+          default: "Welcome to CoinKrazy",
+          label: "Hero Title",
+        },
+        heroSubtitle: {
+          type: "text",
+          default: "Where Fun Meets Fortune",
+          label: "Hero Subtitle",
+        },
+        heroBackground: {
+          type: "image",
+          default: "/hero-bg.jpg",
+          label: "Background Image",
+        },
+        ctaText: {
+          type: "text",
+          default: "Get Started",
+          label: "CTA Button Text",
+        },
+        ctaUrl: { type: "text", default: "/register", label: "CTA Button URL" },
+      },
     };
 
     const blogPostTemplate: CmsTemplate = {
-      id: 'blog-post',
-      name: 'Blog Post',
-      description: 'Standard blog post layout',
-      preview: '/templates/blog-post.jpg',
-      category: 'page',
+      id: "blog-post",
+      name: "Blog Post",
+      description: "Standard blog post layout",
+      preview: "/templates/blog-post.jpg",
+      category: "page",
       structure: [
         {
-          id: 'post-header',
-          type: 'component',
+          id: "post-header",
+          type: "component",
           data: {
-            component: 'PostHeader',
+            component: "PostHeader",
             props: {
-              title: '{{postTitle}}',
-              author: '{{author}}',
-              publishDate: '{{publishDate}}',
-              featuredImage: '{{featuredImage}}'
-            }
+              title: "{{postTitle}}",
+              author: "{{author}}",
+              publishDate: "{{publishDate}}",
+              featuredImage: "{{featuredImage}}",
+            },
           },
-          style: { layout: 'container' },
+          style: { layout: "container" },
           order: 1,
-          isVisible: true
+          isVisible: true,
         },
         {
-          id: 'post-content',
-          type: 'text',
+          id: "post-content",
+          type: "text",
           data: {
-            content: '{{postContent}}'
+            content: "{{postContent}}",
           },
-          style: { layout: 'narrow' },
+          style: { layout: "narrow" },
           order: 2,
-          isVisible: true
-        }
+          isVisible: true,
+        },
       ],
       variables: {
-        postTitle: { type: 'text', default: 'Blog Post Title', label: 'Post Title' },
-        author: { type: 'text', default: 'Admin', label: 'Author' },
-        publishDate: { type: 'text', default: new Date().toISOString(), label: 'Publish Date' },
-        featuredImage: { type: 'image', default: '/blog-featured.jpg', label: 'Featured Image' },
-        postContent: { type: 'text', default: 'Blog post content goes here...', label: 'Post Content' }
-      }
+        postTitle: {
+          type: "text",
+          default: "Blog Post Title",
+          label: "Post Title",
+        },
+        author: { type: "text", default: "Admin", label: "Author" },
+        publishDate: {
+          type: "text",
+          default: new Date().toISOString(),
+          label: "Publish Date",
+        },
+        featuredImage: {
+          type: "image",
+          default: "/blog-featured.jpg",
+          label: "Featured Image",
+        },
+        postContent: {
+          type: "text",
+          default: "Blog post content goes here...",
+          label: "Post Content",
+        },
+      },
     };
 
     this.templates.set(landingPageTemplate.id, landingPageTemplate);
@@ -313,48 +362,50 @@ class CmsService {
 
   private createDefaultPages() {
     const homePage: CmsPage = {
-      id: 'home',
-      title: 'Home',
-      slug: '/',
+      id: "home",
+      title: "Home",
+      slug: "/",
       content: [
         {
-          id: 'hero-1',
-          type: 'component',
+          id: "hero-1",
+          type: "component",
           data: {
-            component: 'HeroSection',
+            component: "HeroSection",
             props: {
-              title: 'CoinKrazy - Where Fun Meets Fortune',
-              subtitle: 'Experience the ultimate sweepstakes casino',
-              ctaText: 'Play Now',
-              ctaUrl: '/games'
-            }
+              title: "CoinKrazy - Where Fun Meets Fortune",
+              subtitle: "Experience the ultimate sweepstakes casino",
+              ctaText: "Play Now",
+              ctaUrl: "/games",
+            },
           },
-          style: { layout: 'full', spacing: 'none' },
+          style: { layout: "full", spacing: "none" },
           order: 1,
-          isVisible: true
-        }
+          isVisible: true,
+        },
       ],
       metadata: {
-        description: 'CoinKrazy - The ultimate sweepstakes casino platform with real cash prizes',
-        keywords: ['casino', 'sweepstakes', 'games', 'prizes'],
-        author: 'CoinKrazy Team',
+        description:
+          "CoinKrazy - The ultimate sweepstakes casino platform with real cash prizes",
+        keywords: ["casino", "sweepstakes", "games", "prizes"],
+        author: "CoinKrazy Team",
         publishDate: new Date(),
         lastModified: new Date(),
-        status: 'published',
+        status: "published",
         featured: true,
-        template: 'landing-page'
+        template: "landing-page",
       },
       seo: {
-        metaTitle: 'CoinKrazy - Ultimate Sweepstakes Casino',
-        metaDescription: 'Play casino games and win real cash prizes at CoinKrazy',
-        ogImage: '/og-image.jpg'
+        metaTitle: "CoinKrazy - Ultimate Sweepstakes Casino",
+        metaDescription:
+          "Play casino games and win real cash prizes at CoinKrazy",
+        ogImage: "/og-image.jpg",
       },
       settings: {
         showInNavigation: true,
         requireAuth: false,
         allowComments: false,
-        enableLiveChat: true
-      }
+        enableLiveChat: true,
+      },
     };
 
     this.pages.set(homePage.id, homePage);
@@ -363,51 +414,55 @@ class CmsService {
   private setupDefaultNavigation() {
     this.navigation = [
       {
-        id: 'nav-home',
-        label: 'Home',
-        url: '/',
+        id: "nav-home",
+        label: "Home",
+        url: "/",
         order: 1,
-        target: '_self',
+        target: "_self",
         isVisible: true,
-        requireAuth: false
+        requireAuth: false,
       },
       {
-        id: 'nav-games',
-        label: 'Games',
-        url: '/games',
+        id: "nav-games",
+        label: "Games",
+        url: "/games",
         order: 2,
-        target: '_self',
+        target: "_self",
         isVisible: true,
-        requireAuth: false
+        requireAuth: false,
       },
       {
-        id: 'nav-store',
-        label: 'Store',
-        url: '/store',
+        id: "nav-store",
+        label: "Store",
+        url: "/store",
         order: 3,
-        target: '_self',
+        target: "_self",
         isVisible: true,
-        requireAuth: false
-      }
+        requireAuth: false,
+      },
     ];
   }
 
   // Page Management
-  createPage(pageData: Omit<CmsPage, 'id' | 'metadata'> & { metadata?: Partial<CmsPage['metadata']> }): string {
+  createPage(
+    pageData: Omit<CmsPage, "id" | "metadata"> & {
+      metadata?: Partial<CmsPage["metadata"]>;
+    },
+  ): string {
     const id = `page-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const page: CmsPage = {
       ...pageData,
       id,
       metadata: {
-        description: pageData.metadata?.description || '',
+        description: pageData.metadata?.description || "",
         keywords: pageData.metadata?.keywords || [],
-        author: pageData.metadata?.author || 'Admin',
+        author: pageData.metadata?.author || "Admin",
         publishDate: pageData.metadata?.publishDate || new Date(),
         lastModified: new Date(),
-        status: pageData.metadata?.status || 'draft',
+        status: pageData.metadata?.status || "draft",
         featured: pageData.metadata?.featured || false,
-        template: pageData.metadata?.template || 'default'
-      }
+        template: pageData.metadata?.template || "default",
+      },
     };
 
     this.pages.set(id, page);
@@ -425,8 +480,8 @@ class CmsService {
       metadata: {
         ...page.metadata,
         ...updates.metadata,
-        lastModified: new Date()
-      }
+        lastModified: new Date(),
+      },
     };
 
     this.pages.set(id, updatedPage);
@@ -447,21 +502,24 @@ class CmsService {
   }
 
   getPageBySlug(slug: string): CmsPage | undefined {
-    return Array.from(this.pages.values()).find(page => page.slug === slug);
+    return Array.from(this.pages.values()).find((page) => page.slug === slug);
   }
 
   getAllPages(): CmsPage[] {
-    return Array.from(this.pages.values()).sort((a, b) => 
-      b.metadata.lastModified.getTime() - a.metadata.lastModified.getTime()
+    return Array.from(this.pages.values()).sort(
+      (a, b) =>
+        b.metadata.lastModified.getTime() - a.metadata.lastModified.getTime(),
     );
   }
 
   getPublishedPages(): CmsPage[] {
-    return this.getAllPages().filter(page => page.metadata.status === 'published');
+    return this.getAllPages().filter(
+      (page) => page.metadata.status === "published",
+    );
   }
 
   // Template Management
-  createTemplate(template: Omit<CmsTemplate, 'id'>): string {
+  createTemplate(template: Omit<CmsTemplate, "id">): string {
     const id = `template-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     this.templates.set(id, { ...template, id });
     this.notifyListeners();
@@ -477,7 +535,7 @@ class CmsService {
   }
 
   // Asset Management
-  uploadAsset(file: File, folder: string = 'uploads'): Promise<CmsAsset> {
+  uploadAsset(file: File, folder: string = "uploads"): Promise<CmsAsset> {
     return new Promise((resolve) => {
       // Simulate file upload
       const asset: CmsAsset = {
@@ -489,11 +547,11 @@ class CmsService {
         url: URL.createObjectURL(file),
         folder,
         uploadDate: new Date(),
-        uploadedBy: 'admin',
-        metadata: {}
+        uploadedBy: "admin",
+        metadata: {},
       };
 
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         const img = new Image();
         img.onload = () => {
           asset.metadata.width = img.width;
@@ -518,7 +576,7 @@ class CmsService {
 
   getAllAssets(folder?: string): CmsAsset[] {
     const assets = Array.from(this.assets.values());
-    return folder ? assets.filter(asset => asset.folder === folder) : assets;
+    return folder ? assets.filter((asset) => asset.folder === folder) : assets;
   }
 
   deleteAsset(id: string): boolean {
@@ -530,14 +588,16 @@ class CmsService {
   }
 
   // Form Management
-  createForm(formData: Omit<CmsForm, 'id' | 'submissions' | 'createdAt' | 'updatedAt'>): string {
+  createForm(
+    formData: Omit<CmsForm, "id" | "submissions" | "createdAt" | "updatedAt">,
+  ): string {
     const id = `form-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const form: CmsForm = {
       ...formData,
       id,
       submissions: [],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.forms.set(id, form);
@@ -554,7 +614,7 @@ class CmsService {
       formId,
       data,
       submittedAt: new Date(),
-      processed: false
+      processed: false,
     };
 
     form.submissions.push(submission);
@@ -593,12 +653,13 @@ class CmsService {
   // Search and Analytics
   searchContent(query: string): CmsPage[] {
     const lowercaseQuery = query.toLowerCase();
-    return this.getAllPages().filter(page => 
-      page.title.toLowerCase().includes(lowercaseQuery) ||
-      page.metadata.description.toLowerCase().includes(lowercaseQuery) ||
-      page.content.some(content => 
-        JSON.stringify(content.data).toLowerCase().includes(lowercaseQuery)
-      )
+    return this.getAllPages().filter(
+      (page) =>
+        page.title.toLowerCase().includes(lowercaseQuery) ||
+        page.metadata.description.toLowerCase().includes(lowercaseQuery) ||
+        page.content.some((content) =>
+          JSON.stringify(content.data).toLowerCase().includes(lowercaseQuery),
+        ),
     );
   }
 
@@ -611,10 +672,15 @@ class CmsService {
     totalFormSubmissions: number;
   } {
     const pages = this.getAllPages();
-    const publishedPages = pages.filter(p => p.metadata.status === 'published');
-    const draftPages = pages.filter(p => p.metadata.status === 'draft');
+    const publishedPages = pages.filter(
+      (p) => p.metadata.status === "published",
+    );
+    const draftPages = pages.filter((p) => p.metadata.status === "draft");
     const forms = this.getAllForms();
-    const totalSubmissions = forms.reduce((sum, form) => sum + form.submissions.length, 0);
+    const totalSubmissions = forms.reduce(
+      (sum, form) => sum + form.submissions.length,
+      0,
+    );
 
     return {
       totalPages: pages.length,
@@ -622,7 +688,7 @@ class CmsService {
       draftPages: draftPages.length,
       totalAssets: this.assets.size,
       totalForms: forms.length,
-      totalFormSubmissions: totalSubmissions
+      totalFormSubmissions: totalSubmissions,
     };
   }
 
@@ -633,7 +699,7 @@ class CmsService {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(callback => callback());
+    this.listeners.forEach((callback) => callback());
   }
 
   // Export/Import
@@ -651,22 +717,24 @@ class CmsService {
       assets: this.getAllAssets(),
       forms: this.getAllForms(),
       navigation: this.getNavigation(),
-      settings: this.getSettings()
+      settings: this.getSettings(),
     };
   }
 
   importData(data: Partial<ReturnType<typeof this.exportData>>): void {
     if (data.pages) {
-      data.pages.forEach(page => this.pages.set(page.id, page));
+      data.pages.forEach((page) => this.pages.set(page.id, page));
     }
     if (data.templates) {
-      data.templates.forEach(template => this.templates.set(template.id, template));
+      data.templates.forEach((template) =>
+        this.templates.set(template.id, template),
+      );
     }
     if (data.assets) {
-      data.assets.forEach(asset => this.assets.set(asset.id, asset));
+      data.assets.forEach((asset) => this.assets.set(asset.id, asset));
     }
     if (data.forms) {
-      data.forms.forEach(form => this.forms.set(form.id, form));
+      data.forms.forEach((form) => this.forms.set(form.id, form));
     }
     if (data.navigation) {
       this.navigation = data.navigation;

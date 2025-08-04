@@ -35,7 +35,10 @@ import BingoHall from "@/components/games/BingoHall";
 import MiniGames from "@/components/games/MiniGames";
 import SlotsIntegration from "@/components/games/SlotsIntegration";
 import { playerCountService } from "@/services/playerCountService";
-import { gamesTrackingService, PlatformStats } from "@/services/gamesTrackingService";
+import {
+  gamesTrackingService,
+  PlatformStats,
+} from "@/services/gamesTrackingService";
 
 // Import the BetSelection interface from the original Sportsbook
 interface BetSelection {
@@ -274,21 +277,25 @@ export default function Games() {
     activeGames: 0,
     totalPayout: 0,
   });
-  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(
+    null,
+  );
 
   useEffect(() => {
     // Subscribe to real-time player count
-    const unsubscribePlayers = playerCountService.subscribeToPlayerCount((count) => {
-      setLiveStats(prev => ({ ...prev, totalPlayers: count }));
-    });
+    const unsubscribePlayers = playerCountService.subscribeToPlayerCount(
+      (count) => {
+        setLiveStats((prev) => ({ ...prev, totalPlayers: count }));
+      },
+    );
 
     // Subscribe to platform stats for games and payouts
     const unsubscribeStats = gamesTrackingService.subscribeToStats((stats) => {
       setPlatformStats(stats);
-      setLiveStats(prev => ({
+      setLiveStats((prev) => ({
         ...prev,
         activeGames: stats.totalGamesAvailable,
-        totalPayout: Math.round(stats.totalSCWonToday * 1000) // Convert SC to USD equivalent
+        totalPayout: Math.round(stats.totalSCWonToday * 1000), // Convert SC to USD equivalent
       }));
     });
 
@@ -756,10 +763,13 @@ export default function Games() {
             <div className="mb-6 p-4 bg-casino-blue/10 border border-casino-blue/20 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="w-5 h-5 text-casino-blue" />
-                <span className="font-bold text-casino-blue">Sports Betting - Sweeps Coins Only</span>
+                <span className="font-bold text-casino-blue">
+                  Sports Betting - Sweeps Coins Only
+                </span>
               </div>
               <p className="text-sm text-muted-foreground">
-                All sports bets must be placed using Sweeps Coins (SC). Win real cash prizes with successful predictions!
+                All sports bets must be placed using Sweeps Coins (SC). Win real
+                cash prizes with successful predictions!
               </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

@@ -93,7 +93,7 @@ const CmsManagement: React.FC = () => {
 
   useEffect(() => {
     loadCmsData();
-    
+
     // Subscribe to CMS updates
     const unsubscribe = cmsService.subscribe(() => {
       loadCmsData();
@@ -152,7 +152,9 @@ const CmsManagement: React.FC = () => {
     });
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (!files) return;
 
@@ -163,13 +165,16 @@ const CmsManagement: React.FC = () => {
         console.error("Error uploading file:", error);
       }
     }
-    
+
     loadCmsData();
   };
 
-  const filteredPages = pages.filter(page =>
-    page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    page.metadata.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPages = pages.filter(
+    (page) =>
+      page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      page.metadata.description
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   const getStatusColor = (status: string) => {
@@ -241,7 +246,7 @@ const CmsManagement: React.FC = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="page-description">Description</Label>
                   <Textarea
@@ -259,7 +264,7 @@ const CmsManagement: React.FC = () => {
                     placeholder="Enter page description"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="page-status">Status</Label>
@@ -308,19 +313,22 @@ const CmsManagement: React.FC = () => {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreatePageOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreatePageOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button onClick={handleCreatePage}>Create Page</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          
+
           <Button variant="outline">
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          
+
           <Button variant="outline" onClick={() => setIsSettingsOpen(true)}>
             <Settings className="w-4 h-4 mr-2" />
             Settings
@@ -336,7 +344,9 @@ const CmsManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Pages</p>
-                  <p className="text-2xl font-bold">{contentStats.totalPages}</p>
+                  <p className="text-2xl font-bold">
+                    {contentStats.totalPages}
+                  </p>
                 </div>
                 <FileText className="w-8 h-8 text-blue-500" />
               </div>
@@ -348,7 +358,9 @@ const CmsManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Published</p>
-                  <p className="text-2xl font-bold">{contentStats.publishedPages}</p>
+                  <p className="text-2xl font-bold">
+                    {contentStats.publishedPages}
+                  </p>
                 </div>
                 <Globe className="w-8 h-8 text-green-500" />
               </div>
@@ -360,7 +372,9 @@ const CmsManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Drafts</p>
-                  <p className="text-2xl font-bold">{contentStats.draftPages}</p>
+                  <p className="text-2xl font-bold">
+                    {contentStats.draftPages}
+                  </p>
                 </div>
                 <Edit className="w-8 h-8 text-yellow-500" />
               </div>
@@ -372,7 +386,9 @@ const CmsManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Assets</p>
-                  <p className="text-2xl font-bold">{contentStats.totalAssets}</p>
+                  <p className="text-2xl font-bold">
+                    {contentStats.totalAssets}
+                  </p>
                 </div>
                 <Image className="w-8 h-8 text-purple-500" />
               </div>
@@ -384,7 +400,9 @@ const CmsManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Forms</p>
-                  <p className="text-2xl font-bold">{contentStats.totalForms}</p>
+                  <p className="text-2xl font-bold">
+                    {contentStats.totalForms}
+                  </p>
                 </div>
                 <Layout className="w-8 h-8 text-orange-500" />
               </div>
@@ -396,7 +414,9 @@ const CmsManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Submissions</p>
-                  <p className="text-2xl font-bold">{contentStats.totalFormSubmissions}</p>
+                  <p className="text-2xl font-bold">
+                    {contentStats.totalFormSubmissions}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-red-500" />
               </div>
@@ -480,12 +500,13 @@ const CmsManagement: React.FC = () => {
                             {page.metadata.status}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            Last modified: {page.metadata.lastModified.toLocaleDateString()}
+                            Last modified:{" "}
+                            {page.metadata.lastModified.toLocaleDateString()}
                           </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <Button variant="outline" size="sm">
                         <Eye className="w-3 h-3" />
@@ -493,8 +514,8 @@ const CmsManagement: React.FC = () => {
                       <Button variant="outline" size="sm">
                         <Edit className="w-3 h-3" />
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDeletePage(page.id)}
                       >
@@ -542,7 +563,7 @@ const CmsManagement: React.FC = () => {
                     key={asset.id}
                     className="relative group border border-border/50 rounded-lg overflow-hidden hover:border-border transition-colors"
                   >
-                    {asset.mimeType.startsWith('image/') ? (
+                    {asset.mimeType.startsWith("image/") ? (
                       <img
                         src={asset.url}
                         alt={asset.alt || asset.originalName}
@@ -554,7 +575,9 @@ const CmsManagement: React.FC = () => {
                       </div>
                     )}
                     <div className="p-2">
-                      <p className="text-xs font-medium truncate">{asset.originalName}</p>
+                      <p className="text-xs font-medium truncate">
+                        {asset.originalName}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {(asset.size / 1024).toFixed(1)} KB
                       </p>
@@ -679,7 +702,9 @@ const CmsManagement: React.FC = () => {
             <CardContent>
               <div className="text-center py-8">
                 <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  Analytics Dashboard
+                </h3>
                 <p className="text-muted-foreground">
                   Track page views, user engagement, and content performance
                 </p>
@@ -707,7 +732,7 @@ const CmsManagement: React.FC = () => {
                   <TabsTrigger value="analytics">Analytics</TabsTrigger>
                   <TabsTrigger value="social">Social</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="general" className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -724,19 +749,19 @@ const CmsManagement: React.FC = () => {
                     <Textarea value={settings.siteDescription} readOnly />
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="seo" className="space-y-4">
                   <p className="text-muted-foreground">
                     SEO settings and meta tag configuration
                   </p>
                 </TabsContent>
-                
+
                 <TabsContent value="analytics" className="space-y-4">
                   <p className="text-muted-foreground">
                     Analytics and tracking configuration
                   </p>
                 </TabsContent>
-                
+
                 <TabsContent value="social" className="space-y-4">
                   <div className="space-y-4">
                     <div>

@@ -27,18 +27,28 @@ export default function SweepstakesRules() {
               <h1 className="text-4xl font-bold">Official Sweepstakes Rules</h1>
             </div>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Complete terms, conditions, and legal information for CoinKrazy sweepstakes contests
+              Complete terms, conditions, and legal information for CoinKrazy
+              sweepstakes contests
             </p>
             <div className="flex items-center justify-center gap-4">
-              <Badge variant="outline" className="border-green-500 text-green-400">
+              <Badge
+                variant="outline"
+                className="border-green-500 text-green-400"
+              >
                 <CheckCircle className="w-3 h-3 mr-1" />
                 Legally Compliant
               </Badge>
-              <Badge variant="outline" className="border-blue-500 text-blue-400">
+              <Badge
+                variant="outline"
+                className="border-blue-500 text-blue-400"
+              >
                 <Shield className="w-3 h-3 mr-1" />
                 18+ Only
               </Badge>
-              <Badge variant="outline" className="border-gold-500 text-gold-400">
+              <Badge
+                variant="outline"
+                className="border-gold-500 text-gold-400"
+              >
                 <Globe className="w-3 h-3 mr-1" />
                 US Residents Only
               </Badge>
@@ -68,9 +78,10 @@ export default function SweepstakesRules() {
           </CardHeader>
           <CardContent>
             <p className="text-amber-300">
-              Please read these sweepstakes rules carefully. By participating in any CoinKrazy sweepstakes, 
-              you agree to be bound by these terms and conditions. These rules are legally binding and 
-              enforceable under applicable state and federal laws.
+              Please read these sweepstakes rules carefully. By participating in
+              any CoinKrazy sweepstakes, you agree to be bound by these terms
+              and conditions. These rules are legally binding and enforceable
+              under applicable state and federal laws.
             </p>
           </CardContent>
         </Card>
@@ -78,7 +89,6 @@ export default function SweepstakesRules() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            
             {/* Eligibility */}
             <Card>
               <CardHeader>
@@ -93,37 +103,58 @@ export default function SweepstakesRules() {
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Legal residents of the United States (excluding restricted states)</span>
+                      <span>
+                        Legal residents of the United States (excluding
+                        restricted states)
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Must be 18 years of age or older at time of entry</span>
+                      <span>
+                        Must be 18 years of age or older at time of entry
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Must provide valid government-issued identification for verification</span>
+                      <span>
+                        Must provide valid government-issued identification for
+                        verification
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>One account per person, household, IP address, and device</span>
+                      <span>
+                        One account per person, household, IP address, and
+                        device
+                      </span>
                     </li>
                   </ul>
                 </div>
-                
+
                 <div className="space-y-3 pt-4 border-t border-border">
-                  <h4 className="font-semibold text-red-400">Restricted Participants:</h4>
+                  <h4 className="font-semibold text-red-400">
+                    Restricted Participants:
+                  </h4>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-                      <span>Employees of CoinKrazy and their immediate family members</span>
+                      <span>
+                        Employees of CoinKrazy and their immediate family
+                        members
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-                      <span>Residents of Idaho, Montana, Nevada, and Washington</span>
+                      <span>
+                        Residents of Idaho, Montana, Nevada, and Washington
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-                      <span>Anyone with a gambling addiction or self-excluded individuals</span>
+                      <span>
+                        Anyone with a gambling addiction or self-excluded
+                        individuals
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -143,7 +174,9 @@ export default function SweepstakesRules() {
                   <h4 className="font-semibold">Two Currency System:</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 border border-gold-500/30 rounded-lg bg-gold-500/5">
-                      <h5 className="font-medium text-gold-400 mb-2">Gold Coins (GC)</h5>
+                      <h5 className="font-medium text-gold-400 mb-2">
+                        Gold Coins (GC)
+                      </h5>
                       <ul className="text-sm space-y-1">
                         <li>• Virtual currency for entertainment</li>
                         <li>• Cannot be redeemed for cash</li>
@@ -152,7 +185,9 @@ export default function SweepstakesRules() {
                       </ul>
                     </div>
                     <div className="p-4 border border-purple-500/30 rounded-lg bg-purple-500/5">
-                      <h5 className="font-medium text-purple-400 mb-2">Sweeps Coins (SC)</h5>
+                      <h5 className="font-medium text-purple-400 mb-2">
+                        Sweeps Coins (SC)
+                      </h5>
                       <ul className="text-sm space-y-1">
                         <li>• Sweepstakes entry tokens</li>
                         <li>• Can be redeemed for cash prizes</li>
@@ -166,8 +201,10 @@ export default function SweepstakesRules() {
                 <div className="space-y-3 pt-4 border-t border-border">
                   <h4 className="font-semibold">No Purchase Necessary:</h4>
                   <p className="text-sm text-muted-foreground">
-                    Sweeps Coins can be obtained through daily bonuses, mail-in requests, social media promotions, 
-                    and other free methods. Purchase of Gold Coins is not required to participate in sweepstakes.
+                    Sweeps Coins can be obtained through daily bonuses, mail-in
+                    requests, social media promotions, and other free methods.
+                    Purchase of Gold Coins is not required to participate in
+                    sweepstakes.
                   </p>
                 </div>
               </CardContent>
@@ -187,19 +224,27 @@ export default function SweepstakesRules() {
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Minimum redemption: $100 USD (equivalent Sweeps Coins)</span>
+                      <span>
+                        Minimum redemption: $100 USD (equivalent Sweeps Coins)
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Identity verification required before first redemption</span>
+                      <span>
+                        Identity verification required before first redemption
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Processing time: 3-7 business days after approval</span>
+                      <span>
+                        Processing time: 3-7 business days after approval
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Available methods: Bank transfer, PayPal, check by mail</span>
+                      <span>
+                        Available methods: Bank transfer, PayPal, check by mail
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -213,7 +258,9 @@ export default function SweepstakesRules() {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>Available: Amazon, Visa, Mastercard, PlayStation, Xbox</span>
+                      <span>
+                        Available: Amazon, Visa, Mastercard, PlayStation, Xbox
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -237,20 +284,38 @@ export default function SweepstakesRules() {
                   <h4 className="font-semibold">General Conditions:</h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li>• Sweepstakes void where prohibited by law</li>
-                    <li>• All federal, state, and local taxes are the responsibility of winners</li>
-                    <li>• CoinKrazy reserves the right to verify eligibility and disqualify fraudulent entries</li>
-                    <li>• Prizes are non-transferable and cannot be substituted</li>
-                    <li>• Winners may be required to complete affidavit of eligibility</li>
-                    <li>• CoinKrazy is not responsible for technical malfunctions or errors</li>
-                    <li>• Participation constitutes agreement to these official rules</li>
+                    <li>
+                      • All federal, state, and local taxes are the
+                      responsibility of winners
+                    </li>
+                    <li>
+                      • CoinKrazy reserves the right to verify eligibility and
+                      disqualify fraudulent entries
+                    </li>
+                    <li>
+                      • Prizes are non-transferable and cannot be substituted
+                    </li>
+                    <li>
+                      • Winners may be required to complete affidavit of
+                      eligibility
+                    </li>
+                    <li>
+                      • CoinKrazy is not responsible for technical malfunctions
+                      or errors
+                    </li>
+                    <li>
+                      • Participation constitutes agreement to these official
+                      rules
+                    </li>
                   </ul>
                 </div>
 
                 <div className="space-y-3 pt-4 border-t border-border">
                   <h4 className="font-semibold">Dispute Resolution:</h4>
                   <p className="text-sm text-muted-foreground">
-                    Any disputes arising from these sweepstakes will be resolved through binding arbitration 
-                    in accordance with the laws of the state of Delaware. Participants waive the right to 
+                    Any disputes arising from these sweepstakes will be resolved
+                    through binding arbitration in accordance with the laws of
+                    the state of Delaware. Participants waive the right to
                     participate in class action lawsuits.
                   </p>
                 </div>
@@ -268,21 +333,32 @@ export default function SweepstakesRules() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Minimum Age:</span>
+                    <span className="text-sm text-muted-foreground">
+                      Minimum Age:
+                    </span>
                     <Badge variant="outline">18+</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Purchase Required:</span>
-                    <Badge variant="outline" className="text-green-400 border-green-500">
+                    <span className="text-sm text-muted-foreground">
+                      Purchase Required:
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-green-400 border-green-500"
+                    >
                       No
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Min Redemption:</span>
+                    <span className="text-sm text-muted-foreground">
+                      Min Redemption:
+                    </span>
                     <Badge variant="outline">$25</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Max Processing:</span>
+                    <span className="text-sm text-muted-foreground">
+                      Max Processing:
+                    </span>
                     <Badge variant="outline">7 Days</Badge>
                   </div>
                 </div>
@@ -302,17 +378,23 @@ export default function SweepstakesRules() {
                   </div>
                   <div>
                     <p className="font-medium">Prize Support:</p>
-                    <p className="text-muted-foreground">prizes@coinkrazy.com</p>
+                    <p className="text-muted-foreground">
+                      prizes@coinkrazy.com
+                    </p>
                   </div>
                   <div>
                     <p className="font-medium">General Support:</p>
-                    <p className="text-muted-foreground">support@coinkrazy.com</p>
+                    <p className="text-muted-foreground">
+                      support@coinkrazy.com
+                    </p>
                   </div>
                   <div>
                     <p className="font-medium">Mail-in Requests:</p>
                     <p className="text-muted-foreground text-xs">
-                      CoinKrazy Sweepstakes<br />
-                      123 Gaming Street<br />
+                      CoinKrazy Sweepstakes
+                      <br />
+                      123 Gaming Street
+                      <br />
                       Las Vegas, NV 89101
                     </p>
                   </div>
@@ -351,11 +433,13 @@ export default function SweepstakesRules() {
           <CardContent className="p-6">
             <div className="text-center space-y-2">
               <p className="text-sm font-medium text-blue-400">
-                For complete terms and conditions, please review our Privacy Policy and Terms of Service.
+                For complete terms and conditions, please review our Privacy
+                Policy and Terms of Service.
               </p>
               <p className="text-xs text-muted-foreground">
-                CoinKrazy operates under applicable sweepstakes laws and regulations. 
-                We are committed to fair play and responsible gaming.
+                CoinKrazy operates under applicable sweepstakes laws and
+                regulations. We are committed to fair play and responsible
+                gaming.
               </p>
             </div>
           </CardContent>

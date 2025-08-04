@@ -23,6 +23,7 @@ import {
 import { playerCountService } from "../services/playerCountService";
 import RealTimePlayerCount from "@/components/RealTimePlayerCount";
 import { gamesTrackingService, PlatformStats } from "../services/gamesTrackingService";
+import Logo from "@/components/ui/Logo";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
@@ -121,6 +122,9 @@ export default function Index() {
           <div className="text-center space-y-8">
             {/* Logo & Tagline */}
             <div className="space-y-4">
+              <div className="flex items-center justify-center mb-4">
+                <Logo size="xl" showText={false} />
+              </div>
               <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 bg-clip-text text-transparent">
                 CoinKrazy
               </h1>

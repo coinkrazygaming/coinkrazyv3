@@ -296,7 +296,7 @@ export default function GamePickCard({
                   onChange={(e) => setWagerAmount(e.target.value)}
                   className="pl-10"
                   min="1"
-                  max={props.isSportsBetting ? userBalance.sc : userBalance.gc}
+                  max={isSportsBetting ? userBalance.sc : userBalance.gc}
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">

@@ -217,8 +217,8 @@ export default function Support() {
         faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }))
-    .filter(category => 
-      !selectedCategory || category.id === selectedCategory
+    .filter(category =>
+      !selectedCategory || selectedCategory === "all" || category.id === selectedCategory
     )
     .filter(category => category.faqs.length > 0);
 

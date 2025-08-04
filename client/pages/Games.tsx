@@ -252,7 +252,7 @@ const bingoRooms = [
 export default function Games() {
   const [selectedCategory, setSelectedCategory] = useState("featured");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currencyMode, setCurrencyMode] = useState<"GC" | "SC">("GC");
+  const [currencyMode, setCurrencyMode] = useState<"GC" | "SC">("SC");
   const [favorites, setFavorites] = useState<number[]>([]);
 
   // Sportsbook state
@@ -776,6 +776,16 @@ export default function Games() {
 
           {/* Sports Betting */}
           <TabsContent value="sports" className="mt-8">
+            {/* Sports betting notice */}
+            <div className="mb-6 p-4 bg-casino-blue/10 border border-casino-blue/20 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="w-5 h-5 text-casino-blue" />
+                <span className="font-bold text-casino-blue">Sports Betting - Sweeps Coins Only</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                All sports bets must be placed using Sweeps Coins (SC). Win real cash prizes with successful predictions!
+              </p>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Main Sports Content */}
               <div className="lg:col-span-3">

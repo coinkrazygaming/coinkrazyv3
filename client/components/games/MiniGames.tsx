@@ -65,7 +65,6 @@ import {
   Info,
   BarChart3,
   Flame,
-  Zap,
   Sparkles,
   Gem,
   Cherry,

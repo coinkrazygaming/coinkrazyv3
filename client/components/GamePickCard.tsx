@@ -307,7 +307,7 @@ export default function GamePickCard({
 
             {/* Quick Bet Amounts */}
             <div className="flex gap-2">
-              {props.isSportsBetting ?
+              {isSportsBetting ?
                 [1, 5, 10, 25].map((amount) => (
                   <Button
                     key={amount}

@@ -104,7 +104,7 @@ export default function GamePickCard({
 
   const canPlaceBet = () => {
     const amount = parseFloat(wagerAmount) || 0;
-    const availableBalance = props.isSportsBetting ? userBalance.sc : userBalance.gc;
+    const availableBalance = isSportsBetting ? userBalance.sc : userBalance.gc;
     return (
       amount > 0 &&
       amount <= availableBalance &&

@@ -343,7 +343,7 @@ export default function GamePickCard({
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium">Potential Payout:</span>
               <span className="text-2xl font-bold text-green-400">
-                {pickCard.potentialPayout.toLocaleString()} {props.isSportsBetting ? 'SC' : 'GC'}
+                {pickCard.potentialPayout.toLocaleString()} {isSportsBetting ? 'SC' : 'GC'}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">

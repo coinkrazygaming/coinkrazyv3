@@ -366,7 +366,7 @@ export default function GamePickCard({
               onClick={handlePlaceBet}
               disabled={
                 !canPlaceBet() &&
-                (parseFloat(wagerAmount) || 0) <= (props.isSportsBetting ? userBalance.sc : userBalance.gc)
+                (parseFloat(wagerAmount) || 0) <= (isSportsBetting ? userBalance.sc : userBalance.gc)
               }
               className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold"
             >

@@ -1,6 +1,6 @@
 export interface BonusConfig {
   id: string;
-  type: 'welcome' | 'deposit' | 'reload' | 'daily' | 'weekly' | 'vip';
+  type: "welcome" | "deposit" | "reload" | "daily" | "weekly" | "vip";
   name: string;
   description: string;
   isActive: boolean;
@@ -27,7 +27,7 @@ export interface UserBonus {
   bonusType: string;
   gcAwarded: number;
   scAwarded: number;
-  status: 'pending' | 'active' | 'completed' | 'expired' | 'forfeited';
+  status: "pending" | "active" | "completed" | "expired" | "forfeited";
   awardedAt: Date;
   expiresAt?: Date;
   wageringRequired: number;
@@ -63,28 +63,28 @@ class BonusService {
   private initializeDefaultBonuses() {
     // Welcome Bonus - 10 GC + 10 SC
     this.createBonus({
-      id: 'welcome-bonus-001',
-      type: 'welcome',
-      name: 'Welcome Bonus',
-      description: 'Get 10 Gold Coins + 10 Sweeps Coins when you sign up!',
+      id: "welcome-bonus-001",
+      type: "welcome",
+      name: "Welcome Bonus",
+      description: "Get 10 Gold Coins + 10 Sweeps Coins when you sign up!",
       isActive: true,
       gcAmount: 10,
       scAmount: 10,
       requirements: {
         maxUses: 1,
         expiryDays: 30,
-        wagering: 1
+        wagering: 1,
       },
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     // First Deposit Bonus - 100% match up to $100
     this.createBonus({
-      id: 'first-deposit-bonus-001',
-      type: 'deposit',
-      name: 'First Deposit Bonus',
-      description: '100% match up to $100 on your first deposit!',
+      id: "first-deposit-bonus-001",
+      type: "deposit",
+      name: "First Deposit Bonus",
+      description: "100% match up to $100 on your first deposit!",
       isActive: true,
       matchPercentage: 100,
       maxAmount: 100,
@@ -92,38 +92,40 @@ class BonusService {
       requirements: {
         maxUses: 1,
         expiryDays: 30,
-        wagering: 10
+        wagering: 10,
       },
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     // Daily Login Bonus
     this.createBonus({
-      id: 'daily-login-bonus-001',
-      type: 'daily',
-      name: 'Daily Login Bonus',
-      description: 'Get free coins every day you log in!',
+      id: "daily-login-bonus-001",
+      type: "daily",
+      name: "Daily Login Bonus",
+      description: "Get free coins every day you log in!",
       isActive: true,
       gcAmount: 1000,
       scAmount: 1,
       cooldownHours: 24,
       requirements: {
         expiryDays: 1,
-        wagering: 1
+        wagering: 1,
       },
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
   }
 
-  createBonus(bonus: Omit<BonusConfig, 'id'> & { id?: string }): string {
-    const id = bonus.id || `bonus-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  createBonus(bonus: Omit<BonusConfig, "id"> & { id?: string }): string {
+    const id =
+      bonus.id ||
+      `bonus-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const fullBonus: BonusConfig = {
       ...bonus,
       id,
       createdAt: bonus.createdAt || new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.bonuses.set(id, fullBonus);
     return id;
@@ -136,7 +138,7 @@ class BonusService {
     const updatedBonus = {
       ...bonus,
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.bonuses.set(id, updatedBonus);
     return true;
@@ -151,17 +153,17 @@ class BonusService {
   }
 
   getAllBonuses(): BonusConfig[] {
-    return Array.from(this.bonuses.values()).sort((a, b) => 
-      b.updatedAt.getTime() - a.updatedAt.getTime()
+    return Array.from(this.bonuses.values()).sort(
+      (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
     );
   }
 
-  getBonusesByType(type: BonusConfig['type']): BonusConfig[] {
-    return this.getAllBonuses().filter(bonus => bonus.type === type);
+  getBonusesByType(type: BonusConfig["type"]): BonusConfig[] {
+    return this.getAllBonuses().filter((bonus) => bonus.type === type);
   }
 
   getActiveBonuses(): BonusConfig[] {
-    return this.getAllBonuses().filter(bonus => bonus.isActive);
+    return this.getAllBonuses().filter((bonus) => bonus.isActive);
   }
 
   async awardBonus(userId: string, bonusId: string): Promise<UserBonus | null> {
@@ -170,9 +172,14 @@ class BonusService {
 
     // Check if user already has this bonus (for max uses)
     const userBonusList = this.userBonuses.get(userId) || [];
-    const existingCount = userBonusList.filter(ub => ub.bonusId === bonusId).length;
-    
-    if (bonus.requirements.maxUses && existingCount >= bonus.requirements.maxUses) {
+    const existingCount = userBonusList.filter(
+      (ub) => ub.bonusId === bonusId,
+    ).length;
+
+    if (
+      bonus.requirements.maxUses &&
+      existingCount >= bonus.requirements.maxUses
+    ) {
       return null;
     }
 
@@ -183,13 +190,16 @@ class BonusService {
       bonusType: bonus.type,
       gcAwarded: bonus.gcAmount || 0,
       scAwarded: bonus.scAmount || 0,
-      status: 'active',
+      status: "active",
       awardedAt: new Date(),
-      expiresAt: bonus.requirements.expiryDays ? 
-        new Date(Date.now() + bonus.requirements.expiryDays * 24 * 60 * 60 * 1000) : 
-        undefined,
-      wageringRequired: (bonus.gcAmount || 0) * (bonus.requirements.wagering || 1),
-      wageringCompleted: 0
+      expiresAt: bonus.requirements.expiryDays
+        ? new Date(
+            Date.now() + bonus.requirements.expiryDays * 24 * 60 * 60 * 1000,
+          )
+        : undefined,
+      wageringRequired:
+        (bonus.gcAmount || 0) * (bonus.requirements.wagering || 1),
+      wageringCompleted: 0,
     };
 
     if (!this.userBonuses.has(userId)) {
@@ -205,9 +215,9 @@ class BonusService {
   }
 
   getActiveBonusesForUser(userId: string): UserBonus[] {
-    return this.getUserBonuses(userId).filter(ub => 
-      ub.status === 'active' && 
-      (!ub.expiresAt || ub.expiresAt > new Date())
+    return this.getUserBonuses(userId).filter(
+      (ub) =>
+        ub.status === "active" && (!ub.expiresAt || ub.expiresAt > new Date()),
     );
   }
 
@@ -215,13 +225,13 @@ class BonusService {
     const userBonusList = this.userBonuses.get(userId);
     if (!userBonusList) return false;
 
-    const userBonus = userBonusList.find(ub => ub.id === userBonusId);
-    if (!userBonus || userBonus.status !== 'active') return false;
+    const userBonus = userBonusList.find((ub) => ub.id === userBonusId);
+    if (!userBonus || userBonus.status !== "active") return false;
 
     userBonus.wageringCompleted += amount;
-    
+
     if (userBonus.wageringCompleted >= userBonus.wageringRequired) {
-      userBonus.status = 'completed';
+      userBonus.status = "completed";
       userBonus.completedAt = new Date();
     }
 
@@ -230,10 +240,12 @@ class BonusService {
 
   getBonusStats(bonusId?: string): BonusStats {
     let relevantBonuses: UserBonus[] = [];
-    
+
     if (bonusId) {
       for (const userBonusList of this.userBonuses.values()) {
-        relevantBonuses.push(...userBonusList.filter(ub => ub.bonusId === bonusId));
+        relevantBonuses.push(
+          ...userBonusList.filter((ub) => ub.bonusId === bonusId),
+        );
       }
     } else {
       for (const userBonusList of this.userBonuses.values()) {
@@ -242,14 +254,24 @@ class BonusService {
     }
 
     const totalAwarded = relevantBonuses.length;
-    const activeUsers = new Set(relevantBonuses.map(ub => ub.userId)).size;
-    const completedBonuses = relevantBonuses.filter(ub => ub.status === 'completed').length;
-    const completionRate = totalAwarded > 0 ? (completedBonuses / totalAwarded) * 100 : 0;
-    
-    const totalGCAwarded = relevantBonuses.reduce((sum, ub) => sum + ub.gcAwarded, 0);
-    const totalSCAwarded = relevantBonuses.reduce((sum, ub) => sum + ub.scAwarded, 0);
-    
-    const conversionRate = activeUsers > 0 ? (completedBonuses / activeUsers) * 100 : 0;
+    const activeUsers = new Set(relevantBonuses.map((ub) => ub.userId)).size;
+    const completedBonuses = relevantBonuses.filter(
+      (ub) => ub.status === "completed",
+    ).length;
+    const completionRate =
+      totalAwarded > 0 ? (completedBonuses / totalAwarded) * 100 : 0;
+
+    const totalGCAwarded = relevantBonuses.reduce(
+      (sum, ub) => sum + ub.gcAwarded,
+      0,
+    );
+    const totalSCAwarded = relevantBonuses.reduce(
+      (sum, ub) => sum + ub.scAwarded,
+      0,
+    );
+
+    const conversionRate =
+      activeUsers > 0 ? (completedBonuses / activeUsers) * 100 : 0;
 
     return {
       totalAwarded,
@@ -257,7 +279,7 @@ class BonusService {
       completionRate,
       totalGCAwarded,
       totalSCAwarded,
-      conversionRate
+      conversionRate,
     };
   }
 
@@ -267,10 +289,12 @@ class BonusService {
 
     for (const userBonusList of this.userBonuses.values()) {
       for (const userBonus of userBonusList) {
-        if (userBonus.status === 'active' && 
-            userBonus.expiresAt && 
-            userBonus.expiresAt <= now) {
-          userBonus.status = 'expired';
+        if (
+          userBonus.status === "active" &&
+          userBonus.expiresAt &&
+          userBonus.expiresAt <= now
+        ) {
+          userBonus.status = "expired";
           expiredCount++;
         }
       }
@@ -280,28 +304,42 @@ class BonusService {
   }
 
   // Real-time bonus validation
-  canClaimBonus(userId: string, bonusId: string): { canClaim: boolean; reason?: string } {
+  canClaimBonus(
+    userId: string,
+    bonusId: string,
+  ): { canClaim: boolean; reason?: string } {
     const bonus = this.getBonus(bonusId);
-    if (!bonus) return { canClaim: false, reason: 'Bonus not found' };
-    if (!bonus.isActive) return { canClaim: false, reason: 'Bonus is not active' };
+    if (!bonus) return { canClaim: false, reason: "Bonus not found" };
+    if (!bonus.isActive)
+      return { canClaim: false, reason: "Bonus is not active" };
 
     const userBonuses = this.getUserBonuses(userId);
-    const bonusUsageCount = userBonuses.filter(ub => ub.bonusId === bonusId).length;
+    const bonusUsageCount = userBonuses.filter(
+      (ub) => ub.bonusId === bonusId,
+    ).length;
 
-    if (bonus.requirements.maxUses && bonusUsageCount >= bonus.requirements.maxUses) {
-      return { canClaim: false, reason: 'Maximum uses exceeded' };
+    if (
+      bonus.requirements.maxUses &&
+      bonusUsageCount >= bonus.requirements.maxUses
+    ) {
+      return { canClaim: false, reason: "Maximum uses exceeded" };
     }
 
     // Check cooldown for daily/weekly bonuses
     if (bonus.cooldownHours) {
       const lastClaim = userBonuses
-        .filter(ub => ub.bonusId === bonusId)
+        .filter((ub) => ub.bonusId === bonusId)
         .sort((a, b) => b.awardedAt.getTime() - a.awardedAt.getTime())[0];
 
       if (lastClaim) {
-        const cooldownEnd = new Date(lastClaim.awardedAt.getTime() + bonus.cooldownHours * 60 * 60 * 1000);
+        const cooldownEnd = new Date(
+          lastClaim.awardedAt.getTime() + bonus.cooldownHours * 60 * 60 * 1000,
+        );
         if (cooldownEnd > new Date()) {
-          return { canClaim: false, reason: `Cooldown active until ${cooldownEnd.toLocaleString()}` };
+          return {
+            canClaim: false,
+            reason: `Cooldown active until ${cooldownEnd.toLocaleString()}`,
+          };
         }
       }
     }

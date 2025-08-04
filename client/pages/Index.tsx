@@ -22,14 +22,19 @@ import {
 } from "../services/realTimeAnalytics";
 import { playerCountService } from "../services/playerCountService";
 import RealTimePlayerCount from "@/components/RealTimePlayerCount";
-import { gamesTrackingService, PlatformStats } from "../services/gamesTrackingService";
+import {
+  gamesTrackingService,
+  PlatformStats,
+} from "../services/gamesTrackingService";
 import Logo from "@/components/ui/Logo";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [playerCount, setPlayerCount] = useState<number>(0);
-  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(
+    null,
+  );
 
   useEffect(() => {
     // Subscribe to real-time analytics updates
@@ -42,9 +47,11 @@ export default function Index() {
     );
 
     // Subscribe to real-time player count
-    const unsubscribePlayers = playerCountService.subscribeToPlayerCount((count) => {
-      setPlayerCount(count);
-    });
+    const unsubscribePlayers = playerCountService.subscribeToPlayerCount(
+      (count) => {
+        setPlayerCount(count);
+      },
+    );
 
     // Subscribe to platform stats
     const unsubscribeStats = gamesTrackingService.subscribeToStats((stats) => {
@@ -66,9 +73,7 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.4).toLocaleString()}`
         : "$125,847",
-      players: playerCount > 0
-        ? Math.floor(playerCount * 0.15)
-        : 423,
+      players: playerCount > 0 ? Math.floor(playerCount * 0.15) : 423,
     },
     {
       name: "Lucky Scratch Gold",
@@ -76,9 +81,7 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.3).toLocaleString()}`
         : "$89,234",
-      players: playerCount > 0
-        ? Math.floor(playerCount * 0.11)
-        : 312,
+      players: playerCount > 0 ? Math.floor(playerCount * 0.11) : 312,
     },
     {
       name: "Wheel of Fortune",
@@ -86,9 +89,7 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.2).toLocaleString()}`
         : "$67,891",
-      players: playerCount > 0
-        ? Math.floor(playerCount * 0.1)
-        : 289,
+      players: playerCount > 0 ? Math.floor(playerCount * 0.1) : 289,
     },
     {
       name: "Number Rush Bingo",
@@ -96,9 +97,7 @@ export default function Index() {
       jackpot: realTimeData
         ? `$${Math.floor(realTimeData.jackpotTotal * 0.1).toLocaleString()}`
         : "$156,782",
-      players: playerCount > 0
-        ? Math.floor(playerCount * 0.2)
-        : 567,
+      players: playerCount > 0 ? Math.floor(playerCount * 0.2) : 567,
     },
   ];
 
@@ -310,9 +309,10 @@ export default function Index() {
               },
               {
                 title: "Live Poker",
-                count: playerCount > 0
-                  ? `${Math.floor(playerCount * 0.02)}`
-                  : "24/7",
+                count:
+                  playerCount > 0
+                    ? `${Math.floor(playerCount * 0.02)}`
+                    : "24/7",
                 icon: Trophy,
                 color: "casino-blue",
               },
@@ -366,13 +366,16 @@ export default function Index() {
             {realTimeData && (
               <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                 <p className="text-green-400 font-bold">
-                  🎉 Today's Winners: {platformStats?.totalSCWonToday.toFixed(2) || '0.00'}{" "}
-                  SC Won ({formatUSDAmount((platformStats?.totalSCWonToday || 0) * 1000)}{" "}
+                  🎉 Today's Winners:{" "}
+                  {platformStats?.totalSCWonToday.toFixed(2) || "0.00"} SC Won (
+                  {formatUSDAmount(
+                    (platformStats?.totalSCWonToday || 0) * 1000,
+                  )}{" "}
                   USD equivalent)
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {playerCount > 0 ? playerCount.toLocaleString() : 0} players online
-                  right now!
+                  {playerCount > 0 ? playerCount.toLocaleString() : 0} players
+                  online right now!
                 </p>
               </div>
             )}

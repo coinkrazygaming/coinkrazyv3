@@ -29,7 +29,9 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
 }) => {
   const [balance, setBalance] = useState<UserBalance | null>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [previousBalance, setPreviousBalance] = useState<UserBalance | null>(null);
+  const [previousBalance, setPreviousBalance] = useState<UserBalance | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
@@ -38,11 +40,14 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
     loadBalance();
 
     // Subscribe to real-time updates
-    const unsubscribe = balanceService.subscribeToBalanceUpdates(userId, (newBalance) => {
-      setPreviousBalance(balance);
-      setBalance(newBalance);
-      setLastUpdate(new Date());
-    });
+    const unsubscribe = balanceService.subscribeToBalanceUpdates(
+      userId,
+      (newBalance) => {
+        setPreviousBalance(balance);
+        setBalance(newBalance);
+        setLastUpdate(new Date());
+      },
+    );
 
     // Cleanup subscription
     return unsubscribe;
@@ -55,7 +60,7 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
       setBalance(userBalance);
       setLastUpdate(new Date());
     } catch (error) {
-      console.error('Error loading balance:', error);
+      console.error("Error loading balance:", error);
     } finally {
       setIsLoading(false);
     }
@@ -78,16 +83,28 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
     return num.toLocaleString();
   };
 
-  const getChangeIndicator = (current: number, previous: number | undefined) => {
+  const getChangeIndicator = (
+    current: number,
+    previous: number | undefined,
+  ) => {
     if (!previous || current === previous) return null;
-    
+
     const isIncrease = current > previous;
     const difference = Math.abs(current - previous);
-    
+
     return (
-      <div className={`flex items-center gap-1 text-xs ${isIncrease ? 'text-green-400' : 'text-red-400'}`}>
-        {isIncrease ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-        <span>{isIncrease ? '+' : '-'}{formatNumber(difference)}</span>
+      <div
+        className={`flex items-center gap-1 text-xs ${isIncrease ? "text-green-400" : "text-red-400"}`}
+      >
+        {isIncrease ? (
+          <TrendingUp className="w-3 h-3" />
+        ) : (
+          <TrendingDown className="w-3 h-3" />
+        )}
+        <span>
+          {isIncrease ? "+" : "-"}
+          {formatNumber(difference)}
+        </span>
       </div>
     );
   };
@@ -117,31 +134,35 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
           onClick={toggleVisibility}
           className="p-1 h-auto"
         >
-          {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          {isVisible ? (
+            <Eye className="w-4 h-4" />
+          ) : (
+            <EyeOff className="w-4 h-4" />
+          )}
         </Button>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Coins className="w-4 h-4 text-gold-500" />
             <span className="font-bold">
-              {isVisible ? formatNumber(balance.gc) : '••••••'}
+              {isVisible ? formatNumber(balance.gc) : "••••••"}
             </span>
             <span className="text-xs text-muted-foreground">GC</span>
             {getChangeIndicator(balance.gc, previousBalance?.gc)}
           </div>
-          
+
           <div className="w-px h-4 bg-border"></div>
-          
+
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-casino-blue" />
             <span className="font-bold">
-              {isVisible ? balance.sc.toLocaleString() : '••••'}
+              {isVisible ? balance.sc.toLocaleString() : "••••"}
             </span>
             <span className="text-xs text-muted-foreground">SC</span>
             {getChangeIndicator(balance.sc, previousBalance?.sc)}
           </div>
         </div>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -149,14 +170,16 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
           disabled={isLoading}
           className="p-1 h-auto"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
         </Button>
       </div>
     );
   }
 
   return (
-    <Card className={`${className} transition-all duration-200 hover:shadow-lg`}>
+    <Card
+      className={`${className} transition-all duration-200 hover:shadow-lg`}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -166,7 +189,7 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
               LIVE
             </Badge>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -174,9 +197,13 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
               onClick={toggleVisibility}
               className="p-1 h-auto"
             >
-              {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+              {isVisible ? (
+                <Eye className="w-4 h-4" />
+              ) : (
+                <EyeOff className="w-4 h-4" />
+              )}
             </Button>
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -184,7 +211,9 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
               disabled={isLoading}
               className="p-1 h-auto"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
         </div>
@@ -198,7 +227,7 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
             </div>
             <div className="space-y-1">
               <div className="text-2xl font-bold">
-                {isVisible ? formatNumber(balance.gc) : '••••••'}
+                {isVisible ? formatNumber(balance.gc) : "••••••"}
               </div>
               {getChangeIndicator(balance.gc, previousBalance?.gc)}
             </div>
@@ -208,11 +237,13 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-casino-blue" />
-              <span className="text-sm text-muted-foreground">Sweeps Coins</span>
+              <span className="text-sm text-muted-foreground">
+                Sweeps Coins
+              </span>
             </div>
             <div className="space-y-1">
               <div className="text-2xl font-bold">
-                {isVisible ? balance.sc.toLocaleString() : '••••'}
+                {isVisible ? balance.sc.toLocaleString() : "••••"}
               </div>
               {getChangeIndicator(balance.sc, previousBalance?.sc)}
             </div>
@@ -234,17 +265,23 @@ const RealTimeBalance: React.FC<RealTimeBalanceProps> = ({
             <h4 className="text-sm font-medium mb-2">Recent Transactions</h4>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {balanceService.getUserTransactions(userId, 5).map((txn) => (
-                <div key={txn.id} className="flex items-center justify-between text-xs">
+                <div
+                  key={txn.id}
+                  className="flex items-center justify-between text-xs"
+                >
                   <div className="flex items-center gap-2">
-                    {txn.currency === 'gc' ? (
+                    {txn.currency === "gc" ? (
                       <Coins className="w-3 h-3 text-gold-500" />
                     ) : (
                       <Star className="w-3 h-3 text-casino-blue" />
                     )}
                     <span className="truncate max-w-32">{txn.description}</span>
                   </div>
-                  <div className={`font-medium ${txn.type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
-                    {txn.type === 'credit' ? '+' : '-'}{txn.amount.toLocaleString()}
+                  <div
+                    className={`font-medium ${txn.type === "credit" ? "text-green-400" : "text-red-400"}`}
+                  >
+                    {txn.type === "credit" ? "+" : "-"}
+                    {txn.amount.toLocaleString()}
                   </div>
                 </div>
               ))}

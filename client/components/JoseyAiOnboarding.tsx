@@ -56,15 +56,15 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
 
   useEffect(() => {
     loadUserAccount();
-    
+
     // Subscribe to JoseyAI responses
     const unsubscribe = joseyAiOnboardingService.subscribeToResponses(
       (responseUserId, response) => {
         if (responseUserId === userId) {
-          setAiResponses(prev => [response, ...prev.slice(0, 9)]);
+          setAiResponses((prev) => [response, ...prev.slice(0, 9)]);
           setShowJoseyAi(true);
         }
-      }
+      },
     );
 
     return unsubscribe;
@@ -72,27 +72,31 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
 
   const loadUserAccount = () => {
     let userAccount = joseyAiOnboardingService.getUserAccount(userId);
-    
+
     if (!userAccount) {
       // Create new account if doesn't exist
       userAccount = joseyAiOnboardingService.createUserAccount({
         id: userId,
-        email: 'user@example.com', // Would come from auth system
-        username: 'Player',
-        accountType: 'user'
+        email: "user@example.com", // Would come from auth system
+        username: "Player",
+        accountType: "user",
       });
     }
 
     setAccount(userAccount);
-    const steps = joseyAiOnboardingService.getOnboardingSteps(userAccount.accountType);
+    const steps = joseyAiOnboardingService.getOnboardingSteps(
+      userAccount.accountType,
+    );
     setOnboardingSteps(steps);
-    
+
     // Find current step
-    const current = steps.find(step => 
-      !step.completed && 
-      (!step.dependsOn || step.dependsOn.every(dep => 
-        userAccount!.onboardingData.completedSteps.includes(dep)
-      ))
+    const current = steps.find(
+      (step) =>
+        !step.completed &&
+        (!step.dependsOn ||
+          step.dependsOn.every((dep) =>
+            userAccount!.onboardingData.completedSteps.includes(dep),
+          )),
     );
     setCurrentStep(current || null);
 
@@ -102,25 +106,29 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
   };
 
   const completeStep = (stepId: string) => {
-    const success = joseyAiOnboardingService.completeOnboardingStep(userId, stepId);
+    const success = joseyAiOnboardingService.completeOnboardingStep(
+      userId,
+      stepId,
+    );
     if (success) {
       loadUserAccount();
     }
   };
 
   const getStepIcon = (step: OnboardingStep) => {
-    if (step.completed) return <CheckCircle className="w-5 h-5 text-green-500" />;
-    
+    if (step.completed)
+      return <CheckCircle className="w-5 h-5 text-green-500" />;
+
     switch (step.type) {
-      case 'welcome':
+      case "welcome":
         return <Bot className="w-5 h-5 text-purple-500" />;
-      case 'education':
+      case "education":
         return <Users className="w-5 h-5 text-blue-500" />;
-      case 'kyc':
+      case "kyc":
         return <Shield className="w-5 h-5 text-orange-500" />;
-      case 'verification':
+      case "verification":
         return <FileText className="w-5 h-5 text-red-500" />;
-      case 'completion':
+      case "completion":
         return <Trophy className="w-5 h-5 text-gold-500" />;
       default:
         return <Clock className="w-5 h-5 text-gray-500" />;
@@ -129,13 +137,15 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
 
   const getProgressPercentage = () => {
     if (!account) return 0;
-    const totalSteps = onboardingSteps.filter(s => s.required).length;
-    const completedSteps = onboardingSteps.filter(s => s.required && s.completed).length;
+    const totalSteps = onboardingSteps.filter((s) => s.required).length;
+    const completedSteps = onboardingSteps.filter(
+      (s) => s.required && s.completed,
+    ).length;
     return (completedSteps / totalSteps) * 100;
   };
 
   const handleEducationComplete = () => {
-    completeStep('education');
+    completeStep("education");
     setShowEducationModal(false);
   };
 
@@ -167,7 +177,10 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
               <CardTitle className="flex items-center gap-2">
                 <Bot className="w-5 h-5 text-purple-500" />
                 JoseyAI Assistant
-                <Badge variant="outline" className="text-xs border-green-500 text-green-400">
+                <Badge
+                  variant="outline"
+                  className="text-xs border-green-500 text-green-400"
+                >
                   LIVE
                 </Badge>
               </CardTitle>
@@ -190,20 +203,28 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
                       <Bot className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-white/90">{response.message}</p>
+                      <p className="text-sm text-white/90">
+                        {response.message}
+                      </p>
                       <div className="flex items-center gap-2 mt-2">
                         <span className="text-xs text-purple-300">
                           {response.timestamp.toLocaleTimeString()}
                         </span>
                         {response.actionRequired && (
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             className="text-xs h-6 border-purple-500 text-purple-400"
                             onClick={() => {
-                              if (response.actionRequired?.type === 'complete_education') {
+                              if (
+                                response.actionRequired?.type ===
+                                "complete_education"
+                              ) {
                                 setShowEducationModal(true);
-                              } else if (response.actionRequired?.type === 'upload_document') {
+                              } else if (
+                                response.actionRequired?.type ===
+                                "upload_document"
+                              ) {
                                 setShowKycModal(true);
                               }
                             }}
@@ -235,52 +256,58 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           <Progress value={getProgressPercentage()} className="h-2" />
-          
+
           <div className="space-y-3">
             {onboardingSteps.map((step, index) => (
               <div
                 key={step.id}
                 className={`flex items-center gap-4 p-3 rounded-lg border transition-all duration-200 ${
-                  step.completed 
-                    ? 'border-green-500/30 bg-green-500/5' 
+                  step.completed
+                    ? "border-green-500/30 bg-green-500/5"
                     : currentStep?.id === step.id
-                      ? 'border-purple-500/30 bg-purple-500/5'
-                      : 'border-border'
+                      ? "border-purple-500/30 bg-purple-500/5"
+                      : "border-border"
                 }`}
               >
-                <div className="flex-shrink-0">
-                  {getStepIcon(step)}
-                </div>
-                
+                <div className="flex-shrink-0">{getStepIcon(step)}</div>
+
                 <div className="flex-1">
                   <h4 className="font-medium">{step.title}</h4>
-                  <p className="text-sm text-muted-foreground">{step.description}</p>
-                  
+                  <p className="text-sm text-muted-foreground">
+                    {step.description}
+                  </p>
+
                   {step.incentives && !step.completed && (
                     <div className="flex items-center gap-2 mt-1">
                       <Gift className="w-3 h-3 text-gold-500" />
                       <span className="text-xs text-gold-400">
-                        Reward: {step.incentives.gcReward && `${step.incentives.gcReward.toLocaleString()} GC`}
-                        {step.incentives.scReward && ` + ${step.incentives.scReward} SC`}
+                        Reward:{" "}
+                        {step.incentives.gcReward &&
+                          `${step.incentives.gcReward.toLocaleString()} GC`}
+                        {step.incentives.scReward &&
+                          ` + ${step.incentives.scReward} SC`}
                       </span>
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   {step.completed ? (
-                    <Badge variant="outline" className="text-green-400 border-green-500">
+                    <Badge
+                      variant="outline"
+                      className="text-green-400 border-green-500"
+                    >
                       Complete
                     </Badge>
                   ) : currentStep?.id === step.id ? (
                     <Button
                       size="sm"
                       onClick={() => {
-                        if (step.id === 'welcome') {
+                        if (step.id === "welcome") {
                           completeStep(step.id);
-                        } else if (step.id === 'education') {
+                        } else if (step.id === "education") {
                           setShowEducationModal(true);
-                        } else if (step.id === 'kyc_documents') {
+                        } else if (step.id === "kyc_documents") {
                           setShowKycModal(true);
                         }
                       }}
@@ -313,11 +340,13 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
               Learn what makes CoinKrazy the best sweepstakes casino platform
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">
-                <h4 className="font-semibold text-purple-400">🏆 CoinKrazy Advantages</h4>
+                <h4 className="font-semibold text-purple-400">
+                  🏆 CoinKrazy Advantages
+                </h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <Zap className="w-4 h-4 text-green-500" />
@@ -341,9 +370,11 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
                   </li>
                 </ul>
               </div>
-              
+
               <div className="space-y-3">
-                <h4 className="font-semibold text-red-400">❌ Other Platforms</h4>
+                <h4 className="font-semibold text-red-400">
+                  ❌ Other Platforms
+                </h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li>• Slow 3-7 day withdrawal processing</li>
                   <li>• Lower RTPs and worse odds</li>
@@ -353,22 +384,29 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
                 </ul>
               </div>
             </div>
-            
+
             <div className="p-4 bg-gradient-to-r from-purple-900/20 to-blue-900/20 rounded-lg">
               <h4 className="font-semibold mb-2">🎯 Why Choose CoinKrazy?</h4>
               <p className="text-sm text-muted-foreground">
-                We're not just another sweepstakes casino. We're a community-driven platform 
-                that puts players first. Our AI assistants, real-time support, and innovative 
-                features create the best social gaming experience available.
+                We're not just another sweepstakes casino. We're a
+                community-driven platform that puts players first. Our AI
+                assistants, real-time support, and innovative features create
+                the best social gaming experience available.
               </p>
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEducationModal(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowEducationModal(false)}
+            >
               Maybe Later
             </Button>
-            <Button onClick={handleEducationComplete} className="bg-purple-600 hover:bg-purple-700">
+            <Button
+              onClick={handleEducationComplete}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
               I Understand - Claim Bonus!
               <Coins className="w-4 h-4 ml-2" />
             </Button>
@@ -385,10 +423,11 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
               KYC Verification Required
             </DialogTitle>
             <DialogDescription>
-              Upload your documents to enable withdrawals and full platform access
+              Upload your documents to enable withdrawals and full platform
+              access
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card className="p-4 border-dashed border-orange-500/30">
@@ -404,7 +443,7 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
                   </Button>
                 </div>
               </Card>
-              
+
               <Card className="p-4 border-dashed border-orange-500/30">
                 <div className="text-center space-y-2">
                   <FileText className="w-8 h-8 text-orange-500 mx-auto" />
@@ -419,27 +458,32 @@ const JoseyAiOnboarding: React.FC<JoseyAiOnboardingProps> = ({
                 </div>
               </Card>
             </div>
-            
+
             <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Gift className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-green-400">KYC Completion Bonus</span>
+                <span className="text-sm font-medium text-green-400">
+                  KYC Completion Bonus
+                </span>
               </div>
               <p className="text-xs text-muted-foreground">
                 Complete KYC verification and receive 10 Sweeps Coins bonus!
               </p>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowKycModal(false)}>
               Complete Later
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 // Simulate KYC completion
-                joseyAiOnboardingService.updateKycStatus(userId, 'under_review');
-                completeStep('kyc_documents');
+                joseyAiOnboardingService.updateKycStatus(
+                  userId,
+                  "under_review",
+                );
+                completeStep("kyc_documents");
                 setShowKycModal(false);
               }}
               className="bg-orange-600 hover:bg-orange-700"

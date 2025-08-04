@@ -44,7 +44,12 @@ import {
   Activity,
   RefreshCw,
 } from "lucide-react";
-import { bonusService, BonusConfig, UserBonus, BonusStats } from "@/services/bonusService";
+import {
+  bonusService,
+  BonusConfig,
+  UserBonus,
+  BonusStats,
+} from "@/services/bonusService";
 
 const BonusManagement: React.FC = () => {
   const [bonuses, setBonuses] = useState<BonusConfig[]>([]);
@@ -56,9 +61,9 @@ const BonusManagement: React.FC = () => {
 
   // Form state for creating/editing bonuses
   const [formData, setFormData] = useState({
-    type: 'welcome' as BonusConfig['type'],
-    name: '',
-    description: '',
+    type: "welcome" as BonusConfig["type"],
+    name: "",
+    description: "",
     isActive: true,
     gcAmount: 0,
     scAmount: 0,
@@ -70,8 +75,8 @@ const BonusManagement: React.FC = () => {
       minLevel: 0,
       maxUses: 1,
       expiryDays: 30,
-      wagering: 1
-    }
+      wagering: 1,
+    },
   });
 
   useEffect(() => {
@@ -113,7 +118,11 @@ const BonusManagement: React.FC = () => {
   };
 
   const handleDeleteBonus = (bonusId: string) => {
-    if (confirm('Are you sure you want to delete this bonus? This action cannot be undone.')) {
+    if (
+      confirm(
+        "Are you sure you want to delete this bonus? This action cannot be undone.",
+      )
+    ) {
       bonusService.deleteBonus(bonusId);
       loadBonuses();
       loadBonusStats();
@@ -127,9 +136,9 @@ const BonusManagement: React.FC = () => {
 
   const resetForm = () => {
     setFormData({
-      type: 'welcome',
-      name: '',
-      description: '',
+      type: "welcome",
+      name: "",
+      description: "",
       isActive: true,
       gcAmount: 0,
       scAmount: 0,
@@ -141,8 +150,8 @@ const BonusManagement: React.FC = () => {
         minLevel: 0,
         maxUses: 1,
         expiryDays: 30,
-        wagering: 1
-      }
+        wagering: 1,
+      },
     });
   };
 
@@ -159,32 +168,46 @@ const BonusManagement: React.FC = () => {
       maxAmount: bonus.maxAmount || 0,
       minDeposit: bonus.minDeposit || 0,
       cooldownHours: bonus.cooldownHours || 0,
-      requirements: bonus.requirements
+      requirements: bonus.requirements,
     });
     setIsEditDialogOpen(true);
   };
 
-  const getBonusTypeIcon = (type: BonusConfig['type']) => {
+  const getBonusTypeIcon = (type: BonusConfig["type"]) => {
     switch (type) {
-      case 'welcome': return <Gift className="w-4 h-4" />;
-      case 'deposit': return <DollarSign className="w-4 h-4" />;
-      case 'reload': return <RefreshCw className="w-4 h-4" />;
-      case 'daily': return <Calendar className="w-4 h-4" />;
-      case 'weekly': return <Clock className="w-4 h-4" />;
-      case 'vip': return <Star className="w-4 h-4" />;
-      default: return <Award className="w-4 h-4" />;
+      case "welcome":
+        return <Gift className="w-4 h-4" />;
+      case "deposit":
+        return <DollarSign className="w-4 h-4" />;
+      case "reload":
+        return <RefreshCw className="w-4 h-4" />;
+      case "daily":
+        return <Calendar className="w-4 h-4" />;
+      case "weekly":
+        return <Clock className="w-4 h-4" />;
+      case "vip":
+        return <Star className="w-4 h-4" />;
+      default:
+        return <Award className="w-4 h-4" />;
     }
   };
 
-  const getBonusTypeColor = (type: BonusConfig['type']) => {
+  const getBonusTypeColor = (type: BonusConfig["type"]) => {
     switch (type) {
-      case 'welcome': return 'bg-green-500/10 text-green-400 border-green-500/20';
-      case 'deposit': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-      case 'reload': return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
-      case 'daily': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
-      case 'weekly': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
-      case 'vip': return 'bg-gold-500/10 text-gold-400 border-gold-500/20';
-      default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+      case "welcome":
+        return "bg-green-500/10 text-green-400 border-green-500/20";
+      case "deposit":
+        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+      case "reload":
+        return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+      case "daily":
+        return "bg-orange-500/10 text-orange-400 border-orange-500/20";
+      case "weekly":
+        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
+      case "vip":
+        return "bg-gold-500/10 text-gold-400 border-gold-500/20";
+      default:
+        return "bg-gray-500/10 text-gray-400 border-gray-500/20";
     }
   };
 
@@ -194,7 +217,9 @@ const BonusManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Bonus Management</h2>
-          <p className="text-muted-foreground">Manage welcome bonuses, deposits, and promotional offers</p>
+          <p className="text-muted-foreground">
+            Manage welcome bonuses, deposits, and promotional offers
+          </p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -214,7 +239,12 @@ const BonusManagement: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="bonus-type">Bonus Type</Label>
-                  <Select value={formData.type} onValueChange={(value: BonusConfig['type']) => setFormData(prev => ({ ...prev, type: value }))}>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(value: BonusConfig["type"]) =>
+                      setFormData((prev) => ({ ...prev, type: value }))
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -231,32 +261,41 @@ const BonusManagement: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Switch
                     checked={formData.isActive}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({ ...prev, isActive: checked }))
+                    }
                   />
                   <Label>Active</Label>
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="bonus-name">Bonus Name</Label>
                 <Input
                   id="bonus-name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   placeholder="Enter bonus name"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="bonus-description">Description</Label>
                 <Textarea
                   id="bonus-description"
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Enter bonus description"
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="gc-amount">Gold Coins</Label>
@@ -264,7 +303,12 @@ const BonusManagement: React.FC = () => {
                     id="gc-amount"
                     type="number"
                     value={formData.gcAmount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, gcAmount: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        gcAmount: Number(e.target.value),
+                      }))
+                    }
                     placeholder="0"
                   />
                 </div>
@@ -274,13 +318,18 @@ const BonusManagement: React.FC = () => {
                     id="sc-amount"
                     type="number"
                     value={formData.scAmount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, scAmount: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        scAmount: Number(e.target.value),
+                      }))
+                    }
                     placeholder="0"
                   />
                 </div>
               </div>
-              
-              {formData.type === 'deposit' && (
+
+              {formData.type === "deposit" && (
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="match-percentage">Match %</Label>
@@ -288,7 +337,12 @@ const BonusManagement: React.FC = () => {
                       id="match-percentage"
                       type="number"
                       value={formData.matchPercentage}
-                      onChange={(e) => setFormData(prev => ({ ...prev, matchPercentage: Number(e.target.value) }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          matchPercentage: Number(e.target.value),
+                        }))
+                      }
                       placeholder="100"
                     />
                   </div>
@@ -298,7 +352,12 @@ const BonusManagement: React.FC = () => {
                       id="max-amount"
                       type="number"
                       value={formData.maxAmount}
-                      onChange={(e) => setFormData(prev => ({ ...prev, maxAmount: Number(e.target.value) }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          maxAmount: Number(e.target.value),
+                        }))
+                      }
                       placeholder="100"
                     />
                   </div>
@@ -308,13 +367,18 @@ const BonusManagement: React.FC = () => {
                       id="min-deposit"
                       type="number"
                       value={formData.minDeposit}
-                      onChange={(e) => setFormData(prev => ({ ...prev, minDeposit: Number(e.target.value) }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          minDeposit: Number(e.target.value),
+                        }))
+                      }
                       placeholder="10"
                     />
                   </div>
                 </div>
               )}
-              
+
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="max-uses">Max Uses</Label>
@@ -322,10 +386,15 @@ const BonusManagement: React.FC = () => {
                     id="max-uses"
                     type="number"
                     value={formData.requirements.maxUses}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      requirements: { ...prev.requirements, maxUses: Number(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        requirements: {
+                          ...prev.requirements,
+                          maxUses: Number(e.target.value),
+                        },
+                      }))
+                    }
                     placeholder="1"
                   />
                 </div>
@@ -335,10 +404,15 @@ const BonusManagement: React.FC = () => {
                     id="expiry-days"
                     type="number"
                     value={formData.requirements.expiryDays}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      requirements: { ...prev.requirements, expiryDays: Number(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        requirements: {
+                          ...prev.requirements,
+                          expiryDays: Number(e.target.value),
+                        },
+                      }))
+                    }
                     placeholder="30"
                   />
                 </div>
@@ -348,17 +422,25 @@ const BonusManagement: React.FC = () => {
                     id="wagering"
                     type="number"
                     value={formData.requirements.wagering}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      requirements: { ...prev.requirements, wagering: Number(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        requirements: {
+                          ...prev.requirements,
+                          wagering: Number(e.target.value),
+                        },
+                      }))
+                    }
                     placeholder="1"
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsCreateDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleCreateBonus}>Create Bonus</Button>
@@ -375,7 +457,9 @@ const BonusManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Awarded</p>
-                  <p className="text-2xl font-bold">{bonusStats.totalAwarded}</p>
+                  <p className="text-2xl font-bold">
+                    {bonusStats.totalAwarded}
+                  </p>
                 </div>
                 <Award className="w-8 h-8 text-green-500" />
               </div>
@@ -398,8 +482,12 @@ const BonusManagement: React.FC = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Completion Rate</p>
-                  <p className="text-2xl font-bold">{bonusStats.completionRate.toFixed(1)}%</p>
+                  <p className="text-sm text-muted-foreground">
+                    Completion Rate
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {bonusStats.completionRate.toFixed(1)}%
+                  </p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-purple-500" />
               </div>
@@ -411,7 +499,9 @@ const BonusManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total GC</p>
-                  <p className="text-2xl font-bold">{bonusStats.totalGCAwarded.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">
+                    {bonusStats.totalGCAwarded.toLocaleString()}
+                  </p>
                 </div>
                 <Coins className="w-8 h-8 text-gold-500" />
               </div>
@@ -423,7 +513,9 @@ const BonusManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total SC</p>
-                  <p className="text-2xl font-bold">{bonusStats.totalSCAwarded}</p>
+                  <p className="text-2xl font-bold">
+                    {bonusStats.totalSCAwarded}
+                  </p>
                 </div>
                 <Star className="w-8 h-8 text-casino-blue" />
               </div>
@@ -435,7 +527,9 @@ const BonusManagement: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Conversion</p>
-                  <p className="text-2xl font-bold">{bonusStats.conversionRate.toFixed(1)}%</p>
+                  <p className="text-2xl font-bold">
+                    {bonusStats.conversionRate.toFixed(1)}%
+                  </p>
                 </div>
                 <BarChart3 className="w-8 h-8 text-orange-500" />
               </div>
@@ -460,12 +554,16 @@ const BonusManagement: React.FC = () => {
                 className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-2 rounded-lg ${getBonusTypeColor(bonus.type)}`}>
+                  <div
+                    className={`p-2 rounded-lg ${getBonusTypeColor(bonus.type)}`}
+                  >
                     {getBonusTypeIcon(bonus.type)}
                   </div>
                   <div>
                     <h3 className="font-semibold">{bonus.name}</h3>
-                    <p className="text-sm text-muted-foreground">{bonus.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {bonus.description}
+                    </p>
                     <div className="flex items-center gap-4 mt-2">
                       {bonus.gcAmount && (
                         <div className="flex items-center gap-1">
@@ -482,7 +580,10 @@ const BonusManagement: React.FC = () => {
                       {bonus.matchPercentage && (
                         <div className="flex items-center gap-1">
                           <DollarSign className="w-3 h-3 text-green-500" />
-                          <span className="text-sm">{bonus.matchPercentage}% match up to ${bonus.maxAmount}</span>
+                          <span className="text-sm">
+                            {bonus.matchPercentage}% match up to $
+                            {bonus.maxAmount}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -491,7 +592,9 @@ const BonusManagement: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={bonus.isActive}
-                    onCheckedChange={(checked) => handleToggleBonus(bonus.id, checked)}
+                    onCheckedChange={(checked) =>
+                      handleToggleBonus(bonus.id, checked)
+                    }
                   />
                   <Button
                     variant="outline"
@@ -519,15 +622,18 @@ const BonusManagement: React.FC = () => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit Bonus</DialogTitle>
-            <DialogDescription>
-              Update bonus configuration
-            </DialogDescription>
+            <DialogDescription>Update bonus configuration</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-bonus-type">Bonus Type</Label>
-                <Select value={formData.type} onValueChange={(value: BonusConfig['type']) => setFormData(prev => ({ ...prev, type: value }))}>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: BonusConfig["type"]) =>
+                    setFormData((prev) => ({ ...prev, type: value }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -544,32 +650,41 @@ const BonusManagement: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isActive: checked }))
+                  }
                 />
                 <Label>Active</Label>
               </div>
             </div>
-            
+
             <div>
               <Label htmlFor="edit-bonus-name">Bonus Name</Label>
               <Input
                 id="edit-bonus-name"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="Enter bonus name"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="edit-bonus-description">Description</Label>
               <Textarea
                 id="edit-bonus-description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Enter bonus description"
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-gc-amount">Gold Coins</Label>
@@ -577,7 +692,12 @@ const BonusManagement: React.FC = () => {
                   id="edit-gc-amount"
                   type="number"
                   value={formData.gcAmount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, gcAmount: Number(e.target.value) }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      gcAmount: Number(e.target.value),
+                    }))
+                  }
                   placeholder="0"
                 />
               </div>
@@ -587,13 +707,18 @@ const BonusManagement: React.FC = () => {
                   id="edit-sc-amount"
                   type="number"
                   value={formData.scAmount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, scAmount: Number(e.target.value) }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      scAmount: Number(e.target.value),
+                    }))
+                  }
                   placeholder="0"
                 />
               </div>
             </div>
-            
-            {formData.type === 'deposit' && (
+
+            {formData.type === "deposit" && (
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="edit-match-percentage">Match %</Label>
@@ -601,7 +726,12 @@ const BonusManagement: React.FC = () => {
                     id="edit-match-percentage"
                     type="number"
                     value={formData.matchPercentage}
-                    onChange={(e) => setFormData(prev => ({ ...prev, matchPercentage: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        matchPercentage: Number(e.target.value),
+                      }))
+                    }
                     placeholder="100"
                   />
                 </div>
@@ -611,7 +741,12 @@ const BonusManagement: React.FC = () => {
                     id="edit-max-amount"
                     type="number"
                     value={formData.maxAmount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, maxAmount: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        maxAmount: Number(e.target.value),
+                      }))
+                    }
                     placeholder="100"
                   />
                 </div>
@@ -621,13 +756,18 @@ const BonusManagement: React.FC = () => {
                     id="edit-min-deposit"
                     type="number"
                     value={formData.minDeposit}
-                    onChange={(e) => setFormData(prev => ({ ...prev, minDeposit: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        minDeposit: Number(e.target.value),
+                      }))
+                    }
                     placeholder="10"
                   />
                 </div>
               </div>
             )}
-            
+
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="edit-max-uses">Max Uses</Label>
@@ -635,10 +775,15 @@ const BonusManagement: React.FC = () => {
                   id="edit-max-uses"
                   type="number"
                   value={formData.requirements.maxUses}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    requirements: { ...prev.requirements, maxUses: Number(e.target.value) }
-                  }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      requirements: {
+                        ...prev.requirements,
+                        maxUses: Number(e.target.value),
+                      },
+                    }))
+                  }
                   placeholder="1"
                 />
               </div>
@@ -648,10 +793,15 @@ const BonusManagement: React.FC = () => {
                   id="edit-expiry-days"
                   type="number"
                   value={formData.requirements.expiryDays}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    requirements: { ...prev.requirements, expiryDays: Number(e.target.value) }
-                  }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      requirements: {
+                        ...prev.requirements,
+                        expiryDays: Number(e.target.value),
+                      },
+                    }))
+                  }
                   placeholder="30"
                 />
               </div>
@@ -661,17 +811,25 @@ const BonusManagement: React.FC = () => {
                   id="edit-wagering"
                   type="number"
                   value={formData.requirements.wagering}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    requirements: { ...prev.requirements, wagering: Number(e.target.value) }
-                  }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      requirements: {
+                        ...prev.requirements,
+                        wagering: Number(e.target.value),
+                      },
+                    }))
+                  }
                   placeholder="1"
                 />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleEditBonus}>Update Bonus</Button>

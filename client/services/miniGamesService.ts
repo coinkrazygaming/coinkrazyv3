@@ -2,8 +2,8 @@ export interface MiniGameConfig {
   id: string;
   name: string;
   description: string;
-  category: 'luck' | 'skill' | 'puzzle';
-  difficulty: 'easy' | 'medium' | 'hard';
+  category: "luck" | "skill" | "puzzle";
+  difficulty: "easy" | "medium" | "hard";
   maxReward: number;
   minReward: number;
   cooldownHours: number;
@@ -67,7 +67,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.01,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "lucky-dice",
@@ -78,7 +78,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.01,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "memory-match",
@@ -89,7 +89,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.05,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "number-guesser",
@@ -100,7 +100,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.03,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "color-sequence",
@@ -109,9 +109,9 @@ class MiniGamesService {
         category: "skill",
         difficulty: "hard",
         maxReward: 0.25,
-        minReward: 0.10,
+        minReward: 0.1,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "fruit-slash",
@@ -122,7 +122,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.05,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "scratch-win",
@@ -133,7 +133,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.01,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "coin-flip",
@@ -144,7 +144,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.02,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "pattern-puzzle",
@@ -155,7 +155,7 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.08,
         cooldownHours: 24,
-        isActive: true
+        isActive: true,
       },
       {
         id: "lightning-rounds",
@@ -166,11 +166,11 @@ class MiniGamesService {
         maxReward: 0.25,
         minReward: 0.05,
         cooldownHours: 24,
-        isActive: true
-      }
+        isActive: true,
+      },
     ];
 
-    configs.forEach(config => {
+    configs.forEach((config) => {
       this.gameConfigs.set(config.id, config);
     });
   }
@@ -185,16 +185,18 @@ class MiniGamesService {
 
   private cleanupOldSessions() {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    
+
     for (const [userId, sessions] of this.userSessions.entries()) {
-      const recentSessions = sessions.filter(session => session.startTime >= sevenDaysAgo);
+      const recentSessions = sessions.filter(
+        (session) => session.startTime >= sevenDaysAgo,
+      );
       this.userSessions.set(userId, recentSessions);
     }
   }
 
   private resetDailyLimitsIfNeeded() {
     const today = new Date().toDateString();
-    
+
     for (const [userId, limits] of this.dailyLimits.entries()) {
       if (limits.date !== today) {
         // Reset daily limits for new day
@@ -203,7 +205,7 @@ class MiniGamesService {
           date: today,
           gamesPlayed: new Map(),
           totalSCEarned: 0,
-          lastReset: new Date()
+          lastReset: new Date(),
         });
       }
     }
@@ -212,61 +214,72 @@ class MiniGamesService {
   private getDailyLimits(userId: string): DailyGameLimits {
     const today = new Date().toDateString();
     let limits = this.dailyLimits.get(userId);
-    
+
     if (!limits || limits.date !== today) {
       limits = {
         userId,
         date: today,
         gamesPlayed: new Map(),
         totalSCEarned: 0,
-        lastReset: new Date()
+        lastReset: new Date(),
       };
       this.dailyLimits.set(userId, limits);
     }
-    
+
     return limits;
   }
 
-  canPlayGame(userId: string, gameId: string): { canPlay: boolean; reason?: string; cooldownRemaining?: number } {
+  canPlayGame(
+    userId: string,
+    gameId: string,
+  ): { canPlay: boolean; reason?: string; cooldownRemaining?: number } {
     const config = this.gameConfigs.get(gameId);
     if (!config) {
-      return { canPlay: false, reason: 'Game not found' };
+      return { canPlay: false, reason: "Game not found" };
     }
 
     if (!config.isActive) {
-      return { canPlay: false, reason: 'Game is currently disabled' };
+      return { canPlay: false, reason: "Game is currently disabled" };
     }
 
     // Check daily limits
     const dailyLimits = this.getDailyLimits(userId);
-    
+
     // Check if user has already played this specific game today
     const gamesPlayedToday = dailyLimits.gamesPlayed.get(gameId) || 0;
     if (gamesPlayedToday >= 1) {
-      return { canPlay: false, reason: 'You can only play each mini game once per day' };
+      return {
+        canPlay: false,
+        reason: "You can only play each mini game once per day",
+      };
     }
 
     // Check total daily SC limit across all mini games
     if (dailyLimits.totalSCEarned >= this.TOTAL_DAILY_SC_LIMIT) {
-      return { canPlay: false, reason: `Daily SC limit reached (${this.TOTAL_DAILY_SC_LIMIT} SC max per day from mini games)` };
+      return {
+        canPlay: false,
+        reason: `Daily SC limit reached (${this.TOTAL_DAILY_SC_LIMIT} SC max per day from mini games)`,
+      };
     }
 
     // Check cooldown period
     const userSessions = this.userSessions.get(userId) || [];
     const lastSession = userSessions
-      .filter(session => session.gameId === gameId)
+      .filter((session) => session.gameId === gameId)
       .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
 
     if (lastSession) {
-      const cooldownEnd = new Date(lastSession.startTime.getTime() + config.cooldownHours * 60 * 60 * 1000);
+      const cooldownEnd = new Date(
+        lastSession.startTime.getTime() + config.cooldownHours * 60 * 60 * 1000,
+      );
       const now = new Date();
-      
+
       if (cooldownEnd > now) {
         const remainingMs = cooldownEnd.getTime() - now.getTime();
-        return { 
-          canPlay: false, 
+        return {
+          canPlay: false,
           reason: `Cooldown active. Try again in ${Math.ceil(remainingMs / (1000 * 60 * 60))} hours`,
-          cooldownRemaining: remainingMs
+          cooldownRemaining: remainingMs,
         };
       }
     }
@@ -274,24 +287,32 @@ class MiniGamesService {
     return { canPlay: true };
   }
 
-  async playGame(userId: string, gameId: string): Promise<{ success: boolean; reward: number; session: GameSession | null; error?: string }> {
+  async playGame(
+    userId: string,
+    gameId: string,
+  ): Promise<{
+    success: boolean;
+    reward: number;
+    session: GameSession | null;
+    error?: string;
+  }> {
     const canPlayResult = this.canPlayGame(userId, gameId);
     if (!canPlayResult.canPlay) {
-      return { 
-        success: false, 
-        reward: 0, 
-        session: null, 
-        error: canPlayResult.reason 
+      return {
+        success: false,
+        reward: 0,
+        session: null,
+        error: canPlayResult.reason,
       };
     }
 
     const config = this.gameConfigs.get(gameId);
     if (!config) {
-      return { 
-        success: false, 
-        reward: 0, 
-        session: null, 
-        error: 'Game configuration not found' 
+      return {
+        success: false,
+        reward: 0,
+        session: null,
+        error: "Game configuration not found",
       };
     }
 
@@ -312,7 +333,7 @@ class MiniGamesService {
       scAwarded: actualReward,
       success,
       multiplier: success ? 1.0 : 0,
-      bonus: false
+      bonus: false,
     };
 
     // Record session
@@ -323,13 +344,16 @@ class MiniGamesService {
 
     // Update daily limits
     const dailyLimits = this.getDailyLimits(userId);
-    dailyLimits.gamesPlayed.set(gameId, (dailyLimits.gamesPlayed.get(gameId) || 0) + 1);
+    dailyLimits.gamesPlayed.set(
+      gameId,
+      (dailyLimits.gamesPlayed.get(gameId) || 0) + 1,
+    );
     dailyLimits.totalSCEarned += actualReward;
 
     return {
       success,
       reward: actualReward,
-      session
+      session,
     };
   }
 
@@ -337,14 +361,19 @@ class MiniGamesService {
     // Base reward calculation with some randomness
     const range = config.maxReward - config.minReward;
     const randomFactor = Math.random();
-    
+
     // Skill-based games have slightly higher average rewards
-    const skillMultiplier = config.category === 'skill' ? 1.1 : 1.0;
-    const difficultyMultiplier = config.difficulty === 'hard' ? 1.2 : config.difficulty === 'medium' ? 1.1 : 1.0;
-    
-    const baseReward = config.minReward + (range * randomFactor);
+    const skillMultiplier = config.category === "skill" ? 1.1 : 1.0;
+    const difficultyMultiplier =
+      config.difficulty === "hard"
+        ? 1.2
+        : config.difficulty === "medium"
+          ? 1.1
+          : 1.0;
+
+    const baseReward = config.minReward + range * randomFactor;
     const adjustedReward = baseReward * skillMultiplier * difficultyMultiplier;
-    
+
     // Ensure it doesn't exceed the per-game daily limit
     return Math.min(adjustedReward, this.DAILY_SC_LIMIT);
   }
@@ -352,15 +381,15 @@ class MiniGamesService {
   private determineGameSuccess(config: MiniGameConfig): boolean {
     // Success rate based on game difficulty and type
     let successRate = 0.7; // Base 70% success rate
-    
+
     switch (config.difficulty) {
-      case 'easy':
+      case "easy":
         successRate = 0.8;
         break;
-      case 'medium':
+      case "medium":
         successRate = 0.6;
         break;
-      case 'hard':
+      case "hard":
         successRate = 0.4;
         break;
     }
@@ -368,10 +397,16 @@ class MiniGamesService {
     return Math.random() < successRate;
   }
 
-  getUserGameHistory(userId: string, gameId?: string, limit: number = 20): GameSession[] {
+  getUserGameHistory(
+    userId: string,
+    gameId?: string,
+    limit: number = 20,
+  ): GameSession[] {
     const sessions = this.userSessions.get(userId) || [];
-    const filtered = gameId ? sessions.filter(s => s.gameId === gameId) : sessions;
-    
+    const filtered = gameId
+      ? sessions.filter((s) => s.gameId === gameId)
+      : sessions;
+
     return filtered
       .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
       .slice(0, limit);
@@ -384,8 +419,10 @@ class MiniGamesService {
     availableGames: string[];
   } {
     const dailyLimits = this.getDailyLimits(userId);
-    const gamesPlayedToday = Array.from(dailyLimits.gamesPlayed.values()).reduce((sum, count) => sum + count, 0);
-    
+    const gamesPlayedToday = Array.from(
+      dailyLimits.gamesPlayed.values(),
+    ).reduce((sum, count) => sum + count, 0);
+
     // Find games that can still be played today
     const availableGames: string[] = [];
     for (const [gameId, config] of this.gameConfigs.entries()) {
@@ -398,37 +435,46 @@ class MiniGamesService {
     return {
       gamesPlayedToday,
       scEarnedToday: dailyLimits.totalSCEarned,
-      remainingDailyLimit: Math.max(0, this.TOTAL_DAILY_SC_LIMIT - dailyLimits.totalSCEarned),
-      availableGames
+      remainingDailyLimit: Math.max(
+        0,
+        this.TOTAL_DAILY_SC_LIMIT - dailyLimits.totalSCEarned,
+      ),
+      availableGames,
     };
   }
 
   getGameCooldowns(userId: string): CooldownInfo[] {
     const cooldowns: CooldownInfo[] = [];
     const now = new Date();
-    
+
     for (const [gameId, config] of this.gameConfigs.entries()) {
       const userSessions = this.userSessions.get(userId) || [];
       const lastSession = userSessions
-        .filter(session => session.gameId === gameId)
+        .filter((session) => session.gameId === gameId)
         .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
 
       if (lastSession) {
-        const cooldownEnd = new Date(lastSession.startTime.getTime() + config.cooldownHours * 60 * 60 * 1000);
-        const remainingCooldown = Math.max(0, cooldownEnd.getTime() - now.getTime());
-        
+        const cooldownEnd = new Date(
+          lastSession.startTime.getTime() +
+            config.cooldownHours * 60 * 60 * 1000,
+        );
+        const remainingCooldown = Math.max(
+          0,
+          cooldownEnd.getTime() - now.getTime(),
+        );
+
         cooldowns.push({
           gameId,
           lastPlayed: lastSession.startTime,
           remainingCooldown,
-          canPlay: remainingCooldown === 0
+          canPlay: remainingCooldown === 0,
         });
       } else {
         cooldowns.push({
           gameId,
           lastPlayed: new Date(0), // Never played
           remainingCooldown: 0,
-          canPlay: true
+          canPlay: true,
         });
       }
     }
@@ -437,7 +483,9 @@ class MiniGamesService {
   }
 
   getAllGameConfigs(): MiniGameConfig[] {
-    return Array.from(this.gameConfigs.values()).filter(config => config.isActive);
+    return Array.from(this.gameConfigs.values()).filter(
+      (config) => config.isActive,
+    );
   }
 
   getGameConfig(gameId: string): MiniGameConfig | undefined {
@@ -467,15 +515,22 @@ class MiniGamesService {
 
     for (const sessions of this.userSessions.values()) {
       totalGamesPlayed += sessions.length;
-      totalSCAwarded += sessions.reduce((sum, session) => sum + session.scAwarded, 0);
-      
-      sessions.forEach(session => {
-        gamePopularity.set(session.gameId, (gamePopularity.get(session.gameId) || 0) + 1);
+      totalSCAwarded += sessions.reduce(
+        (sum, session) => sum + session.scAwarded,
+        0,
+      );
+
+      sessions.forEach((session) => {
+        gamePopularity.set(
+          session.gameId,
+          (gamePopularity.get(session.gameId) || 0) + 1,
+        );
       });
     }
 
     const activeUsers = this.userSessions.size;
-    const averageSessionsPerUser = activeUsers > 0 ? totalGamesPlayed / activeUsers : 0;
+    const averageSessionsPerUser =
+      activeUsers > 0 ? totalGamesPlayed / activeUsers : 0;
 
     const popularGames = Array.from(gamePopularity.entries())
       .map(([gameId, plays]) => ({ gameId, plays }))
@@ -487,7 +542,7 @@ class MiniGamesService {
       totalSCAwarded,
       activeUsers,
       averageSessionsPerUser,
-      popularGames
+      popularGames,
     };
   }
 }

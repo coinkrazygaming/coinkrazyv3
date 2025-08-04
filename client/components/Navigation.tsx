@@ -52,9 +52,11 @@ export default function Navigation() {
     );
 
     // Subscribe to real-time player count
-    const unsubscribePlayers = playerCountService.subscribeToPlayerCount((count) => {
-      setPlayerCount(count);
-    });
+    const unsubscribePlayers = playerCountService.subscribeToPlayerCount(
+      (count) => {
+        setPlayerCount(count);
+      },
+    );
 
     // Load wallet balance if user is logged in
     if (user?.isLoggedIn) {
@@ -164,17 +166,13 @@ export default function Navigation() {
               >
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
                 <Users className="w-3 h-3 mr-1" />
-                {playerCount > 0 ? playerCount.toLocaleString() : "..."}{" "}
-                Online
+                {playerCount > 0 ? playerCount.toLocaleString() : "..."} Online
               </Badge>
             </div>
 
             {/* Enhanced Wallet Balance (logged in users only) */}
             {user?.isLoggedIn && (
-              <WalletBalance
-                userId={user.id || 'user-1'}
-                compact={true}
-              />
+              <WalletBalance userId={user.id || "user-1"} compact={true} />
             )}
 
             {/* Contact Phone */}

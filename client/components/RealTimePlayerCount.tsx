@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Users,
-  Activity,
-  Play,
-  Eye,
-  TrendingUp,
-  Clock,
-} from "lucide-react";
+import { Users, Activity, Play, Eye, TrendingUp, Clock } from "lucide-react";
 import { playerCountService, PlayerStats } from "@/services/playerCountService";
 
 interface RealTimePlayerCountProps {
@@ -36,11 +29,13 @@ const RealTimePlayerCount: React.FC<RealTimePlayerCountProps> = ({
     setIsLoading(true);
 
     // Subscribe to real-time player count updates
-    const unsubscribe = playerCountService.subscribeToPlayerCount((count, stats) => {
-      setPlayerCount(count);
-      setPlayerStats(stats);
-      setIsLoading(false);
-    });
+    const unsubscribe = playerCountService.subscribeToPlayerCount(
+      (count, stats) => {
+        setPlayerCount(count);
+        setPlayerStats(stats);
+        setIsLoading(false);
+      },
+    );
 
     // Cleanup subscription
     return unsubscribe;
@@ -103,7 +98,9 @@ const RealTimePlayerCount: React.FC<RealTimePlayerCountProps> = ({
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-green-500">{playerCount}</span>
+            <span className="text-3xl font-bold text-green-500">
+              {playerCount}
+            </span>
             <span className="text-muted-foreground">players</span>
           </div>
 
@@ -114,7 +111,9 @@ const RealTimePlayerCount: React.FC<RealTimePlayerCountProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Play className="w-3 h-3 text-casino-blue" />
-                    <span className="text-sm text-muted-foreground">Playing</span>
+                    <span className="text-sm text-muted-foreground">
+                      Playing
+                    </span>
                   </div>
                   <div className="text-lg font-bold text-casino-blue">
                     {playerStats.playingGames}
@@ -124,7 +123,9 @@ const RealTimePlayerCount: React.FC<RealTimePlayerCountProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Eye className="w-3 h-3 text-orange-500" />
-                    <span className="text-sm text-muted-foreground">Browsing</span>
+                    <span className="text-sm text-muted-foreground">
+                      Browsing
+                    </span>
                   </div>
                   <div className="text-lg font-bold text-orange-500">
                     {playerStats.browsing}
@@ -137,7 +138,9 @@ const RealTimePlayerCount: React.FC<RealTimePlayerCountProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-3 h-3 text-gold-500" />
-                    <span className="text-sm text-muted-foreground">Peak Today</span>
+                    <span className="text-sm text-muted-foreground">
+                      Peak Today
+                    </span>
                   </div>
                   <div className="text-lg font-bold text-gold-500">
                     {playerStats.peakToday}
@@ -147,7 +150,9 @@ const RealTimePlayerCount: React.FC<RealTimePlayerCountProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Clock className="w-3 h-3 text-purple-500" />
-                    <span className="text-sm text-muted-foreground">Avg Session</span>
+                    <span className="text-sm text-muted-foreground">
+                      Avg Session
+                    </span>
                   </div>
                   <div className="text-lg font-bold text-purple-500">
                     {playerStats.averageSessionTime}m

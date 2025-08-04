@@ -38,7 +38,7 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
     // Auto-rotate through messages every 8 seconds
     const interval = setInterval(() => {
       setIsAnimating(true);
-      
+
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % messages.length);
         setIsAnimating(false);
@@ -48,51 +48,56 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
     return () => clearInterval(interval);
   }, [messages.length]);
 
-  const getMessageIcon = (type: TickerMessage['type'], source: TickerMessage['source']) => {
+  const getMessageIcon = (
+    type: TickerMessage["type"],
+    source: TickerMessage["source"],
+  ) => {
     switch (type) {
-      case 'win':
+      case "win":
         return <Trophy className="w-4 h-4 text-gold-500" />;
-      case 'new_user':
+      case "new_user":
         return <Users className="w-4 h-4 text-green-500" />;
-      case 'leaderboard':
+      case "leaderboard":
         return <Crown className="w-4 h-4 text-purple-500" />;
-      case 'offer':
+      case "offer":
         return <Gift className="w-4 h-4 text-red-500" />;
-      case 'social':
+      case "social":
         return <MessageCircle className="w-4 h-4 text-blue-500" />;
-      case 'ai_status':
+      case "ai_status":
         return <Bot className="w-4 h-4 text-cyan-500" />;
       default:
         return <Star className="w-4 h-4 text-gray-500" />;
     }
   };
 
-  const getSourceColor = (source: TickerMessage['source']) => {
+  const getSourceColor = (source: TickerMessage["source"]) => {
     switch (source) {
-      case 'LuckyAI':
-        return 'text-gold-400';
-      case 'JoseyAI':
-        return 'text-purple-400';
-      case 'SecurityAI':
-        return 'text-red-400';
-      case 'GameMakerAI':
-        return 'text-green-400';
-      case 'system':
-        return 'text-blue-400';
+      case "LuckyAI":
+        return "text-gold-400";
+      case "JoseyAI":
+        return "text-purple-400";
+      case "SecurityAI":
+        return "text-red-400";
+      case "GameMakerAI":
+        return "text-green-400";
+      case "system":
+        return "text-blue-400";
       default:
-        return 'text-gray-400';
+        return "text-gray-400";
     }
   };
 
-  const getPriorityIndicator = (priority: TickerMessage['priority']) => {
+  const getPriorityIndicator = (priority: TickerMessage["priority"]) => {
     switch (priority) {
-      case 'urgent':
-        return <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />;
-      case 'high':
+      case "urgent":
+        return (
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        );
+      case "high":
         return <div className="w-2 h-2 bg-orange-500 rounded-full" />;
-      case 'medium':
+      case "medium":
         return <div className="w-2 h-2 bg-yellow-500 rounded-full" />;
-      case 'low':
+      case "low":
         return <div className="w-2 h-2 bg-green-500 rounded-full" />;
       default:
         return <div className="w-2 h-2 bg-gray-500 rounded-full" />;
@@ -101,12 +106,17 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
 
   const formatMessageContent = (content: string) => {
     // Replace **text** with bold formatting
-    return content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gold-400">$1</strong>');
+    return content.replace(
+      /\*\*(.*?)\*\*/g,
+      '<strong class="text-gold-400">$1</strong>',
+    );
   };
 
   if (messages.length === 0) {
     return (
-      <div className={`bg-gradient-to-r from-purple-900/20 via-purple-800/20 to-purple-900/20 border-b border-purple-500/20 ${className}`}>
+      <div
+        className={`bg-gradient-to-r from-purple-900/20 via-purple-800/20 to-purple-900/20 border-b border-purple-500/20 ${className}`}
+      >
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2 text-sm text-purple-300">
@@ -122,7 +132,9 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
   const currentMessage = messages[currentIndex];
 
   return (
-    <div className={`bg-gradient-to-r from-purple-900/30 via-purple-800/30 to-purple-900/30 border-b border-purple-500/30 ${className}`}>
+    <div
+      className={`bg-gradient-to-r from-purple-900/30 via-purple-800/30 to-purple-900/30 border-b border-purple-500/30 ${className}`}
+    >
       <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           {/* Current Message Display */}
@@ -131,16 +143,20 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
               {getMessageIcon(currentMessage.type, currentMessage.source)}
               {getPriorityIndicator(currentMessage.priority)}
             </div>
-            
-            <div className={`flex-1 overflow-hidden transition-all duration-300 ${isAnimating ? 'opacity-50 transform translate-x-2' : 'opacity-100'}`}>
-              <div 
+
+            <div
+              className={`flex-1 overflow-hidden transition-all duration-300 ${isAnimating ? "opacity-50 transform translate-x-2" : "opacity-100"}`}
+            >
+              <div
                 className="text-sm text-white/90 truncate"
-                dangerouslySetInnerHTML={{ __html: formatMessageContent(currentMessage.content) }}
+                dangerouslySetInnerHTML={{
+                  __html: formatMessageContent(currentMessage.content),
+                }}
               />
             </div>
 
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className={`text-xs px-2 py-1 ${getSourceColor(currentMessage.source)} border-current/30`}
             >
               {currentMessage.source}
@@ -156,9 +172,9 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                    index === currentIndex 
-                      ? 'bg-purple-400 scale-125' 
-                      : 'bg-purple-600/50 hover:bg-purple-500/70'
+                    index === currentIndex
+                      ? "bg-purple-400 scale-125"
+                      : "bg-purple-600/50 hover:bg-purple-500/70"
                   }`}
                 />
               ))}
@@ -167,22 +183,30 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
             {/* Live Indicator */}
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs text-purple-300 hidden sm:inline">LIVE</span>
+              <span className="text-xs text-purple-300 hidden sm:inline">
+                LIVE
+              </span>
             </div>
 
             {/* Quick Stats */}
             <div className="hidden md:flex items-center gap-4 text-xs text-purple-300">
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
-                <span>{messages.filter(m => m.type === 'win').length} wins</span>
+                <span>
+                  {messages.filter((m) => m.type === "win").length} wins
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <Users className="w-3 h-3" />
-                <span>{messages.filter(m => m.type === 'new_user').length} new</span>
+                <span>
+                  {messages.filter((m) => m.type === "new_user").length} new
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <Gift className="w-3 h-3" />
-                <span>{messages.filter(m => m.type === 'offer').length} offers</span>
+                <span>
+                  {messages.filter((m) => m.type === "offer").length} offers
+                </span>
               </div>
             </div>
           </div>
@@ -194,10 +218,15 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
             <div className="flex items-center gap-6 overflow-hidden">
               <div className="animate-marquee flex items-center gap-6 whitespace-nowrap">
                 {messages.slice(1, 4).map((message, index) => (
-                  <div key={message.id} className="flex items-center gap-2 text-xs text-purple-200/80">
+                  <div
+                    key={message.id}
+                    className="flex items-center gap-2 text-xs text-purple-200/80"
+                  >
                     {getMessageIcon(message.type, message.source)}
-                    <div 
-                      dangerouslySetInnerHTML={{ __html: formatMessageContent(message.content) }}
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: formatMessageContent(message.content),
+                      }}
                     />
                   </div>
                 ))}
@@ -209,8 +238,12 @@ const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
 
       <style jsx>{`
         @keyframes marquee {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
         }
         .animate-marquee {
           animation: marquee 30s linear infinite;

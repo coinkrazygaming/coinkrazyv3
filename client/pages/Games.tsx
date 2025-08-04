@@ -291,9 +291,11 @@ export default function Games() {
     setSportsLoading(true);
     try {
       const games = await sportsDataService.getUpcomingGames();
-      setSportsGames(games);
+      setSportsGames(games || []); // Ensure we always have an array
     } catch (error) {
       console.error("Error loading sports games:", error);
+      // Set empty array as fallback
+      setSportsGames([]);
     } finally {
       setSportsLoading(false);
     }

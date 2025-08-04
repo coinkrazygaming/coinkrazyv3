@@ -27,6 +27,7 @@ import {
   CheckCircle,
   Clock,
   X,
+  Gamepad2,
 } from "lucide-react";
 import { sportsDataService, GameWithLines } from "@/services/sportsApi";
 import { Link } from "react-router-dom";

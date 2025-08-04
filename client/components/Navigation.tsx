@@ -159,12 +159,11 @@ export default function Navigation() {
             <div className="flex items-center gap-2 text-sm">
               <Badge
                 variant="outline"
-                className="border-gold-500 text-gold-400"
+                className="border-purple-500 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 transition-colors"
               >
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
                 <Users className="w-3 h-3 mr-1" />
-                {realTimeData
-                  ? realTimeData.playersOnline.toLocaleString()
-                  : "..."}{" "}
+                {playerCount > 0 ? playerCount.toLocaleString() : "..."}{" "}
                 Online
               </Badge>
             </div>

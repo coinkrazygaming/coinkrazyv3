@@ -61,11 +61,15 @@ export default function Navigation() {
       const walletInterval = setInterval(loadWalletBalance, 5000); // Update every 5 seconds
       return () => {
         clearInterval(walletInterval);
-        unsubscribe();
+        unsubscribeAnalytics();
+        unsubscribePlayers();
       };
     }
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAnalytics();
+      unsubscribePlayers();
+    };
   }, [user?.isLoggedIn, user?.id]);
 
   const loadWalletBalance = async () => {

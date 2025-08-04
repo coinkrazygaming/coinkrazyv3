@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Logo from "@/components/ui/Logo";
 import {
   Coins,
   Users,
@@ -116,12 +117,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
-              <Crown className="w-5 h-5 text-black" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">
-              CoinKrazy
-            </span>
+            <Logo size="md" showText={true} />
           </Link>
 
           {/* Desktop Navigation */}

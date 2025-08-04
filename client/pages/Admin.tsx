@@ -901,6 +901,11 @@ export default function Admin() {
           <TabsContent value="bonus" className="mt-6">
             <BonusManagement />
           </TabsContent>
+
+          {/* CMS Management */}
+          <TabsContent value="cms" className="mt-6">
+            <CmsManagement />
+          </TabsContent>
         </Tabs>
       </div>
     </div>

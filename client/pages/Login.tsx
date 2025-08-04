@@ -31,12 +31,15 @@ export default function Login() {
 
   const handleLogin = () => {
     // Simulate login process
+    // 2FA disabled for admin accounts as requested
+    console.log("Login successful");
+    // Navigate to appropriate dashboard
     if (formData.email === "coinkrazy00@gmail.com") {
-      // Admin login requires 2FA
-      setIs2FARequired(true);
+      // Admin user - redirect to admin panel
+      window.location.href = "/admin";
     } else {
-      // Regular user login
-      console.log("Login successful");
+      // Regular user - redirect to dashboard
+      window.location.href = "/dashboard";
     }
   };
 

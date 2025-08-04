@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import AIAssistant from "./components/AIAssistant";
+import TickerDisplay from "./components/TickerDisplay";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";
@@ -29,6 +30,7 @@ const queryClient = new QueryClient();
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
+    <TickerDisplay />
     <Navigation />
     <main className="flex-1">{children}</main>
     <Footer />

@@ -70,25 +70,10 @@ class SportsDataService {
    * Get upcoming games for the next 7 days across all supported sports
    */
   async getUpcomingGames(): Promise<GameWithLines[]> {
-    try {
-      const allGames: GameWithLines[] = [];
-
-      // Get games from each sport
-      for (const [sport, config] of Object.entries(this.SUPPORTED_SPORTS)) {
-        const games = await this.getGamesBySport(sport, config);
-        allGames.push(...games);
-      }
-
-      // Sort by game time
-      return allGames.sort(
-        (a, b) =>
-          new Date(a.gameTime).getTime() - new Date(b.gameTime).getTime(),
-      );
-    } catch (error) {
-      console.error("Error fetching upcoming games:", error);
-      // Fallback to demo data in production
-      return this.getDemoGames();
-    }
+    // For browser environments, immediately use demo data to avoid CORS issues
+    // In production, this would be called from a backend service
+    console.log("Using demo sports data (CORS restrictions prevent external API calls in browser)");
+    return this.getDemoGames();
   }
 
   /**

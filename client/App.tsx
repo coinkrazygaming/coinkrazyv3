@@ -25,6 +25,7 @@ import Compliance from "./pages/Compliance";
 import Admin from "./pages/Admin";
 import HowToPlay from "./pages/HowToPlay";
 import SweepstakesRules from "./pages/SweepstakesRules";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/how-to-play" element={<HowToPlay />} />
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
+            <Route path="/support" element={<Support />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

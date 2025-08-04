@@ -22,11 +22,13 @@ import {
 } from "../services/realTimeAnalytics";
 import { playerCountService } from "../services/playerCountService";
 import RealTimePlayerCount from "@/components/RealTimePlayerCount";
+import { gamesTrackingService, PlatformStats } from "../services/gamesTrackingService";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [playerCount, setPlayerCount] = useState<number>(0);
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
 
   useEffect(() => {
     // Subscribe to real-time analytics updates
@@ -43,9 +45,15 @@ export default function Index() {
       setPlayerCount(count);
     });
 
+    // Subscribe to platform stats
+    const unsubscribeStats = gamesTrackingService.subscribeToStats((stats) => {
+      setPlatformStats(stats);
+    });
+
     return () => {
       unsubscribeAnalytics();
       unsubscribePlayers();
+      unsubscribeStats();
     };
   }, []);
 
@@ -160,16 +168,16 @@ export default function Index() {
                     <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="text-2xl font-bold text-foreground">
-                      {realTimeData?.totalSCWonToday
-                        ? formatSCAmount(realTimeData.totalSCWonToday)
+                      {platformStats?.totalSCWonToday
+                        ? formatSCAmount(platformStats.totalSCWonToday)
                         : "..."}
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">SC Won Today</p>
-                {realTimeData?.totalSCWonToday && (
+                {platformStats?.totalSCWonToday && (
                   <p className="text-xs text-green-400">
-                    ({formatUSDAmount(realTimeData.totalSCWonToday * 1000)} USD
+                    ({formatUSDAmount(platformStats.totalSCWonToday * 1000)} USD
                     equiv.)
                   </p>
                 )}
@@ -182,7 +190,7 @@ export default function Index() {
                     <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="text-2xl font-bold text-foreground">
-                      {realTimeData?.activeGames || "700+"}
+                      {platformStats?.totalGamesAvailable || "299+"}
                     </span>
                   )}
                 </div>
@@ -354,8 +362,8 @@ export default function Index() {
             {realTimeData && (
               <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                 <p className="text-green-400 font-bold">
-                  🎉 Today's Winners: {realTimeData.totalSCWonToday.toFixed(2)}{" "}
-                  SC Won ({formatUSDAmount(realTimeData.totalSCWonToday * 1000)}{" "}
+                  🎉 Today's Winners: {platformStats?.totalSCWonToday.toFixed(2) || '0.00'}{" "}
+                  SC Won ({formatUSDAmount((platformStats?.totalSCWonToday || 0) * 1000)}{" "}
                   USD equivalent)
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">

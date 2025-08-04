@@ -114,7 +114,7 @@ export default function GamePickCard({
   };
 
   const handlePlaceBet = () => {
-    const availableBalance = props.isSportsBetting ? userBalance.sc : userBalance.gc;
+    const availableBalance = isSportsBetting ? userBalance.sc : userBalance.gc;
     if (canPlaceBet()) {
       onPlaceBet(pickCard);
     } else if ((parseFloat(wagerAmount) || 0) > availableBalance) {

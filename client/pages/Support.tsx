@@ -42,7 +42,7 @@ import { Link } from "react-router-dom";
 
 export default function Support() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",

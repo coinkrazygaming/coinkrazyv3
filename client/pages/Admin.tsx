@@ -890,6 +890,11 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Bonus Management */}
+          <TabsContent value="bonus" className="mt-6">
+            <BonusManagement />
+          </TabsContent>
         </Tabs>
       </div>
     </div>

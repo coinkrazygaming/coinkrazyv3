@@ -20,14 +20,17 @@ import {
   analyticsService,
   type RealTimeData,
 } from "../services/realTimeAnalytics";
+import { playerCountService } from "../services/playerCountService";
+import RealTimePlayerCount from "@/components/RealTimePlayerCount";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [playerCount, setPlayerCount] = useState<number>(0);
 
   useEffect(() => {
     // Subscribe to real-time analytics updates
-    const unsubscribe = analyticsService.subscribe(
+    const unsubscribeAnalytics = analyticsService.subscribe(
       "homepage",
       (data: RealTimeData) => {
         setRealTimeData(data);
@@ -35,7 +38,15 @@ export default function Index() {
       },
     );
 
-    return unsubscribe;
+    // Subscribe to real-time player count
+    const unsubscribePlayers = playerCountService.subscribeToPlayerCount((count) => {
+      setPlayerCount(count);
+    });
+
+    return () => {
+      unsubscribeAnalytics();
+      unsubscribePlayers();
+    };
   }, []);
 
   // Real game data instead of mock data

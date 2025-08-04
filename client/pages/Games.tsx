@@ -785,6 +785,21 @@ export default function Games() {
             </div>
           </TabsContent>
 
+          {/* Table Games */}
+          <TabsContent value="table" className="mt-8">
+            <TableGames />
+          </TabsContent>
+
+          {/* Bingo Hall */}
+          <TabsContent value="bingo" className="mt-8">
+            <BingoHall />
+          </TabsContent>
+
+          {/* Mini Games */}
+          <TabsContent value="mini" className="mt-8">
+            <MiniGames />
+          </TabsContent>
+
           {/* Sports Betting */}
           <TabsContent value="sports" className="mt-8">
             {/* Sports betting notice */}

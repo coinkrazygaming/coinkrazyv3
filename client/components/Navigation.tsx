@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/ui/Logo";
+import { playerCountService } from "@/services/playerCountService";
+import RealTimeBalance from "@/components/RealTimeBalance";
 import {
   Coins,
   Users,
@@ -34,18 +36,24 @@ export default function Navigation() {
   const [currentCurrency, setCurrentCurrency] = useState<"USD" | "BTC" | "ETH">(
     "USD",
   );
+  const [playerCount, setPlayerCount] = useState<number>(0);
 
   // Real user authentication state
   const { user, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
     // Subscribe to real-time analytics data
-    const unsubscribe = analyticsService.subscribe(
+    const unsubscribeAnalytics = analyticsService.subscribe(
       "navigation",
       (data: RealTimeData) => {
         setRealTimeData(data);
       },
     );
+
+    // Subscribe to real-time player count
+    const unsubscribePlayers = playerCountService.subscribeToPlayerCount((count) => {
+      setPlayerCount(count);
+    });
 
     // Load wallet balance if user is logged in
     if (user?.isLoggedIn) {

@@ -34,6 +34,7 @@ import { Link } from "react-router-dom";
 import TableGames from "@/components/games/TableGames";
 import BingoHall from "@/components/games/BingoHall";
 import MiniGames from "@/components/games/MiniGames";
+import SlotsIntegration from "@/components/games/SlotsIntegration";
 
 // Import the BetSelection interface from the original Sportsbook
 interface BetSelection {

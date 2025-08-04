@@ -370,7 +370,7 @@ export default function GamePickCard({
               }
               className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold"
             >
-              {(parseFloat(wagerAmount) || 0) > (props.isSportsBetting ? userBalance.sc : userBalance.gc) ? (
+              {(parseFloat(wagerAmount) || 0) > (isSportsBetting ? userBalance.sc : userBalance.gc) ? (
                 <>
                   <Plus className="w-4 h-4 mr-2" />
                   {props.isSportsBetting ? 'Buy More SC' : 'Buy More Coins'}

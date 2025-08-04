@@ -124,7 +124,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-card/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
+    <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

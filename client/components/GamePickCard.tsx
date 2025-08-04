@@ -373,7 +373,7 @@ export default function GamePickCard({
               {(parseFloat(wagerAmount) || 0) > (isSportsBetting ? userBalance.sc : userBalance.gc) ? (
                 <>
                   <Plus className="w-4 h-4 mr-2" />
-                  {props.isSportsBetting ? 'Buy More SC' : 'Buy More Coins'}
+                  {isSportsBetting ? 'Buy More SC' : 'Buy More Coins'}
                 </>
               ) : (
                 <>

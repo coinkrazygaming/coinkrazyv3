@@ -74,6 +74,7 @@ export default function GamePickCard({
   onRemoveCard,
   onPlaceBet,
   onSaveToCart,
+  isSportsBetting = false,
 }: GamePickCardProps) {
   const [wagerAmount, setWagerAmount] = useState<string>(
     pickCard.wagerAmount.toString() || "",

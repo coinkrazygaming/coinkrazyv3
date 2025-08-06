@@ -27,6 +27,7 @@ import HowToPlay from "./pages/HowToPlay";
 import SweepstakesRules from "./pages/SweepstakesRules";
 import Support from "./pages/Support";
 import Contact from "./pages/Contact";
+import ResponsibleGaming from "./pages/ResponsibleGaming";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

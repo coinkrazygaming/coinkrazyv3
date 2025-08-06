@@ -27,6 +27,7 @@ import {
   PlatformStats,
 } from "../services/gamesTrackingService";
 import Logo from "@/components/ui/Logo";
+import LuckyAI from "@/components/LuckyAI";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);

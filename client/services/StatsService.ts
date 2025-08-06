@@ -1,5 +1,5 @@
 // Stats service for WebSocket connections and real-time statistics
-// Fixed version without getReadyStateText method
+// Fixed version without getReadyStateText method - Updated: 2025-01-08
 
 interface StatsData {
   playersOnline: number;

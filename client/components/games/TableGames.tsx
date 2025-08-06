@@ -998,7 +998,7 @@ export default function TableGames() {
                   <div className="flex gap-1 flex-wrap">
                     {rouletteHistory.map((num, index) => (
                       <div
-                        key={index}
+                        key={`history-${index}-${num}`}
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${
                           getRouletteColor(num) === 'red' ? 'bg-red-500' :
                           getRouletteColor(num) === 'black' ? 'bg-black' :

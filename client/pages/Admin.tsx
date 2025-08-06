@@ -10,6 +10,7 @@ import CasinoBanking from "@/components/CasinoBanking";
 import PackageEditor from "@/components/PackageEditor";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
+import GameManagement from "@/components/GameManagement";
 import {
   Shield,
   Users,

@@ -977,7 +977,7 @@ export default function TableGames() {
 
                 <div className="space-y-2">
                   {Object.entries(rouletteBets).map(([betType, amount]) => (
-                    <div key={betType} className="flex justify-between text-sm">
+                    <div key={`bet-${betType}`} className="flex justify-between text-sm">
                       <span className="capitalize">{betType.replace('-', ' ')}</span>
                       <span className="font-bold">{amount}</span>
                     </div>

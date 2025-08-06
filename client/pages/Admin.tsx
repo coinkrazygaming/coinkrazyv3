@@ -714,6 +714,11 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
+          {/* Game Management - SlotsAI Integration */}
+          <TabsContent value="game-management" className="mt-6">
+            <GameManagement />
+          </TabsContent>
+
           {/* Payment Management */}
           <TabsContent value="payments" className="mt-6">
             <CasinoBanking />

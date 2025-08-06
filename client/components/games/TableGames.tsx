@@ -769,7 +769,7 @@ export default function TableGames() {
                     <h3 className="text-lg font-bold mb-4">Player ({playerValue})</h3>
                     <div className="flex justify-center gap-2">
                       {playerHand.map((card, index) => (
-                        <CardComponent key={index} card={card} />
+                        <CardComponent key={`player-${index}-${card.suit}-${card.rank}`} card={card} />
                       ))}
                     </div>
                     {playerValue > 21 && (

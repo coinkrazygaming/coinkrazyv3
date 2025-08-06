@@ -397,6 +397,9 @@ export default function Index() {
           </CardContent>
         </Card>
       </div>
+
+      {/* LuckyAI Assistant */}
+      <LuckyAI />
     </div>
   );
 }

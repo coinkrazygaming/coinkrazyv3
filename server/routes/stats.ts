@@ -1,11 +1,5 @@
 import { RequestHandler } from "express";
-
-interface StatsResponse {
-  playersOnline: number;
-  totalWins: number;
-  activeGames: number;
-  serverStatus: 'online' | 'offline' | 'maintenance';
-}
+import { StatsResponse } from "@shared/api";
 
 export const handleStats: RequestHandler = (req, res) => {
   try {

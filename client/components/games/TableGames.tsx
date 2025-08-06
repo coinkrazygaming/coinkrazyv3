@@ -1043,7 +1043,7 @@ export default function TableGames() {
                       </h3>
                       <div className="flex justify-center gap-2">
                         {bankerHand.cards.map((card, index) => (
-                          <CardComponent key={index} card={card} />
+                          <CardComponent key={`baccarat-banker-${index}-${card.suit}-${card.rank}`} card={card} />
                         ))}
                       </div>
                     </div>

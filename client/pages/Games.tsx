@@ -158,6 +158,17 @@ const slotGames = [
   // Custom CoinKrazy games
   {
     id: 10,
+    name: "CoinKrazy Lucky Slots",
+    provider: "CoinKrazy",
+    rtp: "96.5%",
+    jackpot: "$525,847",
+    players: 1234,
+    category: "slots",
+    featured: true,
+    image: "🪙",
+  },
+  {
+    id: 11,
     name: "Josey Duck Game",
     provider: "CoinKrazy",
     rtp: "96.8%",
@@ -168,7 +179,7 @@ const slotGames = [
     image: "🦆",
   },
   {
-    id: 11,
+    id: 12,
     name: "Colin Shots",
     provider: "CoinKrazy",
     rtp: "97.2%",
@@ -179,7 +190,7 @@ const slotGames = [
     image: "🎯",
   },
   {
-    id: 12,
+    id: 13,
     name: "Beth's Darts",
     provider: "CoinKrazy",
     rtp: "96.5%",

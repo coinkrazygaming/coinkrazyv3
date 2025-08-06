@@ -987,8 +987,10 @@ export default function TableGames() {
                 <div>
                   <label className="text-sm font-medium">Chip Value</label>
                   <div className="flex gap-2 mt-2">
-                    {[25, 100, 500, 1000].map(value => 
-                      getChipComponent(value, selectedChip === value)
+                    {[25, 100, 500, 1000].map(value =>
+                      <div key={`roulette-chip-${value}`}>
+                        {getChipComponent(value, selectedChip === value)}
+                      </div>
                     )}
                   </div>
                 </div>

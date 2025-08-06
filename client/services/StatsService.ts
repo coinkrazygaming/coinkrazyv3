@@ -1,12 +1,9 @@
 // Statistics service for real-time data with WebSocket support
 // Provides live updates for player statistics and game metrics
 
-interface StatsData {
-  playersOnline: number;
-  totalWins: number;
-  activeGames: number;
-  serverStatus: 'online' | 'offline' | 'maintenance';
-}
+import { StatsResponse } from '@shared/api';
+
+type StatsData = StatsResponse;
 
 class StatsService {
   private static instance: StatsService;

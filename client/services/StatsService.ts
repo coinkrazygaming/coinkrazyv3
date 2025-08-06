@@ -40,7 +40,7 @@ class StatsService {
 
       this.wsConnection = new WebSocket(wsUrl);
 
-      this.wsConnection.onopen = () => {
+      this.wsConnection.onopen = (event) => {
         console.log('Stats WebSocket connected');
         this.reconnectAttempts = 0;
         this.isConnecting = false;
@@ -55,9 +55,11 @@ class StatsService {
         }
       };
 
-      this.wsConnection.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        console.log('WebSocket ready state:', this.getReadyStateText(this.wsConnection?.readyState));
+      this.wsConnection.onerror = (event) => {
+        console.error('WebSocket error:', event);
+        if (this.wsConnection) {
+          console.log('WebSocket ready state:', this.getReadyStateText(this.wsConnection.readyState));
+        }
         this.isConnecting = false;
       };
 
@@ -65,7 +67,7 @@ class StatsService {
         console.log('WebSocket connection closed:', event.code, event.reason);
         this.isConnecting = false;
         this.wsConnection = null;
-        
+
         if (!event.wasClean) {
           this.handleReconnect();
         }

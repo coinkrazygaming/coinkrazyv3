@@ -625,7 +625,7 @@ export default function Games() {
                         size="sm"
                       >
                         <Play className="w-4 h-4 mr-2" />
-                        Play {globalCurrencyMode}
+                        Spin ({globalCurrencyMode})
                       </Button>
                       <Button variant="outline" size="sm">
                         <Eye className="w-4 h-4" />

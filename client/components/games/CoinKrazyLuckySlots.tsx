@@ -588,11 +588,46 @@ export default function CoinKrazyLuckySlots() {
                 {/* Paylines Overlay */}
                 {winLines.length > 0 && (
                   <div className="absolute inset-0 pointer-events-none">
-                    {winLines.map((win, index) => (
-                      <div key={index} className="absolute inset-0">
-                        {/* This would contain SVG lines showing winning paylines */}
-                      </div>
-                    ))}
+                    <svg className="w-full h-full" viewBox="0 0 500 240">
+                      {winLines.map((win, index) => {
+                        const lineColors = ["#fbbf24", "#10b981", "#8b5cf6", "#f59e0b", "#ef4444"];
+                        const color = lineColors[index % lineColors.length];
+
+                        return (
+                          <g key={index}>
+                            <polyline
+                              points={win.positions.map((pos, i) => {
+                                const x = 50 + (i * 90); // Reel position
+                                const y = 40 + (pos[1] * 80); // Row position
+                                return `${x},${y}`;
+                              }).join(" ")}
+                              fill="none"
+                              stroke={color}
+                              strokeWidth="4"
+                              strokeLinecap="round"
+                              strokeDasharray="5,5"
+                              className="animate-pulse"
+                            />
+                            {/* Line number indicator */}
+                            <circle
+                              cx="20"
+                              cy={120}
+                              r="12"
+                              fill={color}
+                              opacity="0.9"
+                            />
+                            <text
+                              x="20"
+                              y="125"
+                              textAnchor="middle"
+                              className="text-xs font-bold fill-white"
+                            >
+                              {win.line}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
                   </div>
                 )}
               </div>

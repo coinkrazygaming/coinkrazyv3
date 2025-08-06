@@ -2,10 +2,10 @@ import "./global.css";
 import "./services/globalErrorHandler"; // Load WebSocket error protection
 
 // Emergency error suppression for getReadyStateText
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.onerror = (msg, url, line, col, error) => {
-    if (msg && msg.toString().includes('getReadyStateText')) {
-      console.log('Emergency: Suppressed getReadyStateText error');
+    if (msg && msg.toString().includes("getReadyStateText")) {
+      console.log("Emergency: Suppressed getReadyStateText error");
       return true; // Prevent default error handling
     }
     return false;

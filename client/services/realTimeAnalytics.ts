@@ -32,7 +32,7 @@ class RealTimeAnalyticsService {
   private simulationInterval: number | null = null;
 
   private constructor() {
-    console.log('RealTimeAnalyticsService: WebSocket functionality disabled');
+    console.log("RealTimeAnalyticsService: WebSocket functionality disabled");
     // NO WebSocket initialization - pure simulation only
     this.startSimulation();
   }
@@ -54,13 +54,19 @@ class RealTimeAnalyticsService {
 
     this.simulationInterval = window.setInterval(() => {
       const playerChange = Math.floor(Math.random() * 20) - 10;
-      playersOnline = Math.max(1000, Math.min(5000, playersOnline + playerChange));
+      playersOnline = Math.max(
+        1000,
+        Math.min(5000, playersOnline + playerChange),
+      );
 
       const scWinIncrease = (Math.random() * 50 + 1) * 0.01;
       totalSCWonToday += scWinIncrease;
       totalWinningsUSD = totalSCWonToday * 1000;
 
-      activeGames = Math.max(100, Math.min(200, activeGames + Math.floor(Math.random() * 10) - 5));
+      activeGames = Math.max(
+        100,
+        Math.min(200, activeGames + Math.floor(Math.random() * 10) - 5),
+      );
       if (Math.random() > 0.7) newSignupsToday++;
       jackpotTotal += Math.random() * 1000;
 
@@ -86,7 +92,7 @@ class RealTimeAnalyticsService {
   subscribe(id: string, callback: (data: RealTimeData) => void) {
     this.subscribers.set(id, callback);
     this.getCurrentData().then(callback);
-    
+
     return () => {
       this.subscribers.delete(id);
     };
@@ -128,7 +134,9 @@ class RealTimeAnalyticsService {
         isAdmin: i === 0,
         isOnline: true,
         lastActivity: new Date(Date.now() - Math.random() * 3600000),
-        location: ["USA", "Canada", "UK", "Australia"][Math.floor(Math.random() * 4)],
+        location: ["USA", "Canada", "UK", "Australia"][
+          Math.floor(Math.random() * 4)
+        ],
       });
     }
 
@@ -137,7 +145,9 @@ class RealTimeAnalyticsService {
 
   async trackSCWin(userId: string, amount: number, gameType: string) {
     if (amount >= 0.01) {
-      console.log(`Tracked SC win: ${amount} SC for user ${userId} in ${gameType}`);
+      console.log(
+        `Tracked SC win: ${amount} SC for user ${userId} in ${gameType}`,
+      );
     }
   }
 

@@ -726,7 +726,7 @@ export default function TableGames() {
                     <h3 className="text-lg font-bold mb-4">Dealer ({dealerValue})</h3>
                     <div className="flex justify-center gap-2 mb-4">
                       {dealerHand.map((card, index) => (
-                        <CardComponent key={index} card={card} faceDown={!card.faceUp} />
+                        <CardComponent key={`dealer-${index}-${card.suit}-${card.rank}`} card={card} faceDown={!card.faceUp} />
                       ))}
                     </div>
                   </div>

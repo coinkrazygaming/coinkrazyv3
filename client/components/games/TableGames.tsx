@@ -880,7 +880,7 @@ export default function TableGames() {
                     {/* Numbers 1-36 */}
                     {Array.from({ length: 36 }, (_, i) => i + 1).map(num => (
                       <Button
-                        key={num}
+                        key={`roulette-${num}`}
                         size="sm"
                         className={`w-8 h-8 text-white ${
                           getRouletteColor(num) === 'red' ? 'bg-red-600 hover:bg-red-700' : 'bg-black hover:bg-gray-800'

@@ -1,5 +1,8 @@
-// Redirect to new stats service to avoid cache issues
-export { newStatsService as statsService } from './StatsServiceNew';
-export type { StatsData } from './StatsServiceNew';
+// COMPLETELY REPLACED - NO WEBSOCKET CODE
+// This file has been replaced to fix getReadyStateText errors
 
-// This file now just re-exports the new service to maintain compatibility
+export { safeStatsService as statsService } from './SafeStatsService';
+export type { SafeStatsData as StatsData } from './SafeStatsService';
+
+// Original file caused TypeError: this.getReadyStateText is not a function
+// Now using safe implementation without WebSocket

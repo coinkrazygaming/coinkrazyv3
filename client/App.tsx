@@ -1,6 +1,17 @@
 import "./global.css";
 import "./services/globalErrorHandler"; // Load WebSocket error protection
 
+// Emergency error suppression for getReadyStateText
+if (typeof window !== 'undefined') {
+  window.onerror = (msg, url, line, col, error) => {
+    if (msg && msg.toString().includes('getReadyStateText')) {
+      console.log('Emergency: Suppressed getReadyStateText error');
+      return true; // Prevent default error handling
+    }
+    return false;
+  };
+}
+
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";

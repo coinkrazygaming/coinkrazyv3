@@ -1,5 +1,5 @@
 // Stats service for WebSocket connections and real-time statistics
-// Safe version - prevents WebSocket initialization until explicitly called
+// CACHE BREAKER: 1754504900000 - Safe version without getReadyStateText
 
 interface StatsData {
   playersOnline: number;

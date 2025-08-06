@@ -10,3 +10,13 @@
 export interface DemoResponse {
   message: string;
 }
+
+/**
+ * Response type for /api/stats
+ */
+export interface StatsResponse {
+  playersOnline: number;
+  totalWins: number;
+  activeGames: number;
+  serverStatus: 'online' | 'offline' | 'maintenance';
+}

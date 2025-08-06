@@ -1227,7 +1227,7 @@ export default function TableGames() {
         <CardContent>
           <div className="space-y-2">
             {gameHistory.slice(0, 5).map((game, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+              <div key={`game-history-${index}-${game.timestamp}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Badge className="capitalize">{game.game}</Badge>
                   <span className="text-sm">Bet: {game.bet} chips</span>

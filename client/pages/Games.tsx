@@ -34,6 +34,8 @@ import TableGames from "@/components/games/TableGames";
 import BingoHall from "@/components/games/BingoHall";
 import MiniGames from "@/components/games/MiniGames";
 import SlotsIntegration from "@/components/games/SlotsIntegration";
+import MaryHadALilCucumber from "@/components/games/MaryHadALilCucumber";
+import CurrencyToggle from "@/components/CurrencyToggle";
 import { playerCountService } from "@/services/playerCountService";
 import {
   gamesTrackingService,
@@ -270,6 +272,7 @@ export default function Games() {
   const [betSlip, setBetSlip] = useState<BetSelection[]>([]);
   const [showBetSlip, setShowBetSlip] = useState(false);
   const [userBalance] = useState({ gc: 125000, sc: 450 });
+  const [globalCurrencyMode, setGlobalCurrencyMode] = useState<"GC" | "SC">("GC");
 
   // Real-time stats from services
   const [liveStats, setLiveStats] = useState({
@@ -475,38 +478,23 @@ export default function Games() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Currency Toggle */}
+        <div className="mb-8">
+          <CurrencyToggle
+            currentCurrency={globalCurrencyMode}
+            onCurrencyChange={(currency) => {
+              setGlobalCurrencyMode(currency);
+              setCurrencyMode(currency);
+            }}
+            showBalances={true}
+            showToggleInfo={true}
+            size="lg"
+            className="w-full"
+          />
+        </div>
+
         {/* Filters */}
         <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <div className="flex items-center gap-4">
-            <div className="flex bg-card rounded-lg p-1">
-              <Button
-                variant={currencyMode === "GC" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setCurrencyMode("GC")}
-                className={
-                  currencyMode === "GC"
-                    ? "bg-gold-500 text-black hover:bg-gold-600"
-                    : ""
-                }
-              >
-                <Coins className="w-4 h-4 mr-2" />
-                Gold Coins (Play)
-              </Button>
-              <Button
-                variant={currencyMode === "SC" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setCurrencyMode("SC")}
-                className={
-                  currencyMode === "SC"
-                    ? "bg-casino-blue text-white hover:bg-casino-blue-dark"
-                    : ""
-                }
-              >
-                <Crown className="w-4 h-4 mr-2" />
-                Sweeps Coins (Win)
-              </Button>
-            </div>
-          </div>
 
           <div className="flex items-center gap-2 flex-1">
             <Search className="w-5 h-5 text-muted-foreground" />
@@ -626,7 +614,7 @@ export default function Games() {
                         size="sm"
                       >
                         <Play className="w-4 h-4 mr-2" />
-                        Play {currencyMode}
+                        Play {globalCurrencyMode}
                       </Button>
                       <Button variant="outline" size="sm">
                         <Eye className="w-4 h-4" />
@@ -754,7 +742,26 @@ export default function Games() {
 
           {/* Mini Games */}
           <TabsContent value="mini" className="mt-8">
-            <MiniGames />
+            <div className="space-y-8">
+              {/* Featured Mini Game */}
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Star className="w-6 h-6 text-gold-500" />
+                  <h2 className="text-2xl font-bold">Featured Game</h2>
+                  <Badge className="bg-green-600 text-white">New!</Badge>
+                </div>
+                <MaryHadALilCucumber />
+              </div>
+
+              {/* Other Mini Games */}
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Gamepad2 className="w-6 h-6 text-purple-500" />
+                  <h2 className="text-2xl font-bold">Mini Games Arcade</h2>
+                </div>
+                <MiniGames />
+              </div>
+            </div>
           </TabsContent>
 
           {/* Sports Betting */}

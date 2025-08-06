@@ -1180,7 +1180,7 @@ export default function TableGames() {
                 <h4 className="text-lg font-bold mb-4">Community Cards</h4>
                 <div className="flex justify-center gap-2">
                   {communityCards.map((card, index) => (
-                    <CardComponent key={index} card={card} />
+                    <CardComponent key={`community-${index}-${card.suit}-${card.rank}`} card={card} />
                   ))}
                 </div>
               </div>

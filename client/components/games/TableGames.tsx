@@ -1190,7 +1190,7 @@ export default function TableGames() {
                 <h4 className="text-lg font-bold mb-4">Your Hand</h4>
                 <div className="flex justify-center gap-2 mb-4">
                   {pokerHand.map((card, index) => (
-                    <CardComponent key={index} card={card} />
+                    <CardComponent key={`poker-hand-${index}-${card.suit}-${card.rank}`} card={card} />
                   ))}
                 </div>
                 

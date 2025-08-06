@@ -1,4 +1,5 @@
 import "./global.css";
+import "./services/globalErrorHandler"; // Load WebSocket error protection
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";

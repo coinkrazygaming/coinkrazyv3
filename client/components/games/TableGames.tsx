@@ -832,7 +832,7 @@ export default function TableGames() {
                   <div className="grid grid-cols-2 gap-2">
                     {[100, 500, 1000, 2500].map(amount => (
                       <Button
-                        key={amount}
+                        key={`quick-bet-${amount}`}
                         size="sm"
                         variant="outline"
                         onClick={() => setCurrentBet(amount)}

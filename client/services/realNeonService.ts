@@ -414,11 +414,21 @@ class RealNeonService {
   }
 
   async getUserByEmail(email: string): Promise<UserData | null> {
-    const [user] = await this.sql`
-      SELECT * FROM users WHERE email = ${email}
-    `;
+    try {
+      // Ensure SQL client is initialized
+      if (!this.sql) {
+        this.sql = neon(this.connectionString);
+      }
 
-    return user ? this.mapUserFromDb(user) : null;
+      const [user] = await this.sql`
+        SELECT * FROM users WHERE email = ${email}
+      `;
+
+      return user ? this.mapUserFromDb(user) : null;
+    } catch (error) {
+      console.error('Error getting user by email:', error);
+      return null;
+    }
   }
 
   async updateUser(id: string, updates: Partial<UserData>): Promise<UserData> {

@@ -218,20 +218,6 @@ export default function Login() {
               </div>
 
               {/* Admin Login Demo */}
-              <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="w-4 h-4 text-casino-blue" />
-                  <span className="text-sm font-medium">Demo Accounts</span>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <strong>Admin:</strong> coinkrazy00@gmail.com / Tabletop123!
-                  </div>
-                  <div>
-                    <strong>Player:</strong> demo@player.com / password123
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
 

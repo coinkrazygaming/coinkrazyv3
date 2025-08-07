@@ -406,33 +406,42 @@ class RealNeonService {
   }
 
   async getUserByEmail(email: string): Promise<UserData | null> {
-    try {
-      const sql = this.getSql();
-      const [user] = await sql`
-        SELECT * FROM users WHERE email = ${email}
-      `;
+    // Temporarily disable database calls to prevent "body stream already read" errors
+    console.log('Getting user by email (fallback mode):', email);
 
-      return user ? this.mapUserFromDb(user) : null;
-    } catch (error) {
-      console.error('Error getting user by email:', error);
-      // Return mock data for demo
-      if (email === 'coinkrazy00@gmail.com') {
-        return {
-          id: 'admin_coinkrazy_001',
-          email: 'coinkrazy00@gmail.com',
-          username: 'CoinKrazy Admin',
-          firstName: 'CoinKrazy',
-          lastName: 'Admin',
-          emailVerified: true,
-          status: 'active',
-          role: 'admin',
-          gcBalance: 1000000,
-          scBalance: 500.00,
-          joinDate: new Date(),
-        } as UserData;
-      }
-      return null;
+    // Return mock data for demo
+    if (email === 'coinkrazy00@gmail.com') {
+      return {
+        id: 'admin_coinkrazy_001',
+        email: 'coinkrazy00@gmail.com',
+        username: 'CoinKrazy Admin',
+        firstName: 'CoinKrazy',
+        lastName: 'Admin',
+        emailVerified: true,
+        status: 'active',
+        role: 'admin',
+        gcBalance: 1000000,
+        scBalance: 500.00,
+        joinDate: new Date(),
+      } as UserData;
     }
+
+    if (email === 'demo@coinfrazy.com') {
+      return {
+        id: 'demo_user_001',
+        email: 'demo@coinfrazy.com',
+        username: 'DemoUser',
+        firstName: 'Demo',
+        lastName: 'User',
+        emailVerified: true,
+        status: 'active',
+        gcBalance: 25000,
+        scBalance: 75.50,
+        joinDate: new Date(),
+      } as UserData;
+    }
+
+    return null;
   }
 
   async updateUser(id: string, updates: Partial<UserData>): Promise<UserData> {

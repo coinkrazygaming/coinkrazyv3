@@ -880,13 +880,13 @@ class WalletService {
 
   private async syncDepositToNeon(deposit: DepositRecord) {
     try {
-      if (this.neonClient?.connected) {
-        // In production, this would insert deposit record into Neon database
+      if (this.neonService) {
+        await this.neonService.saveDeposit(deposit);
         deposit.metadata = { ...deposit.metadata, neonSynced: true };
-        console.log("Syncing deposit to Neon:", deposit);
+        console.log("✅ Deposit synced to Neon:", deposit.id);
       }
     } catch (error) {
-      console.error("Failed to sync deposit to Neon:", error);
+      console.error("❌ Failed to sync deposit to Neon:", error);
     }
   }
 

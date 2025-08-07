@@ -69,7 +69,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                <span>coinkrazy00@gmail.com</span>
+                <span>support@coinfrazy.com</span>
               </div>
               <div className="space-y-1">
                 <Link

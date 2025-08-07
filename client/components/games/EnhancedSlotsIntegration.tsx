@@ -97,7 +97,8 @@ interface GameSession {
 
 const EnhancedSlotsIntegration: React.FC = () => {
   const { toast } = useToast();
-  const userId = "demo@coinfrazy.com"; // In production, this would come from auth context
+  const { user } = useAuth();
+  const userId = user?.id || user?.email || "guest";
 
   // Game state
   const [games, setGames] = useState<SlotGame[]>([]);

@@ -393,9 +393,41 @@ class AuthService {
 
   async login(data: LoginData): Promise<AuthResponse> {
     try {
-      const user = Array.from(this.users.values()).find(
-        (u) => u.email === data.email,
-      );
+      let user: User | null = null;
+
+      if (realNeonService.isConnected()) {
+        // Get user from Neon database
+        const neonUser = await realNeonService.getUserByEmail(data.email);
+        if (neonUser) {
+          user = this.mapNeonUserToLocal(neonUser);
+
+          // Update last login in Neon
+          await realNeonService.updateUser(user.id, {
+            lastLogin: new Date()
+          });
+
+          // Log login action
+          await realNeonService.logAdminAction({
+            admin_user_id: user.id,
+            action: 'user_login',
+            target_type: 'user',
+            target_id: user.id,
+            details: {
+              loginMethod: 'web',
+              userAgent: navigator.userAgent
+            },
+            ip_address: 'client-side', // In production, get real IP
+            user_agent: navigator.userAgent,
+            severity: 'info'
+          });
+        }
+      } else {
+        // Fallback to local storage
+        user = Array.from(this.users.values()).find(
+          (u) => u.email === data.email,
+        );
+      }
+
       if (!user) {
         return { success: false, error: "Invalid email or password" };
       }
@@ -417,10 +449,12 @@ class AuthService {
       // In a real app, you'd verify the password hash here
       // For demo purposes, we'll accept any password for existing users
 
-      // Update last login
-      user.lastLogin = new Date();
-      this.users.set(user.id, user);
-      this.saveUsersToStorage();
+      // Update last login in local storage as backup
+      if (!realNeonService.isConnected()) {
+        user.lastLogin = new Date();
+        this.users.set(user.id, user);
+        this.saveUsersToStorage();
+      }
 
       // Generate session token
       const token = this.generateToken();

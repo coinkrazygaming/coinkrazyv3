@@ -101,9 +101,20 @@ if (!globalThis.__APP_ROOT__) {
 
 globalThis.__APP_ROOT__.render(<App />);
 
-// HMR support
+// HMR support with error protection
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
-    globalThis.__APP_ROOT__.render(<App />);
+    try {
+      if (globalThis.__APP_ROOT__) {
+        globalThis.__APP_ROOT__.render(<App />);
+      }
+    } catch (error) {
+      console.warn('HMR update failed:', error);
+      // Fallback: recreate root if needed
+      if (!globalThis.__APP_ROOT__) {
+        globalThis.__APP_ROOT__ = createRoot(container);
+        globalThis.__APP_ROOT__.render(<App />);
+      }
+    }
   });
 }

@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { authService } from "../services/authService";
+import { RegisterData, WelcomeBonus } from "../types/auth";
 import {
   Gift,
   Shield,
@@ -56,6 +59,10 @@ export default function Register() {
     addressProof: null,
   });
   const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [welcomeBonus, setWelcomeBonus] = useState<WelcomeBonus | null>(null);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const { toast } = useToast();
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -97,13 +104,54 @@ export default function Register() {
     }
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (validateStep(currentStep)) {
       if (currentStep === 4) {
-        setRegistrationComplete(true);
+        await handleRegistration();
       } else {
         setCurrentStep((prev) => prev + 1);
       }
+    }
+  };
+
+  const handleRegistration = async () => {
+    setIsLoading(true);
+    try {
+      const registerData: RegisterData = {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: formData.username,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
+        acceptTerms: formData.agreeTerms,
+        acceptPrivacy: formData.agreeTerms,
+        newsletterOptIn: formData.agreeMarketing,
+      };
+
+      const response = await authService.register(registerData);
+
+      if (response.success) {
+        setVerificationSent(true);
+        toast({
+          title: "Registration Successful!",
+          description: response.message,
+        });
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: response.error || "Please try again",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Registration failed. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,50 +159,62 @@ export default function Register() {
     setCurrentStep((prev) => prev - 1);
   };
 
-  if (registrationComplete) {
+  if (verificationSent) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-2xl mx-auto border-gold-500/20 bg-gradient-to-r from-gold/5 to-casino-blue/5">
           <CardContent className="p-12 text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Crown className="w-10 h-10 text-black" />
+            <div className="w-20 h-20 bg-gradient-to-r from-casino-blue to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Mail className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-3xl font-bold mb-4">Welcome to CoinKrazy!</h2>
+            <h2 className="text-3xl font-bold mb-4">Check Your Email!</h2>
             <p className="text-muted-foreground mb-8">
-              Your account has been created successfully. You've received your
-              welcome bonus!
+              We've sent a verification email to <strong>{formData.email}</strong>.
+              Click the verification link to activate your account and claim your welcome bonus!
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-4 bg-card rounded-lg">
-                <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gold-500">100,000</div>
-                <div className="text-sm text-muted-foreground">Gold Coins</div>
-              </div>
-              <div className="text-center p-4 bg-card rounded-lg">
-                <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
-                <div className="text-2xl font-bold text-casino-blue">50</div>
-                <div className="text-sm text-muted-foreground">
-                  Sweeps Coins
+            <div className="bg-gradient-to-r from-gold/10 to-casino-blue/10 border border-gold-500/20 rounded-lg p-6 mb-8">
+              <h3 className="font-bold text-lg mb-4">🎁 Your Welcome Bonus Awaits!</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-card rounded-lg">
+                  <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-gold-500">10</div>
+                  <div className="text-sm text-muted-foreground">Gold Coins</div>
+                </div>
+                <div className="text-center p-4 bg-card rounded-lg">
+                  <Star className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-purple-500">10</div>
+                  <div className="text-sm text-muted-foreground">Sweeps Coins</div>
                 </div>
               </div>
-              <div className="text-center p-4 bg-card rounded-lg">
-                <Star className="w-8 h-8 text-gold-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gold-500">7</div>
-                <div className="text-sm text-muted-foreground">Days VIP</div>
-              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Verify your email to instantly receive your bonus and start playing!
+              </p>
             </div>
 
             <div className="space-y-4">
+              <div className="bg-muted/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-orange-500" />
+                  <span className="font-medium">Email Not Received?</span>
+                </div>
+                <ul className="text-sm text-muted-foreground text-left space-y-1">
+                  <li>• Check your spam/junk folder</li>
+                  <li>• Make sure {formData.email} is correct</li>
+                  <li>• Wait a few minutes for delivery</li>
+                  <li>• Contact support if you need help</li>
+                </ul>
+              </div>
+
               <Button
-                size="lg"
-                className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                variant="outline"
+                onClick={() => {
+                  setVerificationSent(false);
+                  setCurrentStep(1);
+                }}
               >
-                Start Playing Now
+                Back to Registration
               </Button>
-              <p className="text-sm text-muted-foreground">
-                Complete KYC verification to unlock Sweeps Coin withdrawals
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -185,26 +245,28 @@ export default function Register() {
             <CardContent className="p-6 text-center">
               <Gift className="w-12 h-12 text-gold-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-4">Welcome Bonus Package</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">
-                    100,000
+                  <div className="text-3xl font-bold text-gold-500 mb-1">
+                    10
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Free Gold Coins
+                    Gold Coins
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    For playing games
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-casino-blue mb-1">
-                    50
+                  <div className="text-3xl font-bold text-purple-500 mb-1">
+                    10
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Sweeps Coins
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">7</div>
-                  <div className="text-sm text-muted-foreground">Days VIP</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Redeemable for cash prizes
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -592,10 +654,17 @@ export default function Register() {
                 </Button>
                 <Button
                   onClick={nextStep}
-                  disabled={!validateStep(currentStep)}
+                  disabled={!validateStep(currentStep) || isLoading}
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
-                  {currentStep === 4 ? "Create Account" : "Next"}
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      Creating Account...
+                    </div>
+                  ) : (
+                    currentStep === 4 ? "Create Account & Get Bonus" : "Next"
+                  )}
                 </Button>
               </div>
             </CardContent>

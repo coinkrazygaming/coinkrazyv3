@@ -282,38 +282,42 @@ const EnhancedSlotsIntegration: React.FC = () => {
           features: ["Progressive Jackpot", "Megaways", "Free Spins", "Cascading Reels"],
           minBet: { GC: 20, SC: 0.2 },
           maxBet: { GC: 2000, SC: 20 },
-          paylines: 117649, // Megaways
+          paylines: 117649,
           reels: 6,
           category: ["featured", "megaways", "jackpot", "high-volatility"],
           isNew: true,
           isFeatured: true,
           isJackpot: true,
-          popularity: 98,
-          releaseDate: new Date("2024-01-15"),
-        },
-        {
-          id: "classic-777",
-          name: "Classic 777",
-          provider: "CoinKrazy",
-          thumbnail: "/api/placeholder/300/200",
-          rtp: 96.8,
-          volatility: "low",
-          maxWin: 1000,
-          features: ["Classic Symbols", "Simple Gameplay"],
-          minBet: { GC: 1, SC: 0.01 },
-          maxBet: { GC: 100, SC: 1 },
-          paylines: 1,
-          reels: 3,
-          category: ["classic"],
-          isNew: false,
-          isFeatured: false,
-          isJackpot: false,
-          popularity: 75,
-          releaseDate: new Date("2023-06-01"),
+          popularity: 88,
+          releaseDate: new Date("2023-11-20"),
         },
       ];
 
-      setGames(mockGames);
+      // Load jackpot data for all games
+      const gamesWithJackpots = await Promise.all(
+        realGames.map(async (game) => {
+          try {
+            const jackpotData = await jackpotService.getJackpotDisplayData(game.id);
+            return {
+              ...game,
+              currentJackpot: jackpotData.amount,
+              jackpotFormatted: jackpotData.formatted,
+            };
+          } catch (error) {
+            console.error(`Failed to load jackpot for ${game.id}:`, error);
+            return {
+              ...game,
+              currentJackpot: 0,
+              jackpotFormatted: "$0",
+            };
+          }
+        })
+      );
+
+      setGames(gamesWithJackpots);
+
+      // Set up real-time jackpot updates
+      setupJackpotUpdates();
     } catch (error) {
       console.error("Error loading slot games:", error);
       toast({

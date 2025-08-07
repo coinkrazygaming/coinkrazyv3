@@ -1,4 +1,5 @@
-import { walletService, CurrencyType } from './walletService';
+import { walletService, CurrencyType, DepositRecord } from './walletService';
+import { currencyToggleService } from './currencyToggleService';
 
 export interface PayPalConfig {
   clientId: string;

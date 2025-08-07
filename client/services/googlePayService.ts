@@ -298,38 +298,39 @@ class GooglePayService {
       const result = await this.processPaymentToken(mockPaymentData, packageData, userId);
       
       if (result.success) {
-        // Award coins to user
-        await walletService.addBalance(userId, packageData.goldCoins, 'GC');
-        
-        // Calculate and award bonus sweep coins
+        // Calculate bonus amounts
+        const bonusGC = Math.floor(packageData.goldCoins * (packageData.bonusPercentage || 0) / 100);
         const bonusSC = Math.floor(packageData.sweepCoins * (packageData.bonusPercentage || 0) / 100);
-        const totalSC = packageData.sweepCoins + bonusSC;
-        await walletService.addBalance(userId, totalSC, 'SC');
 
-        // Record transaction
-        const transaction = {
-          id: `gpy_${Date.now()}`,
-          userId: userId,
-          packageId: packageData.id,
-          amount: packageData.price,
-          currency: 'USD',
-          goldCoinsAwarded: packageData.goldCoins,
-          sweepCoinsAwarded: totalSC,
-          status: 'completed',
-          paymentMethod: 'GooglePay',
-          googlePayToken: mockPaymentData.paymentMethodData.tokenizationData.token,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
+        // Process deposit through enhanced wallet service
+        const deposit = await walletService.processDeposit(
+          userId,
+          packageData.price,
+          'Google Pay',
+          mockPaymentData.paymentMethodData.tokenizationData.token,
+          {
+            goldCoins: packageData.goldCoins,
+            bonusGC: bonusGC,
+            sweepsCoins: packageData.sweepCoins + bonusSC
+          },
+          `Google Pay purchase: Package ${packageData.id}`
+        );
 
-        // Store transaction
-        localStorage.setItem(`transaction_${transaction.id}`, JSON.stringify(transaction));
+        // Update user's preferred currency if they made a deposit
+        // This helps establish their preferred gaming currency
+        const currentCurrency = currencyToggleService.getUserCurrency(userId);
+        if (packageData.goldCoins > packageData.sweepCoins) {
+          currencyToggleService.setUserCurrency(userId, 'GC');
+        } else if (packageData.sweepCoins > 0) {
+          currencyToggleService.setUserCurrency(userId, 'SC');
+        }
 
         return {
           success: true,
-          transactionId: transaction.id,
-          goldCoinsAwarded: packageData.goldCoins,
-          sweepCoinsAwarded: totalSC
+          transactionId: deposit.id,
+          goldCoinsAwarded: packageData.goldCoins + bonusGC,
+          sweepCoinsAwarded: packageData.sweepCoins + bonusSC,
+          depositRecord: deposit
         };
       } else {
         throw new Error('Payment processing failed');

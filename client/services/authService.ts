@@ -224,15 +224,20 @@ class AuthService {
         return { success: false, message: 'Invalid or expired verification token' };
       }
 
+      // Import bonusService dynamically to avoid circular dependency
+      const { bonusService } = await import('./bonusService');
+
       // Award welcome bonus after email verification
-      await databaseService.createUserBalance(user.id, 10, 10);
+      const bonusResult = await bonusService.claimWelcomeBonus(user.id);
 
       // Send welcome email with bonus info
       await this.sendWelcomeEmail(user.email, user.username);
 
       return {
         success: true,
-        message: 'Email verified successfully! Your welcome bonus of 10 GC + 10 SC has been added to your account.'
+        message: bonusResult.success
+          ? `Email verified successfully! ${bonusResult.message}`
+          : 'Email verified successfully! Your welcome bonus is ready to claim.'
       };
 
     } catch (error) {

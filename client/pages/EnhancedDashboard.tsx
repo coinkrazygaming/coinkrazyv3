@@ -5,38 +5,29 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Coins,
   Crown,
   Gift,
-  TrendingUp,
   Calendar,
-  Star,
   Trophy,
   DollarSign,
-  Wallet,
   CheckCircle,
   Clock,
-  AlertTriangle,
-  Shield,
   Settings,
   Plus,
   ArrowUpRight,
   ArrowDownLeft,
   RotateCcw,
   Gamepad2,
-  Target,
-  Flame,
+  Shield,
   Zap,
-  Heart,
   Activity,
-  Award,
   ChevronRight,
   Sparkles,
   Timer,
-  RefreshCw
+  RefreshCw,
+  Wallet
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -50,8 +41,6 @@ interface UserStats {
   biggestWin: number;
   favoriteGame: string;
   winRate: number;
-  averageSession: number;
-  totalSessions: number;
   vipPoints: number;
   nextVipLevel: string;
   pointsToNextLevel: number;
@@ -61,17 +50,6 @@ interface DailyBonus {
   day: number;
   reward: { type: 'GC' | 'SC'; amount: number };
   claimed: boolean;
-}
-
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  progress: number;
-  maxProgress: number;
-  reward: { type: 'GC' | 'SC'; amount: number };
-  unlocked: boolean;
 }
 
 interface Transaction {
@@ -88,15 +66,13 @@ export default function EnhancedDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   
-  const [userStats, setUserStats] = useState<UserStats>({
+  const [userStats] = useState<UserStats>({
     totalGamesPlayed: 1247,
     totalWagered: 485600,
     totalWinnings: 421350,
     biggestWin: 15750,
     favoriteGame: 'CoinKrazy Special',
     winRate: 42.8,
-    averageSession: 28,
-    totalSessions: 89,
     vipPoints: 2840,
     nextVipLevel: 'Platinum',
     pointsToNextLevel: 1160
@@ -117,39 +93,6 @@ export default function EnhancedDashboard() {
     { day: 6, reward: { type: 'SC', amount: 10 }, claimed: false },
     { day: 7, reward: { type: 'GC', amount: 5000 }, claimed: false }
   ]);
-
-  const [achievements] = useState<Achievement[]>([
-    {
-      id: 'first_win',
-      name: 'First Victory',
-      description: 'Win your first game',
-      icon: '🏆',
-      progress: 1,
-      maxProgress: 1,
-      reward: { type: 'GC', amount: 500 },
-      unlocked: true
-    },
-    {
-      id: 'high_roller',
-      name: 'High Roller',
-      description: 'Wager 100,000 GC',
-      icon: '💰',
-      progress: 85600,
-      maxProgress: 100000,
-      reward: { type: 'SC', amount: 25 },
-      unlocked: false
-    },
-    {
-      id: 'big_winner',
-      name: 'Big Winner',
-      description: 'Win 10,000 GC in a single spin',
-      icon: '🎰',
-      progress: 8750,
-      maxProgress: 10000,
-      reward: { type: 'GC', amount: 2000 },
-      unlocked: false
-    }
-  ];
 
   const [recentTransactions] = useState<Transaction[]>([
     {
@@ -199,7 +142,6 @@ export default function EnhancedDashboard() {
         todayBonus.claimed = true;
         setCanClaimDailyBonus(false);
         
-        // Update balance display
         setBalances(prev => ({
           ...prev,
           [todayBonus.reward.type]: prev[todayBonus.reward.type] + todayBonus.reward.amount
@@ -259,7 +201,7 @@ export default function EnhancedDashboard() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-4">
           <Avatar className="w-16 h-16">
-            <AvatarImage src="/api/placeholder/64/64" />
+            <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face" />
             <AvatarFallback className="text-lg font-bold">
               {user?.email?.charAt(0).toUpperCase() || 'U'}
             </AvatarFallback>
@@ -443,231 +385,126 @@ export default function EnhancedDashboard() {
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
+      {/* Gaming Stats & Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gamepad2 className="w-5 h-5" />
+              Gaming Statistics
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-2xl font-bold text-blue-400">
+                  {userStats.totalGamesPlayed.toLocaleString()}
+                </div>
+                <p className="text-sm text-muted-foreground">Games Played</p>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-green-400">
+                  {userStats.winRate}%
+                </div>
+                <p className="text-sm text-muted-foreground">Win Rate</p>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-400">
+                  {formatCurrency(userStats.totalWagered, 'GC')}
+                </div>
+                <p className="text-sm text-muted-foreground">Total Wagered</p>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-gold-400">
+                  {formatCurrency(userStats.biggestWin, 'GC')}
+                </div>
+                <p className="text-sm text-muted-foreground">Biggest Win</p>
+              </div>
+            </div>
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground">Favorite Game</p>
+              <p className="font-medium">{userStats.favoriteGame}</p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Gaming Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gamepad2 className="w-5 h-5" />
-                  Gaming Statistics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="w-5 h-5" />
+              Quick Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Link to="/games" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <Gamepad2 className="w-4 h-4 mr-2" />
+                Play Games
+                <ChevronRight className="w-4 h-4 ml-auto" />
+              </Button>
+            </Link>
+            <Link to="/store" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <Coins className="w-4 h-4 mr-2" />
+                Buy Gold Coins
+                <ChevronRight className="w-4 h-4 ml-auto" />
+              </Button>
+            </Link>
+            <Button variant="outline" className="w-full justify-start">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Redeem Sweep Coins
+              <ChevronRight className="w-4 h-4 ml-auto" />
+            </Button>
+            <Link to="/support" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <Shield className="w-4 h-4 mr-2" />
+                Contact Support
+                <ChevronRight className="w-4 h-4 ml-auto" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Transactions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5" />
+            Recent Transactions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recentTransactions.map((transaction) => (
+              <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-3">
+                  {getTransactionIcon(transaction.type)}
                   <div>
-                    <div className="text-2xl font-bold text-blue-400">
-                      {userStats.totalGamesPlayed.toLocaleString()}
-                    </div>
-                    <p className="text-sm text-muted-foreground">Games Played</p>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-400">
-                      {userStats.winRate}%
-                    </div>
-                    <p className="text-sm text-muted-foreground">Win Rate</p>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-purple-400">
-                      {formatCurrency(userStats.totalWagered, 'GC')}
-                    </div>
-                    <p className="text-sm text-muted-foreground">Total Wagered</p>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gold-400">
-                      {formatCurrency(userStats.biggestWin, 'GC')}
-                    </div>
-                    <p className="text-sm text-muted-foreground">Biggest Win</p>
+                    <p className="font-medium">{transaction.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {transaction.timestamp.toLocaleDateString()} at {transaction.timestamp.toLocaleTimeString()}
+                    </p>
                   </div>
                 </div>
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-muted-foreground">Favorite Game</p>
-                  <p className="font-medium">{userStats.favoriteGame}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link to="/games" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Gamepad2 className="w-4 h-4 mr-2" />
-                    Play Games
-                    <ChevronRight className="w-4 h-4 ml-auto" />
-                  </Button>
-                </Link>
-                <Link to="/store" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Coins className="w-4 h-4 mr-2" />
-                    Buy Gold Coins
-                    <ChevronRight className="w-4 h-4 ml-auto" />
-                  </Button>
-                </Link>
-                <Link to="/dashboard/withdraw" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    Redeem Sweep Coins
-                    <ChevronRight className="w-4 h-4 ml-auto" />
-                  </Button>
-                </Link>
-                <Link to="/support" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Contact Support
-                    <ChevronRight className="w-4 h-4 ml-auto" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="achievements" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievements.map((achievement) => (
-              <Card key={achievement.id} className={achievement.unlocked ? 'bg-green-500/10 border-green-500/30' : ''}>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="text-2xl">{achievement.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">{achievement.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {achievement.description}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>{achievement.progress.toLocaleString()}</span>
-                          <span className="text-muted-foreground">
-                            {achievement.maxProgress.toLocaleString()}
-                          </span>
-                        </div>
-                        <Progress value={(achievement.progress / achievement.maxProgress) * 100} className="h-2" />
-                        <div className="flex items-center justify-between">
-                          <Badge variant="outline" className="text-xs">
-                            {achievement.reward.amount} {achievement.reward.type}
-                          </Badge>
-                          {achievement.unlocked && (
-                            <Badge className="bg-green-500 text-xs">
-                              <Trophy className="w-3 h-3 mr-1" />
-                              Unlocked
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                <div className="text-right">
+                  <div className={`font-medium ${
+                    transaction.type === 'win' || transaction.type === 'deposit' || transaction.type === 'bonus'
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  }`}>
+                    {transaction.type === 'bet' ? '-' : '+'}
+                    {formatCurrency(transaction.amount, transaction.currency)}
                   </div>
-                </CardContent>
-              </Card>
+                  <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="text-xs">
+                    {transaction.status}
+                  </Badge>
+                </div>
+              </div>
             ))}
           </div>
-        </TabsContent>
-
-        <TabsContent value="transactions" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="w-5 h-5" />
-                Recent Transactions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentTransactions.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                    <div className="flex items-center gap-3">
-                      {getTransactionIcon(transaction.type)}
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {transaction.timestamp.toLocaleDateString()} at {transaction.timestamp.toLocaleTimeString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className={`font-medium ${
-                        transaction.type === 'win' || transaction.type === 'deposit' || transaction.type === 'bonus'
-                          ? 'text-green-500'
-                          : 'text-red-500'
-                      }`}>
-                        {transaction.type === 'bet' ? '-' : '+'}
-                        {formatCurrency(transaction.amount, transaction.currency)}
-                      </div>
-                      <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="text-xs">
-                        {transaction.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  Account Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button variant="outline" className="w-full justify-start">
-                  <Shield className="w-4 h-4 mr-2" />
-                  Security Settings
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Payment Methods
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Responsible Gaming
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Verification</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span>Email Verified</span>
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Phone Verified</span>
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Identity Verified</span>
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -40,6 +40,7 @@ import DailyLuckyWheel from "./components/DailyLuckyWheel";
 import BankingTab from "./components/BankingTab";
 import SweepstakesCompliance from "./components/SweepstakesCompliance";
 import InHouseCasino from "./components/games/InHouseCasino";
+import RealGameAggregator from "./components/RealGameAggregator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

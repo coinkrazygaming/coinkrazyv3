@@ -124,7 +124,7 @@ export default function Login() {
               <div className="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Crown className="w-6 h-6 text-black" />
               </div>
-              <CardTitle>Login to CoinKrazy</CardTitle>
+              <CardTitle>Login to Start Going CoinKrazy!</CardTitle>
               <p className="text-muted-foreground">
                 Access your account and continue playing
               </p>

@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 import {
   Crown,
   Mail,
@@ -13,92 +16,76 @@ import {
   Shield,
   Smartphone,
   AlertTriangle,
+  Loader2,
+  CheckCircle,
 } from "lucide-react";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { login, loading } = useAuth();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [is2FARequired, setIs2FARequired] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // Check for verification success message
+  const verified = searchParams.get('verified');
+  const verifyError = searchParams.get('verify_error');
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError(""); // Clear error when user starts typing
   };
 
-  const handleLogin = () => {
-    // Simulate login process
-    // 2FA disabled for admin accounts as requested
-    console.log("Login successful");
-    // Navigate to appropriate dashboard
-    if (formData.email === "coinkrazy00@gmail.com") {
-      // Admin user - redirect to admin panel
-      window.location.href = "/admin";
-    } else {
-      // Regular user - redirect to dashboard
-      window.location.href = "/dashboard";
+  const handleLogin = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    
+    if (!formData.email || !formData.password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
+    try {
+      const response = await login(formData.email, formData.password);
+      
+      if (response.success && response.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been logged in successfully.",
+        });
+
+        // Redirect based on user role
+        if (response.user.role === 'admin') {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        setError(response.message || "Login failed");
+        
+        if (response.requiresEmailVerification) {
+          setError("Please verify your email address before logging in. Check your inbox for the verification link.");
+        }
+      }
+    } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
     }
   };
 
-  const handle2FASubmit = () => {
-    if (twoFactorCode.length === 6) {
-      console.log("2FA verified, login complete");
-      // Redirect to admin panel or dashboard
-    }
+  const fillAdminCredentials = () => {
+    setFormData({
+      email: "coinkrazy00@gmail.com",
+      password: "Woot6969!",
+      rememberMe: false
+    });
   };
-
-  if (is2FARequired) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md border-gold-500/20">
-          <CardHeader className="text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-6 h-6 text-black" />
-            </div>
-            <CardTitle>Two-Factor Authentication</CardTitle>
-            <p className="text-muted-foreground">
-              Enter the 6-digit code from your authenticator app
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Verification Code
-              </label>
-              <Input
-                type="text"
-                placeholder="000000"
-                value={twoFactorCode}
-                onChange={(e) => setTwoFactorCode(e.target.value)}
-                maxLength={6}
-                className="text-center text-2xl tracking-widest"
-              />
-            </div>
-
-            <Button
-              onClick={handle2FASubmit}
-              disabled={twoFactorCode.length !== 6}
-              className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-            >
-              Verify & Login
-            </Button>
-
-            <div className="text-center">
-              <button
-                className="text-sm text-muted-foreground hover:text-foreground"
-                onClick={() => setIs2FARequired(false)}
-              >
-                Back to login
-              </button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -130,80 +117,132 @@ export default function Login() {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+              {/* Success/Error Messages */}
+              {verified && (
+                <Alert className="border-green-500/20 bg-green-500/10">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <AlertDescription className="text-green-400">
+                    Email verified successfully! Your welcome bonus has been added to your account. You can now log in.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              {verifyError && (
+                <Alert className="border-red-500/20 bg-red-500/10">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  <AlertDescription className="text-red-400">
+                    Email verification failed. The link may be invalid or expired.
+                  </AlertDescription>
+                </Alert>
+              )}
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      handleInputChange("password", e.target.value)
-                    }
-                    className="pl-10 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
+              {error && (
+                <Alert className="border-red-500/20 bg-red-500/10">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  <AlertDescription className="text-red-400">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={(e) =>
-                      handleInputChange("rememberMe", e.target.checked)
-                    }
-                  />
-                  <label htmlFor="rememberMe" className="text-sm">
-                    Remember me
+              {success && (
+                <Alert className="border-green-500/20 bg-green-500/10">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <AlertDescription className="text-green-400">
+                    {success}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Email Address
                   </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="pl-10"
+                      disabled={loading}
+                      autoComplete="email"
+                    />
+                  </div>
                 </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-gold-400 hover:text-gold-300"
-                >
-                  Forgot password?
-                </Link>
-              </div>
 
-              <Button
-                onClick={handleLogin}
-                disabled={!formData.email || !formData.password}
-                className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-              >
-                Login
-              </Button>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
+                      className="pl-10 pr-10"
+                      disabled={loading}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      disabled={loading}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      checked={formData.rememberMe}
+                      onChange={(e) =>
+                        handleInputChange("rememberMe", e.target.checked)
+                      }
+                      disabled={loading}
+                    />
+                    <label htmlFor="rememberMe" className="text-sm">
+                      Remember me
+                    </label>
+                  </div>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-gold-400 hover:text-gold-300"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={!formData.email || !formData.password || loading}
+                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
+              </form>
 
               <div className="text-center">
                 <p className="text-muted-foreground">
@@ -217,19 +256,25 @@ export default function Login() {
                 </p>
               </div>
 
-              {/* Admin Login Demo */}
+              {/* Admin Login Helper */}
               <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Shield className="w-4 h-4 text-casino-blue" />
-                  <span className="text-sm font-medium">Demo Accounts</span>
+                  <span className="text-sm font-medium">Quick Admin Access</span>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <div>
-                    <strong>Admin:</strong> coinkrazy00@gmail.com / Tabletop123!
-                  </div>
-                  <div>
-                    <strong>Player:</strong> demo@player.com / password123
-                  </div>
+                  <p className="text-muted-foreground">
+                    <strong>Admin Account:</strong> coinkrazy00@gmail.com
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={fillAdminCredentials}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    Fill Admin Credentials
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -290,8 +335,7 @@ export default function Login() {
             <div className="bg-gradient-to-r from-gold/5 to-casino-blue/5 rounded-lg p-6 border border-gold-500/20">
               <h3 className="font-bold text-lg mb-2">New Player Bonus</h3>
               <p className="text-muted-foreground mb-4">
-                Get started with 100,000 Gold Coins + 50 Sweeps Coins + 7 Days
-                VIP when you sign up!
+                Get started with 10 Gold Coins + 10 Sweeps Coins when you verify your email!
               </p>
               <Link to="/register">
                 <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">

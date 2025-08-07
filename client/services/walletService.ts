@@ -707,6 +707,339 @@ class WalletService {
 
     return this.updateBalance(userId, bonusGC, bonusSC, `Level ${level} Bonus`);
   }
+
+  // Deposit processing methods
+  async processDeposit(
+    userId: string,
+    usdAmount: number,
+    paymentMethod: string,
+    paymentId: string,
+    gcPackage: { goldCoins: number; bonusGC?: number; sweepsCoins: number },
+    adminNotes?: string
+  ): Promise<DepositRecord> {
+    const depositId = `dep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const totalGC = gcPackage.goldCoins + (gcPackage.bonusGC || 0);
+
+    const deposit: DepositRecord = {
+      id: depositId,
+      userId,
+      amount: usdAmount,
+      usdAmount,
+      gcAwarded: totalGC,
+      scAwarded: gcPackage.sweepsCoins,
+      paymentMethod,
+      paymentId,
+      status: "completed",
+      timestamp: new Date(),
+      adminNotes,
+      metadata: {
+        originalGC: gcPackage.goldCoins,
+        bonusGC: gcPackage.bonusGC || 0,
+        neonSynced: false
+      }
+    };
+
+    // Add to user deposit history
+    if (!this.deposits.has(userId)) {
+      this.deposits.set(userId, []);
+    }
+    this.deposits.get(userId)!.unshift(deposit);
+
+    // Update wallet balances
+    await this.updateBalance(
+      userId,
+      totalGC,
+      gcPackage.sweepsCoins,
+      `Deposit: ${paymentMethod} $${usdAmount}`,
+      undefined,
+      "slots",
+      0,
+      0,
+      depositId,
+      paymentMethod
+    );
+
+    // Record individual transactions for detailed tracking
+    await this.addTransaction(
+      userId,
+      "credit",
+      "GC",
+      totalGC,
+      `Deposit: ${totalGC} Gold Coins`,
+      undefined,
+      "slots",
+      0,
+      totalGC,
+      paymentId,
+      true,
+      paymentMethod
+    );
+
+    if (gcPackage.sweepsCoins > 0) {
+      await this.addTransaction(
+        userId,
+        "credit",
+        "SC",
+        gcPackage.sweepsCoins,
+        `Deposit: ${gcPackage.sweepsCoins} Sweeps Coins`,
+        undefined,
+        "slots",
+        0,
+        gcPackage.sweepsCoins,
+        paymentId,
+        true,
+        paymentMethod
+      );
+    }
+
+    // Update total deposited amount
+    const wallet = await this.getUserWallet(userId);
+    wallet.totalDeposited = (wallet.totalDeposited || 0) + usdAmount;
+    this.wallets.set(userId, wallet);
+
+    // Notify deposit listeners
+    this.notifyDepositChange(userId);
+
+    // Sync to Neon
+    await this.syncDepositToNeon(deposit);
+
+    return deposit;
+  }
+
+  private async addTransaction(
+    userId: string,
+    type: "credit" | "debit",
+    currency: CurrencyType,
+    amount: number,
+    description: string,
+    gameId?: string,
+    gameType?: "slots" | "table" | "live" | "bingo" | "sportsbook",
+    betAmount?: number,
+    winAmount?: number,
+    paymentId?: string,
+    isDeposit?: boolean,
+    depositMethod?: string
+  ) {
+    const wallet = await this.getUserWallet(userId);
+
+    const transaction: WalletTransaction = {
+      id: `txn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      userId,
+      type,
+      currency,
+      amount,
+      description,
+      gameId,
+      gameType,
+      betAmount,
+      winAmount,
+      transactionDate: new Date(),
+      balanceAfter: {
+        GC: wallet.goldCoins,
+        SC: wallet.sweepsCoins,
+        USD: wallet.cashBalance || 0,
+      },
+      metadata: {
+        neonSynced: false,
+        sessionId: this.getCurrentSessionId(userId),
+      },
+      paymentId,
+      isDeposit,
+      depositMethod
+    };
+
+    if (!this.transactions.has(userId)) {
+      this.transactions.set(userId, []);
+    }
+
+    this.transactions.get(userId)!.unshift(transaction);
+
+    // Keep only last 500 transactions per user
+    const userTransactions = this.transactions.get(userId)!;
+    if (userTransactions.length > 500) {
+      this.transactions.set(userId, userTransactions.slice(0, 500));
+    }
+
+    // Sync transaction to Neon
+    await this.syncTransactionToNeon(transaction);
+  }
+
+  private async syncDepositToNeon(deposit: DepositRecord) {
+    try {
+      if (this.neonClient?.connected) {
+        // In production, this would insert deposit record into Neon database
+        deposit.metadata = { ...deposit.metadata, neonSynced: true };
+        console.log("Syncing deposit to Neon:", deposit);
+      }
+    } catch (error) {
+      console.error("Failed to sync deposit to Neon:", error);
+    }
+  }
+
+  // Get user deposit history
+  getUserDeposits(userId: string, limit: number = 50): DepositRecord[] {
+    return this.deposits.get(userId)?.slice(0, limit) || [];
+  }
+
+  // Subscribe to deposit updates
+  subscribeToDepositUpdates(
+    userId: string,
+    callback: (deposits: DepositRecord[]) => void
+  ): () => void {
+    if (!this.depositListeners.has(userId)) {
+      this.depositListeners.set(userId, new Set());
+    }
+
+    this.depositListeners.get(userId)!.add(callback);
+
+    // Call immediately with current deposits
+    callback(this.getUserDeposits(userId));
+
+    return () => {
+      this.depositListeners.get(userId)?.delete(callback);
+    };
+  }
+
+  private notifyDepositChange(userId: string) {
+    const userListeners = this.depositListeners.get(userId);
+    if (userListeners) {
+      const deposits = this.getUserDeposits(userId);
+      userListeners.forEach(callback => callback(deposits));
+    }
+  }
+
+  // Admin methods for deposit management
+  getAllDeposits(): DepositRecord[] {
+    const allDeposits: DepositRecord[] = [];
+    this.deposits.forEach(userDeposits => {
+      allDeposits.push(...userDeposits);
+    });
+    return allDeposits.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
+
+  getDepositsByPaymentMethod(paymentMethod: string): DepositRecord[] {
+    return this.getAllDeposits().filter(d => d.paymentMethod === paymentMethod);
+  }
+
+  getDepositStatistics(): {
+    totalDeposits: number;
+    totalUSD: number;
+    totalGCAwarded: number;
+    totalSCAwarded: number;
+    byPaymentMethod: Record<string, number>;
+    last24Hours: number;
+    last7Days: number;
+  } {
+    const allDeposits = this.getAllDeposits();
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const byPaymentMethod: Record<string, number> = {};
+    let totalUSD = 0;
+    let totalGCAwarded = 0;
+    let totalSCAwarded = 0;
+    let last24Hours = 0;
+    let last7Days = 0;
+
+    allDeposits.forEach(deposit => {
+      totalUSD += deposit.usdAmount;
+      totalGCAwarded += deposit.gcAwarded;
+      totalSCAwarded += deposit.scAwarded;
+
+      byPaymentMethod[deposit.paymentMethod] = (byPaymentMethod[deposit.paymentMethod] || 0) + deposit.usdAmount;
+
+      if (deposit.timestamp >= oneDayAgo) {
+        last24Hours += deposit.usdAmount;
+      }
+      if (deposit.timestamp >= sevenDaysAgo) {
+        last7Days += deposit.usdAmount;
+      }
+    });
+
+    return {
+      totalDeposits: allDeposits.length,
+      totalUSD,
+      totalGCAwarded,
+      totalSCAwarded,
+      byPaymentMethod,
+      last24Hours,
+      last7Days
+    };
+  }
+
+  // Enhanced updateBalance method to support deposits
+  async updateBalance(
+    userId: string,
+    gcChange: number,
+    scChange: number,
+    description: string,
+    gameId?: string,
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook" = "slots",
+    betAmount?: number,
+    winAmount?: number,
+    paymentId?: string,
+    depositMethod?: string
+  ): Promise<UserWallet> {
+    const currentWallet = await this.getUserWallet(userId);
+
+    // Calculate new balances (prevent negative balances)
+    const newGC = Math.max(0, currentWallet.goldCoins + gcChange);
+    const newSC = Math.max(0, currentWallet.sweepsCoins + scChange);
+
+    // Update lifetime stats
+    const lifetimeWins = currentWallet.lifetimeWins || 0;
+    const lifetimeLosses = currentWallet.lifetimeLosses || 0;
+    const newLifetimeWins = winAmount ? lifetimeWins + winAmount : lifetimeWins;
+    const newLifetimeLosses =
+      betAmount && !winAmount ? lifetimeLosses + betAmount : lifetimeLosses;
+
+    // Update wallet
+    const updatedWallet: UserWallet = {
+      ...currentWallet,
+      goldCoins: newGC,
+      sweepsCoins: newSC,
+      lifetimeWins: newLifetimeWins,
+      lifetimeLosses: newLifetimeLosses,
+      lastUpdated: new Date(),
+    };
+
+    this.wallets.set(userId, updatedWallet);
+
+    // Notify listeners
+    this.notifyWalletChange(userId, updatedWallet);
+
+    // Sync to Neon
+    await this.syncWalletToNeon(userId, updatedWallet);
+
+    return updatedWallet;
+  }
+
+  // Currency preference methods
+  setUserCurrencyPreference(userId: string, currency: CurrencyType): void {
+    const wallet = this.wallets.get(userId);
+    if (wallet) {
+      wallet.preferredCurrency = currency;
+      wallet.lastUpdated = new Date();
+      this.wallets.set(userId, wallet);
+      this.notifyWalletChange(userId, wallet);
+    }
+  }
+
+  getUserCurrencyPreference(userId: string): CurrencyType {
+    const wallet = this.wallets.get(userId);
+    return wallet?.preferredCurrency || "GC";
+  }
+
+  // Real-time update control
+  setRealTimeUpdates(userId: string, enabled: boolean): void {
+    const wallet = this.wallets.get(userId);
+    if (wallet) {
+      wallet.realTimeUpdateEnabled = enabled;
+      this.wallets.set(userId, wallet);
+    }
+  }
 }
 
 export const walletService = WalletService.getInstance();

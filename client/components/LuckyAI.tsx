@@ -23,7 +23,7 @@ import {
   BarChart3,
   Server,
   Cpu,
-  Memory,
+  Database,
   HardDrive,
   Network,
   Play,

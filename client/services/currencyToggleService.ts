@@ -1,4 +1,4 @@
-import { CurrencyType } from './walletService';
+import { CurrencyType } from "./walletService";
 
 export type GameCurrencyType = "GC" | "SC";
 
@@ -20,8 +20,11 @@ class CurrencyToggleService {
   private static instance: CurrencyToggleService;
   private preferences: Map<string, CurrencyPreferences> = new Map();
   private toggleStates: Map<string, CurrencyToggleState> = new Map();
-  private listeners: Map<string, Set<(currency: GameCurrencyType) => void>> = new Map();
-  private globalListeners: Set<(userId: string, currency: GameCurrencyType) => void> = new Set();
+  private listeners: Map<string, Set<(currency: GameCurrencyType) => void>> =
+    new Map();
+  private globalListeners: Set<
+    (userId: string, currency: GameCurrencyType) => void
+  > = new Set();
 
   static getInstance(): CurrencyToggleService {
     if (!CurrencyToggleService.instance) {
@@ -37,66 +40,64 @@ class CurrencyToggleService {
 
   private loadFromStorage() {
     try {
-      const stored = localStorage.getItem('currency_preferences');
+      const stored = localStorage.getItem("currency_preferences");
       if (stored) {
         const data = JSON.parse(stored);
         Object.entries(data).forEach(([userId, prefs]: [string, any]) => {
           this.preferences.set(userId, {
             ...prefs,
-            lastUpdated: new Date(prefs.lastUpdated)
+            lastUpdated: new Date(prefs.lastUpdated),
           });
         });
       }
 
-      const toggleStates = localStorage.getItem('currency_toggle_states');
+      const toggleStates = localStorage.getItem("currency_toggle_states");
       if (toggleStates) {
         const data = JSON.parse(toggleStates);
         Object.entries(data).forEach(([userId, state]: [string, any]) => {
           this.toggleStates.set(userId, {
             ...state,
-            lastToggleTime: new Date(state.lastToggleTime)
+            lastToggleTime: new Date(state.lastToggleTime),
           });
         });
       }
     } catch (error) {
-      console.error('Failed to load currency preferences from storage:', error);
+      console.error("Failed to load currency preferences from storage:", error);
     }
   }
 
   private saveToStorage() {
     try {
       const prefsObj = Object.fromEntries(this.preferences.entries());
-      localStorage.setItem('currency_preferences', JSON.stringify(prefsObj));
+      localStorage.setItem("currency_preferences", JSON.stringify(prefsObj));
 
       const statesObj = Object.fromEntries(this.toggleStates.entries());
-      localStorage.setItem('currency_toggle_states', JSON.stringify(statesObj));
+      localStorage.setItem("currency_toggle_states", JSON.stringify(statesObj));
     } catch (error) {
-      console.error('Failed to save currency preferences to storage:', error);
+      console.error("Failed to save currency preferences to storage:", error);
     }
   }
 
   private initializeDefaultPreferences() {
     // Set default preferences for demo users
-    const defaultUsers = [
-      'user-1', 'user-2', 'user-3'
-    ];
+    const defaultUsers = ["user-1", "user-2", "user-3"];
 
-    defaultUsers.forEach(userId => {
+    defaultUsers.forEach((userId) => {
       if (!this.preferences.has(userId)) {
         this.preferences.set(userId, {
           userId,
-          preferredCurrency: 'GC',
+          preferredCurrency: "GC",
           lastUpdated: new Date(),
           autoSwitchEnabled: true,
-          gameSpecificPreferences: {}
+          gameSpecificPreferences: {},
         });
       }
 
       if (!this.toggleStates.has(userId)) {
         this.toggleStates.set(userId, {
-          selectedCurrency: 'GC',
+          selectedCurrency: "GC",
           isToggling: false,
-          lastToggleTime: new Date()
+          lastToggleTime: new Date(),
         });
       }
     });
@@ -115,7 +116,7 @@ class CurrencyToggleService {
     }
 
     // Default to Gold Coins for new users
-    return 'GC';
+    return "GC";
   }
 
   // Set user's preferred currency globally
@@ -123,32 +124,32 @@ class CurrencyToggleService {
     // Update preferences
     const currentPrefs = this.preferences.get(userId) || {
       userId,
-      preferredCurrency: 'GC',
+      preferredCurrency: "GC",
       lastUpdated: new Date(),
       autoSwitchEnabled: true,
-      gameSpecificPreferences: {}
+      gameSpecificPreferences: {},
     };
 
     const updatedPrefs: CurrencyPreferences = {
       ...currentPrefs,
       preferredCurrency: currency,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
 
     this.preferences.set(userId, updatedPrefs);
 
     // Update toggle state
     const currentState = this.toggleStates.get(userId) || {
-      selectedCurrency: 'GC',
+      selectedCurrency: "GC",
       isToggling: false,
-      lastToggleTime: new Date()
+      lastToggleTime: new Date(),
     };
 
     const updatedState: CurrencyToggleState = {
       ...currentState,
       selectedCurrency: currency,
       isToggling: false,
-      lastToggleTime: new Date()
+      lastToggleTime: new Date(),
     };
 
     this.toggleStates.set(userId, updatedState);
@@ -163,8 +164,9 @@ class CurrencyToggleService {
   // Toggle between GC and SC
   toggleUserCurrency(userId: string): GameCurrencyType {
     const currentCurrency = this.getUserCurrency(userId);
-    const newCurrency: GameCurrencyType = currentCurrency === 'GC' ? 'SC' : 'GC';
-    
+    const newCurrency: GameCurrencyType =
+      currentCurrency === "GC" ? "SC" : "GC";
+
     // Set toggling state
     const currentState = this.toggleStates.get(userId);
     if (currentState) {
@@ -195,46 +197,50 @@ class CurrencyToggleService {
     description: string;
   } {
     switch (currency) {
-      case 'GC':
+      case "GC":
         return {
-          name: 'Gold Coins',
-          shortName: 'GC',
-          symbol: '🪙',
-          color: '#FFD700',
-          description: 'Play coins for entertainment gaming'
+          name: "Gold Coins",
+          shortName: "GC",
+          symbol: "🪙",
+          color: "#FFD700",
+          description: "Play coins for entertainment gaming",
         };
-      case 'SC':
+      case "SC":
         return {
-          name: 'Sweeps Coins',
-          shortName: 'SC', 
-          symbol: '💎',
-          color: '#6366F1',
-          description: 'Premium coins for sweepstakes entries'
+          name: "Sweeps Coins",
+          shortName: "SC",
+          symbol: "💎",
+          color: "#6366F1",
+          description: "Premium coins for sweepstakes entries",
         };
       default:
         return {
-          name: 'Gold Coins',
-          shortName: 'GC',
-          symbol: '🪙',
-          color: '#FFD700',
-          description: 'Play coins for entertainment gaming'
+          name: "Gold Coins",
+          shortName: "GC",
+          symbol: "🪙",
+          color: "#FFD700",
+          description: "Play coins for entertainment gaming",
         };
     }
   }
 
   // Set game-specific currency preference
-  setGameCurrency(userId: string, gameType: string, currency: GameCurrencyType): void {
+  setGameCurrency(
+    userId: string,
+    gameType: string,
+    currency: GameCurrencyType,
+  ): void {
     const prefs = this.preferences.get(userId) || {
       userId,
-      preferredCurrency: 'GC',
+      preferredCurrency: "GC",
       lastUpdated: new Date(),
       autoSwitchEnabled: true,
-      gameSpecificPreferences: {}
+      gameSpecificPreferences: {},
     };
 
     prefs.gameSpecificPreferences[gameType] = currency;
     prefs.lastUpdated = new Date();
-    
+
     this.preferences.set(userId, prefs);
     this.saveToStorage();
 
@@ -250,7 +256,7 @@ class CurrencyToggleService {
     if (prefs && prefs.gameSpecificPreferences[gameType]) {
       return prefs.gameSpecificPreferences[gameType];
     }
-    
+
     return this.getUserCurrency(userId);
   }
 
@@ -267,8 +273,8 @@ class CurrencyToggleService {
 
   // Subscribe to currency changes for specific user
   subscribeToUserCurrency(
-    userId: string, 
-    callback: (currency: GameCurrencyType) => void
+    userId: string,
+    callback: (currency: GameCurrencyType) => void,
   ): () => void {
     if (!this.listeners.has(userId)) {
       this.listeners.set(userId, new Set());
@@ -286,7 +292,7 @@ class CurrencyToggleService {
 
   // Subscribe to all currency changes globally
   subscribeToGlobalCurrency(
-    callback: (userId: string, currency: GameCurrencyType) => void
+    callback: (userId: string, currency: GameCurrencyType) => void,
   ): () => void {
     this.globalListeners.add(callback);
 
@@ -299,17 +305,17 @@ class CurrencyToggleService {
     // Notify user-specific listeners
     const userListeners = this.listeners.get(userId);
     if (userListeners) {
-      userListeners.forEach(callback => callback(currency));
+      userListeners.forEach((callback) => callback(currency));
     }
 
     // Notify global listeners
-    this.globalListeners.forEach(callback => callback(userId, currency));
+    this.globalListeners.forEach((callback) => callback(userId, currency));
   }
 
   // Get all user preferences (admin function)
   getAllPreferences(): CurrencyPreferences[] {
-    return Array.from(this.preferences.values()).sort((a, b) => 
-      b.lastUpdated.getTime() - a.lastUpdated.getTime()
+    return Array.from(this.preferences.values()).sort(
+      (a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime(),
     );
   }
 
@@ -324,9 +330,11 @@ class CurrencyToggleService {
   } {
     const allPrefs = this.getAllPreferences();
     const totalUsers = allPrefs.length;
-    const gcUsers = allPrefs.filter(p => p.preferredCurrency === 'GC').length;
-    const scUsers = allPrefs.filter(p => p.preferredCurrency === 'SC').length;
-    const autoSwitchEnabled = allPrefs.filter(p => p.autoSwitchEnabled).length;
+    const gcUsers = allPrefs.filter((p) => p.preferredCurrency === "GC").length;
+    const scUsers = allPrefs.filter((p) => p.preferredCurrency === "SC").length;
+    const autoSwitchEnabled = allPrefs.filter(
+      (p) => p.autoSwitchEnabled,
+    ).length;
 
     return {
       totalUsers,
@@ -334,7 +342,7 @@ class CurrencyToggleService {
       scUsers,
       gcPercentage: totalUsers > 0 ? (gcUsers / totalUsers) * 100 : 0,
       scPercentage: totalUsers > 0 ? (scUsers / totalUsers) * 100 : 0,
-      autoSwitchEnabled
+      autoSwitchEnabled,
     };
   }
 
@@ -345,7 +353,7 @@ class CurrencyToggleService {
 
   // Convert wallet service currency to game currency
   fromWalletCurrency(walletCurrency: CurrencyType): GameCurrencyType | null {
-    if (walletCurrency === 'GC' || walletCurrency === 'SC') {
+    if (walletCurrency === "GC" || walletCurrency === "SC") {
       return walletCurrency;
     }
     return null;
@@ -360,12 +368,14 @@ class CurrencyToggleService {
   }
 
   // Bulk update preferences (admin function)
-  bulkUpdatePreferences(updates: Array<{
-    userId: string;
-    preferredCurrency: GameCurrencyType;
-    autoSwitchEnabled?: boolean;
-  }>): void {
-    updates.forEach(update => {
+  bulkUpdatePreferences(
+    updates: Array<{
+      userId: string;
+      preferredCurrency: GameCurrencyType;
+      autoSwitchEnabled?: boolean;
+    }>,
+  ): void {
+    updates.forEach((update) => {
       const currentPrefs = this.preferences.get(update.userId);
       if (currentPrefs) {
         currentPrefs.preferredCurrency = update.preferredCurrency;
@@ -374,7 +384,7 @@ class CurrencyToggleService {
         }
         currentPrefs.lastUpdated = new Date();
         this.preferences.set(update.userId, currentPrefs);
-        
+
         // Update toggle state
         this.setUserCurrency(update.userId, update.preferredCurrency);
       }

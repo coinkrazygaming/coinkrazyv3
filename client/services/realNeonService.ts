@@ -398,7 +398,6 @@ class RealNeonService {
       } as UserData;
     }
 
-
     return null;
   }
 

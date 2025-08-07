@@ -72,7 +72,10 @@ class WalletService {
   private deposits: Map<string, DepositRecord[]> = new Map();
   private sessions: Map<string, GameSession[]> = new Map();
   private listeners: Map<string, Set<(wallet: UserWallet) => void>> = new Map();
-  private depositListeners: Map<string, Set<(deposits: DepositRecord[]) => void>> = new Map();
+  private depositListeners: Map<
+    string,
+    Set<(deposits: DepositRecord[]) => void>
+  > = new Map();
   private neonClient: any = null; // This would be the actual Neon client in production
   private realTimeUpdateInterval: NodeJS.Timeout | null = null;
   private neonService: any = null;
@@ -94,11 +97,11 @@ class WalletService {
   private async initializeNeonService() {
     try {
       // Dynamically import to avoid circular dependencies
-      const { neonDatabaseService } = await import('./neonDatabaseService');
+      const { neonDatabaseService } = await import("./neonDatabaseService");
       this.neonService = neonDatabaseService;
-      console.log('✅ Neon Database Service integrated with Wallet Service');
+      console.log("✅ Neon Database Service integrated with Wallet Service");
     } catch (error) {
-      console.error('Failed to initialize Neon Database Service:', error);
+      console.error("Failed to initialize Neon Database Service:", error);
     }
   }
 
@@ -733,7 +736,7 @@ class WalletService {
     paymentMethod: string,
     paymentId: string,
     gcPackage: { goldCoins: number; bonusGC?: number; sweepsCoins: number },
-    adminNotes?: string
+    adminNotes?: string,
   ): Promise<DepositRecord> {
     const depositId = `dep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -754,8 +757,8 @@ class WalletService {
       metadata: {
         originalGC: gcPackage.goldCoins,
         bonusGC: gcPackage.bonusGC || 0,
-        neonSynced: false
-      }
+        neonSynced: false,
+      },
     };
 
     // Add to user deposit history
@@ -775,7 +778,7 @@ class WalletService {
       0,
       0,
       depositId,
-      paymentMethod
+      paymentMethod,
     );
 
     // Record individual transactions for detailed tracking
@@ -791,7 +794,7 @@ class WalletService {
       totalGC,
       paymentId,
       true,
-      paymentMethod
+      paymentMethod,
     );
 
     if (gcPackage.sweepsCoins > 0) {
@@ -807,7 +810,7 @@ class WalletService {
         gcPackage.sweepsCoins,
         paymentId,
         true,
-        paymentMethod
+        paymentMethod,
       );
     }
 
@@ -837,7 +840,7 @@ class WalletService {
     winAmount?: number,
     paymentId?: string,
     isDeposit?: boolean,
-    depositMethod?: string
+    depositMethod?: string,
   ) {
     const wallet = await this.getUserWallet(userId);
 
@@ -864,7 +867,7 @@ class WalletService {
       },
       paymentId,
       isDeposit,
-      depositMethod
+      depositMethod,
     };
 
     if (!this.transactions.has(userId)) {
@@ -903,7 +906,7 @@ class WalletService {
   // Subscribe to deposit updates
   subscribeToDepositUpdates(
     userId: string,
-    callback: (deposits: DepositRecord[]) => void
+    callback: (deposits: DepositRecord[]) => void,
   ): () => void {
     if (!this.depositListeners.has(userId)) {
       this.depositListeners.set(userId, new Set());
@@ -923,21 +926,25 @@ class WalletService {
     const userListeners = this.depositListeners.get(userId);
     if (userListeners) {
       const deposits = this.getUserDeposits(userId);
-      userListeners.forEach(callback => callback(deposits));
+      userListeners.forEach((callback) => callback(deposits));
     }
   }
 
   // Admin methods for deposit management
   getAllDeposits(): DepositRecord[] {
     const allDeposits: DepositRecord[] = [];
-    this.deposits.forEach(userDeposits => {
+    this.deposits.forEach((userDeposits) => {
       allDeposits.push(...userDeposits);
     });
-    return allDeposits.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return allDeposits.sort(
+      (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
+    );
   }
 
   getDepositsByPaymentMethod(paymentMethod: string): DepositRecord[] {
-    return this.getAllDeposits().filter(d => d.paymentMethod === paymentMethod);
+    return this.getAllDeposits().filter(
+      (d) => d.paymentMethod === paymentMethod,
+    );
   }
 
   getDepositStatistics(): {
@@ -961,12 +968,13 @@ class WalletService {
     let last24Hours = 0;
     let last7Days = 0;
 
-    allDeposits.forEach(deposit => {
+    allDeposits.forEach((deposit) => {
       totalUSD += deposit.usdAmount;
       totalGCAwarded += deposit.gcAwarded;
       totalSCAwarded += deposit.scAwarded;
 
-      byPaymentMethod[deposit.paymentMethod] = (byPaymentMethod[deposit.paymentMethod] || 0) + deposit.usdAmount;
+      byPaymentMethod[deposit.paymentMethod] =
+        (byPaymentMethod[deposit.paymentMethod] || 0) + deposit.usdAmount;
 
       if (deposit.timestamp >= oneDayAgo) {
         last24Hours += deposit.usdAmount;
@@ -983,7 +991,7 @@ class WalletService {
       totalSCAwarded,
       byPaymentMethod,
       last24Hours,
-      last7Days
+      last7Days,
     };
   }
 
@@ -998,7 +1006,7 @@ class WalletService {
     betAmount?: number,
     winAmount?: number,
     paymentId?: string,
-    depositMethod?: string
+    depositMethod?: string,
   ): Promise<UserWallet> {
     const currentWallet = await this.getUserWallet(userId);
 
@@ -1064,10 +1072,15 @@ class WalletService {
     adminUserId: string,
     action: string,
     targetUserId?: string,
-    targetType: 'user' | 'deposit' | 'transaction' | 'wallet' | 'system' = 'system',
+    targetType:
+      | "user"
+      | "deposit"
+      | "transaction"
+      | "wallet"
+      | "system" = "system",
     targetId?: string,
     details: Record<string, any> = {},
-    severity: 'info' | 'warning' | 'error' | 'critical' = 'info'
+    severity: "info" | "warning" | "error" | "critical" = "info",
   ): Promise<void> {
     if (this.neonService) {
       await this.neonService.logAdminAction(
@@ -1077,7 +1090,7 @@ class WalletService {
         targetType,
         targetId,
         details,
-        severity
+        severity,
       );
     }
   }
@@ -1089,10 +1102,17 @@ class WalletService {
     action?: string,
     severity?: string,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<any[]> {
     if (this.neonService) {
-      return await this.neonService.getAdminLogs(limit, adminUserId, action, severity, startDate, endDate);
+      return await this.neonService.getAdminLogs(
+        limit,
+        adminUserId,
+        action,
+        severity,
+        startDate,
+        endDate,
+      );
     }
     return [];
   }
@@ -1104,10 +1124,17 @@ class WalletService {
     paymentMethod?: string,
     status?: string,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<any[]> {
     if (this.neonService) {
-      return await this.neonService.getPaymentLogs(limit, userId, paymentMethod, status, startDate, endDate);
+      return await this.neonService.getPaymentLogs(
+        limit,
+        userId,
+        paymentMethod,
+        status,
+        startDate,
+        endDate,
+      );
     }
     return [];
   }
@@ -1130,12 +1157,12 @@ class WalletService {
       totalSCIssued: deposits.reduce((sum, d) => sum + d.scAwarded, 0),
       last24HourDeposits: 0,
       last24HourAmount: 0,
-      topPaymentMethods: []
+      topPaymentMethods: [],
     };
   }
 
   // Export logs for compliance (admin function)
-  async exportLogs(format: 'json' | 'csv' = 'json'): Promise<string> {
+  async exportLogs(format: "json" | "csv" = "json"): Promise<string> {
     if (this.neonService) {
       return await this.neonService.exportLogs(format);
     }
@@ -1144,7 +1171,7 @@ class WalletService {
     const data = {
       wallets: this.getAllWallets(),
       deposits: this.getAllDeposits(),
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
     };
 
     return JSON.stringify(data, null, 2);

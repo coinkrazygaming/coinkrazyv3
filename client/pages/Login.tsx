@@ -276,8 +276,8 @@ export default function Login() {
             <div className="bg-gradient-to-r from-gold/5 to-casino-blue/5 rounded-lg p-6 border border-gold-500/20">
               <h3 className="font-bold text-lg mb-2">New Player Bonus</h3>
               <p className="text-muted-foreground mb-4">
-                Get started with 10 Gold Coins + 10 Sweeps Coins when
-                you sign up!
+                Get started with 10 Gold Coins + 10 Sweeps Coins when you sign
+                up!
               </p>
               <Link to="/register">
                 <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">

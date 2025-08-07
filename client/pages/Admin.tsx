@@ -336,7 +336,7 @@ export default function Admin() {
 
         {/* Admin Tools Tabs */}
         <Tabs defaultValue="ai-manager" className="w-full">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-12">
             <TabsTrigger value="ai-manager">
               <Bot className="w-4 h-4 mr-2" />
               AI Manager

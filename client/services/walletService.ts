@@ -69,9 +69,12 @@ class WalletService {
   private static instance: WalletService;
   private wallets: Map<string, UserWallet> = new Map();
   private transactions: Map<string, WalletTransaction[]> = new Map();
+  private deposits: Map<string, DepositRecord[]> = new Map();
   private sessions: Map<string, GameSession[]> = new Map();
   private listeners: Map<string, Set<(wallet: UserWallet) => void>> = new Map();
+  private depositListeners: Map<string, Set<(deposits: DepositRecord[]) => void>> = new Map();
   private neonClient: any = null; // This would be the actual Neon client in production
+  private realTimeUpdateInterval: NodeJS.Timeout | null = null;
 
   static getInstance(): WalletService {
     if (!WalletService.instance) {

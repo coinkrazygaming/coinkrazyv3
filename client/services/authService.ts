@@ -745,6 +745,45 @@ class AuthService {
       verified: users.filter((u) => u.emailVerified).length,
     };
   }
+
+  // Helper method to map Neon user to local User format
+  private mapNeonUserToLocal(neonUser: UserData): User {
+    return {
+      id: neonUser.id,
+      email: neonUser.email,
+      firstName: neonUser.firstName,
+      lastName: neonUser.lastName,
+      username: neonUser.username,
+      emailVerified: neonUser.emailVerified || false,
+      status: neonUser.status as any,
+      kycStatus: neonUser.kycStatus as any,
+      gcBalance: neonUser.gcBalance || 0,
+      scBalance: neonUser.scBalance || 0,
+      bonusBalance: neonUser.bonusBalance || 0,
+      joinDate: neonUser.joinDate || new Date(),
+      lastLogin: neonUser.lastLogin,
+      preferences: neonUser.preferences || {},
+    };
+  }
+
+  // Get real-time user data from Neon
+  async getUserFromNeon(userId: string): Promise<User | null> {
+    try {
+      if (realNeonService.isConnected()) {
+        const neonUser = await realNeonService.getUserById(userId);
+        return neonUser ? this.mapNeonUserToLocal(neonUser) : null;
+      }
+      return this.users.get(userId) || null;
+    } catch (error) {
+      console.error('Failed to get user from Neon:', error);
+      return this.users.get(userId) || null;
+    }
+  }
+
+  // Check if Neon is connected
+  isNeonConnected(): boolean {
+    return realNeonService.isConnected();
+  }
 }
 
 export const authService = new AuthService();

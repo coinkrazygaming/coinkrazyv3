@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import AIAssistant from "./components/AIAssistant";
 import TickerDisplay from "./components/TickerDisplay";
 import AuthGuard from "./components/AuthGuard";
+import AdminToolbar from "./components/AdminToolbar";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";
@@ -74,128 +75,23 @@ const App = () => (
             <Route path="/terms-of-service" element={<TermsOfService />} />
 
             {/* Protected Routes - Require Authentication */}
-            <Route
-              path="/games"
-              element={
-                <AuthGuard>
-                  <Games />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <AuthGuard>
-                  <Dashboard />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/store"
-              element={
-                <AuthGuard>
-                  <Store />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/sportsbook"
-              element={
-                <AuthGuard>
-                  <Sportsbook />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/pick-cards"
-              element={
-                <AuthGuard>
-                  <PickCards />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/bingo"
-              element={
-                <AuthGuard>
-                  <Bingo />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/poker"
-              element={
-                <AuthGuard>
-                  <Poker />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/enhanced-dashboard"
-              element={
-                <AuthGuard>
-                  <EnhancedDashboard />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/payments"
-              element={
-                <AuthGuard>
-                  <PaymentsPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/dashboard/wheel"
-              element={
-                <AuthGuard>
-                  <DailyLuckyWheel />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/dashboard/banking"
-              element={
-                <AuthGuard>
-                  <BankingTab />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/casino"
-              element={
-                <AuthGuard>
-                  <InHouseCasino />
-                </AuthGuard>
-              }
-            />
+            <Route path="/games" element={<AuthGuard><Games /></AuthGuard>} />
+            <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+            <Route path="/store" element={<AuthGuard><Store /></AuthGuard>} />
+            <Route path="/sportsbook" element={<AuthGuard><Sportsbook /></AuthGuard>} />
+            <Route path="/pick-cards" element={<AuthGuard><PickCards /></AuthGuard>} />
+            <Route path="/bingo" element={<AuthGuard><Bingo /></AuthGuard>} />
+            <Route path="/poker" element={<AuthGuard><Poker /></AuthGuard>} />
+            <Route path="/enhanced-dashboard" element={<AuthGuard><EnhancedDashboard /></AuthGuard>} />
+            <Route path="/payments" element={<AuthGuard><PaymentsPage /></AuthGuard>} />
+            <Route path="/dashboard/wheel" element={<AuthGuard><DailyLuckyWheel /></AuthGuard>} />
+            <Route path="/dashboard/banking" element={<AuthGuard><BankingTab /></AuthGuard>} />
+            <Route path="/casino" element={<AuthGuard><InHouseCasino /></AuthGuard>} />
 
             {/* Admin Only Routes */}
-            <Route
-              path="/analytics"
-              element={
-                <AuthGuard requireAdmin>
-                  <Analytics />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/compliance"
-              element={
-                <AuthGuard requireAdmin>
-                  <Compliance />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <AuthGuard requireAdmin>
-                  <Admin />
-                </AuthGuard>
-              }
-            />
+            <Route path="/analytics" element={<AuthGuard requireAdmin><Analytics /></AuthGuard>} />
+            <Route path="/compliance" element={<AuthGuard requireAdmin><Compliance /></AuthGuard>} />
+            <Route path="/admin" element={<AuthGuard requireAdmin><Admin /></AuthGuard>} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

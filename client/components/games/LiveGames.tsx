@@ -33,6 +33,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import CurrencySelector from '../CurrencySelector';
 import { walletService, CurrencyType } from '../../services/walletService';
+import { useAuth } from '../../hooks/useAuth';
 
 interface LiveGameTable {
   id: string;

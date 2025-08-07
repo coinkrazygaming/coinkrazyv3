@@ -10,6 +10,7 @@ import CasinoBanking from "@/components/CasinoBanking";
 import PackageEditor from "@/components/PackageEditor";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
+import EmailTemplates from "@/components/EmailTemplates";
 import {
   Shield,
   Users,
@@ -42,6 +43,7 @@ import {
   Coins,
   Gift,
   Layout,
+  Mail,
 } from "lucide-react";
 
 // Mock data
@@ -334,7 +336,7 @@ export default function Admin() {
 
         {/* Admin Tools Tabs */}
         <Tabs defaultValue="ai-manager" className="w-full">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-12">
             <TabsTrigger value="ai-manager">
               <Bot className="w-4 h-4 mr-2" />
               AI Manager
@@ -374,6 +376,10 @@ export default function Admin() {
             <TabsTrigger value="cms">
               <Layout className="w-4 h-4 mr-2" />
               CMS
+            </TabsTrigger>
+            <TabsTrigger value="email">
+              <Mail className="w-4 h-4 mr-2" />
+              Email Templates
             </TabsTrigger>
             <TabsTrigger value="audit">
               <FileText className="w-4 h-4 mr-2" />
@@ -905,6 +911,11 @@ export default function Admin() {
           {/* CMS Management */}
           <TabsContent value="cms" className="mt-6">
             <CmsManagement />
+          </TabsContent>
+
+          {/* Email Templates */}
+          <TabsContent value="email" className="mt-6">
+            <EmailTemplates />
           </TabsContent>
         </Tabs>
       </div>

@@ -726,7 +726,7 @@ export default function TableGames() {
                     <h3 className="text-lg font-bold mb-4">Dealer ({dealerValue})</h3>
                     <div className="flex justify-center gap-2 mb-4">
                       {dealerHand.map((card, index) => (
-                        <CardComponent key={index} card={card} faceDown={!card.faceUp} />
+                        <CardComponent key={`dealer-${index}-${card.suit}-${card.rank}`} card={card} faceDown={!card.faceUp} />
                       ))}
                     </div>
                   </div>
@@ -769,7 +769,7 @@ export default function TableGames() {
                     <h3 className="text-lg font-bold mb-4">Player ({playerValue})</h3>
                     <div className="flex justify-center gap-2">
                       {playerHand.map((card, index) => (
-                        <CardComponent key={index} card={card} />
+                        <CardComponent key={`player-${index}-${card.suit}-${card.rank}`} card={card} />
                       ))}
                     </div>
                     {playerValue > 21 && (
@@ -799,8 +799,10 @@ export default function TableGames() {
                 <div>
                   <label className="text-sm font-medium">Select Chip Value</label>
                   <div className="flex gap-2 mt-2">
-                    {[25, 100, 500, 1000, 5000].map(value => 
-                      getChipComponent(value, selectedChip === value)
+                    {[25, 100, 500, 1000, 5000].map(value =>
+                      <div key={`chip-${value}`}>
+                        {getChipComponent(value, selectedChip === value)}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -830,7 +832,7 @@ export default function TableGames() {
                   <div className="grid grid-cols-2 gap-2">
                     {[100, 500, 1000, 2500].map(amount => (
                       <Button
-                        key={amount}
+                        key={`quick-bet-${amount}`}
                         size="sm"
                         variant="outline"
                         onClick={() => setCurrentBet(amount)}
@@ -878,7 +880,7 @@ export default function TableGames() {
                     {/* Numbers 1-36 */}
                     {Array.from({ length: 36 }, (_, i) => i + 1).map(num => (
                       <Button
-                        key={num}
+                        key={`roulette-${num}`}
                         size="sm"
                         className={`w-8 h-8 text-white ${
                           getRouletteColor(num) === 'red' ? 'bg-red-600 hover:bg-red-700' : 'bg-black hover:bg-gray-800'
@@ -975,7 +977,7 @@ export default function TableGames() {
 
                 <div className="space-y-2">
                   {Object.entries(rouletteBets).map(([betType, amount]) => (
-                    <div key={betType} className="flex justify-between text-sm">
+                    <div key={`bet-${betType}`} className="flex justify-between text-sm">
                       <span className="capitalize">{betType.replace('-', ' ')}</span>
                       <span className="font-bold">{amount}</span>
                     </div>
@@ -985,8 +987,10 @@ export default function TableGames() {
                 <div>
                   <label className="text-sm font-medium">Chip Value</label>
                   <div className="flex gap-2 mt-2">
-                    {[25, 100, 500, 1000].map(value => 
-                      getChipComponent(value, selectedChip === value)
+                    {[25, 100, 500, 1000].map(value =>
+                      <div key={`roulette-chip-${value}`}>
+                        {getChipComponent(value, selectedChip === value)}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -996,7 +1000,7 @@ export default function TableGames() {
                   <div className="flex gap-1 flex-wrap">
                     {rouletteHistory.map((num, index) => (
                       <div
-                        key={index}
+                        key={`history-${index}-${num}`}
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${
                           getRouletteColor(num) === 'red' ? 'bg-red-500' :
                           getRouletteColor(num) === 'black' ? 'bg-black' :
@@ -1028,7 +1032,7 @@ export default function TableGames() {
                       </h3>
                       <div className="flex justify-center gap-2">
                         {playerHand_Baccarat.cards.map((card, index) => (
-                          <CardComponent key={index} card={card} />
+                          <CardComponent key={`baccarat-player-${index}-${card.suit}-${card.rank}`} card={card} />
                         ))}
                       </div>
                     </div>
@@ -1041,7 +1045,7 @@ export default function TableGames() {
                       </h3>
                       <div className="flex justify-center gap-2">
                         {bankerHand.cards.map((card, index) => (
-                          <CardComponent key={index} card={card} />
+                          <CardComponent key={`baccarat-banker-${index}-${card.suit}-${card.rank}`} card={card} />
                         ))}
                       </div>
                     </div>
@@ -1128,8 +1132,10 @@ export default function TableGames() {
                 <div>
                   <label className="text-sm font-medium">Chip Value</label>
                   <div className="flex gap-2 mt-2">
-                    {[25, 100, 500, 1000].map(value => 
-                      getChipComponent(value, selectedChip === value)
+                    {[25, 100, 500, 1000].map(value =>
+                      <div key={`baccarat-chip-${value}`}>
+                        {getChipComponent(value, selectedChip === value)}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1178,7 +1184,7 @@ export default function TableGames() {
                 <h4 className="text-lg font-bold mb-4">Community Cards</h4>
                 <div className="flex justify-center gap-2">
                   {communityCards.map((card, index) => (
-                    <CardComponent key={index} card={card} />
+                    <CardComponent key={`community-${index}-${card.suit}-${card.rank}`} card={card} />
                   ))}
                 </div>
               </div>
@@ -1188,7 +1194,7 @@ export default function TableGames() {
                 <h4 className="text-lg font-bold mb-4">Your Hand</h4>
                 <div className="flex justify-center gap-2 mb-4">
                   {pokerHand.map((card, index) => (
-                    <CardComponent key={index} card={card} />
+                    <CardComponent key={`poker-hand-${index}-${card.suit}-${card.rank}`} card={card} />
                   ))}
                 </div>
                 
@@ -1225,7 +1231,7 @@ export default function TableGames() {
         <CardContent>
           <div className="space-y-2">
             {gameHistory.slice(0, 5).map((game, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+              <div key={`game-history-${index}-${game.timestamp}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Badge className="capitalize">{game.game}</Badge>
                   <span className="text-sm">Bet: {game.bet} chips</span>

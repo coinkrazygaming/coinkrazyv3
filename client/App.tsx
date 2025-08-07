@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import VerifyEmail from "./pages/VerifyEmail";
 import Dashboard from "./pages/Dashboard";
 import Store from "./pages/Store";
 import Sportsbook from "./pages/Sportsbook";
@@ -26,6 +27,8 @@ import Admin from "./pages/Admin";
 import HowToPlay from "./pages/HowToPlay";
 import SweepstakesRules from "./pages/SweepstakesRules";
 import Support from "./pages/Support";
+import Contact from "./pages/Contact";
+import ResponsibleGaming from "./pages/ResponsibleGaming";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +55,7 @@ const App = () => (
             <Route path="/games" element={<Games />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/store" element={<Store />} />
             <Route path="/sportsbook" element={<Sportsbook />} />
@@ -64,6 +68,8 @@ const App = () => (
             <Route path="/how-to-play" element={<HowToPlay />} />
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/responsible-gaming" element={<ResponsibleGaming />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

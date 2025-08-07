@@ -30,6 +30,7 @@ import Support from "./pages/Support";
 import Contact from "./pages/Contact";
 import ResponsibleGaming from "./pages/ResponsibleGaming";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

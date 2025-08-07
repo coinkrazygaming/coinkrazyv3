@@ -102,7 +102,7 @@ interface RouletteGame {
 
 const EnhancedTableGames: React.FC = () => {
   const { toast } = useToast();
-  const userId = "demo@coinfrazy.com";
+  const userId = "user-current"; // This would come from auth context in production
 
   // Game state
   const [games, setGames] = useState<TableGame[]>([]);

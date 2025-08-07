@@ -422,14 +422,16 @@ class PayPalService {
         currencyToggleService.setUserCurrency(userId, 'SC');
       }
 
-      console.log('Payment processed successfully:', transaction);
+      console.log('Payment processed successfully:', deposit);
 
       return {
         success: true,
+        transactionId: deposit.id,
         orderId: orderId,
         captureId: capture.id,
-        goldCoinsAwarded: goldCoinsToAward,
-        sweepCoinsAwarded: totalSC
+        goldCoinsAwarded: packageData.goldCoins + bonusGC,
+        sweepCoinsAwarded: packageData.sweepCoins + bonusSC,
+        depositRecord: deposit
       };
 
     } catch (error) {

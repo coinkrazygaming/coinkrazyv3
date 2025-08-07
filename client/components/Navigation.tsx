@@ -5,6 +5,7 @@ import Logo from "@/components/ui/Logo";
 import { playerCountService } from "@/services/playerCountService";
 import RealTimeBalance from "@/components/RealTimeBalance";
 import WalletBalance from "@/components/WalletBalance";
+import CurrencyToggle from "@/components/CurrencyToggle";
 import {
   Coins,
   Users,

@@ -64,7 +64,7 @@ export default function Login() {
         if (response.user.role === "admin") {
           navigate("/admin");
         } else {
-          navigate("/dashboard");
+          navigate("/games");
         }
       } else {
         setError(response.message || "Login failed");

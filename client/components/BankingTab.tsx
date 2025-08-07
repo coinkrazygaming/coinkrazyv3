@@ -316,7 +316,7 @@ export default function BankingTab() {
     switch (type) {
       case 'checking':
       case 'savings':
-        return <Bank className="w-5 h-5" />;
+        return <Banknote className="w-5 h-5" />;
       case 'paypal':
         return <Wallet className="w-5 h-5" />;
       case 'googlepay':

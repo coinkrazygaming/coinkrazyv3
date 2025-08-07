@@ -1,21 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Progress } from '../ui/progress';
-import { 
-  Play, 
-  Users, 
-  Clock, 
-  Wifi, 
-  WifiOff, 
-  Settings, 
-  Eye, 
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Progress } from "../ui/progress";
+import {
+  Play,
+  Users,
+  Clock,
+  Wifi,
+  WifiOff,
+  Settings,
+  Eye,
   Star,
   Heart,
   Search,
@@ -28,18 +42,24 @@ import {
   Activity,
   Zap,
   AlertCircle,
-  CheckCircle
-} from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import CurrencySelector from '../CurrencySelector';
-import { walletService, CurrencyType } from '../../services/walletService';
-import { useAuth } from '../../hooks/useAuth';
+  CheckCircle,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import CurrencySelector from "../CurrencySelector";
+import { walletService, CurrencyType } from "../../services/walletService";
+import { useAuth } from "../../hooks/useAuth";
 
 interface LiveGameTable {
   id: string;
   name: string;
-  provider: 'evolution' | 'pragmatic_live' | 'ezugi';
-  gameType: 'blackjack' | 'roulette' | 'baccarat' | 'poker' | 'game_show' | 'lottery';
+  provider: "evolution" | "pragmatic_live" | "ezugi";
+  gameType:
+    | "blackjack"
+    | "roulette"
+    | "baccarat"
+    | "poker"
+    | "game_show"
+    | "lottery";
   dealerName: string;
   dealerImage: string;
   thumbnail: string;
@@ -51,8 +71,8 @@ interface LiveGameTable {
   isVip: boolean;
   isNewTable: boolean;
   isFeatured: boolean;
-  status: 'live' | 'maintenance' | 'closed';
-  gameSpeed: 'slow' | 'normal' | 'fast';
+  status: "live" | "maintenance" | "closed";
+  gameSpeed: "slow" | "normal" | "fast";
   lastHandTime: Date;
   tableStats: {
     handsPlayed: number;
@@ -60,7 +80,7 @@ interface LiveGameTable {
     biggestWin: number;
     hotStreak: number;
   };
-  streamQuality: '720p' | '1080p' | '4K';
+  streamQuality: "720p" | "1080p" | "4K";
   tableNumber: string;
   limits: {
     minBalance: number;
@@ -72,7 +92,7 @@ interface LiveGameProvider {
   id: string;
   name: string;
   logo: string;
-  status: 'online' | 'offline' | 'maintenance';
+  status: "online" | "offline" | "maintenance";
   latency: number;
   uptime: number;
   totalTables: number;
@@ -86,22 +106,24 @@ export default function LiveGames() {
   const { user } = useAuth();
   const userId = user?.id || user?.email || "guest";
 
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>('GC');
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>("GC");
   const [providers, setProviders] = useState<LiveGameProvider[]>([]);
   const [tables, setTables] = useState<LiveGameTable[]>([]);
   const [filteredTables, setFilteredTables] = useState<LiveGameTable[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState<string>('all');
-  const [selectedGameType, setSelectedGameType] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProvider, setSelectedProvider] = useState<string>("all");
+  const [selectedGameType, setSelectedGameType] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showVipOnly, setShowVipOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTable, setSelectedTable] = useState<LiveGameTable | null>(null);
+  const [selectedTable, setSelectedTable] = useState<LiveGameTable | null>(
+    null,
+  );
   const [isJoining, setIsJoining] = useState(false);
 
   useEffect(() => {
     loadProviders();
     loadLiveTables();
-    
+
     // Real-time updates every 30 seconds
     const interval = setInterval(() => {
       updateTableStatus();
@@ -117,41 +139,52 @@ export default function LiveGames() {
   const loadProviders = async () => {
     const providerData: LiveGameProvider[] = [
       {
-        id: 'evolution',
-        name: 'Evolution Gaming',
-        logo: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=120&h=60&fit=crop&crop=center',
-        status: 'online',
+        id: "evolution",
+        name: "Evolution Gaming",
+        logo: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=120&h=60&fit=crop&crop=center",
+        status: "online",
         latency: 45,
         uptime: 99.8,
         totalTables: 156,
         activeTables: 142,
-        supportedCurrencies: ['GC', 'SC'],
-        features: ['4K Streaming', 'Multi-Camera', 'Chat', 'Side Bets', 'Statistics']
+        supportedCurrencies: ["GC", "SC"],
+        features: [
+          "4K Streaming",
+          "Multi-Camera",
+          "Chat",
+          "Side Bets",
+          "Statistics",
+        ],
       },
       {
-        id: 'pragmatic_live',
-        name: 'Pragmatic Play Live',
-        logo: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=120&h=60&fit=crop&crop=center',
-        status: 'online',
+        id: "pragmatic_live",
+        name: "Pragmatic Play Live",
+        logo: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=120&h=60&fit=crop&crop=center",
+        status: "online",
         latency: 52,
         uptime: 99.5,
         totalTables: 89,
         activeTables: 81,
-        supportedCurrencies: ['GC', 'SC'],
-        features: ['HD Streaming', 'Mobile Optimized', 'Multiple Languages', 'Tournaments']
+        supportedCurrencies: ["GC", "SC"],
+        features: [
+          "HD Streaming",
+          "Mobile Optimized",
+          "Multiple Languages",
+          "Tournaments",
+        ],
       },
       {
-        id: 'ezugi',
-        name: 'Ezugi',
-        logo: 'https://images.unsplash.com/photo-1606868306217-dbf5046868d2?w=120&h=60&fit=crop&crop=center',
-        status: 'maintenance',
+        id: "ezugi",
+        name: "Ezugi",
+        logo: "https://images.unsplash.com/photo-1606868306217-dbf5046868d2?w=120&h=60&fit=crop&crop=center",
+        status: "maintenance",
         latency: 0,
         uptime: 0,
         totalTables: 34,
         activeTables: 0,
-        supportedCurrencies: ['GC'],
-        features: ['Interactive Games', 'Social Features', 'Live Chat']
-      }
+        supportedCurrencies: ["GC"],
+        features: ["Interactive Games", "Social Features", "Live Chat"],
+      },
     ];
     setProviders(providerData);
   };
@@ -163,14 +196,16 @@ export default function LiveGames() {
       const mockTables: LiveGameTable[] = [
         // Evolution Gaming Tables
         {
-          id: 'evo-blackjack-vip-01',
-          name: 'VIP Blackjack Salon Privé',
-          provider: 'evolution',
-          gameType: 'blackjack',
-          dealerName: 'Sarah Martinez',
-          dealerImage: 'https://images.unsplash.com/photo-1494790108755-2616c96513c0?w=80&h=80&fit=crop&crop=face',
-          thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center',
-          language: 'English',
+          id: "evo-blackjack-vip-01",
+          name: "VIP Blackjack Salon Privé",
+          provider: "evolution",
+          gameType: "blackjack",
+          dealerName: "Sarah Martinez",
+          dealerImage:
+            "https://images.unsplash.com/photo-1494790108755-2616c96513c0?w=80&h=80&fit=crop&crop=face",
+          thumbnail:
+            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
+          language: "English",
           minBet: { GC: 500, SC: 5 },
           maxBet: { GC: 50000, SC: 500 },
           currentPlayers: 6,
@@ -178,31 +213,31 @@ export default function LiveGames() {
           isVip: true,
           isNewTable: false,
           isFeatured: true,
-          status: 'live',
-          gameSpeed: 'normal',
+          status: "live",
+          gameSpeed: "normal",
           lastHandTime: new Date(Date.now() - 45000),
           tableStats: {
             handsPlayed: 1247,
             averageBet: 2500,
             biggestWin: 45000,
-            hotStreak: 8
+            hotStreak: 8,
           },
-          streamQuality: '4K',
-          tableNumber: 'EVO-BJ-VIP-01',
+          streamQuality: "4K",
+          tableNumber: "EVO-BJ-VIP-01",
           limits: {
             minBalance: 5000,
-            maxWinPerHand: 250000
-          }
+            maxWinPerHand: 250000,
+          },
         },
         {
-          id: 'evo-roulette-01',
-          name: 'Speed Roulette',
-          provider: 'evolution',
-          gameType: 'roulette',
-          dealerName: 'Emma Thompson',
-          dealerImage: '/api/placeholder/80/80',
-          thumbnail: '/api/placeholder/400/300',
-          language: 'English',
+          id: "evo-roulette-01",
+          name: "Speed Roulette",
+          provider: "evolution",
+          gameType: "roulette",
+          dealerName: "Emma Thompson",
+          dealerImage: "/api/placeholder/80/80",
+          thumbnail: "/api/placeholder/400/300",
+          language: "English",
           minBet: { GC: 10, SC: 0.1 },
           maxBet: { GC: 10000, SC: 100 },
           currentPlayers: 24,
@@ -210,31 +245,31 @@ export default function LiveGames() {
           isVip: false,
           isNewTable: false,
           isFeatured: true,
-          status: 'live',
-          gameSpeed: 'fast',
+          status: "live",
+          gameSpeed: "fast",
           lastHandTime: new Date(Date.now() - 12000),
           tableStats: {
             handsPlayed: 892,
             averageBet: 150,
             biggestWin: 18500,
-            hotStreak: 3
+            hotStreak: 3,
           },
-          streamQuality: '1080p',
-          tableNumber: 'EVO-ROU-01',
+          streamQuality: "1080p",
+          tableNumber: "EVO-ROU-01",
           limits: {
             minBalance: 100,
-            maxWinPerHand: 350000
-          }
+            maxWinPerHand: 350000,
+          },
         },
         {
-          id: 'evo-baccarat-squeeze',
-          name: 'Baccarat Squeeze',
-          provider: 'evolution',
-          gameType: 'baccarat',
-          dealerName: 'Chen Wei',
-          dealerImage: '/api/placeholder/80/80',
-          thumbnail: '/api/placeholder/400/300',
-          language: 'English',
+          id: "evo-baccarat-squeeze",
+          name: "Baccarat Squeeze",
+          provider: "evolution",
+          gameType: "baccarat",
+          dealerName: "Chen Wei",
+          dealerImage: "/api/placeholder/80/80",
+          thumbnail: "/api/placeholder/400/300",
+          language: "English",
           minBet: { GC: 50, SC: 0.5 },
           maxBet: { GC: 25000, SC: 250 },
           currentPlayers: 12,
@@ -242,32 +277,32 @@ export default function LiveGames() {
           isVip: false,
           isNewTable: true,
           isFeatured: false,
-          status: 'live',
-          gameSpeed: 'slow',
+          status: "live",
+          gameSpeed: "slow",
           lastHandTime: new Date(Date.now() - 78000),
           tableStats: {
             handsPlayed: 456,
             averageBet: 850,
             biggestWin: 32000,
-            hotStreak: 2
+            hotStreak: 2,
           },
-          streamQuality: '1080p',
-          tableNumber: 'EVO-BAC-SQ-01',
+          streamQuality: "1080p",
+          tableNumber: "EVO-BAC-SQ-01",
           limits: {
             minBalance: 500,
-            maxWinPerHand: 500000
-          }
+            maxWinPerHand: 500000,
+          },
         },
         // Pragmatic Play Live Tables
         {
-          id: 'pp-blackjack-01',
-          name: 'Blackjack Azure',
-          provider: 'pragmatic_live',
-          gameType: 'blackjack',
-          dealerName: 'Maria Rodriguez',
-          dealerImage: '/api/placeholder/80/80',
-          thumbnail: '/api/placeholder/400/300',
-          language: 'Spanish',
+          id: "pp-blackjack-01",
+          name: "Blackjack Azure",
+          provider: "pragmatic_live",
+          gameType: "blackjack",
+          dealerName: "Maria Rodriguez",
+          dealerImage: "/api/placeholder/80/80",
+          thumbnail: "/api/placeholder/400/300",
+          language: "Spanish",
           minBet: { GC: 25, SC: 0.25 },
           maxBet: { GC: 5000, SC: 50 },
           currentPlayers: 4,
@@ -275,31 +310,31 @@ export default function LiveGames() {
           isVip: false,
           isNewTable: false,
           isFeatured: false,
-          status: 'live',
-          gameSpeed: 'normal',
+          status: "live",
+          gameSpeed: "normal",
           lastHandTime: new Date(Date.now() - 32000),
           tableStats: {
             handsPlayed: 623,
             averageBet: 175,
             biggestWin: 8750,
-            hotStreak: 5
+            hotStreak: 5,
           },
-          streamQuality: '1080p',
-          tableNumber: 'PP-BJ-AZ-01',
+          streamQuality: "1080p",
+          tableNumber: "PP-BJ-AZ-01",
           limits: {
             minBalance: 250,
-            maxWinPerHand: 100000
-          }
+            maxWinPerHand: 100000,
+          },
         },
         {
-          id: 'pp-roulette-turbo',
-          name: 'Mega Roulette',
-          provider: 'pragmatic_live',
-          gameType: 'roulette',
-          dealerName: 'Jessica Collins',
-          dealerImage: '/api/placeholder/80/80',
-          thumbnail: '/api/placeholder/400/300',
-          language: 'English',
+          id: "pp-roulette-turbo",
+          name: "Mega Roulette",
+          provider: "pragmatic_live",
+          gameType: "roulette",
+          dealerName: "Jessica Collins",
+          dealerImage: "/api/placeholder/80/80",
+          thumbnail: "/api/placeholder/400/300",
+          language: "English",
           minBet: { GC: 5, SC: 0.05 },
           maxBet: { GC: 2000, SC: 20 },
           currentPlayers: 67,
@@ -307,31 +342,31 @@ export default function LiveGames() {
           isVip: false,
           isNewTable: true,
           isFeatured: true,
-          status: 'live',
-          gameSpeed: 'fast',
+          status: "live",
+          gameSpeed: "fast",
           lastHandTime: new Date(Date.now() - 8000),
           tableStats: {
             handsPlayed: 1024,
             averageBet: 85,
             biggestWin: 15400,
-            hotStreak: 7
+            hotStreak: 7,
           },
-          streamQuality: '720p',
-          tableNumber: 'PP-MR-01',
+          streamQuality: "720p",
+          tableNumber: "PP-MR-01",
           limits: {
             minBalance: 50,
-            maxWinPerHand: 500000
-          }
+            maxWinPerHand: 500000,
+          },
         },
         {
-          id: 'pp-baccarat-01',
-          name: 'Baccarat Deluxe',
-          provider: 'pragmatic_live',
-          gameType: 'baccarat',
-          dealerName: 'Liu Ming',
-          dealerImage: '/api/placeholder/80/80',
-          thumbnail: '/api/placeholder/400/300',
-          language: 'Mandarin',
+          id: "pp-baccarat-01",
+          name: "Baccarat Deluxe",
+          provider: "pragmatic_live",
+          gameType: "baccarat",
+          dealerName: "Liu Ming",
+          dealerImage: "/api/placeholder/80/80",
+          thumbnail: "/api/placeholder/400/300",
+          language: "Mandarin",
           minBet: { GC: 20, SC: 0.2 },
           maxBet: { GC: 15000, SC: 150 },
           currentPlayers: 8,
@@ -339,27 +374,27 @@ export default function LiveGames() {
           isVip: false,
           isNewTable: false,
           isFeatured: false,
-          status: 'live',
-          gameSpeed: 'normal',
+          status: "live",
+          gameSpeed: "normal",
           lastHandTime: new Date(Date.now() - 65000),
           tableStats: {
             handsPlayed: 789,
             averageBet: 420,
             biggestWin: 22500,
-            hotStreak: 1
+            hotStreak: 1,
           },
-          streamQuality: '1080p',
-          tableNumber: 'PP-BAC-DX-01',
+          streamQuality: "1080p",
+          tableNumber: "PP-BAC-DX-01",
           limits: {
             minBalance: 200,
-            maxWinPerHand: 300000
-          }
-        }
+            maxWinPerHand: 300000,
+          },
+        },
       ];
 
       setTables(mockTables);
     } catch (error) {
-      console.error('Failed to load live tables:', error);
+      console.error("Failed to load live tables:", error);
       toast({
         title: "Error",
         description: "Failed to load live tables",
@@ -372,44 +407,56 @@ export default function LiveGames() {
 
   const updateTableStatus = async () => {
     // Update player counts and table statistics in real-time
-    setTables(prevTables => 
-      prevTables.map(table => ({
+    setTables((prevTables) =>
+      prevTables.map((table) => ({
         ...table,
-        currentPlayers: Math.max(1, table.currentPlayers + Math.floor(Math.random() * 3) - 1),
+        currentPlayers: Math.max(
+          1,
+          table.currentPlayers + Math.floor(Math.random() * 3) - 1,
+        ),
         lastHandTime: new Date(Date.now() - Math.random() * 120000), // Random time within last 2 minutes
         tableStats: {
           ...table.tableStats,
-          handsPlayed: table.tableStats.handsPlayed + Math.floor(Math.random() * 3),
-          hotStreak: Math.max(0, table.tableStats.hotStreak + Math.floor(Math.random() * 2) - 1)
-        }
-      }))
+          handsPlayed:
+            table.tableStats.handsPlayed + Math.floor(Math.random() * 3),
+          hotStreak: Math.max(
+            0,
+            table.tableStats.hotStreak + Math.floor(Math.random() * 2) - 1,
+          ),
+        },
+      })),
     );
   };
 
   const filterTables = () => {
     let filtered = tables;
 
-    if (selectedProvider !== 'all') {
-      filtered = filtered.filter(table => table.provider === selectedProvider);
+    if (selectedProvider !== "all") {
+      filtered = filtered.filter(
+        (table) => table.provider === selectedProvider,
+      );
     }
 
-    if (selectedGameType !== 'all') {
-      filtered = filtered.filter(table => table.gameType === selectedGameType);
+    if (selectedGameType !== "all") {
+      filtered = filtered.filter(
+        (table) => table.gameType === selectedGameType,
+      );
     }
 
     if (searchQuery) {
-      filtered = filtered.filter(table => 
-        table.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        table.dealerName.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (table) =>
+          table.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          table.dealerName.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
     if (showVipOnly) {
-      filtered = filtered.filter(table => table.isVip);
+      filtered = filtered.filter((table) => table.isVip);
     }
 
     // Only show live tables
-    filtered = filtered.filter(table => table.status === 'live');
+    filtered = filtered.filter((table) => table.status === "live");
 
     setFilteredTables(filtered);
   };
@@ -431,7 +478,7 @@ export default function LiveGames() {
       }
 
       // Simulate joining the table
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // In a real implementation, this would redirect to the live game interface
       toast({
@@ -441,14 +488,16 @@ export default function LiveGames() {
       });
 
       // Update player count
-      setTables(prevTables =>
-        prevTables.map(t =>
+      setTables((prevTables) =>
+        prevTables.map((t) =>
           t.id === table.id
-            ? { ...t, currentPlayers: Math.min(t.maxPlayers, t.currentPlayers + 1) }
-            : t
-        )
+            ? {
+                ...t,
+                currentPlayers: Math.min(t.maxPlayers, t.currentPlayers + 1),
+              }
+            : t,
+        ),
       );
-
     } catch (error) {
       toast({
         title: "Failed to Join",
@@ -471,20 +520,29 @@ export default function LiveGames() {
 
   const getGameTypeIcon = (gameType: string) => {
     switch (gameType) {
-      case 'blackjack': return <Target className="w-4 h-4" />;
-      case 'roulette': return <Crown className="w-4 h-4" />;
-      case 'baccarat': return <Trophy className="w-4 h-4" />;
-      case 'poker': return <Gamepad2 className="w-4 h-4" />;
-      default: return <DollarSign className="w-4 h-4" />;
+      case "blackjack":
+        return <Target className="w-4 h-4" />;
+      case "roulette":
+        return <Crown className="w-4 h-4" />;
+      case "baccarat":
+        return <Trophy className="w-4 h-4" />;
+      case "poker":
+        return <Gamepad2 className="w-4 h-4" />;
+      default:
+        return <DollarSign className="w-4 h-4" />;
     }
   };
 
   const getProviderBadgeColor = (provider: string) => {
     switch (provider) {
-      case 'evolution': return 'bg-blue-500';
-      case 'pragmatic_live': return 'bg-green-500';
-      case 'ezugi': return 'bg-purple-500';
-      default: return 'bg-gray-500';
+      case "evolution":
+        return "bg-blue-500";
+      case "pragmatic_live":
+        return "bg-green-500";
+      case "ezugi":
+        return "bg-purple-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
@@ -493,7 +551,9 @@ export default function LiveGames() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Live Games</h2>
-          <p className="text-muted-foreground">Play with real dealers in real-time</p>
+          <p className="text-muted-foreground">
+            Play with real dealers in real-time
+          </p>
         </div>
         <CurrencySelector onCurrencyChange={setSelectedCurrency} />
       </div>
@@ -505,12 +565,21 @@ export default function LiveGames() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <img src={provider.logo} alt={provider.name} className="h-8" />
-                <Badge 
-                  variant={provider.status === 'online' ? 'default' : 
-                          provider.status === 'maintenance' ? 'secondary' : 'destructive'}
+                <Badge
+                  variant={
+                    provider.status === "online"
+                      ? "default"
+                      : provider.status === "maintenance"
+                        ? "secondary"
+                        : "destructive"
+                  }
                   className="flex items-center gap-1"
                 >
-                  {provider.status === 'online' ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+                  {provider.status === "online" ? (
+                    <Wifi className="w-3 h-3" />
+                  ) : (
+                    <WifiOff className="w-3 h-3" />
+                  )}
                   {provider.status}
                 </Badge>
               </div>
@@ -525,7 +594,9 @@ export default function LiveGames() {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Tables:</span>
-                  <span className="ml-1 font-medium">{provider.activeTables}/{provider.totalTables}</span>
+                  <span className="ml-1 font-medium">
+                    {provider.activeTables}/{provider.totalTables}
+                  </span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Quality:</span>
@@ -550,8 +621,11 @@ export default function LiveGames() {
                 className="w-48"
               />
             </div>
-            
-            <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+
+            <Select
+              value={selectedProvider}
+              onValueChange={setSelectedProvider}
+            >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Provider" />
               </SelectTrigger>
@@ -563,7 +637,10 @@ export default function LiveGames() {
               </SelectContent>
             </Select>
 
-            <Select value={selectedGameType} onValueChange={setSelectedGameType}>
+            <Select
+              value={selectedGameType}
+              onValueChange={setSelectedGameType}
+            >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Game Type" />
               </SelectTrigger>
@@ -604,14 +681,17 @@ export default function LiveGames() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTables.map((table) => (
-            <Card key={table.id} className="group hover:shadow-lg transition-all duration-300">
+            <Card
+              key={table.id}
+              className="group hover:shadow-lg transition-all duration-300"
+            >
               <div className="relative">
                 <img
                   src={table.thumbnail}
                   alt={table.name}
                   className="aspect-video w-full object-cover rounded-t-lg"
                 />
-                
+
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-300 flex items-center justify-center rounded-t-lg">
                   <Button
                     size="lg"
@@ -631,9 +711,14 @@ export default function LiveGames() {
                 </div>
 
                 <div className="absolute top-3 left-3 flex gap-2">
-                  <Badge className={`${getProviderBadgeColor(table.provider)} text-white`}>
-                    {table.provider === 'evolution' ? 'EVO' : 
-                     table.provider === 'pragmatic_live' ? 'PP' : 'EZU'}
+                  <Badge
+                    className={`${getProviderBadgeColor(table.provider)} text-white`}
+                  >
+                    {table.provider === "evolution"
+                      ? "EVO"
+                      : table.provider === "pragmatic_live"
+                        ? "PP"
+                        : "EZU"}
                   </Badge>
                   {table.isVip && (
                     <Badge className="bg-gold-500 text-black">
@@ -653,7 +738,10 @@ export default function LiveGames() {
                 </div>
 
                 <div className="absolute top-3 right-3">
-                  <Badge variant="outline" className="bg-black/50 text-white border-white/20">
+                  <Badge
+                    variant="outline"
+                    className="bg-black/50 text-white border-white/20"
+                  >
                     <Activity className="w-3 h-3 mr-1" />
                     LIVE
                   </Badge>
@@ -679,11 +767,16 @@ export default function LiveGames() {
                     {getGameTypeIcon(table.gameType)}
                     {table.name}
                   </h3>
-                  <Badge variant="outline" className={
-                    table.gameSpeed === 'fast' ? 'border-red-500 text-red-400' :
-                    table.gameSpeed === 'slow' ? 'border-blue-500 text-blue-400' :
-                    'border-yellow-500 text-yellow-400'
-                  }>
+                  <Badge
+                    variant="outline"
+                    className={
+                      table.gameSpeed === "fast"
+                        ? "border-red-500 text-red-400"
+                        : table.gameSpeed === "slow"
+                          ? "border-blue-500 text-blue-400"
+                          : "border-yellow-500 text-yellow-400"
+                    }
+                  >
                     {table.gameSpeed}
                   </Badge>
                 </div>
@@ -702,15 +795,21 @@ export default function LiveGames() {
                 <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                   <div>
                     <span className="text-muted-foreground">Min Bet:</span>
-                    <div className="font-medium">{table.minBet[selectedCurrency]} {selectedCurrency}</div>
+                    <div className="font-medium">
+                      {table.minBet[selectedCurrency]} {selectedCurrency}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Max Bet:</span>
-                    <div className="font-medium">{table.maxBet[selectedCurrency]} {selectedCurrency}</div>
+                    <div className="font-medium">
+                      {table.maxBet[selectedCurrency]} {selectedCurrency}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Last Hand:</span>
-                    <div className="font-medium">{formatTimeSince(table.lastHandTime)}</div>
+                    <div className="font-medium">
+                      {formatTimeSince(table.lastHandTime)}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Hot Streak:</span>
@@ -721,8 +820,8 @@ export default function LiveGames() {
                   </div>
                 </div>
 
-                <Progress 
-                  value={(table.currentPlayers / table.maxPlayers) * 100} 
+                <Progress
+                  value={(table.currentPlayers / table.maxPlayers) * 100}
                   className="h-2"
                 />
               </CardContent>
@@ -737,7 +836,8 @@ export default function LiveGames() {
             <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No Live Tables Found</h3>
             <p className="text-muted-foreground">
-              Try adjusting your filters or check back later for available tables.
+              Try adjusting your filters or check back later for available
+              tables.
             </p>
           </CardContent>
         </Card>

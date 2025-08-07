@@ -1,10 +1,10 @@
-import { walletService, CurrencyType } from './walletService';
+import { walletService, CurrencyType } from "./walletService";
 
 export interface Jackpot {
   id: string;
   gameId: string;
   gameName: string;
-  type: 'progressive' | 'fixed' | 'local';
+  type: "progressive" | "fixed" | "local";
   amount: number;
   currency: CurrencyType;
   contributionRate: number; // Percentage of profit that goes to jackpot (45% = 0.45)
@@ -55,21 +55,21 @@ class JackpotService {
   private initializeJackpots() {
     // Initialize jackpots for all slot games starting at 0
     const slotGames = [
-      { id: 'coinkrazy-special', name: 'CoinKrazy Special' },
-      { id: 'sweet-bonanza-pro', name: 'Sweet Bonanza Pro' },
-      { id: 'gates-olympus-pro', name: 'Gates of Olympus Pro' },
-      { id: 'classic-777', name: 'Classic 777' },
-      { id: 'cosmic-megaways', name: 'Cosmic Megaways' }
+      { id: "coinkrazy-special", name: "CoinKrazy Special" },
+      { id: "sweet-bonanza-pro", name: "Sweet Bonanza Pro" },
+      { id: "gates-olympus-pro", name: "Gates of Olympus Pro" },
+      { id: "classic-777", name: "Classic 777" },
+      { id: "cosmic-megaways", name: "Cosmic Megaways" },
     ];
 
-    slotGames.forEach(game => {
+    slotGames.forEach((game) => {
       const jackpot: Jackpot = {
         id: `jackpot-${game.id}`,
         gameId: game.id,
         gameName: game.name,
-        type: 'progressive',
+        type: "progressive",
         amount: 0, // Start at 0 as requested
-        currency: 'GC',
+        currency: "GC",
         contributionRate: 0.45, // 45% of profit
         minBet: 10, // Minimum 10 GC bet to qualify
         lastWon: null,
@@ -95,10 +95,10 @@ class JackpotService {
 
       // Get recent game profit for this specific slot game
       const gameProfit = await this.getGameProfit(gameId);
-      
+
       // Calculate jackpot contribution (45% of profit)
       const contribution = gameProfit * jackpot.contributionRate;
-      
+
       if (contribution > 0) {
         const oldAmount = jackpot.amount;
         jackpot.amount += contribution;
@@ -109,17 +109,19 @@ class JackpotService {
           id: `contrib-${Date.now()}-${Math.random()}`,
           jackpotId: jackpot.id,
           gameId,
-          userId: 'system', // System contribution from profit
+          userId: "system", // System contribution from profit
           amount: contribution,
           currency: jackpot.currency,
           contributedAt: new Date(),
-          fromProfit: gameProfit
+          fromProfit: gameProfit,
         });
 
         // Notify subscribers of jackpot update
         this.notifyUpdateCallbacks(jackpot);
 
-        console.log(`Jackpot ${jackpot.gameName}: ${oldAmount.toFixed(2)} → ${jackpot.amount.toFixed(2)} (+${contribution.toFixed(2)})`);
+        console.log(
+          `Jackpot ${jackpot.gameName}: ${oldAmount.toFixed(2)} → ${jackpot.amount.toFixed(2)} (+${contribution.toFixed(2)})`,
+        );
       }
     }
   }
@@ -127,22 +129,22 @@ class JackpotService {
   private async getGameProfit(gameId: string): Promise<number> {
     // This would connect to your actual game session database
     // For real implementation, calculate profit from recent game sessions
-    
+
     // Simulate realistic profit data based on game activity
     const baseProfit = Math.random() * 50; // 0-50 profit per update cycle
     const gameActivity = this.getGameActivityMultiplier(gameId);
-    
+
     return baseProfit * gameActivity;
   }
 
   private getGameActivityMultiplier(gameId: string): number {
     // Different games have different activity levels
     const activityMap: Record<string, number> = {
-      'coinkrazy-special': 1.5, // Most popular
-      'sweet-bonanza-pro': 1.3,
-      'gates-olympus-pro': 1.2,
-      'classic-777': 0.8,
-      'cosmic-megaways': 1.0
+      "coinkrazy-special": 1.5, // Most popular
+      "sweet-bonanza-pro": 1.3,
+      "gates-olympus-pro": 1.2,
+      "classic-777": 0.8,
+      "cosmic-megaways": 1.0,
     };
     return activityMap[gameId] || 1.0;
   }
@@ -156,14 +158,14 @@ class JackpotService {
   }
 
   public async getAllJackpots(): Promise<Jackpot[]> {
-    return Array.from(this.jackpots.values()).map(j => ({ ...j }));
+    return Array.from(this.jackpots.values()).map((j) => ({ ...j }));
   }
 
   public async contributeToJackpot(
-    gameId: string, 
-    userId: string, 
-    betAmount: number, 
-    currency: CurrencyType
+    gameId: string,
+    userId: string,
+    betAmount: number,
+    currency: CurrencyType,
   ): Promise<void> {
     const jackpot = this.jackpots.get(gameId);
     if (!jackpot || !jackpot.isActive) return;
@@ -187,7 +189,7 @@ class JackpotService {
       amount: contribution,
       currency,
       contributedAt: new Date(),
-      fromProfit: 0 // This is from player bet, not profit
+      fromProfit: 0, // This is from player bet, not profit
     });
 
     this.notifyUpdateCallbacks(jackpot);
@@ -198,7 +200,7 @@ class JackpotService {
     userId: string,
     spinResult: any,
     betAmount: number,
-    currency: CurrencyType
+    currency: CurrencyType,
   ): Promise<JackpotWin | null> {
     const jackpot = this.jackpots.get(gameId);
     if (!jackpot || !jackpot.isActive || betAmount < jackpot.minBet) {
@@ -207,7 +209,7 @@ class JackpotService {
 
     // Check if this spin triggers jackpot
     const jackpotTriggered = this.evaluateJackpotWin(spinResult, jackpot);
-    
+
     if (jackpotTriggered) {
       const win: JackpotWin = {
         id: `win-${Date.now()}-${Math.random()}`,
@@ -219,7 +221,7 @@ class JackpotService {
         wonAt: new Date(),
         spinNumber: spinResult.spinNumber || 0,
         betAmount,
-        isVerified: false
+        isVerified: false,
       };
 
       // Process the jackpot win
@@ -232,16 +234,20 @@ class JackpotService {
 
   private evaluateJackpotWin(spinResult: any, jackpot: Jackpot): boolean {
     // Different jackpot trigger conditions based on game type
-    if (jackpot.gameId.includes('coinkrazy')) {
+    if (jackpot.gameId.includes("coinkrazy")) {
       // CoinKrazy: 5 gold coin symbols on payline
-      return spinResult.symbols?.includes('gold_coin') && 
-             spinResult.winningLines?.length > 0;
-    } else if (jackpot.gameId.includes('sweet-bonanza')) {
+      return (
+        spinResult.symbols?.includes("gold_coin") &&
+        spinResult.winningLines?.length > 0
+      );
+    } else if (jackpot.gameId.includes("sweet-bonanza")) {
       // Sweet Bonanza: Scatter combination with multiplier
       return spinResult.scatterCount >= 4 && spinResult.multiplier >= 100;
-    } else if (jackpot.gameId.includes('gates-olympus')) {
+    } else if (jackpot.gameId.includes("gates-olympus")) {
       // Gates of Olympus: Zeus symbol combination
-      return spinResult.symbols?.filter((s: string) => s === 'zeus').length >= 3;
+      return (
+        spinResult.symbols?.filter((s: string) => s === "zeus").length >= 3
+      );
     } else {
       // Generic: Random chance based on bet amount
       const jackpotChance = Math.min(jackpot.amount / 100000, 0.001); // Max 0.1% chance
@@ -270,20 +276,26 @@ class JackpotService {
 
     this.notifyUpdateCallbacks(jackpot);
 
-    console.log(`JACKPOT WON! ${jackpot.gameName}: ${win.userId} won ${win.amount.toFixed(2)} ${win.currency}`);
-    console.log(`Jackpot reset: ${oldAmount.toFixed(2)} → ${jackpot.amount.toFixed(2)}`);
+    console.log(
+      `JACKPOT WON! ${jackpot.gameName}: ${win.userId} won ${win.amount.toFixed(2)} ${win.currency}`,
+    );
+    console.log(
+      `Jackpot reset: ${oldAmount.toFixed(2)} → ${jackpot.amount.toFixed(2)}`,
+    );
   }
 
   public async getJackpotHistory(gameId?: string): Promise<JackpotWin[]> {
     if (gameId) {
-      return this.wins.filter(win => win.gameId === gameId);
+      return this.wins.filter((win) => win.gameId === gameId);
     }
     return [...this.wins];
   }
 
-  public async getJackpotContributions(gameId?: string): Promise<JackpotContribution[]> {
+  public async getJackpotContributions(
+    gameId?: string,
+  ): Promise<JackpotContribution[]> {
     if (gameId) {
-      return this.contributions.filter(contrib => contrib.gameId === gameId);
+      return this.contributions.filter((contrib) => contrib.gameId === gameId);
     }
     return [...this.contributions];
   }
@@ -292,7 +304,9 @@ class JackpotService {
     this.updateCallbacks.push(callback);
   }
 
-  public removeJackpotUpdateCallback(callback: (jackpot: Jackpot) => void): void {
+  public removeJackpotUpdateCallback(
+    callback: (jackpot: Jackpot) => void,
+  ): void {
     const index = this.updateCallbacks.indexOf(callback);
     if (index > -1) {
       this.updateCallbacks.splice(index, 1);
@@ -300,16 +314,19 @@ class JackpotService {
   }
 
   private notifyUpdateCallbacks(jackpot: Jackpot): void {
-    this.updateCallbacks.forEach(callback => {
+    this.updateCallbacks.forEach((callback) => {
       try {
         callback({ ...jackpot });
       } catch (error) {
-        console.error('Error in jackpot update callback:', error);
+        console.error("Error in jackpot update callback:", error);
       }
     });
   }
 
-  public async setJackpotActive(gameId: string, isActive: boolean): Promise<void> {
+  public async setJackpotActive(
+    gameId: string,
+    isActive: boolean,
+  ): Promise<void> {
     const jackpot = this.jackpots.get(gameId);
     if (jackpot) {
       jackpot.isActive = isActive;
@@ -318,8 +335,10 @@ class JackpotService {
   }
 
   public async updateJackpotConfig(
-    gameId: string, 
-    updates: Partial<Pick<Jackpot, 'contributionRate' | 'minBet' | 'maxAmount' | 'seedAmount'>>
+    gameId: string,
+    updates: Partial<
+      Pick<Jackpot, "contributionRate" | "minBet" | "maxAmount" | "seedAmount">
+    >,
   ): Promise<void> {
     const jackpot = this.jackpots.get(gameId);
     if (jackpot) {
@@ -339,15 +358,15 @@ class JackpotService {
     const jackpot = await this.getJackpot(gameId);
     return {
       amount: jackpot.amount,
-      formatted: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
+      formatted: new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       }).format(jackpot.amount),
       lastUpdate: new Date(),
       isActive: jackpot.isActive,
-      contributionRate: jackpot.contributionRate
+      contributionRate: jackpot.contributionRate,
     };
   }
 }

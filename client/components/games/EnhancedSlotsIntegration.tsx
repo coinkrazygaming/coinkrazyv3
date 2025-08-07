@@ -197,7 +197,8 @@ const EnhancedSlotsIntegration: React.FC = () => {
           id: "coinkrazy-special",
           name: "CoinKrazy Special",
           provider: "CoinKrazy",
-          thumbnail: "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=300&h=200&fit=crop&crop=center",
+          thumbnail:
+            "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=300&h=200&fit=crop&crop=center",
           rtp: 97.2,
           volatility: "medium",
           maxWin: 10000,
@@ -217,11 +218,17 @@ const EnhancedSlotsIntegration: React.FC = () => {
           id: "sweet-bonanza-pro",
           name: "Sweet Bonanza Pro",
           provider: "Pragmatic Play",
-          thumbnail: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=300&h=200&fit=crop&crop=center",
+          thumbnail:
+            "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=300&h=200&fit=crop&crop=center",
           rtp: 96.48,
           volatility: "high",
           maxWin: 21100,
-          features: ["Progressive Jackpot", "Free Spins", "Multipliers", "Tumble"],
+          features: [
+            "Progressive Jackpot",
+            "Free Spins",
+            "Multipliers",
+            "Tumble",
+          ],
           minBet: { GC: 10, SC: 0.1 },
           maxBet: { GC: 5000, SC: 50 },
           paylines: 0,
@@ -237,11 +244,17 @@ const EnhancedSlotsIntegration: React.FC = () => {
           id: "gates-olympus-pro",
           name: "Gates of Olympus Pro",
           provider: "Pragmatic Play",
-          thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop&crop=center",
+          thumbnail:
+            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop&crop=center",
           rtp: 96.5,
           volatility: "high",
           maxWin: 5000,
-          features: ["Progressive Jackpot", "Free Spins", "Multipliers", "Ante Bet"],
+          features: [
+            "Progressive Jackpot",
+            "Free Spins",
+            "Multipliers",
+            "Ante Bet",
+          ],
           minBet: { GC: 10, SC: 0.1 },
           maxBet: { GC: 5000, SC: 50 },
           paylines: 20,
@@ -257,11 +270,16 @@ const EnhancedSlotsIntegration: React.FC = () => {
           id: "classic-777",
           name: "Classic 777",
           provider: "CoinKrazy",
-          thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop&crop=center",
+          thumbnail:
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop&crop=center",
           rtp: 96.8,
           volatility: "low",
           maxWin: 2500,
-          features: ["Progressive Jackpot", "Classic Symbols", "Simple Gameplay"],
+          features: [
+            "Progressive Jackpot",
+            "Classic Symbols",
+            "Simple Gameplay",
+          ],
           minBet: { GC: 1, SC: 0.01 },
           maxBet: { GC: 500, SC: 5 },
           paylines: 5,
@@ -277,11 +295,17 @@ const EnhancedSlotsIntegration: React.FC = () => {
           id: "cosmic-megaways",
           name: "Cosmic Megaways",
           provider: "CoinKrazy",
-          thumbnail: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300&h=200&fit=crop&crop=center",
+          thumbnail:
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300&h=200&fit=crop&crop=center",
           rtp: 96.2,
           volatility: "high",
           maxWin: 50000,
-          features: ["Progressive Jackpot", "Megaways", "Free Spins", "Cascading Reels"],
+          features: [
+            "Progressive Jackpot",
+            "Megaways",
+            "Free Spins",
+            "Cascading Reels",
+          ],
           minBet: { GC: 20, SC: 0.2 },
           maxBet: { GC: 2000, SC: 20 },
           paylines: 117649,
@@ -299,7 +323,9 @@ const EnhancedSlotsIntegration: React.FC = () => {
       const gamesWithJackpots = await Promise.all(
         realGames.map(async (game) => {
           try {
-            const jackpotData = await jackpotService.getJackpotDisplayData(game.id);
+            const jackpotData = await jackpotService.getJackpotDisplayData(
+              game.id,
+            );
             return {
               ...game,
               currentJackpot: jackpotData.amount,
@@ -313,7 +339,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
               jackpotFormatted: "$0",
             };
           }
-        })
+        }),
       );
 
       setGames(gamesWithJackpots);
@@ -341,15 +367,15 @@ const EnhancedSlotsIntegration: React.FC = () => {
             ? {
                 ...game,
                 currentJackpot: jackpot.amount,
-                jackpotFormatted: new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
+                jackpotFormatted: new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 }).format(jackpot.amount),
               }
-            : game
-        )
+            : game,
+        ),
       );
     };
 
@@ -436,7 +462,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
             currentGame.id,
             userId,
             betAmount,
-            selectedCurrency
+            selectedCurrency,
           );
 
           // Check if this spin wins the jackpot
@@ -445,7 +471,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
             userId,
             result.result,
             betAmount,
-            selectedCurrency
+            selectedCurrency,
           );
 
           if (jackpotWin) {
@@ -456,7 +482,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
             });
           }
         } catch (error) {
-          console.error('Jackpot processing error:', error);
+          console.error("Jackpot processing error:", error);
         }
       }
 
@@ -1183,10 +1209,13 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         <Trophy className="w-4 h-4 text-gold-400" />
-                        <span className="text-xs font-medium text-purple-300">Jackpot:</span>
+                        <span className="text-xs font-medium text-purple-300">
+                          Jackpot:
+                        </span>
                       </div>
                       <div className="text-sm font-bold text-gold-400">
-                        {game.jackpotFormatted || `$${game.currentJackpot?.toFixed(0)}`}
+                        {game.jackpotFormatted ||
+                          `$${game.currentJackpot?.toFixed(0)}`}
                       </div>
                     </div>
                   </div>

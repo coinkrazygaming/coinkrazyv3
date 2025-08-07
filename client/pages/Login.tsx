@@ -81,41 +81,6 @@ export default function Login() {
     }
   };
 
-  const fillAdminCredentials = () => {
-    setFormData({
-      email: "coinkrazy00@gmail.com",
-      password: "Woot6969!",
-      rememberMe: false,
-    });
-  };
-
-  const initializeAdmin = async () => {
-    try {
-      setSuccess("Initializing admin user...");
-      const response = await fetch("/api/init-admin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSuccess(result.message);
-        setError("");
-        // Auto-fill admin credentials after creation
-        fillAdminCredentials();
-      } else {
-        setError(result.error || "Failed to initialize admin user");
-        setSuccess("");
-      }
-    } catch (error) {
-      setError("Failed to initialize admin user");
-      setSuccess("");
-      console.error("Admin initialization error:", error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -288,41 +253,6 @@ export default function Login() {
                     Sign up here
                   </Link>
                 </p>
-              </div>
-
-              {/* Admin Login Helper */}
-              <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="w-4 h-4 text-casino-blue" />
-                  <span className="text-sm font-medium">
-                    Quick Admin Access
-                  </span>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <p className="text-muted-foreground">
-                    <strong>Admin Account:</strong> coinkrazy00@gmail.com
-                  </p>
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={fillAdminCredentials}
-                      disabled={loading}
-                      className="w-full"
-                    >
-                      Fill Admin Credentials
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={initializeAdmin}
-                      disabled={loading}
-                      className="w-full text-xs"
-                    >
-                      Initialize Admin User
-                    </Button>
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>

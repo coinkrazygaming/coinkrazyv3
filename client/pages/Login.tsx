@@ -310,7 +310,7 @@ export default function Login() {
           </div>
           <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
             Must be 18+ years old. Void where prohibited. Play responsibly.
-            Support: 319-473-0416 | coinkrazy00@gmail.com
+            Support: 319-473-0416 | support@coinfrazy.com
           </p>
         </div>
       </div>

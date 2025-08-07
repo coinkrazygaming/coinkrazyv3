@@ -115,38 +115,6 @@ class RealNeonService {
     return neon(this.connectionString);
   }
 
-  private async initializeDatabase() {
-    try {
-      console.log("🔗 Connecting to Neon PostgreSQL...");
-
-      // Create SQL client here to avoid constructor issues
-      this.sql = neon(this.connectionString);
-
-      // Test connection with a simple query
-      const result = await this.sql`SELECT 1 as test`;
-
-      if (result && result.length > 0) {
-        this.connected = true;
-        console.log("✅ Neon Database connected successfully");
-
-        // Initialize tables after successful connection
-        try {
-          await this.createTables();
-          await this.insertDefaultData();
-        } catch (error) {
-          console.error("Failed to initialize tables:", error);
-        }
-      }
-
-    } catch (error) {
-      console.error("❌ Failed to connect to Neon:", error);
-      this.connected = false;
-
-      // Fallback: mark as connected for demo purposes but log the issue
-      this.connected = true;
-      console.log("⚠️ Using fallback connection status for demo");
-    }
-  }
 
   private async createTables() {
     try {

@@ -32,40 +32,44 @@ class AuthService {
 
   private async initializeNeonConnection() {
     try {
-      // Wait for Neon to be ready
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Wait longer for Neon to be fully ready
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       if (realNeonService.isConnected()) {
-        console.log("✅ AuthService connected to Neon Database");
+        console.log('✅ AuthService connected to Neon Database');
 
-        // Sync existing users to Neon if needed
-        await this.syncUsersToNeon();
+        // Add another delay before syncing users
+        setTimeout(async () => {
+          try {
+            await this.syncUsersToNeon();
+          } catch (error) {
+            console.error('Failed to sync users to Neon:', error);
+          }
+        }, 2000);
       }
     } catch (error) {
-      console.error("Failed to initialize Neon connection:", error);
+      console.error('Failed to initialize Neon connection:', error);
     }
   }
 
   private async syncUsersToNeon() {
     try {
       // Check if admin user exists in Neon
-      const adminUser = await realNeonService.getUserByEmail(
-        "coinkrazy00@gmail.com",
-      );
+      const adminUser = await realNeonService.getUserByEmail('coinkrazy00@gmail.com');
       if (!adminUser) {
         // Create admin user in Neon
         await realNeonService.createUser({
-          email: "coinkrazy00@gmail.com",
-          username: "CoinKrazy Admin",
-          firstName: "CoinKrazy",
-          lastName: "Admin",
+          email: 'coinkrazy00@gmail.com',
+          username: 'CoinKrazy Admin',
+          firstName: 'CoinKrazy',
+          lastName: 'Admin',
           emailVerified: true,
-          status: "active",
+          status: 'active',
           gcBalance: 1000000,
-          scBalance: 500.0,
+          scBalance: 500.00,
           preferences: {
-            theme: "dark",
-            currency: "USD",
+            theme: 'dark',
+            currency: 'USD',
             notifications: {
               email: true,
               sms: false,
@@ -73,13 +77,13 @@ class AuthService {
               bonuses: true,
               promotions: true,
               gameUpdates: true,
-            },
-          },
+            }
+          }
         });
-        console.log("✅ Admin user synced to Neon");
+        console.log('✅ Admin user synced to Neon');
       }
     } catch (error) {
-      console.error("Failed to sync users to Neon:", error);
+      console.error('Failed to sync users to Neon:', error);
     }
   }
 
@@ -326,18 +330,18 @@ class AuthService {
 
         // Log registration action
         await realNeonService.logAdminAction({
-          admin_user_id: "system",
-          action: "user_registered",
-          target_type: "user",
+          admin_user_id: 'system',
+          action: 'user_registered',
+          target_type: 'user',
           target_id: user.id,
           details: {
             email: user.email,
-            registrationMethod: "web",
+            registrationMethod: 'web',
             acceptedTerms: data.acceptTerms,
             acceptedPrivacy: data.acceptPrivacy,
-            newsletterOptIn: data.newsletterOptIn,
+            newsletterOptIn: data.newsletterOptIn
           },
-          severity: "info",
+          severity: 'info'
         });
       } else {
         // Fallback to local storage
@@ -405,22 +409,22 @@ class AuthService {
 
           // Update last login in Neon
           await realNeonService.updateUser(user.id, {
-            lastLogin: new Date(),
+            lastLogin: new Date()
           });
 
           // Log login action
           await realNeonService.logAdminAction({
             admin_user_id: user.id,
-            action: "user_login",
-            target_type: "user",
+            action: 'user_login',
+            target_type: 'user',
             target_id: user.id,
             details: {
-              loginMethod: "web",
-              userAgent: navigator.userAgent,
+              loginMethod: 'web',
+              userAgent: navigator.userAgent
             },
-            ip_address: "client-side", // In production, get real IP
+            ip_address: 'client-side', // In production, get real IP
             user_agent: navigator.userAgent,
-            severity: "info",
+            severity: 'info'
           });
         }
       } else {
@@ -777,7 +781,7 @@ class AuthService {
       }
       return this.users.get(userId) || null;
     } catch (error) {
-      console.error("Failed to get user from Neon:", error);
+      console.error('Failed to get user from Neon:', error);
       return this.users.get(userId) || null;
     }
   }

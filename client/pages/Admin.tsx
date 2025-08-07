@@ -43,6 +43,7 @@ import {
   Coins,
   Gift,
   Layout,
+  Mail,
 } from "lucide-react";
 
 // Mock data

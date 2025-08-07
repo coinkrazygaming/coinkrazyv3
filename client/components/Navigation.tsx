@@ -33,7 +33,7 @@ export default function Navigation() {
   // Check authentication status
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem("auth_token");
       if (token) {
         const currentUser = authService.getUserByToken(token);
         setUser(currentUser);
@@ -46,10 +46,10 @@ export default function Navigation() {
 
     // Listen for auth changes
     const handleAuthChange = () => checkAuth();
-    window.addEventListener('auth-change', handleAuthChange);
+    window.addEventListener("auth-change", handleAuthChange);
 
     return () => {
-      window.removeEventListener('auth-change', handleAuthChange);
+      window.removeEventListener("auth-change", handleAuthChange);
     };
   }, []);
 
@@ -91,7 +91,6 @@ export default function Navigation() {
     if (item.requiresLogin && !user) return false;
     return true;
   });
-
 
   return (
     <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
@@ -168,7 +167,8 @@ export default function Navigation() {
                 >
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
                   <Users className="w-3 h-3 mr-1" />
-                  {playerCount > 0 ? playerCount.toLocaleString() : "..."} Online
+                  {playerCount > 0 ? playerCount.toLocaleString() : "..."}{" "}
+                  Online
                 </Badge>
                 {user && (
                   <div className="mt-2">

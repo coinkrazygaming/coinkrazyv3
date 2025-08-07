@@ -1,18 +1,24 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { Switch } from './ui/switch';
-import { 
-  Users, 
-  Database, 
-  Settings, 
-  BarChart3, 
-  Shield, 
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { Switch } from "./ui/switch";
+import {
+  Users,
+  Database,
+  Settings,
+  BarChart3,
+  Shield,
   Monitor,
   FileText,
   Edit3,
@@ -37,14 +43,18 @@ import {
   Bell,
   Calendar,
   Clock,
-  Search
-} from 'lucide-react';
-import { realNeonService, UserData, AdminAction } from '../services/realNeonService';
-import { authService } from '../services/authService';
+  Search,
+} from "lucide-react";
+import {
+  realNeonService,
+  UserData,
+  AdminAction,
+} from "../services/realNeonService";
+import { authService } from "../services/authService";
 
 interface CMSContent {
   id: string;
-  type: 'page' | 'component' | 'banner' | 'popup';
+  type: "page" | "component" | "banner" | "popup";
   title: string;
   slug: string;
   content: string;
@@ -86,14 +96,14 @@ interface SystemConfig {
 }
 
 const ComprehensiveAdminPanel = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [users, setUsers] = useState<UserData[]>([]);
   const [adminActions, setAdminActions] = useState<AdminAction[]>([]);
   const [systemStats, setSystemStats] = useState<any>(null);
   const [cmsContent, setCmsContent] = useState<CMSContent[]>([]);
   const [systemConfig, setSystemConfig] = useState<SystemConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [editingContent, setEditingContent] = useState<CMSContent | null>(null);
 
@@ -104,7 +114,7 @@ const ComprehensiveAdminPanel = () => {
   const loadAdminData = async () => {
     try {
       setLoading(true);
-      
+
       if (realNeonService.isConnected()) {
         // Load users
         const allUsers = await realNeonService.getAllUsers(100);
@@ -119,9 +129,9 @@ const ComprehensiveAdminPanel = () => {
         setSystemStats({
           status: healthCheck.status,
           totalUsers: allUsers.length,
-          activeUsers: allUsers.filter(u => u.status === 'active').length,
+          activeUsers: allUsers.filter((u) => u.status === "active").length,
           totalTransactions: 0, // Would be fetched from DB
-          systemUptime: '99.9%',
+          systemUptime: "99.9%",
           databaseConnections: 5,
           lastBackup: new Date(),
         });
@@ -130,9 +140,8 @@ const ComprehensiveAdminPanel = () => {
       // Load CMS content from localStorage (in production, this would be from DB)
       loadCMSContent();
       loadSystemConfig();
-
     } catch (error) {
-      console.error('Failed to load admin data:', error);
+      console.error("Failed to load admin data:", error);
     } finally {
       setLoading(false);
     }
@@ -140,73 +149,75 @@ const ComprehensiveAdminPanel = () => {
 
   const loadCMSContent = () => {
     try {
-      const stored = localStorage.getItem('cms_content');
+      const stored = localStorage.getItem("cms_content");
       if (stored) {
         const parsed = JSON.parse(stored);
-        setCmsContent(parsed.map((item: any) => ({
-          ...item,
-          created_at: new Date(item.created_at),
-          updated_at: new Date(item.updated_at)
-        })));
+        setCmsContent(
+          parsed.map((item: any) => ({
+            ...item,
+            created_at: new Date(item.created_at),
+            updated_at: new Date(item.updated_at),
+          })),
+        );
       } else {
         // Initialize with default content
         const defaultContent: CMSContent[] = [
           {
-            id: 'home_hero',
-            type: 'component',
-            title: 'Homepage Hero Section',
-            slug: 'home-hero',
+            id: "home_hero",
+            type: "component",
+            title: "Homepage Hero Section",
+            slug: "home-hero",
             content: JSON.stringify({
-              headline: 'Welcome to CoinKrazy',
-              subheadline: 'The Ultimate Sweepstakes Casino Experience',
-              buttonText: 'Start Playing Now',
-              backgroundImage: '/hero-bg.jpg'
+              headline: "Welcome to CoinKrazy",
+              subheadline: "The Ultimate Sweepstakes Casino Experience",
+              buttonText: "Start Playing Now",
+              backgroundImage: "/hero-bg.jpg",
             }),
             published: true,
             meta: {
-              description: 'Main hero section for homepage'
+              description: "Main hero section for homepage",
             },
             settings: {
               showButton: true,
-              buttonColor: 'purple',
-              textAlign: 'center'
+              buttonColor: "purple",
+              textAlign: "center",
             },
             created_at: new Date(),
-            updated_at: new Date()
+            updated_at: new Date(),
           },
           {
-            id: 'terms_page',
-            type: 'page',
-            title: 'Terms of Service',
-            slug: 'terms-of-service',
-            content: '<h1>Terms of Service</h1><p>Welcome to CoinKrazy...</p>',
+            id: "terms_page",
+            type: "page",
+            title: "Terms of Service",
+            slug: "terms-of-service",
+            content: "<h1>Terms of Service</h1><p>Welcome to CoinKrazy...</p>",
             published: true,
             meta: {
-              description: 'Terms of Service page',
-              keywords: ['terms', 'service', 'legal']
+              description: "Terms of Service page",
+              keywords: ["terms", "service", "legal"],
             },
             settings: {},
             created_at: new Date(),
-            updated_at: new Date()
-          }
+            updated_at: new Date(),
+          },
         ];
         setCmsContent(defaultContent);
-        localStorage.setItem('cms_content', JSON.stringify(defaultContent));
+        localStorage.setItem("cms_content", JSON.stringify(defaultContent));
       }
     } catch (error) {
-      console.error('Failed to load CMS content:', error);
+      console.error("Failed to load CMS content:", error);
     }
   };
 
   const loadSystemConfig = () => {
     try {
-      const stored = localStorage.getItem('system_config');
+      const stored = localStorage.getItem("system_config");
       if (stored) {
         setSystemConfig(JSON.parse(stored));
       } else {
         const defaultConfig: SystemConfig = {
-          site_name: 'CoinKrazy',
-          site_description: 'The Ultimate Sweepstakes Casino Experience',
+          site_name: "CoinKrazy",
+          site_description: "The Ultimate Sweepstakes Casino Experience",
           maintenance_mode: false,
           registration_enabled: true,
           min_deposit: 5,
@@ -215,78 +226,83 @@ const ComprehensiveAdminPanel = () => {
           default_sc_bonus_rate: 0.05,
           kyc_required: false,
           email_verification_required: true,
-          support_email: 'support@coinfrazy.com',
-          support_phone: '319-473-0416',
+          support_email: "support@coinfrazy.com",
+          support_phone: "319-473-0416",
           social_links: {
-            facebook: 'https://facebook.com/coinfrazy',
-            twitter: 'https://twitter.com/coinfrazy',
-            instagram: 'https://instagram.com/coinfrazy'
+            facebook: "https://facebook.com/coinfrazy",
+            twitter: "https://twitter.com/coinfrazy",
+            instagram: "https://instagram.com/coinfrazy",
           },
           seo_settings: {
-            meta_title: 'CoinKrazy - Sweepstakes Casino',
-            meta_description: 'Play free sweepstakes casino games and win real prizes',
-            keywords: ['sweepstakes', 'casino', 'free games', 'prizes']
-          }
+            meta_title: "CoinKrazy - Sweepstakes Casino",
+            meta_description:
+              "Play free sweepstakes casino games and win real prizes",
+            keywords: ["sweepstakes", "casino", "free games", "prizes"],
+          },
         };
         setSystemConfig(defaultConfig);
-        localStorage.setItem('system_config', JSON.stringify(defaultConfig));
+        localStorage.setItem("system_config", JSON.stringify(defaultConfig));
       }
     } catch (error) {
-      console.error('Failed to load system config:', error);
+      console.error("Failed to load system config:", error);
     }
   };
 
   const saveCMSContent = (content: CMSContent) => {
     try {
-      const updatedContent = cmsContent.map(item => 
-        item.id === content.id ? { ...content, updated_at: new Date() } : item
+      const updatedContent = cmsContent.map((item) =>
+        item.id === content.id ? { ...content, updated_at: new Date() } : item,
       );
-      
-      if (!cmsContent.find(item => item.id === content.id)) {
-        updatedContent.push({ ...content, created_at: new Date(), updated_at: new Date() });
+
+      if (!cmsContent.find((item) => item.id === content.id)) {
+        updatedContent.push({
+          ...content,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
       }
 
       setCmsContent(updatedContent);
-      localStorage.setItem('cms_content', JSON.stringify(updatedContent));
+      localStorage.setItem("cms_content", JSON.stringify(updatedContent));
       setEditingContent(null);
-      
+
       // Log admin action
       if (realNeonService.isConnected()) {
         realNeonService.logAdminAction({
-          admin_user_id: 'admin_coinkrazy_001',
-          action: 'cms_content_updated',
-          target_type: 'system',
+          admin_user_id: "admin_coinkrazy_001",
+          action: "cms_content_updated",
+          target_type: "system",
           target_id: content.id,
           details: {
             contentType: content.type,
             title: content.title,
-            published: content.published
+            published: content.published,
           },
-          severity: 'info'
+          severity: "info",
         });
       }
     } catch (error) {
-      console.error('Failed to save CMS content:', error);
+      console.error("Failed to save CMS content:", error);
     }
   };
 
   const saveSystemConfig = (config: SystemConfig) => {
     try {
       setSystemConfig(config);
-      localStorage.setItem('system_config', JSON.stringify(config));
-      
+      localStorage.setItem("system_config", JSON.stringify(config));
+
       // Log admin action
       if (realNeonService.isConnected()) {
         realNeonService.logAdminAction({
-          admin_user_id: 'admin_coinkrazy_001',
-          action: 'system_config_updated',
-          target_type: 'system',
+          admin_user_id: "admin_coinkrazy_001",
+          action: "system_config_updated",
+          target_type: "system",
           details: { configKeys: Object.keys(config) },
-          severity: 'info'
+          severity: "info",
         });
       }
     } catch (error) {
-      console.error('Failed to save system config:', error);
+      console.error("Failed to save system config:", error);
     }
   };
 
@@ -294,15 +310,15 @@ const ComprehensiveAdminPanel = () => {
     try {
       if (realNeonService.isConnected()) {
         await realNeonService.updateUser(userId, { status: status as any });
-        
+
         // Log admin action
         await realNeonService.logAdminAction({
-          admin_user_id: 'admin_coinkrazy_001',
-          action: 'user_status_updated',
-          target_type: 'user',
+          admin_user_id: "admin_coinkrazy_001",
+          action: "user_status_updated",
+          target_type: "user",
           target_id: userId,
           details: { newStatus: status },
-          severity: 'warning'
+          severity: "warning",
         });
 
         // Refresh users
@@ -310,14 +326,15 @@ const ComprehensiveAdminPanel = () => {
         setUsers(updatedUsers);
       }
     } catch (error) {
-      console.error('Failed to update user status:', error);
+      console.error("Failed to update user status:", error);
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (loading) {
@@ -387,7 +404,7 @@ const ComprehensiveAdminPanel = () => {
                   <span className="text-sm font-medium">System Status</span>
                 </div>
                 <div className="text-2xl font-bold mt-2 text-green-600">
-                  {systemStats?.status || 'Unknown'}
+                  {systemStats?.status || "Unknown"}
                 </div>
               </CardContent>
             </Card>
@@ -399,7 +416,7 @@ const ComprehensiveAdminPanel = () => {
                   <span className="text-sm font-medium">Uptime</span>
                 </div>
                 <div className="text-2xl font-bold mt-2">
-                  {systemStats?.systemUptime || '0%'}
+                  {systemStats?.systemUptime || "0%"}
                 </div>
               </CardContent>
             </Card>
@@ -413,14 +430,24 @@ const ComprehensiveAdminPanel = () => {
               <CardContent>
                 <div className="space-y-3">
                   {adminActions.slice(0, 5).map((action) => (
-                    <div key={action.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={action.id}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div>
                         <p className="font-medium">{action.action}</p>
                         <p className="text-sm text-muted-foreground">
-                          {action.admin_user_id} • {new Date(action.created_at).toLocaleString()}
+                          {action.admin_user_id} •{" "}
+                          {new Date(action.created_at).toLocaleString()}
                         </p>
                       </div>
-                      <Badge variant={action.severity === 'error' ? 'destructive' : 'default'}>
+                      <Badge
+                        variant={
+                          action.severity === "error"
+                            ? "destructive"
+                            : "default"
+                        }
+                      >
                         {action.severity}
                       </Badge>
                     </div>
@@ -443,7 +470,11 @@ const ComprehensiveAdminPanel = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Neon Database</span>
-                  <Badge variant={realNeonService.isConnected() ? 'default' : 'destructive'}>
+                  <Badge
+                    variant={
+                      realNeonService.isConnected() ? "default" : "destructive"
+                    }
+                  >
                     {realNeonService.isConnected() ? (
                       <>
                         <CheckCircle className="h-4 w-4 mr-1" />
@@ -459,14 +490,24 @@ const ComprehensiveAdminPanel = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Maintenance Mode</span>
-                  <Badge variant={systemConfig?.maintenance_mode ? 'destructive' : 'default'}>
-                    {systemConfig?.maintenance_mode ? 'Enabled' : 'Disabled'}
+                  <Badge
+                    variant={
+                      systemConfig?.maintenance_mode ? "destructive" : "default"
+                    }
+                  >
+                    {systemConfig?.maintenance_mode ? "Enabled" : "Disabled"}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Registration</span>
-                  <Badge variant={systemConfig?.registration_enabled ? 'default' : 'destructive'}>
-                    {systemConfig?.registration_enabled ? 'Open' : 'Closed'}
+                  <Badge
+                    variant={
+                      systemConfig?.registration_enabled
+                        ? "default"
+                        : "destructive"
+                    }
+                  >
+                    {systemConfig?.registration_enabled ? "Open" : "Closed"}
                   </Badge>
                 </div>
               </CardContent>
@@ -479,7 +520,9 @@ const ComprehensiveAdminPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage user accounts and permissions</CardDescription>
+              <CardDescription>
+                Manage user accounts and permissions
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-4">
@@ -506,19 +549,34 @@ const ComprehensiveAdminPanel = () => {
                   <span>SC Balance</span>
                   <span>Actions</span>
                 </div>
-                
+
                 {filteredUsers.map((user) => (
-                  <div key={user.id} className="grid grid-cols-6 gap-4 p-3 border-b hover:bg-gray-50">
+                  <div
+                    key={user.id}
+                    className="grid grid-cols-6 gap-4 p-3 border-b hover:bg-gray-50"
+                  >
                     <div>
-                      <p className="font-medium">{user.firstName} {user.lastName}</p>
-                      <p className="text-sm text-muted-foreground">{user.username}</p>
+                      <p className="font-medium">
+                        {user.firstName} {user.lastName}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {user.username}
+                      </p>
                     </div>
                     <span className="text-sm">{user.email}</span>
-                    <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
+                    <Badge
+                      variant={
+                        user.status === "active" ? "default" : "destructive"
+                      }
+                    >
                       {user.status}
                     </Badge>
-                    <span className="text-sm">{user.gcBalance?.toLocaleString() || 0}</span>
-                    <span className="text-sm">{user.scBalance?.toFixed(2) || 0}</span>
+                    <span className="text-sm">
+                      {user.gcBalance?.toLocaleString() || 0}
+                    </span>
+                    <span className="text-sm">
+                      {user.scBalance?.toFixed(2) || 0}
+                    </span>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -527,11 +585,11 @@ const ComprehensiveAdminPanel = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      {user.status === 'active' ? (
+                      {user.status === "active" ? (
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => updateUserStatus(user.id, 'suspended')}
+                          onClick={() => updateUserStatus(user.id, "suspended")}
                         >
                           <Lock className="h-4 w-4" />
                         </Button>
@@ -539,7 +597,7 @@ const ComprehensiveAdminPanel = () => {
                         <Button
                           size="sm"
                           variant="default"
-                          onClick={() => updateUserStatus(user.id, 'active')}
+                          onClick={() => updateUserStatus(user.id, "active")}
                         >
                           <Unlock className="h-4 w-4" />
                         </Button>
@@ -559,20 +617,26 @@ const ComprehensiveAdminPanel = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle>Content Management System</CardTitle>
-                  <CardDescription>Manage website content, pages, and components</CardDescription>
+                  <CardDescription>
+                    Manage website content, pages, and components
+                  </CardDescription>
                 </div>
-                <Button onClick={() => setEditingContent({
-                  id: `content_${Date.now()}`,
-                  type: 'page',
-                  title: 'New Content',
-                  slug: 'new-content',
-                  content: '',
-                  published: false,
-                  meta: {},
-                  settings: {},
-                  created_at: new Date(),
-                  updated_at: new Date()
-                })}>
+                <Button
+                  onClick={() =>
+                    setEditingContent({
+                      id: `content_${Date.now()}`,
+                      type: "page",
+                      title: "New Content",
+                      slug: "new-content",
+                      content: "",
+                      published: false,
+                      meta: {},
+                      settings: {},
+                      created_at: new Date(),
+                      updated_at: new Date(),
+                    })
+                  }
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   New Content
                 </Button>
@@ -581,17 +645,23 @@ const ComprehensiveAdminPanel = () => {
             <CardContent>
               <div className="space-y-4">
                 {cmsContent.map((content) => (
-                  <div key={content.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={content.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">{content.title}</h4>
-                        <Badge variant={content.published ? 'default' : 'secondary'}>
-                          {content.published ? 'Published' : 'Draft'}
+                        <Badge
+                          variant={content.published ? "default" : "secondary"}
+                        >
+                          {content.published ? "Published" : "Draft"}
                         </Badge>
                         <Badge variant="outline">{content.type}</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        /{content.slug} • Updated {content.updated_at.toLocaleDateString()}
+                        /{content.slug} • Updated{" "}
+                        {content.updated_at.toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -606,9 +676,14 @@ const ComprehensiveAdminPanel = () => {
                         size="sm"
                         variant="destructive"
                         onClick={() => {
-                          const updated = cmsContent.filter(c => c.id !== content.id);
+                          const updated = cmsContent.filter(
+                            (c) => c.id !== content.id,
+                          );
                           setCmsContent(updated);
-                          localStorage.setItem('cms_content', JSON.stringify(updated));
+                          localStorage.setItem(
+                            "cms_content",
+                            JSON.stringify(updated),
+                          );
                         }}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -632,20 +707,24 @@ const ComprehensiveAdminPanel = () => {
                     <Label>Title</Label>
                     <Input
                       value={editingContent.title}
-                      onChange={(e) => setEditingContent({
-                        ...editingContent,
-                        title: e.target.value
-                      })}
+                      onChange={(e) =>
+                        setEditingContent({
+                          ...editingContent,
+                          title: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div>
                     <Label>Slug</Label>
                     <Input
                       value={editingContent.slug}
-                      onChange={(e) => setEditingContent({
-                        ...editingContent,
-                        slug: e.target.value
-                      })}
+                      onChange={(e) =>
+                        setEditingContent({
+                          ...editingContent,
+                          slug: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -655,10 +734,12 @@ const ComprehensiveAdminPanel = () => {
                   <Textarea
                     rows={10}
                     value={editingContent.content}
-                    onChange={(e) => setEditingContent({
-                      ...editingContent,
-                      content: e.target.value
-                    })}
+                    onChange={(e) =>
+                      setEditingContent({
+                        ...editingContent,
+                        content: e.target.value,
+                      })
+                    }
                     placeholder="Enter content (HTML, JSON, or plain text)"
                   />
                 </div>
@@ -667,10 +748,12 @@ const ComprehensiveAdminPanel = () => {
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={editingContent.published}
-                      onCheckedChange={(checked) => setEditingContent({
-                        ...editingContent,
-                        published: checked
-                      })}
+                      onCheckedChange={(checked) =>
+                        setEditingContent({
+                          ...editingContent,
+                          published: checked,
+                        })
+                      }
                     />
                     <Label>Published</Label>
                   </div>
@@ -681,7 +764,10 @@ const ComprehensiveAdminPanel = () => {
                     <Save className="h-4 w-4 mr-2" />
                     Save Content
                   </Button>
-                  <Button variant="outline" onClick={() => setEditingContent(null)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingContent(null)}
+                  >
                     Cancel
                   </Button>
                 </div>
@@ -704,20 +790,24 @@ const ComprehensiveAdminPanel = () => {
                     <Label>Site Name</Label>
                     <Input
                       value={systemConfig.site_name}
-                      onChange={(e) => setSystemConfig({
-                        ...systemConfig,
-                        site_name: e.target.value
-                      })}
+                      onChange={(e) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          site_name: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div>
                     <Label>Support Email</Label>
                     <Input
                       value={systemConfig.support_email}
-                      onChange={(e) => setSystemConfig({
-                        ...systemConfig,
-                        support_email: e.target.value
-                      })}
+                      onChange={(e) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          support_email: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -726,10 +816,12 @@ const ComprehensiveAdminPanel = () => {
                   <Label>Site Description</Label>
                   <Textarea
                     value={systemConfig.site_description}
-                    onChange={(e) => setSystemConfig({
-                      ...systemConfig,
-                      site_description: e.target.value
-                    })}
+                    onChange={(e) =>
+                      setSystemConfig({
+                        ...systemConfig,
+                        site_description: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
@@ -737,30 +829,36 @@ const ComprehensiveAdminPanel = () => {
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={systemConfig.maintenance_mode}
-                      onCheckedChange={(checked) => setSystemConfig({
-                        ...systemConfig,
-                        maintenance_mode: checked
-                      })}
+                      onCheckedChange={(checked) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          maintenance_mode: checked,
+                        })
+                      }
                     />
                     <Label>Maintenance Mode</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={systemConfig.registration_enabled}
-                      onCheckedChange={(checked) => setSystemConfig({
-                        ...systemConfig,
-                        registration_enabled: checked
-                      })}
+                      onCheckedChange={(checked) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          registration_enabled: checked,
+                        })
+                      }
                     />
                     <Label>Registration Enabled</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={systemConfig.kyc_required}
-                      onCheckedChange={(checked) => setSystemConfig({
-                        ...systemConfig,
-                        kyc_required: checked
-                      })}
+                      onCheckedChange={(checked) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          kyc_required: checked,
+                        })
+                      }
                     />
                     <Label>KYC Required</Label>
                   </div>
@@ -772,10 +870,12 @@ const ComprehensiveAdminPanel = () => {
                     <Input
                       type="number"
                       value={systemConfig.min_deposit}
-                      onChange={(e) => setSystemConfig({
-                        ...systemConfig,
-                        min_deposit: parseFloat(e.target.value)
-                      })}
+                      onChange={(e) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          min_deposit: parseFloat(e.target.value),
+                        })
+                      }
                     />
                   </div>
                   <div>
@@ -783,10 +883,12 @@ const ComprehensiveAdminPanel = () => {
                     <Input
                       type="number"
                       value={systemConfig.max_deposit}
-                      onChange={(e) => setSystemConfig({
-                        ...systemConfig,
-                        max_deposit: parseFloat(e.target.value)
-                      })}
+                      onChange={(e) =>
+                        setSystemConfig({
+                          ...systemConfig,
+                          max_deposit: parseFloat(e.target.value),
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -805,13 +907,16 @@ const ComprehensiveAdminPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>Analytics Dashboard</CardTitle>
-              <CardDescription>System metrics and user analytics</CardDescription>
+              <CardDescription>
+                System metrics and user analytics
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
-                  Advanced analytics dashboard would be implemented here with charts and metrics
+                  Advanced analytics dashboard would be implemented here with
+                  charts and metrics
                 </p>
               </div>
             </CardContent>
@@ -839,10 +944,15 @@ const ComprehensiveAdminPanel = () => {
                           {new Date(action.created_at).toLocaleString()}
                         </p>
                       </div>
-                      <Badge variant={
-                        action.severity === 'error' ? 'destructive' :
-                        action.severity === 'warning' ? 'default' : 'secondary'
-                      }>
+                      <Badge
+                        variant={
+                          action.severity === "error"
+                            ? "destructive"
+                            : action.severity === "warning"
+                              ? "default"
+                              : "secondary"
+                        }
+                      >
                         {action.severity}
                       </Badge>
                     </div>
@@ -866,7 +976,10 @@ const ComprehensiveAdminPanel = () => {
                 <CardTitle>Database Tools</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button className="w-full" onClick={() => realNeonService.healthCheck()}>
+                <Button
+                  className="w-full"
+                  onClick={() => realNeonService.healthCheck()}
+                >
                   <Database className="h-4 w-4 mr-2" />
                   Test Database Connection
                 </Button>

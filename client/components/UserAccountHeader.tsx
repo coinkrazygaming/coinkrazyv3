@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
-import { User } from '../types/auth';
-import { Button } from './ui/button';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../services/authService";
+import { User } from "../types/auth";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,17 +10,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Badge } from './ui/badge';
-import { 
-  User as UserIcon, 
-  Settings, 
-  LogOut, 
-  Shield, 
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import {
+  User as UserIcon,
+  Settings,
+  LogOut,
+  Shield,
   Coins,
-  Crown
-} from 'lucide-react';
+  Crown,
+} from "lucide-react";
 
 const UserAccountHeader = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,7 +29,7 @@ const UserAccountHeader = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem("auth_token");
       if (token) {
         const currentUser = authService.getUserByToken(token);
         setUser(currentUser);
@@ -41,22 +41,22 @@ const UserAccountHeader = () => {
 
     // Listen for auth changes
     const handleAuthChange = () => checkAuth();
-    window.addEventListener('auth-change', handleAuthChange);
-    
+    window.addEventListener("auth-change", handleAuthChange);
+
     return () => {
-      window.removeEventListener('auth-change', handleAuthChange);
+      window.removeEventListener("auth-change", handleAuthChange);
     };
   }, []);
 
   const handleLogout = () => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
     if (token) {
       authService.logout(token);
     }
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem("auth_token");
     setUser(null);
-    window.dispatchEvent(new Event('auth-change'));
-    navigate('/');
+    window.dispatchEvent(new Event("auth-change"));
+    navigate("/");
   };
 
   if (loading) {
@@ -66,17 +66,15 @@ const UserAccountHeader = () => {
   if (!user) {
     return (
       <div className="flex items-center gap-2">
-        <Button variant="ghost" onClick={() => navigate('/login')}>
+        <Button variant="ghost" onClick={() => navigate("/login")}>
           Login
         </Button>
-        <Button onClick={() => navigate('/register')}>
-          Sign Up
-        </Button>
+        <Button onClick={() => navigate("/register")}>Sign Up</Button>
       </div>
     );
   }
 
-  const isAdmin = user.email === 'coinkrazy00@gmail.com';
+  const isAdmin = user.email === "coinkrazy00@gmail.com";
 
   return (
     <div className="flex items-center gap-4">
@@ -101,7 +99,8 @@ const UserAccountHeader = () => {
             <Avatar className="h-8 w-8">
               <AvatarImage src="" alt={user.username || user.email} />
               <AvatarFallback>
-                {user.firstName?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
+                {user.firstName?.[0]?.toUpperCase() ||
+                  user.email[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -110,10 +109,9 @@ const UserAccountHeader = () => {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {user.firstName && user.lastName 
+                {user.firstName && user.lastName
                   ? `${user.firstName} ${user.lastName}`
-                  : user.username || user.email
-                }
+                  : user.username || user.email}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.email}
@@ -124,7 +122,7 @@ const UserAccountHeader = () => {
                     Admin
                   </Badge>
                 )}
-                {user.status === 'active' && (
+                {user.status === "active" && (
                   <Badge variant="secondary" className="text-xs">
                     Active
                   </Badge>
@@ -133,7 +131,7 @@ const UserAccountHeader = () => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
+
           {/* Mobile Balance Display */}
           <div className="md:hidden px-2 py-1">
             <div className="flex justify-between text-sm">
@@ -149,12 +147,12 @@ const UserAccountHeader = () => {
           </div>
           <DropdownMenuSeparator className="md:hidden" />
 
-          <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
             <UserIcon className="mr-2 h-4 w-4" />
             <span>My Account</span>
           </DropdownMenuItem>
-          
-          <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+
+          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </DropdownMenuItem>
@@ -162,7 +160,7 @@ const UserAccountHeader = () => {
           {isAdmin && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/admin')}>
+              <DropdownMenuItem onClick={() => navigate("/admin")}>
                 <Shield className="mr-2 h-4 w-4" />
                 <span>Admin Panel</span>
               </DropdownMenuItem>

@@ -632,7 +632,7 @@ class RealNeonService {
 
   // Status methods
   isConnected(): boolean {
-    return this.isConnected;
+    return this.connected;
   }
 
   async healthCheck(): Promise<{

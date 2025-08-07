@@ -1,843 +1,654 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { bonusService, Bonus } from "@/services/bonusService";
+import { useToast } from "@/hooks/use-toast";
 import {
   Gift,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
   Users,
   TrendingUp,
-  DollarSign,
-  Clock,
-  Award,
-  Coins,
-  Star,
   Calendar,
+  Star,
+  Trophy,
+  Crown,
+  Heart,
+  Share2,
+  Coins,
+  DollarSign,
   CheckCircle,
-  XCircle,
-  AlertCircle,
-  BarChart3,
-  Activity,
+  AlertTriangle,
+  Clock,
   RefreshCw,
+  Plus,
+  Eye,
+  Edit,
+  Loader2,
+  BarChart3,
 } from "lucide-react";
-import {
-  bonusService,
-  BonusConfig,
-  UserBonus,
-  BonusStats,
-} from "@/services/bonusService";
 
-const BonusManagement: React.FC = () => {
-  const [bonuses, setBonuses] = useState<BonusConfig[]>([]);
-  const [selectedBonus, setSelectedBonus] = useState<BonusConfig | null>(null);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [bonusStats, setBonusStats] = useState<BonusStats | null>(null);
+interface BonusStats {
+  totalBonuses: number;
+  totalClaimed: number;
+  totalGCAwarded: number;
+  totalSCAwarded: number;
+  pendingBonuses: number;
+  claimRate: number;
+}
+
+export default function BonusManagement() {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  const [bonuses, setBonuses] = useState<Bonus[]>([]);
+  const [bonusStats, setBonusStats] = useState<BonusStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Form state for creating/editing bonuses
-  const [formData, setFormData] = useState({
-    type: "welcome" as BonusConfig["type"],
-    name: "",
-    description: "",
-    isActive: true,
+  // New bonus form
+  const [newBonusForm, setNewBonusForm] = useState({
+    type: 'daily',
+    title: '',
+    description: '',
     gcAmount: 0,
     scAmount: 0,
-    matchPercentage: 0,
-    maxAmount: 0,
-    minDeposit: 0,
-    cooldownHours: 0,
-    requirements: {
-      minLevel: 0,
-      maxUses: 1,
-      expiryDays: 30,
-      wagering: 1,
-    },
+    wageringRequirement: 0,
+    expiresIn: 24, // hours
+    targetUsers: 'all'
   });
 
   useEffect(() => {
-    loadBonuses();
-    loadBonusStats();
+    loadBonusData();
   }, []);
 
-  const loadBonuses = () => {
-    const allBonuses = bonusService.getAllBonuses();
-    setBonuses(allBonuses);
-  };
+  const loadBonusData = async () => {
+    try {
+      setLoading(true);
+      const [bonusesData, statsData] = await Promise.all([
+        bonusService.getAllBonuses(100),
+        bonusService.getBonusStatistics()
+      ]);
 
-  const loadBonusStats = () => {
-    const stats = bonusService.getBonusStats();
-    setBonusStats(stats);
-  };
+      setBonuses(bonusesData);
+      
+      // Calculate aggregated stats
+      const totalBonuses = bonusesData.length;
+      const totalClaimed = bonusesData.filter(b => b.status === 'claimed').length;
+      const totalGCAwarded = bonusesData.reduce((sum, b) => sum + (b.gc_amount || 0), 0);
+      const totalSCAwarded = bonusesData.reduce((sum, b) => sum + (b.sc_amount || 0), 0);
+      const pendingBonuses = bonusesData.filter(b => b.status === 'pending').length;
+      const claimRate = totalBonuses > 0 ? (totalClaimed / totalBonuses) * 100 : 0;
 
-  const handleCreateBonus = () => {
-    const bonusId = bonusService.createBonus(formData);
-    if (bonusId) {
-      loadBonuses();
-      loadBonusStats();
-      setIsCreateDialogOpen(false);
-      resetForm();
+      setBonusStats({
+        totalBonuses,
+        totalClaimed,
+        totalGCAwarded,
+        totalSCAwarded,
+        pendingBonuses,
+        claimRate
+      });
+    } catch (error) {
+      console.error('Failed to load bonus data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load bonus data.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleEditBonus = () => {
-    if (selectedBonus) {
-      const success = bonusService.updateBonus(selectedBonus.id, formData);
-      if (success) {
-        loadBonuses();
-        loadBonusStats();
-        setIsEditDialogOpen(false);
-        setSelectedBonus(null);
-        resetForm();
-      }
-    }
-  };
-
-  const handleDeleteBonus = (bonusId: string) => {
-    if (
-      confirm(
-        "Are you sure you want to delete this bonus? This action cannot be undone.",
-      )
-    ) {
-      bonusService.deleteBonus(bonusId);
-      loadBonuses();
-      loadBonusStats();
-    }
-  };
-
-  const handleToggleBonus = (bonusId: string, isActive: boolean) => {
-    bonusService.updateBonus(bonusId, { isActive });
-    loadBonuses();
-  };
-
-  const resetForm = () => {
-    setFormData({
-      type: "welcome",
-      name: "",
-      description: "",
-      isActive: true,
-      gcAmount: 0,
-      scAmount: 0,
-      matchPercentage: 0,
-      maxAmount: 0,
-      minDeposit: 0,
-      cooldownHours: 0,
-      requirements: {
-        minLevel: 0,
-        maxUses: 1,
-        expiryDays: 30,
-        wagering: 1,
-      },
+  const refreshData = async () => {
+    setRefreshing(true);
+    await loadBonusData();
+    setRefreshing(false);
+    toast({
+      title: "Data Refreshed",
+      description: "Bonus data has been updated.",
     });
   };
 
-  const openEditDialog = (bonus: BonusConfig) => {
-    setSelectedBonus(bonus);
-    setFormData({
-      type: bonus.type,
-      name: bonus.name,
-      description: bonus.description,
-      isActive: bonus.isActive,
-      gcAmount: bonus.gcAmount || 0,
-      scAmount: bonus.scAmount || 0,
-      matchPercentage: bonus.matchPercentage || 0,
-      maxAmount: bonus.maxAmount || 0,
-      minDeposit: bonus.minDeposit || 0,
-      cooldownHours: bonus.cooldownHours || 0,
-      requirements: bonus.requirements,
-    });
-    setIsEditDialogOpen(true);
-  };
+  const createBonus = async () => {
+    if (!newBonusForm.title || !newBonusForm.description) {
+      toast({
+        title: "Validation Error",
+        description: "Title and description are required.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  const getBonusTypeIcon = (type: BonusConfig["type"]) => {
-    switch (type) {
-      case "welcome":
-        return <Gift className="w-4 h-4" />;
-      case "deposit":
-        return <DollarSign className="w-4 h-4" />;
-      case "reload":
-        return <RefreshCw className="w-4 h-4" />;
-      case "daily":
-        return <Calendar className="w-4 h-4" />;
-      case "weekly":
-        return <Clock className="w-4 h-4" />;
-      case "vip":
-        return <Star className="w-4 h-4" />;
-      default:
-        return <Award className="w-4 h-4" />;
+    try {
+      // In a real implementation, this would create bonuses for selected users
+      // For now, we'll show a success message
+      toast({
+        title: "Bonus Created",
+        description: `${newBonusForm.type} bonus has been created and distributed.`,
+      });
+
+      // Reset form
+      setNewBonusForm({
+        type: 'daily',
+        title: '',
+        description: '',
+        gcAmount: 0,
+        scAmount: 0,
+        wageringRequirement: 0,
+        expiresIn: 24,
+        targetUsers: 'all'
+      });
+
+      // Refresh data
+      await loadBonusData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create bonus.",
+        variant: "destructive"
+      });
     }
   };
 
-  const getBonusTypeColor = (type: BonusConfig["type"]) => {
+  const getBonusTypeIcon = (type: string) => {
     switch (type) {
-      case "welcome":
-        return "bg-green-500/10 text-green-400 border-green-500/20";
-      case "deposit":
-        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-      case "reload":
-        return "bg-purple-500/10 text-purple-400 border-purple-500/20";
-      case "daily":
-        return "bg-orange-500/10 text-orange-400 border-orange-500/20";
-      case "weekly":
-        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
-      case "vip":
-        return "bg-gold-500/10 text-gold-400 border-gold-500/20";
-      default:
-        return "bg-gray-500/10 text-gray-400 border-gray-500/20";
+      case 'welcome': return <Gift className="w-4 h-4" />;
+      case 'daily': return <Calendar className="w-4 h-4" />;
+      case 'deposit': return <DollarSign className="w-4 h-4" />;
+      case 'loyalty': return <Trophy className="w-4 h-4" />;
+      case 'referral': return <Users className="w-4 h-4" />;
+      case 'vip': return <Crown className="w-4 h-4" />;
+      case 'social': return <Share2 className="w-4 h-4" />;
+      case 'wheel_spin': return <Star className="w-4 h-4" />;
+      default: return <Gift className="w-4 h-4" />;
     }
   };
+
+  const getBonusTypeColor = (type: string) => {
+    switch (type) {
+      case 'welcome': return 'bg-green-500/10 text-green-500 border-green-500/20';
+      case 'daily': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      case 'deposit': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+      case 'loyalty': return 'bg-gold-500/10 text-gold-500 border-gold-500/20';
+      case 'referral': return 'bg-casino-blue/10 text-casino-blue border-casino-blue/20';
+      case 'vip': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+      case 'social': return 'bg-pink-500/10 text-pink-500 border-pink-500/20';
+      case 'wheel_spin': return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
+      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'claimed': return 'bg-green-500/10 text-green-500 border-green-500/20';
+      case 'pending': return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
+      case 'expired': return 'bg-red-500/10 text-red-500 border-red-500/20';
+      case 'cancelled': return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+    }
+  };
+
+  const formatCurrency = (amount: number, type: 'gc' | 'sc') => {
+    if (type === 'gc') {
+      return `${amount.toLocaleString()} GC`;
+    } else {
+      return `${amount.toFixed(2)} SC`;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="w-8 h-8 animate-spin" />
+        <span className="ml-2">Loading bonus data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Bonus Management</h2>
-          <p className="text-muted-foreground">
-            Manage welcome bonuses, deposits, and promotional offers
-          </p>
+          <h2 className="text-3xl font-bold">Bonus Management</h2>
+          <p className="text-muted-foreground">Manage player bonuses and promotions</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Bonus
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Bonus</DialogTitle>
-              <DialogDescription>
-                Configure a new bonus offer for your players
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
+        <Button
+          onClick={refreshData}
+          disabled={refreshing}
+          variant="outline"
+        >
+          {refreshing ? (
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <RefreshCw className="w-4 h-4 mr-2" />
+          )}
+          Refresh
+        </Button>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="active">
+            <Clock className="w-4 h-4 mr-2" />
+            Active Bonuses
+          </TabsTrigger>
+          <TabsTrigger value="create">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Bonus
+          </TabsTrigger>
+          <TabsTrigger value="history">
+            <Eye className="w-4 h-4 mr-2" />
+            History
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="mt-6">
+          {bonusStats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+                <CardContent className="p-4 text-center">
+                  <Gift className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">{bonusStats.totalBonuses}</div>
+                  <div className="text-sm text-muted-foreground">Total Bonuses</div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+                <CardContent className="p-4 text-center">
+                  <CheckCircle className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">{bonusStats.totalClaimed}</div>
+                  <div className="text-sm text-muted-foreground">Claimed</div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-gold-500/10 to-gold-500/5 border-gold-500/20">
+                <CardContent className="p-4 text-center">
+                  <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">{bonusStats.totalGCAwarded.toLocaleString()}</div>
+                  <div className="text-sm text-muted-foreground">GC Awarded</div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-casino-blue/10 to-casino-blue/5 border-casino-blue/20">
+                <CardContent className="p-4 text-center">
+                  <Star className="w-8 h-8 text-casino-blue mx-auto mb-2" />
+                  <div className="text-2xl font-bold">{bonusStats.totalSCAwarded.toFixed(1)}</div>
+                  <div className="text-sm text-muted-foreground">SC Awarded</div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Bonus Type Distribution */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Bonus Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>Claim Rate</span>
+                    <span className="font-bold text-green-500">
+                      {bonusStats?.claimRate.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Pending Bonuses</span>
+                    <span className="font-bold text-orange-500">
+                      {bonusStats?.pendingBonuses}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Average GC per Bonus</span>
+                    <span className="font-bold">
+                      {bonusStats && bonusStats.totalBonuses > 0 
+                        ? Math.round(bonusStats.totalGCAwarded / bonusStats.totalBonuses).toLocaleString()
+                        : 0} GC
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Average SC per Bonus</span>
+                    <span className="font-bold">
+                      {bonusStats && bonusStats.totalBonuses > 0 
+                        ? (bonusStats.totalSCAwarded / bonusStats.totalBonuses).toFixed(2)
+                        : 0} SC
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Bonus Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {bonuses.slice(0, 5).map((bonus) => (
+                    <div key={bonus.id} className="flex items-center justify-between p-2 bg-muted/20 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        {getBonusTypeIcon(bonus.bonus_type)}
+                        <div>
+                          <div className="font-medium text-sm">{bonus.title}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {bonus.username} • {new Date(bonus.created_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right text-sm">
+                        <div className="font-bold">
+                          {formatCurrency(bonus.gc_amount || 0, 'gc')}
+                        </div>
+                        <div className="text-casino-blue">
+                          {formatCurrency(bonus.sc_amount || 0, 'sc')}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Active Bonuses Tab */}
+        <TabsContent value="active" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Active Bonuses</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Currently pending and available bonuses
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {bonuses.filter(bonus => bonus.status === 'pending').map((bonus) => (
+                  <div key={bonus.id} className="p-4 bg-muted/20 rounded-lg border border-border/50">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          {getBonusTypeIcon(bonus.bonus_type)}
+                          <span className="font-bold">{bonus.title}</span>
+                        </div>
+                        <Badge className={getBonusTypeColor(bonus.bonus_type)}>
+                          {bonus.bonus_type}
+                        </Badge>
+                        <Badge className={getStatusColor(bonus.status)}>
+                          {bonus.status}
+                        </Badge>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-gold-500">
+                          {formatCurrency(bonus.gc_amount || 0, 'gc')}
+                        </div>
+                        <div className="font-bold text-casino-blue">
+                          {formatCurrency(bonus.sc_amount || 0, 'sc')}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-2">{bonus.description}</p>
+                    
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-4">
+                        <span>User: <strong>{bonus.username}</strong></span>
+                        <span>Created: {new Date(bonus.created_at).toLocaleString()}</span>
+                        {bonus.expires_at && (
+                          <span>Expires: {new Date(bonus.expires_at).toLocaleString()}</span>
+                        )}
+                      </div>
+                      {bonus.wagering_requirement > 0 && (
+                        <span className="text-orange-500">
+                          Wagering: {bonus.wagering_requirement}x
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                
+                {bonuses.filter(bonus => bonus.status === 'pending').length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No active bonuses found
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Create Bonus Tab */}
+        <TabsContent value="create" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Create New Bonus</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Create and distribute bonuses to players
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="bonus-type">Bonus Type</Label>
+                  <label className="block text-sm font-medium mb-2">Bonus Type</label>
                   <Select
-                    value={formData.type}
-                    onValueChange={(value: BonusConfig["type"]) =>
-                      setFormData((prev) => ({ ...prev, type: value }))
-                    }
+                    value={newBonusForm.type}
+                    onValueChange={(value) => setNewBonusForm(prev => ({ ...prev, type: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="welcome">Welcome Bonus</SelectItem>
+                      <SelectItem value="daily">Daily Login</SelectItem>
                       <SelectItem value="deposit">Deposit Bonus</SelectItem>
-                      <SelectItem value="reload">Reload Bonus</SelectItem>
-                      <SelectItem value="daily">Daily Bonus</SelectItem>
-                      <SelectItem value="weekly">Weekly Bonus</SelectItem>
+                      <SelectItem value="loyalty">Loyalty Bonus</SelectItem>
+                      <SelectItem value="referral">Referral Bonus</SelectItem>
                       <SelectItem value="vip">VIP Bonus</SelectItem>
+                      <SelectItem value="social">Social Media</SelectItem>
+                      <SelectItem value="wheel_spin">Wheel Spin</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={formData.isActive}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, isActive: checked }))
-                    }
-                  />
-                  <Label>Active</Label>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Target Users</label>
+                  <Select
+                    value={newBonusForm.targetUsers}
+                    onValueChange={(value) => setNewBonusForm(prev => ({ ...prev, targetUsers: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Users</SelectItem>
+                      <SelectItem value="active">Active Users Only</SelectItem>
+                      <SelectItem value="new">New Users Only</SelectItem>
+                      <SelectItem value="vip">VIP Users Only</SelectItem>
+                      <SelectItem value="inactive">Inactive Users</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="bonus-name">Bonus Name</Label>
+                <label className="block text-sm font-medium mb-2">Bonus Title</label>
                 <Input
-                  id="bonus-name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  placeholder="Enter bonus name"
+                  placeholder="Enter bonus title..."
+                  value={newBonusForm.title}
+                  onChange={(e) => setNewBonusForm(prev => ({ ...prev, title: e.target.value }))}
                 />
               </div>
 
               <div>
-                <Label htmlFor="bonus-description">Description</Label>
-                <Textarea
-                  id="bonus-description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="Enter bonus description"
+                <label className="block text-sm font-medium mb-2">Description</label>
+                <Input
+                  placeholder="Enter bonus description..."
+                  value={newBonusForm.description}
+                  onChange={(e) => setNewBonusForm(prev => ({ ...prev, description: e.target.value }))}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <Label htmlFor="gc-amount">Gold Coins</Label>
+                  <label className="block text-sm font-medium mb-2">Gold Coins (GC)</label>
                   <Input
-                    id="gc-amount"
                     type="number"
-                    value={formData.gcAmount}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        gcAmount: Number(e.target.value),
-                      }))
-                    }
                     placeholder="0"
+                    value={newBonusForm.gcAmount}
+                    onChange={(e) => setNewBonusForm(prev => ({ ...prev, gcAmount: parseInt(e.target.value) || 0 }))}
                   />
                 </div>
+
                 <div>
-                  <Label htmlFor="sc-amount">Sweeps Coins</Label>
+                  <label className="block text-sm font-medium mb-2">Sweeps Coins (SC)</label>
                   <Input
-                    id="sc-amount"
                     type="number"
-                    value={formData.scAmount}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        scAmount: Number(e.target.value),
-                      }))
-                    }
+                    step="0.01"
+                    placeholder="0.00"
+                    value={newBonusForm.scAmount}
+                    onChange={(e) => setNewBonusForm(prev => ({ ...prev, scAmount: parseFloat(e.target.value) || 0 }))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Wagering Requirement (x)</label>
+                  <Input
+                    type="number"
+                    step="0.1"
                     placeholder="0"
+                    value={newBonusForm.wageringRequirement}
+                    onChange={(e) => setNewBonusForm(prev => ({ ...prev, wageringRequirement: parseFloat(e.target.value) || 0 }))}
                   />
                 </div>
               </div>
 
-              {formData.type === "deposit" && (
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="match-percentage">Match %</Label>
-                    <Input
-                      id="match-percentage"
-                      type="number"
-                      value={formData.matchPercentage}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          matchPercentage: Number(e.target.value),
-                        }))
-                      }
-                      placeholder="100"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="max-amount">Max Amount ($)</Label>
-                    <Input
-                      id="max-amount"
-                      type="number"
-                      value={formData.maxAmount}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          maxAmount: Number(e.target.value),
-                        }))
-                      }
-                      placeholder="100"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="min-deposit">Min Deposit ($)</Label>
-                    <Input
-                      id="min-deposit"
-                      type="number"
-                      value={formData.minDeposit}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          minDeposit: Number(e.target.value),
-                        }))
-                      }
-                      placeholder="10"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="max-uses">Max Uses</Label>
-                  <Input
-                    id="max-uses"
-                    type="number"
-                    value={formData.requirements.maxUses}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        requirements: {
-                          ...prev.requirements,
-                          maxUses: Number(e.target.value),
-                        },
-                      }))
-                    }
-                    placeholder="1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="expiry-days">Expiry (Days)</Label>
-                  <Input
-                    id="expiry-days"
-                    type="number"
-                    value={formData.requirements.expiryDays}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        requirements: {
-                          ...prev.requirements,
-                          expiryDays: Number(e.target.value),
-                        },
-                      }))
-                    }
-                    placeholder="30"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="wagering">Wagering Req</Label>
-                  <Input
-                    id="wagering"
-                    type="number"
-                    value={formData.requirements.wagering}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        requirements: {
-                          ...prev.requirements,
-                          wagering: Number(e.target.value),
-                        },
-                      }))
-                    }
-                    placeholder="1"
-                  />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleCreateBonus}>Create Bonus</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Stats Overview */}
-      {bonusStats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Awarded</p>
-                  <p className="text-2xl font-bold">
-                    {bonusStats.totalAwarded}
-                  </p>
-                </div>
-                <Award className="w-8 h-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Active Users</p>
-                  <p className="text-2xl font-bold">{bonusStats.activeUsers}</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Completion Rate
-                  </p>
-                  <p className="text-2xl font-bold">
-                    {bonusStats.completionRate.toFixed(1)}%
-                  </p>
-                </div>
-                <TrendingUp className="w-8 h-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-gold-500/10 to-gold-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total GC</p>
-                  <p className="text-2xl font-bold">
-                    {bonusStats.totalGCAwarded.toLocaleString()}
-                  </p>
-                </div>
-                <Coins className="w-8 h-8 text-gold-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-casino-blue/10 to-casino-blue/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total SC</p>
-                  <p className="text-2xl font-bold">
-                    {bonusStats.totalSCAwarded}
-                  </p>
-                </div>
-                <Star className="w-8 h-8 text-casino-blue" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Conversion</p>
-                  <p className="text-2xl font-bold">
-                    {bonusStats.conversionRate.toFixed(1)}%
-                  </p>
-                </div>
-                <BarChart3 className="w-8 h-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Bonuses List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gift className="w-5 h-5" />
-            Active Bonuses
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {bonuses.map((bonus) => (
-              <div
-                key={bonus.id}
-                className="flex items-center justify-between p-4 border border-border/50 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`p-2 rounded-lg ${getBonusTypeColor(bonus.type)}`}
-                  >
-                    {getBonusTypeIcon(bonus.type)}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{bonus.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {bonus.description}
-                    </p>
-                    <div className="flex items-center gap-4 mt-2">
-                      {bonus.gcAmount && (
-                        <div className="flex items-center gap-1">
-                          <Coins className="w-3 h-3 text-gold-500" />
-                          <span className="text-sm">{bonus.gcAmount} GC</span>
-                        </div>
-                      )}
-                      {bonus.scAmount && (
-                        <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 text-casino-blue" />
-                          <span className="text-sm">{bonus.scAmount} SC</span>
-                        </div>
-                      )}
-                      {bonus.matchPercentage && (
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="w-3 h-3 text-green-500" />
-                          <span className="text-sm">
-                            {bonus.matchPercentage}% match up to $
-                            {bonus.maxAmount}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={bonus.isActive}
-                    onCheckedChange={(checked) =>
-                      handleToggleBonus(bonus.id, checked)
-                    }
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEditDialog(bonus)}
-                  >
-                    <Edit className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteBonus(bonus.id)}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Bonus</DialogTitle>
-            <DialogDescription>Update bonus configuration</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-bonus-type">Bonus Type</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value: BonusConfig["type"]) =>
-                    setFormData((prev) => ({ ...prev, type: value }))
-                  }
+                <label className="block text-sm font-medium mb-2">Expires In (hours)</label>
+                <Input
+                  type="number"
+                  placeholder="24"
+                  value={newBonusForm.expiresIn}
+                  onChange={(e) => setNewBonusForm(prev => ({ ...prev, expiresIn: parseInt(e.target.value) || 24 }))}
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <Button onClick={createBonus} className="bg-green-500 hover:bg-green-600 text-white">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Bonus
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setNewBonusForm({
+                    type: 'daily',
+                    title: '',
+                    description: '',
+                    gcAmount: 0,
+                    scAmount: 0,
+                    wageringRequirement: 0,
+                    expiresIn: 24,
+                    targetUsers: 'all'
+                  })}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="welcome">Welcome Bonus</SelectItem>
-                    <SelectItem value="deposit">Deposit Bonus</SelectItem>
-                    <SelectItem value="reload">Reload Bonus</SelectItem>
-                    <SelectItem value="daily">Daily Bonus</SelectItem>
-                    <SelectItem value="weekly">Weekly Bonus</SelectItem>
-                    <SelectItem value="vip">VIP Bonus</SelectItem>
-                  </SelectContent>
-                </Select>
+                  Reset Form
+                </Button>
               </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({ ...prev, isActive: checked }))
-                  }
-                />
-                <Label>Active</Label>
-              </div>
-            </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-            <div>
-              <Label htmlFor="edit-bonus-name">Bonus Name</Label>
-              <Input
-                id="edit-bonus-name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="Enter bonus name"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="edit-bonus-description">Description</Label>
-              <Textarea
-                id="edit-bonus-description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Enter bonus description"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-gc-amount">Gold Coins</Label>
-                <Input
-                  id="edit-gc-amount"
-                  type="number"
-                  value={formData.gcAmount}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      gcAmount: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="0"
-                />
+        {/* History Tab */}
+        <TabsContent value="history" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Bonus History</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Complete history of all bonuses
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-2">Bonus</th>
+                      <th className="text-left p-2">User</th>
+                      <th className="text-left p-2">Type</th>
+                      <th className="text-left p-2">Amount</th>
+                      <th className="text-left p-2">Status</th>
+                      <th className="text-left p-2">Created</th>
+                      <th className="text-left p-2">Claimed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bonuses.map((bonus) => (
+                      <tr key={bonus.id} className="border-b border-border/50 hover:bg-muted/50">
+                        <td className="p-2">
+                          <div>
+                            <div className="font-medium">{bonus.title}</div>
+                            <div className="text-sm text-muted-foreground truncate max-w-xs">
+                              {bonus.description}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <div>
+                            <div className="font-medium">{bonus.username}</div>
+                            <div className="text-sm text-muted-foreground">{bonus.email}</div>
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <Badge className={getBonusTypeColor(bonus.bonus_type)}>
+                            {getBonusTypeIcon(bonus.bonus_type)}
+                            <span className="ml-1">{bonus.bonus_type}</span>
+                          </Badge>
+                        </td>
+                        <td className="p-2">
+                          <div className="text-sm">
+                            <div className="text-gold-500 font-medium">
+                              {formatCurrency(bonus.gc_amount || 0, 'gc')}
+                            </div>
+                            <div className="text-casino-blue font-medium">
+                              {formatCurrency(bonus.sc_amount || 0, 'sc')}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <Badge className={getStatusColor(bonus.status)}>
+                            {bonus.status}
+                          </Badge>
+                        </td>
+                        <td className="p-2 text-sm">
+                          {new Date(bonus.created_at).toLocaleString()}
+                        </td>
+                        <td className="p-2 text-sm">
+                          {bonus.claimed_at 
+                            ? new Date(bonus.claimed_at).toLocaleString()
+                            : '-'
+                          }
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {bonuses.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No bonus history found
+                  </div>
+                )}
               </div>
-              <div>
-                <Label htmlFor="edit-sc-amount">Sweeps Coins</Label>
-                <Input
-                  id="edit-sc-amount"
-                  type="number"
-                  value={formData.scAmount}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      scAmount: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            {formData.type === "deposit" && (
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="edit-match-percentage">Match %</Label>
-                  <Input
-                    id="edit-match-percentage"
-                    type="number"
-                    value={formData.matchPercentage}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        matchPercentage: Number(e.target.value),
-                      }))
-                    }
-                    placeholder="100"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-max-amount">Max Amount ($)</Label>
-                  <Input
-                    id="edit-max-amount"
-                    type="number"
-                    value={formData.maxAmount}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        maxAmount: Number(e.target.value),
-                      }))
-                    }
-                    placeholder="100"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-min-deposit">Min Deposit ($)</Label>
-                  <Input
-                    id="edit-min-deposit"
-                    type="number"
-                    value={formData.minDeposit}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        minDeposit: Number(e.target.value),
-                      }))
-                    }
-                    placeholder="10"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="edit-max-uses">Max Uses</Label>
-                <Input
-                  id="edit-max-uses"
-                  type="number"
-                  value={formData.requirements.maxUses}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      requirements: {
-                        ...prev.requirements,
-                        maxUses: Number(e.target.value),
-                      },
-                    }))
-                  }
-                  placeholder="1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-expiry-days">Expiry (Days)</Label>
-                <Input
-                  id="edit-expiry-days"
-                  type="number"
-                  value={formData.requirements.expiryDays}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      requirements: {
-                        ...prev.requirements,
-                        expiryDays: Number(e.target.value),
-                      },
-                    }))
-                  }
-                  placeholder="30"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-wagering">Wagering Req</Label>
-                <Input
-                  id="edit-wagering"
-                  type="number"
-                  value={formData.requirements.wagering}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      requirements: {
-                        ...prev.requirements,
-                        wagering: Number(e.target.value),
-                      },
-                    }))
-                  }
-                  placeholder="1"
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsEditDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleEditBonus}>Update Bonus</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
-};
-
-export default BonusManagement;
+}

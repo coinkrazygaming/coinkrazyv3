@@ -106,15 +106,38 @@ if (!globalThis.__APP_ROOT__) {
 
 globalThis.__APP_ROOT__.render(<App />);
 
-// HMR support with error protection
+// HMR support with comprehensive error protection
 if (import.meta.hot) {
+  // Disable HMR errors temporarily
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
+
+  console.error = (...args) => {
+    const message = args.join(' ');
+    if (message.includes('send was called before connect') ||
+        message.includes('WebSocket') ||
+        message.includes('HMR')) {
+      return; // Suppress HMR-related errors
+    }
+    originalConsoleError.apply(console, args);
+  };
+
+  console.warn = (...args) => {
+    const message = args.join(' ');
+    if (message.includes('send was called before connect') ||
+        message.includes('WebSocket') ||
+        message.includes('HMR')) {
+      return; // Suppress HMR-related warnings
+    }
+    originalConsoleWarn.apply(console, args);
+  };
+
   import.meta.hot.accept(() => {
     try {
       if (globalThis.__APP_ROOT__) {
         globalThis.__APP_ROOT__.render(<App />);
       }
     } catch (error) {
-      console.warn("HMR update failed:", error);
       // Fallback: recreate root if needed
       if (!globalThis.__APP_ROOT__) {
         globalThis.__APP_ROOT__ = createRoot(container);

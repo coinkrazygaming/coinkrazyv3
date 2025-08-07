@@ -544,12 +544,12 @@ class WalletService {
 
   private async syncWalletToNeon(userId: string, wallet: UserWallet) {
     try {
-      if (this.neonClient?.connected) {
-        // In production, this would update the Neon database
-        console.log(`Syncing wallet to Neon for user ${userId}:`, wallet);
+      if (this.neonService) {
+        await this.neonService.saveWallet(wallet);
+        console.log(`✅ Wallet synced to Neon for user ${userId}`);
       }
     } catch (error) {
-      console.error("Failed to sync wallet to Neon:", error);
+      console.error("❌ Failed to sync wallet to Neon:", error);
     }
   }
 

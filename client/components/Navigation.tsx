@@ -197,10 +197,14 @@ export default function Navigation() {
                     : "..."}{" "}
                   Online
                 </Badge>
-                {user?.isLoggedIn && walletBalance && (
-                  <div className="text-xs text-muted-foreground">
-                    Balance:{" "}
-                    {formatCurrency(walletBalance.usdBalance, currentCurrency)}
+                {user?.isLoggedIn && (
+                  <div className="mt-2">
+                    <CurrencyToggle
+                      compact={false}
+                      showBalance={true}
+                      showDropdown={false}
+                      className="justify-center"
+                    />
                   </div>
                 )}
               </div>

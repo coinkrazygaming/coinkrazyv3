@@ -62,19 +62,9 @@ const App = () => (
         <Layout>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/games" element={<Games />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/sportsbook" element={<Sportsbook />} />
-            <Route path="/pick-cards" element={<PickCards />} />
-            <Route path="/bingo" element={<Bingo />} />
-            <Route path="/poker" element={<Poker />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/compliance" element={<Compliance />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/how-to-play" element={<HowToPlay />} />
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
             <Route path="/support" element={<Support />} />
@@ -82,13 +72,26 @@ const App = () => (
             <Route path="/responsible-gaming" element={<ResponsibleGaming />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/enhanced-dashboard" element={<EnhancedDashboard />} />
-            <Route path="/store" element={<GoldCoinStore />} />
-            <Route path="/payments" element={<PaymentsPage />} />
-            <Route path="/dashboard/wheel" element={<DailyLuckyWheel />} />
-            <Route path="/dashboard/banking" element={<BankingTab />} />
-            <Route path="/compliance" element={<SweepstakesCompliance />} />
-            <Route path="/casino" element={<InHouseCasino />} />
+
+            {/* Protected Routes - Require Authentication */}
+            <Route path="/games" element={<AuthGuard><Games /></AuthGuard>} />
+            <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+            <Route path="/store" element={<AuthGuard><Store /></AuthGuard>} />
+            <Route path="/sportsbook" element={<AuthGuard><Sportsbook /></AuthGuard>} />
+            <Route path="/pick-cards" element={<AuthGuard><PickCards /></AuthGuard>} />
+            <Route path="/bingo" element={<AuthGuard><Bingo /></AuthGuard>} />
+            <Route path="/poker" element={<AuthGuard><Poker /></AuthGuard>} />
+            <Route path="/enhanced-dashboard" element={<AuthGuard><EnhancedDashboard /></AuthGuard>} />
+            <Route path="/payments" element={<AuthGuard><PaymentsPage /></AuthGuard>} />
+            <Route path="/dashboard/wheel" element={<AuthGuard><DailyLuckyWheel /></AuthGuard>} />
+            <Route path="/dashboard/banking" element={<AuthGuard><BankingTab /></AuthGuard>} />
+            <Route path="/casino" element={<AuthGuard><InHouseCasino /></AuthGuard>} />
+
+            {/* Admin Only Routes */}
+            <Route path="/analytics" element={<AuthGuard requireAdmin><Analytics /></AuthGuard>} />
+            <Route path="/compliance" element={<AuthGuard requireAdmin><Compliance /></AuthGuard>} />
+            <Route path="/admin" element={<AuthGuard requireAdmin><Admin /></AuthGuard>} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

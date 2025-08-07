@@ -426,6 +426,38 @@ const EnhancedSlotsIntegration: React.FC = () => {
 
       setLastSpinResult(result.result);
 
+      // Check for jackpot win
+      if (currentGame.isJackpot) {
+        try {
+          // Contribute to jackpot based on bet
+          await jackpotService.contributeToJackpot(
+            currentGame.id,
+            userId,
+            betAmount,
+            selectedCurrency
+          );
+
+          // Check if this spin wins the jackpot
+          const jackpotWin = await jackpotService.checkJackpotWin(
+            currentGame.id,
+            userId,
+            result.result,
+            betAmount,
+            selectedCurrency
+          );
+
+          if (jackpotWin) {
+            toast({
+              title: "🎉 JACKPOT WON! 🎉",
+              description: `Congratulations! You won the ${jackpotWin.amount.toFixed(2)} ${selectedCurrency} jackpot!`,
+              duration: 10000,
+            });
+          }
+        } catch (error) {
+          console.error('Jackpot processing error:', error);
+        }
+      }
+
       // Update session stats
       setSession((prev) => ({
         ...prev,

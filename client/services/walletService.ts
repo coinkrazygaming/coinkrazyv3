@@ -1067,6 +1067,104 @@ class WalletService {
       this.wallets.set(userId, wallet);
     }
   }
+
+  // Admin logging methods
+  async logAdminAction(
+    adminUserId: string,
+    action: string,
+    targetUserId?: string,
+    targetType: 'user' | 'deposit' | 'transaction' | 'wallet' | 'system' = 'system',
+    targetId?: string,
+    details: Record<string, any> = {},
+    severity: 'info' | 'warning' | 'error' | 'critical' = 'info'
+  ): Promise<void> {
+    if (this.neonService) {
+      await this.neonService.logAdminAction(
+        adminUserId,
+        action,
+        targetUserId,
+        targetType,
+        targetId,
+        details,
+        severity
+      );
+    }
+  }
+
+  // Get admin logs (admin function)
+  async getAdminLogs(
+    limit: number = 100,
+    adminUserId?: string,
+    action?: string,
+    severity?: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any[]> {
+    if (this.neonService) {
+      return await this.neonService.getAdminLogs(limit, adminUserId, action, severity, startDate, endDate);
+    }
+    return [];
+  }
+
+  // Get payment logs (admin function)
+  async getPaymentLogs(
+    limit: number = 100,
+    userId?: string,
+    paymentMethod?: string,
+    status?: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any[]> {
+    if (this.neonService) {
+      return await this.neonService.getPaymentLogs(limit, userId, paymentMethod, status, startDate, endDate);
+    }
+    return [];
+  }
+
+  // Get comprehensive database statistics (admin function)
+  async getDatabaseStats(): Promise<any> {
+    if (this.neonService) {
+      return await this.neonService.getDatabaseStats();
+    }
+
+    // Fallback to local statistics
+    const wallets = this.getAllWallets();
+    const deposits = this.getAllDeposits();
+
+    return {
+      totalUsers: wallets.length,
+      totalDeposits: deposits.length,
+      totalDepositAmount: deposits.reduce((sum, d) => sum + d.usdAmount, 0),
+      totalGCIssued: deposits.reduce((sum, d) => sum + d.gcAwarded, 0),
+      totalSCIssued: deposits.reduce((sum, d) => sum + d.scAwarded, 0),
+      last24HourDeposits: 0,
+      last24HourAmount: 0,
+      topPaymentMethods: []
+    };
+  }
+
+  // Export logs for compliance (admin function)
+  async exportLogs(format: 'json' | 'csv' = 'json'): Promise<string> {
+    if (this.neonService) {
+      return await this.neonService.exportLogs(format);
+    }
+
+    // Fallback export
+    const data = {
+      wallets: this.getAllWallets(),
+      deposits: this.getAllDeposits(),
+      exportedAt: new Date().toISOString()
+    };
+
+    return JSON.stringify(data, null, 2);
+  }
+
+  // Clean old logs (admin function)
+  async cleanOldLogs(daysToKeep: number = 30): Promise<void> {
+    if (this.neonService) {
+      await this.neonService.clearOldLogs(daysToKeep);
+    }
+  }
 }
 
 export const walletService = WalletService.getInstance();

@@ -222,7 +222,7 @@ export default function Admin() {
                 className="border-gold-500 text-gold-400"
               >
                 <Shield className="w-3 h-3 mr-1" />
-                Admin: coinkrazy00@gmail.com
+                Administrator
               </Badge>
               <Button
                 variant="outline"

@@ -379,30 +379,40 @@ class RealNeonService {
 
   // User management methods
   async createUser(userData: Partial<UserData>): Promise<UserData> {
-    const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    try {
+      // Ensure SQL client is initialized
+      if (!this.sql) {
+        this.sql = neon(this.connectionString);
+      }
 
-    const [user] = await this.sql`
-      INSERT INTO users (
-        id, email, username, first_name, last_name,
-        email_verified, status, kyc_status, gc_balance, sc_balance,
-        preferences, join_date
-      ) VALUES (
-        ${id},
-        ${userData.email},
-        ${userData.username || userData.email?.split("@")[0]},
-        ${userData.firstName || ""},
-        ${userData.lastName || ""},
-        ${userData.emailVerified || false},
-        ${userData.status || "pending_verification"},
-        ${userData.kycStatus || "none"},
-        ${userData.gcBalance || 0},
-        ${userData.scBalance || 0},
-        ${JSON.stringify(userData.preferences || {})},
-        NOW()
-      ) RETURNING *
-    `;
+      const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    return this.mapUserFromDb(user);
+      const [user] = await this.sql`
+        INSERT INTO users (
+          id, email, username, first_name, last_name,
+          email_verified, status, kyc_status, gc_balance, sc_balance,
+          preferences, join_date
+        ) VALUES (
+          ${id},
+          ${userData.email},
+          ${userData.username || userData.email?.split("@")[0]},
+          ${userData.firstName || ""},
+          ${userData.lastName || ""},
+          ${userData.emailVerified || false},
+          ${userData.status || "pending_verification"},
+          ${userData.kycStatus || "none"},
+          ${userData.gcBalance || 0},
+          ${userData.scBalance || 0},
+          ${JSON.stringify(userData.preferences || {})},
+          NOW()
+        ) RETURNING *
+      `;
+
+      return this.mapUserFromDb(user);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 
   async getUserById(id: string): Promise<UserData | null> {

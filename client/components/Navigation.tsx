@@ -151,9 +151,13 @@ export default function Navigation() {
               </Badge>
             </div>
 
-            {/* Enhanced Wallet Balance (logged in users only) */}
+            {/* Currency Toggle and Balance (logged in users only) */}
             {user?.isLoggedIn && (
-              <WalletBalance userId={user.id || "user-1"} compact={true} />
+              <CurrencyToggle
+                compact={true}
+                showBalance={true}
+                showDropdown={true}
+              />
             )}
 
             {/* Contact Phone */}

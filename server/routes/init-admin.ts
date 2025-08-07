@@ -1,5 +1,4 @@
 import express from "express";
-import bcrypt from "bcryptjs";
 import databaseService from "../services/database.js";
 
 const router = express.Router();
@@ -25,7 +24,8 @@ router.post("/init-admin", async (req, res) => {
     }
 
     // Create admin user
-    const passwordHash = await bcrypt.hash(adminPassword, 12);
+    const bcrypt = await import("bcryptjs");
+    const passwordHash = await bcrypt.default.hash(adminPassword, 12);
     
     const adminUser = await databaseService.createUser({
       email: adminEmail,

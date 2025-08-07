@@ -54,7 +54,9 @@ export default function Login() {
       const result = await response.json();
 
       if (result.success) {
-        setSuccess("✅ Admin user created! You can now login with coinkrazy00@gmail.com / Woot6969!");
+        setSuccess(
+          "✅ Admin user created! You can now login with coinkrazy00@gmail.com / Woot6969!",
+        );
         // Auto-fill credentials
         setFormData({
           email: "coinkrazy00@gmail.com",
@@ -262,7 +264,12 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  disabled={!formData.email || !formData.password || loading || isCreatingAdmin}
+                  disabled={
+                    !formData.email ||
+                    !formData.password ||
+                    loading ||
+                    isCreatingAdmin
+                  }
                   className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
                   {loading ? (

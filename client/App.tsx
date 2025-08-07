@@ -115,20 +115,24 @@ if (import.meta.hot) {
   const originalConsoleWarn = console.warn;
 
   console.error = (...args) => {
-    const message = args.join(' ');
-    if (message.includes('send was called before connect') ||
-        message.includes('WebSocket') ||
-        message.includes('HMR')) {
+    const message = args.join(" ");
+    if (
+      message.includes("send was called before connect") ||
+      message.includes("WebSocket") ||
+      message.includes("HMR")
+    ) {
       return; // Suppress HMR-related errors
     }
     originalConsoleError.apply(console, args);
   };
 
   console.warn = (...args) => {
-    const message = args.join(' ');
-    if (message.includes('send was called before connect') ||
-        message.includes('WebSocket') ||
-        message.includes('HMR')) {
+    const message = args.join(" ");
+    if (
+      message.includes("send was called before connect") ||
+      message.includes("WebSocket") ||
+      message.includes("HMR")
+    ) {
       return; // Suppress HMR-related warnings
     }
     originalConsoleWarn.apply(console, args);

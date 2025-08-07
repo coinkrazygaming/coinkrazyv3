@@ -7,19 +7,24 @@ import { seedService } from "@/services/seedService";
 
 export default function AdminSetup() {
   const [isSeeding, setIsSeeding] = useState(false);
-  const [result, setResult] = useState<{success: boolean, message?: string, error?: string} | null>(null);
+  const [result, setResult] = useState<{
+    success: boolean;
+    message?: string;
+    error?: string;
+  } | null>(null);
 
   const handleSeedDatabase = async () => {
     setIsSeeding(true);
     setResult(null);
-    
+
     try {
       const response = await seedService.seedDatabase();
       setResult(response);
     } catch (error) {
       setResult({
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       });
     } finally {
       setIsSeeding(false);
@@ -29,7 +34,7 @@ export default function AdminSetup() {
   const handleInitAdmin = async () => {
     setIsSeeding(true);
     setResult(null);
-    
+
     try {
       const response = await fetch("/api/init-admin", {
         method: "POST",
@@ -37,13 +42,14 @@ export default function AdminSetup() {
           "Content-Type": "application/json",
         },
       });
-      
+
       const data = await response.json();
       setResult(data);
     } catch (error) {
       setResult({
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to initialize admin'
+        error:
+          error instanceof Error ? error.message : "Failed to initialize admin",
       });
     } finally {
       setIsSeeding(false);
@@ -64,13 +70,21 @@ export default function AdminSetup() {
         </CardHeader>
         <CardContent className="space-y-4">
           {result && (
-            <Alert className={result.success ? "border-green-500/20 bg-green-500/10" : "border-red-500/20 bg-red-500/10"}>
+            <Alert
+              className={
+                result.success
+                  ? "border-green-500/20 bg-green-500/10"
+                  : "border-red-500/20 bg-red-500/10"
+              }
+            >
               {result.success ? (
                 <CheckCircle className="w-4 h-4 text-green-500" />
               ) : (
                 <AlertTriangle className="w-4 h-4 text-red-500" />
               )}
-              <AlertDescription className={result.success ? "text-green-400" : "text-red-400"}>
+              <AlertDescription
+                className={result.success ? "text-green-400" : "text-red-400"}
+              >
                 {result.success ? result.message : result.error}
               </AlertDescription>
             </Alert>
@@ -92,9 +106,7 @@ export default function AdminSetup() {
               )}
             </Button>
 
-            <div className="text-center text-xs text-muted-foreground">
-              OR
-            </div>
+            <div className="text-center text-xs text-muted-foreground">OR</div>
 
             <Button
               onClick={handleInitAdmin}

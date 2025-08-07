@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import {
   Wallet,
   CreditCard,
-  Bank,
+  Banknote,
   DollarSign,
   TrendingUp,
   TrendingDown,

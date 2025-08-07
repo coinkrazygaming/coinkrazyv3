@@ -8,31 +8,31 @@ router.post("/init-admin", async (req, res) => {
   try {
     const adminEmail = "coinkrazy00@gmail.com";
     const adminPassword = "Woot6969!";
-    
+
     // Check if admin already exists
     const existingAdmin = await databaseService.getUserByEmail(adminEmail);
     if (existingAdmin) {
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         message: "Admin user already exists",
         user: {
           email: existingAdmin.email,
           username: existingAdmin.username,
-          role: existingAdmin.role
-        }
+          role: existingAdmin.role,
+        },
       });
     }
 
     // Create admin user
     const bcrypt = await import("bcryptjs");
     const passwordHash = await bcrypt.default.hash(adminPassword, 12);
-    
+
     const adminUser = await databaseService.createUser({
       email: adminEmail,
       password_hash: passwordHash,
       username: "admin",
       first_name: "Admin",
-      last_name: "User"
+      last_name: "User",
     });
 
     // Update user to admin role and verify email
@@ -43,25 +43,24 @@ router.post("/init-admin", async (req, res) => {
            email_verification_token = NULL,
            status = 'active'
        WHERE id = $1`,
-      [adminUser.id]
+      [adminUser.id],
     );
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "Admin user created successfully",
       user: {
         email: adminUser.email,
         username: adminUser.username,
-        role: "admin"
-      }
+        role: "admin",
+      },
     });
-
   } catch (error) {
     console.error("Error creating admin user:", error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: "Failed to create admin user",
-      details: error.message 
+      details: error.message,
     });
   }
 });

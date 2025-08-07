@@ -70,7 +70,7 @@ class NeonDatabaseService {
 
   constructor() {
     this.config = {
-      connectionString: process.env.VITE_NEON_CONNECTION_STRING || 
+      connectionString: import.meta.env.VITE_NEON_CONNECTION_STRING || 
         'postgresql://coinfrazy_user:secure_password@neon.tech:5432/coinfrazy_prod',
       database: 'coinfrazy_prod',
       host: 'neon.tech',

@@ -67,7 +67,7 @@ interface QuickStats {
 
 const EnhancedGames: React.FC = () => {
   const { toast } = useToast();
-  const userId = "demo@coinfrazy.com"; // In production, this would come from auth context
+  const userId = "user-current"; // This would come from auth context in production
 
   // State
   const [activeTab, setActiveTab] = useState("overview");

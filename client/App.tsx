@@ -82,7 +82,10 @@ const App = () => (
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/enhanced-dashboard" element={<EnhancedDashboard />} />
             <Route path="/store" element={<GoldCoinStore />} />
+            <Route path="/payments" element={<PaymentsPage />} />
             <Route path="/dashboard/wheel" element={<DailyLuckyWheel />} />
+            <Route path="/dashboard/banking" element={<BankingTab />} />
+            <Route path="/compliance" element={<SweepstakesCompliance />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -114,16 +114,27 @@ class RealNeonService {
     try {
       console.log("🔗 Connecting to Neon PostgreSQL...");
 
-      // Test connection
-      await this.sql`SELECT NOW() as current_time`;
+      // Test connection with timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Connection timeout')), 10000)
+      );
+
+      const connectionTest = this.sql`SELECT NOW() as current_time`;
+      await Promise.race([connectionTest, timeoutPromise]);
+
       this.connected = true;
       console.log("✅ Neon Database connected successfully");
 
-      // Initialize tables
-      await this.createTables();
+      // Initialize tables with delay to avoid body stream issues
+      setTimeout(async () => {
+        try {
+          await this.createTables();
+          await this.insertDefaultData();
+        } catch (error) {
+          console.error("Failed to initialize tables:", error);
+        }
+      }, 1000);
 
-      // Insert default data
-      await this.insertDefaultData();
     } catch (error) {
       console.error("❌ Failed to connect to Neon:", error);
       this.connected = false;

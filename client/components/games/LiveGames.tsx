@@ -117,7 +117,7 @@ export default function LiveGames() {
       {
         id: 'evolution',
         name: 'Evolution Gaming',
-        logo: '/api/placeholder/120/60',
+        logo: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=120&h=60&fit=crop&crop=center',
         status: 'online',
         latency: 45,
         uptime: 99.8,
@@ -129,7 +129,7 @@ export default function LiveGames() {
       {
         id: 'pragmatic_live',
         name: 'Pragmatic Play Live',
-        logo: '/api/placeholder/120/60',
+        logo: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=120&h=60&fit=crop&crop=center',
         status: 'online',
         latency: 52,
         uptime: 99.5,
@@ -141,7 +141,7 @@ export default function LiveGames() {
       {
         id: 'ezugi',
         name: 'Ezugi',
-        logo: '/api/placeholder/120/60',
+        logo: 'https://images.unsplash.com/photo-1606868306217-dbf5046868d2?w=120&h=60&fit=crop&crop=center',
         status: 'maintenance',
         latency: 0,
         uptime: 0,

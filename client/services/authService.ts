@@ -27,7 +27,58 @@ class AuthService {
 
   constructor() {
     this.loadUsersFromStorage();
-    this.initializeDefaultUsers();
+    this.initializeNeonConnection();
+  }
+
+  private async initializeNeonConnection() {
+    try {
+      // Wait for Neon to be ready
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      if (realNeonService.isConnected()) {
+        console.log('✅ AuthService connected to Neon Database');
+
+        // Sync existing users to Neon if needed
+        await this.syncUsersToNeon();
+      }
+    } catch (error) {
+      console.error('Failed to initialize Neon connection:', error);
+    }
+  }
+
+  private async syncUsersToNeon() {
+    try {
+      // Check if admin user exists in Neon
+      const adminUser = await realNeonService.getUserByEmail('coinkrazy00@gmail.com');
+      if (!adminUser) {
+        // Create admin user in Neon
+        await realNeonService.createUser({
+          email: 'coinkrazy00@gmail.com',
+          username: 'CoinKrazy Admin',
+          firstName: 'CoinKrazy',
+          lastName: 'Admin',
+          emailVerified: true,
+          status: 'active',
+          gcBalance: 1000000,
+          scBalance: 500.00,
+          preferences: {
+            theme: 'dark',
+            currency: 'USD',
+            notifications: {
+              email: true,
+              sms: false,
+              push: true,
+              bonuses: true,
+              promotions: true,
+              gameUpdates: true,
+            }
+          }
+        });
+        console.log('✅ Admin user synced to Neon');
+      }
+    } catch (error) {
+      console.error('Failed to sync users to Neon:', error);
+    }
   }
 
   private loadUsersFromStorage(): void {

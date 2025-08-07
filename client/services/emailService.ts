@@ -1,4 +1,4 @@
-import { databaseService } from './database';
+import { databaseService } from "./database";
 
 export interface EmailTemplate {
   id: number;
@@ -29,7 +29,7 @@ export interface EmailSendRequest {
   to: string;
   templateName: string;
   variables: Record<string, any>;
-  priority?: 'low' | 'normal' | 'high';
+  priority?: "low" | "normal" | "high";
 }
 
 export interface EmailLog {
@@ -37,7 +37,7 @@ export interface EmailLog {
   to: string;
   subject: string;
   template_name: string;
-  status: 'sent' | 'failed' | 'pending';
+  status: "sent" | "failed" | "pending";
   error_message?: string;
   sent_at: Date;
   variables: any;
@@ -62,49 +62,60 @@ class EmailService {
       `);
       return result.rows;
     } catch (error) {
-      console.error('Failed to get email templates:', error);
+      console.error("Failed to get email templates:", error);
       return [];
     }
   }
 
   async getEmailTemplate(templateName: string): Promise<EmailTemplate | null> {
     try {
-      const result = await databaseService.query(`
+      const result = await databaseService.query(
+        `
         SELECT * FROM email_templates 
         WHERE template_name = $1 AND is_active = TRUE
         LIMIT 1
-      `, [templateName]);
-      
+      `,
+        [templateName],
+      );
+
       return result.rows[0] || null;
     } catch (error) {
-      console.error('Failed to get email template:', error);
+      console.error("Failed to get email template:", error);
       return null;
     }
   }
 
-  async createEmailTemplate(template: Omit<EmailTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<EmailTemplate | null> {
+  async createEmailTemplate(
+    template: Omit<EmailTemplate, "id" | "created_at" | "updated_at">,
+  ): Promise<EmailTemplate | null> {
     try {
-      const result = await databaseService.query(`
+      const result = await databaseService.query(
+        `
         INSERT INTO email_templates (template_name, subject, html_content, text_content, variables, is_active)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
-      `, [
-        template.template_name,
-        template.subject,
-        template.html_content,
-        template.text_content,
-        JSON.stringify(template.variables),
-        template.is_active
-      ]);
+      `,
+        [
+          template.template_name,
+          template.subject,
+          template.html_content,
+          template.text_content,
+          JSON.stringify(template.variables),
+          template.is_active,
+        ],
+      );
 
       return result.rows[0];
     } catch (error) {
-      console.error('Failed to create email template:', error);
+      console.error("Failed to create email template:", error);
       return null;
     }
   }
 
-  async updateEmailTemplate(id: number, updates: Partial<EmailTemplate>): Promise<EmailTemplate | null> {
+  async updateEmailTemplate(
+    id: number,
+    updates: Partial<EmailTemplate>,
+  ): Promise<EmailTemplate | null> {
     try {
       const setClause = [];
       const values = [];
@@ -134,26 +145,31 @@ class EmailService {
       setClause.push(`updated_at = CURRENT_TIMESTAMP`);
       values.push(id);
 
-      const result = await databaseService.query(`
+      const result = await databaseService.query(
+        `
         UPDATE email_templates 
-        SET ${setClause.join(', ')}
+        SET ${setClause.join(", ")}
         WHERE id = $${paramIndex}
         RETURNING *
-      `, values);
+      `,
+        values,
+      );
 
       return result.rows[0] || null;
     } catch (error) {
-      console.error('Failed to update email template:', error);
+      console.error("Failed to update email template:", error);
       return null;
     }
   }
 
   async deleteEmailTemplate(id: number): Promise<boolean> {
     try {
-      await databaseService.query('DELETE FROM email_templates WHERE id = $1', [id]);
+      await databaseService.query("DELETE FROM email_templates WHERE id = $1", [
+        id,
+      ]);
       return true;
     } catch (error) {
-      console.error('Failed to delete email template:', error);
+      console.error("Failed to delete email template:", error);
       return false;
     }
   }
@@ -167,7 +183,7 @@ class EmailService {
       `);
       return result.rows;
     } catch (error) {
-      console.error('Failed to get SMTP settings:', error);
+      console.error("Failed to get SMTP settings:", error);
       return [];
     }
   }
@@ -181,46 +197,59 @@ class EmailService {
       `);
       return result.rows[0] || null;
     } catch (error) {
-      console.error('Failed to get active SMTP settings:', error);
+      console.error("Failed to get active SMTP settings:", error);
       return null;
     }
   }
 
-  async createSMTPSettings(settings: Omit<SMTPSettings, 'id' | 'created_at' | 'updated_at'>): Promise<SMTPSettings | null> {
+  async createSMTPSettings(
+    settings: Omit<SMTPSettings, "id" | "created_at" | "updated_at">,
+  ): Promise<SMTPSettings | null> {
     try {
       // Deactivate other settings if this one is being set as active
       if (settings.is_active) {
-        await databaseService.query('UPDATE smtp_settings SET is_active = FALSE');
+        await databaseService.query(
+          "UPDATE smtp_settings SET is_active = FALSE",
+        );
       }
 
-      const result = await databaseService.query(`
+      const result = await databaseService.query(
+        `
         INSERT INTO smtp_settings (setting_name, host, port, username, password, use_tls, from_email, from_name, is_active)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *
-      `, [
-        settings.setting_name,
-        settings.host,
-        settings.port,
-        settings.username,
-        settings.password,
-        settings.use_tls,
-        settings.from_email,
-        settings.from_name,
-        settings.is_active
-      ]);
+      `,
+        [
+          settings.setting_name,
+          settings.host,
+          settings.port,
+          settings.username,
+          settings.password,
+          settings.use_tls,
+          settings.from_email,
+          settings.from_name,
+          settings.is_active,
+        ],
+      );
 
       return result.rows[0];
     } catch (error) {
-      console.error('Failed to create SMTP settings:', error);
+      console.error("Failed to create SMTP settings:", error);
       return null;
     }
   }
 
-  async updateSMTPSettings(id: number, updates: Partial<SMTPSettings>): Promise<SMTPSettings | null> {
+  async updateSMTPSettings(
+    id: number,
+    updates: Partial<SMTPSettings>,
+  ): Promise<SMTPSettings | null> {
     try {
       // Deactivate other settings if this one is being set as active
       if (updates.is_active) {
-        await databaseService.query('UPDATE smtp_settings SET is_active = FALSE WHERE id != $1', [id]);
+        await databaseService.query(
+          "UPDATE smtp_settings SET is_active = FALSE WHERE id != $1",
+          [id],
+        );
       }
 
       const setClause = [];
@@ -267,125 +296,144 @@ class EmailService {
       setClause.push(`updated_at = CURRENT_TIMESTAMP`);
       values.push(id);
 
-      const result = await databaseService.query(`
+      const result = await databaseService.query(
+        `
         UPDATE smtp_settings 
-        SET ${setClause.join(', ')}
+        SET ${setClause.join(", ")}
         WHERE id = $${paramIndex}
         RETURNING *
-      `, values);
+      `,
+        values,
+      );
 
       return result.rows[0] || null;
     } catch (error) {
-      console.error('Failed to update SMTP settings:', error);
+      console.error("Failed to update SMTP settings:", error);
       return null;
     }
   }
 
-  async testSMTPConnection(settingsId?: number): Promise<{ success: boolean; message: string }> {
+  async testSMTPConnection(
+    settingsId?: number,
+  ): Promise<{ success: boolean; message: string }> {
     try {
       let smtpSettings: SMTPSettings | null;
-      
+
       if (settingsId) {
-        const result = await databaseService.query('SELECT * FROM smtp_settings WHERE id = $1', [settingsId]);
+        const result = await databaseService.query(
+          "SELECT * FROM smtp_settings WHERE id = $1",
+          [settingsId],
+        );
         smtpSettings = result.rows[0] || null;
       } else {
         smtpSettings = await this.getActiveSMTPSettings();
       }
 
       if (!smtpSettings) {
-        return { success: false, message: 'No SMTP settings found' };
+        return { success: false, message: "No SMTP settings found" };
       }
 
       // In a real implementation, this would test the actual SMTP connection
       // For now, we'll simulate a successful test
-      console.log('Testing SMTP connection with settings:', {
+      console.log("Testing SMTP connection with settings:", {
         host: smtpSettings.host,
         port: smtpSettings.port,
         username: smtpSettings.username,
-        use_tls: smtpSettings.use_tls
+        use_tls: smtpSettings.use_tls,
       });
 
       // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return { success: true, message: 'SMTP connection test successful' };
+      return { success: true, message: "SMTP connection test successful" };
     } catch (error) {
-      console.error('SMTP connection test failed:', error);
-      return { success: false, message: 'SMTP connection test failed' };
+      console.error("SMTP connection test failed:", error);
+      return { success: false, message: "SMTP connection test failed" };
     }
   }
 
   // Email Sending
-  async sendEmail(request: EmailSendRequest): Promise<{ success: boolean; message: string; logId?: string }> {
+  async sendEmail(
+    request: EmailSendRequest,
+  ): Promise<{ success: boolean; message: string; logId?: string }> {
     try {
       const template = await this.getEmailTemplate(request.templateName);
       if (!template) {
-        return { success: false, message: 'Email template not found' };
+        return { success: false, message: "Email template not found" };
       }
 
       const smtpSettings = await this.getActiveSMTPSettings();
       if (!smtpSettings) {
-        return { success: false, message: 'No active SMTP settings found' };
+        return { success: false, message: "No active SMTP settings found" };
       }
 
       // Process template variables
-      const processedSubject = this.processTemplate(template.subject, request.variables);
-      const processedHtmlContent = this.processTemplate(template.html_content, request.variables);
-      const processedTextContent = template.text_content 
+      const processedSubject = this.processTemplate(
+        template.subject,
+        request.variables,
+      );
+      const processedHtmlContent = this.processTemplate(
+        template.html_content,
+        request.variables,
+      );
+      const processedTextContent = template.text_content
         ? this.processTemplate(template.text_content, request.variables)
-        : '';
+        : "";
 
       // In a real implementation, this would send the actual email
       // For now, we'll simulate sending and create a log entry
       const logId = `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       // Simulate email sending delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Log the email (in a real system, this would be in a separate emails_log table)
-      console.log('Email sent:', {
+      console.log("Email sent:", {
         logId,
         to: request.to,
         subject: processedSubject,
         templateName: request.templateName,
-        smtpHost: smtpSettings.host
+        smtpHost: smtpSettings.host,
       });
 
       // Create admin notification for successful email
       await databaseService.createAdminNotification(
-        'Email Sent',
+        "Email Sent",
         `Email "${processedSubject}" sent to ${request.to}`,
-        'info',
-        1
+        "info",
+        1,
       );
 
-      return { 
-        success: true, 
-        message: 'Email sent successfully',
-        logId 
+      return {
+        success: true,
+        message: "Email sent successfully",
+        logId,
       };
     } catch (error) {
-      console.error('Failed to send email:', error);
+      console.error("Failed to send email:", error);
 
       // Create admin notification for failed email
       await databaseService.createAdminNotification(
-        'Email Send Failed',
+        "Email Send Failed",
         `Failed to send email to ${request.to}: ${error}`,
-        'error',
-        1
+        "error",
+        1,
       );
 
-      return { success: false, message: 'Failed to send email' };
+      return { success: false, message: "Failed to send email" };
     }
   }
 
   // Template variable processing
-  private processTemplate(template: string, variables: Record<string, any>): string {
+  private processTemplate(
+    template: string,
+    variables: Record<string, any>,
+  ): string {
     let processed = template;
-    
+
     // Replace variables in the format {{variable_name}}
     for (const [key, value] of Object.entries(variables)) {
-      const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+      const regex = new RegExp(`{{\\s*${key}\\s*}}`, "g");
       processed = processed.replace(regex, String(value));
     }
 
@@ -393,106 +441,135 @@ class EmailService {
   }
 
   // Predefined email sending methods
-  async sendWelcomeEmail(email: string, username: string, gcAmount: number = 10, scAmount: number = 10): Promise<boolean> {
+  async sendWelcomeEmail(
+    email: string,
+    username: string,
+    gcAmount: number = 10,
+    scAmount: number = 10,
+  ): Promise<boolean> {
     try {
       const result = await this.sendEmail({
         to: email,
-        templateName: 'welcome_bonus',
+        templateName: "welcome_bonus",
         variables: {
           username,
           gc_amount: gcAmount,
           sc_amount: scAmount,
           games_url: `${window.location.origin}/games`,
-          support_email: 'coinkrazy00@gmail.com'
-        }
+          support_email: "coinkrazy00@gmail.com",
+        },
       });
 
       return result.success;
     } catch (error) {
-      console.error('Failed to send welcome email:', error);
+      console.error("Failed to send welcome email:", error);
       return false;
     }
   }
 
-  async sendEmailVerification(email: string, username: string, verificationToken: string): Promise<boolean> {
+  async sendEmailVerification(
+    email: string,
+    username: string,
+    verificationToken: string,
+  ): Promise<boolean> {
     try {
       const result = await this.sendEmail({
         to: email,
-        templateName: 'email_verification',
+        templateName: "email_verification",
         variables: {
           username,
-          verification_url: `${window.location.origin}/verify-email?token=${verificationToken}`
-        }
+          verification_url: `${window.location.origin}/verify-email?token=${verificationToken}`,
+        },
       });
 
       return result.success;
     } catch (error) {
-      console.error('Failed to send verification email:', error);
+      console.error("Failed to send verification email:", error);
       return false;
     }
   }
 
-  async sendPasswordResetEmail(email: string, username: string, resetToken: string): Promise<boolean> {
+  async sendPasswordResetEmail(
+    email: string,
+    username: string,
+    resetToken: string,
+  ): Promise<boolean> {
     try {
       const result = await this.sendEmail({
         to: email,
-        templateName: 'password_reset',
+        templateName: "password_reset",
         variables: {
           username,
-          reset_url: `${window.location.origin}/reset-password?token=${resetToken}`
-        }
+          reset_url: `${window.location.origin}/reset-password?token=${resetToken}`,
+        },
       });
 
       return result.success;
     } catch (error) {
-      console.error('Failed to send password reset email:', error);
+      console.error("Failed to send password reset email:", error);
       return false;
     }
   }
 
-  async sendWithdrawalApprovalEmail(email: string, username: string, amount: number, method: string, reference: string): Promise<boolean> {
+  async sendWithdrawalApprovalEmail(
+    email: string,
+    username: string,
+    amount: number,
+    method: string,
+    reference: string,
+  ): Promise<boolean> {
     try {
       const result = await this.sendEmail({
         to: email,
-        templateName: 'withdrawal_approved',
+        templateName: "withdrawal_approved",
         variables: {
           username,
           amount: amount.toFixed(2),
           method,
-          reference
-        }
+          reference,
+        },
       });
 
       return result.success;
     } catch (error) {
-      console.error('Failed to send withdrawal approval email:', error);
+      console.error("Failed to send withdrawal approval email:", error);
       return false;
     }
   }
 
-  async sendBonusNotificationEmail(email: string, username: string, bonusTitle: string, gcAmount: number, scAmount: number): Promise<boolean> {
+  async sendBonusNotificationEmail(
+    email: string,
+    username: string,
+    bonusTitle: string,
+    gcAmount: number,
+    scAmount: number,
+  ): Promise<boolean> {
     try {
       const result = await this.sendEmail({
         to: email,
-        templateName: 'bonus_notification',
+        templateName: "bonus_notification",
         variables: {
           username,
           bonus_title: bonusTitle,
           gc_amount: gcAmount,
           sc_amount: scAmount.toFixed(2),
-          claim_url: `${window.location.origin}/dashboard`
-        }
+          claim_url: `${window.location.origin}/dashboard`,
+        },
       });
 
       return result.success;
     } catch (error) {
-      console.error('Failed to send bonus notification email:', error);
+      console.error("Failed to send bonus notification email:", error);
       return false;
     }
   }
 
   // Bulk email operations
-  async sendBulkEmail(emails: string[], templateName: string, variables: Record<string, any>): Promise<{ sent: number; failed: number; results: any[] }> {
+  async sendBulkEmail(
+    emails: string[],
+    templateName: string,
+    variables: Record<string, any>,
+  ): Promise<{ sent: number; failed: number; results: any[] }> {
     const results = [];
     let sent = 0;
     let failed = 0;
@@ -502,7 +579,7 @@ class EmailService {
         const result = await this.sendEmail({
           to: email,
           templateName,
-          variables: { ...variables, email }
+          variables: { ...variables, email },
         });
 
         if (result.success) {
@@ -514,11 +591,15 @@ class EmailService {
         results.push({ email, ...result });
       } catch (error) {
         failed++;
-        results.push({ email, success: false, message: 'Failed to send email' });
+        results.push({
+          email,
+          success: false,
+          message: "Failed to send email",
+        });
       }
 
       // Add small delay between emails to prevent overwhelming the SMTP server
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     return { sent, failed, results };
@@ -534,19 +615,21 @@ class EmailService {
         totalFailed: 23,
         successRate: 98.15,
         popularTemplates: [
-          { template: 'welcome_bonus', count: 456 },
-          { template: 'email_verification', count: 234 },
-          { template: 'withdrawal_approved', count: 189 },
-          { template: 'bonus_notification', count: 167 }
+          { template: "welcome_bonus", count: 456 },
+          { template: "email_verification", count: 234 },
+          { template: "withdrawal_approved", count: 189 },
+          { template: "bonus_notification", count: 167 },
         ],
         dailyVolume: Array.from({ length: days }, (_, i) => ({
-          date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split("T")[0],
           sent: Math.floor(Math.random() * 100) + 20,
-          failed: Math.floor(Math.random() * 5)
-        })).reverse()
+          failed: Math.floor(Math.random() * 5),
+        })).reverse(),
       };
     } catch (error) {
-      console.error('Failed to get email statistics:', error);
+      console.error("Failed to get email statistics:", error);
       return null;
     }
   }
@@ -555,12 +638,13 @@ class EmailService {
   async initializeDefaultTemplates(): Promise<void> {
     try {
       const existingTemplates = await this.getEmailTemplates();
-      const templateNames = existingTemplates.map(t => t.template_name);
+      const templateNames = existingTemplates.map((t) => t.template_name);
 
       const defaultTemplates = [
         {
-          template_name: 'welcome_bonus',
-          subject: 'Welcome to CoinKrazy - Your {{gc_amount}} GC + {{sc_amount}} SC Bonus Awaits!',
+          template_name: "welcome_bonus",
+          subject:
+            "Welcome to CoinKrazy - Your {{gc_amount}} GC + {{sc_amount}} SC Bonus Awaits!",
           html_content: `
             <!DOCTYPE html>
             <html>
@@ -596,13 +680,19 @@ class EmailService {
               </body>
             </html>
           `,
-          text_content: 'Welcome to CoinKrazy! Your {{gc_amount}} GC + {{sc_amount}} SC bonus is ready. Visit {{games_url}} to start playing!',
-          variables: { gc_amount: '10', sc_amount: '10', username: 'string', games_url: 'string' },
-          is_active: true
+          text_content:
+            "Welcome to CoinKrazy! Your {{gc_amount}} GC + {{sc_amount}} SC bonus is ready. Visit {{games_url}} to start playing!",
+          variables: {
+            gc_amount: "10",
+            sc_amount: "10",
+            username: "string",
+            games_url: "string",
+          },
+          is_active: true,
         },
         {
-          template_name: 'bonus_notification',
-          subject: '🎉 New Bonus Available: {{bonus_title}}',
+          template_name: "bonus_notification",
+          subject: "🎉 New Bonus Available: {{bonus_title}}",
           html_content: `
             <!DOCTYPE html>
             <html>
@@ -637,10 +727,17 @@ class EmailService {
               </body>
             </html>
           `,
-          text_content: 'Hi {{username}}, you have a new bonus: {{bonus_title}}. {{gc_amount}} GC + {{sc_amount}} SC. Claim at {{claim_url}}',
-          variables: { username: 'string', bonus_title: 'string', gc_amount: '0', sc_amount: '0.00', claim_url: 'string' },
-          is_active: true
-        }
+          text_content:
+            "Hi {{username}}, you have a new bonus: {{bonus_title}}. {{gc_amount}} GC + {{sc_amount}} SC. Claim at {{claim_url}}",
+          variables: {
+            username: "string",
+            bonus_title: "string",
+            gc_amount: "0",
+            sc_amount: "0.00",
+            claim_url: "string",
+          },
+          is_active: true,
+        },
       ];
 
       for (const template of defaultTemplates) {
@@ -649,7 +746,7 @@ class EmailService {
         }
       }
     } catch (error) {
-      console.error('Failed to initialize default templates:', error);
+      console.error("Failed to initialize default templates:", error);
     }
   }
 }

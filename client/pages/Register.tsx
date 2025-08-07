@@ -33,7 +33,7 @@ const blockedStates = ["WA", "ID", "MT", "NV", "NY"];
 export default function Register() {
   const navigate = useNavigate();
   const { register, loading } = useAuth();
-  
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     username: "",
@@ -72,8 +72,11 @@ export default function Register() {
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       return age - 1 >= 18;
     }
     return age >= 18;
@@ -143,13 +146,14 @@ export default function Register() {
       };
 
       const response = await register(registrationData);
-      
+
       if (response.success) {
         if (response.requiresEmailVerification) {
           setPendingVerification(true);
           toast({
             title: "Registration Successful!",
-            description: "Please check your email to verify your account and claim your welcome bonus.",
+            description:
+              "Please check your email to verify your account and claim your welcome bonus.",
           });
         } else {
           setRegistrationComplete(true);
@@ -173,8 +177,9 @@ export default function Register() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Check Your Email!</h2>
             <p className="text-muted-foreground mb-8">
-              We've sent a verification link to <strong>{formData.email}</strong>. 
-              Click the link in your email to verify your account and claim your welcome bonus!
+              We've sent a verification link to{" "}
+              <strong>{formData.email}</strong>. Click the link in your email to
+              verify your account and claim your welcome bonus!
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -186,7 +191,9 @@ export default function Register() {
               <div className="text-center p-4 bg-card rounded-lg">
                 <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
                 <div className="text-2xl font-bold text-casino-blue">10</div>
-                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                <div className="text-sm text-muted-foreground">
+                  Sweeps Coins
+                </div>
               </div>
             </div>
 
@@ -194,11 +201,13 @@ export default function Register() {
               <Alert className="border-blue-500/20 bg-blue-500/10">
                 <Mail className="w-4 h-4 text-blue-500" />
                 <AlertDescription className="text-blue-400">
-                  <strong>Awaiting Email Verification</strong><br />
-                  Your welcome bonus will be credited automatically after email verification.
+                  <strong>Awaiting Email Verification</strong>
+                  <br />
+                  Your welcome bonus will be credited automatically after email
+                  verification.
                 </AlertDescription>
               </Alert>
-              
+
               <Link to="/login">
                 <Button
                   size="lg"
@@ -207,9 +216,10 @@ export default function Register() {
                   Back to Login
                 </Button>
               </Link>
-              
+
               <p className="text-sm text-muted-foreground">
-                Didn't receive the email? Check your spam folder or contact support.
+                Didn't receive the email? Check your spam folder or contact
+                support.
               </p>
             </div>
           </CardContent>
@@ -228,7 +238,8 @@ export default function Register() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Welcome to CoinKrazy!</h2>
             <p className="text-muted-foreground mb-8">
-              Your account has been created successfully. You've received your welcome bonus!
+              Your account has been created successfully. You've received your
+              welcome bonus!
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -240,7 +251,9 @@ export default function Register() {
               <div className="text-center p-4 bg-card rounded-lg">
                 <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
                 <div className="text-2xl font-bold text-casino-blue">10</div>
-                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                <div className="text-sm text-muted-foreground">
+                  Sweeps Coins
+                </div>
               </div>
             </div>
 
@@ -288,12 +301,20 @@ export default function Register() {
               <h2 className="text-2xl font-bold mb-4">Welcome Bonus Package</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">10</div>
-                  <div className="text-sm text-muted-foreground">Free Gold Coins</div>
+                  <div className="text-2xl font-bold text-gold-500 mb-1">
+                    10
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Free Gold Coins
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-casino-blue mb-1">10</div>
-                  <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                  <div className="text-2xl font-bold text-casino-blue mb-1">
+                    10
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Sweeps Coins
+                  </div>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
@@ -510,11 +531,12 @@ export default function Register() {
                     <p className="text-sm text-muted-foreground mt-1">
                       Must be 18+ years old
                     </p>
-                    {formData.dateOfBirth && !validateAge(formData.dateOfBirth) && (
-                      <p className="text-red-500 text-sm mt-1">
-                        You must be 18 or older to register
-                      </p>
-                    )}
+                    {formData.dateOfBirth &&
+                      !validateAge(formData.dateOfBirth) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          You must be 18 or older to register
+                        </p>
+                      )}
                   </div>
 
                   <div>
@@ -734,8 +756,10 @@ export default function Register() {
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Creating Account...
                     </>
+                  ) : currentStep === 4 ? (
+                    "Create Account"
                   ) : (
-                    currentStep === 4 ? "Create Account" : "Next"
+                    "Next"
                   )}
                 </Button>
               </div>

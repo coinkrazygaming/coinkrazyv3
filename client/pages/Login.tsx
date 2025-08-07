@@ -24,7 +24,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login, loading } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,8 +35,8 @@ export default function Login() {
   const [success, setSuccess] = useState("");
 
   // Check for verification success message
-  const verified = searchParams.get('verified');
-  const verifyError = searchParams.get('verify_error');
+  const verified = searchParams.get("verified");
+  const verifyError = searchParams.get("verify_error");
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -45,7 +45,7 @@ export default function Login() {
 
   const handleLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       setError("Please enter both email and password");
       return;
@@ -53,7 +53,7 @@ export default function Login() {
 
     try {
       const response = await login(formData.email, formData.password);
-      
+
       if (response.success && response.user) {
         toast({
           title: "Welcome back!",
@@ -61,16 +61,18 @@ export default function Login() {
         });
 
         // Redirect based on user role
-        if (response.user.role === 'admin') {
+        if (response.user.role === "admin") {
           navigate("/admin");
         } else {
           navigate("/dashboard");
         }
       } else {
         setError(response.message || "Login failed");
-        
+
         if (response.requiresEmailVerification) {
-          setError("Please verify your email address before logging in. Check your inbox for the verification link.");
+          setError(
+            "Please verify your email address before logging in. Check your inbox for the verification link.",
+          );
         }
       }
     } catch (error) {
@@ -83,7 +85,7 @@ export default function Login() {
     setFormData({
       email: "coinkrazy00@gmail.com",
       password: "Woot6969!",
-      rememberMe: false
+      rememberMe: false,
     });
   };
 
@@ -122,16 +124,18 @@ export default function Login() {
                 <Alert className="border-green-500/20 bg-green-500/10">
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   <AlertDescription className="text-green-400">
-                    Email verified successfully! Your welcome bonus has been added to your account. You can now log in.
+                    Email verified successfully! Your welcome bonus has been
+                    added to your account. You can now log in.
                   </AlertDescription>
                 </Alert>
               )}
-              
+
               {verifyError && (
                 <Alert className="border-red-500/20 bg-red-500/10">
                   <AlertTriangle className="w-4 h-4 text-red-500" />
                   <AlertDescription className="text-red-400">
-                    Email verification failed. The link may be invalid or expired.
+                    Email verification failed. The link may be invalid or
+                    expired.
                   </AlertDescription>
                 </Alert>
               )}
@@ -165,7 +169,9 @@ export default function Login() {
                       type="email"
                       placeholder="your@email.com"
                       value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       className="pl-10"
                       disabled={loading}
                       autoComplete="email"
@@ -260,15 +266,17 @@ export default function Login() {
               <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Shield className="w-4 h-4 text-casino-blue" />
-                  <span className="text-sm font-medium">Quick Admin Access</span>
+                  <span className="text-sm font-medium">
+                    Quick Admin Access
+                  </span>
                 </div>
                 <div className="space-y-2 text-sm">
                   <p className="text-muted-foreground">
                     <strong>Admin Account:</strong> coinkrazy00@gmail.com
                   </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={fillAdminCredentials}
                     disabled={loading}
                     className="w-full"
@@ -335,7 +343,8 @@ export default function Login() {
             <div className="bg-gradient-to-r from-gold/5 to-casino-blue/5 rounded-lg p-6 border border-gold-500/20">
               <h3 className="font-bold text-lg mb-2">New Player Bonus</h3>
               <p className="text-muted-foreground mb-4">
-                Get started with 10 Gold Coins + 10 Sweeps Coins when you verify your email!
+                Get started with 10 Gold Coins + 10 Sweeps Coins when you verify
+                your email!
               </p>
               <Link to="/register">
                 <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">

@@ -4,7 +4,7 @@ class DatabaseAPIService {
   private baseUrl: string;
 
   private constructor() {
-    this.baseUrl = '/api';
+    this.baseUrl = "/api";
   }
 
   static getInstance(): DatabaseAPIService {
@@ -14,17 +14,22 @@ class DatabaseAPIService {
     return DatabaseAPIService.instance;
   }
 
-  private async fetch(endpoint: string, options: RequestInit = {}): Promise<any> {
+  private async fetch(
+    endpoint: string,
+    options: RequestInit = {},
+  ): Promise<any> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
       ...options,
     });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      );
     }
 
     return response.json();
@@ -38,8 +43,8 @@ class DatabaseAPIService {
     first_name?: string;
     last_name?: string;
   }) {
-    return this.fetch('/users', {
-      method: 'POST',
+    return this.fetch("/users", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
   }
@@ -53,8 +58,8 @@ class DatabaseAPIService {
   }
 
   async verifyEmail(token: string) {
-    return this.fetch('/users/verify-email', {
-      method: 'POST',
+    return this.fetch("/users/verify-email", {
+      method: "POST",
       body: JSON.stringify({ token }),
     });
   }
@@ -64,25 +69,31 @@ class DatabaseAPIService {
     return this.fetch(`/balances/${userId}`);
   }
 
-  async updateUserBalance(userId: number, gcChange: number, scChange: number, description: string, gameId?: string) {
+  async updateUserBalance(
+    userId: number,
+    gcChange: number,
+    scChange: number,
+    description: string,
+    gameId?: string,
+  ) {
     return this.fetch(`/balances/${userId}/update`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ gcChange, scChange, description, gameId }),
     });
   }
 
   // Game management
   async getAllGames() {
-    return this.fetch('/games');
+    return this.fetch("/games");
   }
 
   async getActiveGames() {
-    return this.fetch('/games/active');
+    return this.fetch("/games/active");
   }
 
   async updateGameStats(gameId: string, profitGC: number, profitSC: number) {
     return this.fetch(`/games/${gameId}/stats`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ profitGC, profitSC }),
     });
   }
@@ -97,70 +108,95 @@ class DatabaseAPIService {
   }
 
   async getLiveStats() {
-    return this.fetch('/admin/stats');
+    return this.fetch("/admin/stats");
   }
 
   async updateLiveStat(statName: string, value: number, metadata?: any) {
     return this.fetch(`/admin/stats/${encodeURIComponent(statName)}`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ value, metadata }),
     });
   }
 
   // AI Employees
   async getAIEmployees() {
-    return this.fetch('/ai-employees');
+    return this.fetch("/ai-employees");
   }
 
-  async updateAIEmployeeMetrics(id: number, tasksCompleted: number, moneySaved: number) {
+  async updateAIEmployeeMetrics(
+    id: number,
+    tasksCompleted: number,
+    moneySaved: number,
+  ) {
     return this.fetch(`/ai-employees/${id}/metrics`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ tasksCompleted, moneySaved }),
     });
   }
 
   // Notifications
-  async createAdminNotification(title: string, message: string, type: string, fromAI?: number, actionRequired: boolean = false, actionUrl?: string) {
-    return this.fetch('/notifications', {
-      method: 'POST',
-      body: JSON.stringify({ title, message, type, fromAI, actionRequired, actionUrl }),
+  async createAdminNotification(
+    title: string,
+    message: string,
+    type: string,
+    fromAI?: number,
+    actionRequired: boolean = false,
+    actionUrl?: string,
+  ) {
+    return this.fetch("/notifications", {
+      method: "POST",
+      body: JSON.stringify({
+        title,
+        message,
+        type,
+        fromAI,
+        actionRequired,
+        actionUrl,
+      }),
     });
   }
 
   async getUnreadNotifications() {
-    return this.fetch('/notifications/unread');
+    return this.fetch("/notifications/unread");
   }
 
   async markNotificationRead(id: number) {
     return this.fetch(`/notifications/${id}/read`, {
-      method: 'POST',
+      method: "POST",
     });
   }
 
   // Coin packages
   async getCoinPackages() {
-    return this.fetch('/coin-packages');
+    return this.fetch("/coin-packages");
   }
 
   // Daily wheel spins
-  async getDailyWheelSpin(userId: number, date: string = new Date().toISOString().split('T')[0]) {
-    return this.fetch(`/wheel-spins/${userId}?date=${encodeURIComponent(date)}`);
+  async getDailyWheelSpin(
+    userId: number,
+    date: string = new Date().toISOString().split("T")[0],
+  ) {
+    return this.fetch(
+      `/wheel-spins/${userId}?date=${encodeURIComponent(date)}`,
+    );
   }
 
   async createWheelSpin(userId: number, scWon: number) {
     return this.fetch(`/wheel-spins/${userId}`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ scWon }),
     });
   }
 
   // Helper methods for backwards compatibility
   async createUserBalance(userId: number, gc: number = 0, sc: number = 0) {
-    return this.updateUserBalance(userId, gc, sc, 'Initial balance');
+    return this.updateUserBalance(userId, gc, sc, "Initial balance");
   }
 
   async query(text: string, params?: any[]): Promise<any> {
-    throw new Error('Direct SQL queries not supported in client-side API service');
+    throw new Error(
+      "Direct SQL queries not supported in client-side API service",
+    );
   }
 
   async close() {

@@ -8,7 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { adminService, AdminStats, AdminUser, AdminGame, AdminTransaction, AdminNotification } from "@/services/adminService";
+import {
+  adminService,
+  AdminStats,
+  AdminUser,
+  AdminGame,
+  AdminTransaction,
+  AdminNotification,
+} from "@/services/adminService";
 import AIEmployeeManager from "@/components/AIEmployeeManager";
 import CasinoAnalytics from "@/components/CasinoAnalytics";
 import CasinoBanking from "@/components/CasinoBanking";
@@ -89,16 +96,25 @@ export default function Admin() {
   // Load initial data
   useEffect(() => {
     loadAllData();
-    
+
     // Subscribe to real-time updates
-    const unsubscribeStats = adminService.subscribeToUpdates('stats', (newStats) => {
-      setStats(newStats);
-    });
-    
-    const unsubscribeNotifications = adminService.subscribeToUpdates('notifications', (newNotifications) => {
-      setNotifications(newNotifications);
-      setUnreadCount(newNotifications.filter((n: AdminNotification) => !n.read_status).length);
-    });
+    const unsubscribeStats = adminService.subscribeToUpdates(
+      "stats",
+      (newStats) => {
+        setStats(newStats);
+      },
+    );
+
+    const unsubscribeNotifications = adminService.subscribeToUpdates(
+      "notifications",
+      (newNotifications) => {
+        setNotifications(newNotifications);
+        setUnreadCount(
+          newNotifications.filter((n: AdminNotification) => !n.read_status)
+            .length,
+        );
+      },
+    );
 
     return () => {
       unsubscribeStats();
@@ -109,12 +125,18 @@ export default function Admin() {
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const [statsData, usersData, gamesData, transactionsData, notificationsData] = await Promise.all([
+      const [
+        statsData,
+        usersData,
+        gamesData,
+        transactionsData,
+        notificationsData,
+      ] = await Promise.all([
         adminService.getDashboardStats(),
         adminService.getAllUsers(currentPage, usersPerPage, searchTerm),
         adminService.getAllGames(),
         adminService.getRecentTransactions(),
-        adminService.getAdminNotifications()
+        adminService.getAdminNotifications(),
       ]);
 
       setStats(statsData);
@@ -123,13 +145,13 @@ export default function Admin() {
       setGames(gamesData);
       setTransactions(transactionsData);
       setNotifications(notificationsData);
-      setUnreadCount(notificationsData.filter(n => !n.read_status).length);
+      setUnreadCount(notificationsData.filter((n) => !n.read_status).length);
     } catch (error) {
-      console.error('Failed to load admin data:', error);
+      console.error("Failed to load admin data:", error);
       toast({
         title: "Error",
         description: "Failed to load admin data. Please refresh the page.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -158,7 +180,7 @@ export default function Admin() {
       toast({
         title: "Error",
         description: "Failed to update user status.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -169,13 +191,13 @@ export default function Admin() {
       await loadAllData(); // Refresh data
       toast({
         title: "Game Updated",
-        description: `Game ${isActive ? 'activated' : 'deactivated'} successfully.`,
+        description: `Game ${isActive ? "activated" : "deactivated"} successfully.`,
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update game status.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -183,12 +205,14 @@ export default function Admin() {
   const handleNotificationRead = async (notificationId: number) => {
     try {
       await adminService.markNotificationRead(notificationId);
-      setNotifications(prev => prev.map(n => 
-        n.id === notificationId ? { ...n, read_status: true } : n
-      ));
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notificationId ? { ...n, read_status: true } : n,
+        ),
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+      console.error("Failed to mark notification as read:", error);
     }
   };
 
@@ -206,7 +230,7 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background">
       {/* Admin Toolbar */}
-      <AdminToolbar 
+      <AdminToolbar
         unreadNotifications={unreadCount}
         onRefresh={handleRefresh}
         refreshing={refreshing}
@@ -332,7 +356,9 @@ export default function Admin() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">System Health</p>
+                    <p className="text-sm text-muted-foreground">
+                      System Health
+                    </p>
                     <p className="text-2xl font-bold">
                       {stats.systemHealth.toFixed(1)}%
                     </p>
@@ -399,7 +425,10 @@ export default function Admin() {
               <Bell className="w-4 h-4 mr-2" />
               Notifications
               {unreadCount > 0 && (
-                <Badge variant="destructive" className="ml-1 h-5 w-5 text-xs p-0 flex items-center justify-center">
+                <Badge
+                  variant="destructive"
+                  className="ml-1 h-5 w-5 text-xs p-0 flex items-center justify-center"
+                >
                   {unreadCount}
                 </Badge>
               )}
@@ -421,14 +450,23 @@ export default function Admin() {
                 <CardContent>
                   <div className="space-y-4">
                     {transactions.slice(0, 5).map((transaction) => (
-                      <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
+                      >
                         <div>
                           <p className="font-medium">{transaction.username}</p>
-                          <p className="text-sm text-muted-foreground">{transaction.description}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {transaction.description}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">{transaction.amount} {transaction.currency}</p>
-                          <p className="text-sm text-muted-foreground">{transaction.transaction_type}</p>
+                          <p className="font-bold">
+                            {transaction.amount} {transaction.currency}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {transaction.transaction_type}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -452,13 +490,19 @@ export default function Admin() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Active Games</span>
-                      <span className="font-bold">{stats?.activeGames || 0}</span>
+                      <span className="font-bold">
+                        {stats?.activeGames || 0}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Total Currency in Circulation</span>
                       <div className="text-right">
-                        <p className="font-bold">{(stats?.totalGC || 0).toLocaleString()} GC</p>
-                        <p className="text-sm text-muted-foreground">{(stats?.totalSC || 0).toFixed(2)} SC</p>
+                        <p className="font-bold">
+                          {(stats?.totalGC || 0).toLocaleString()} GC
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {(stats?.totalSC || 0).toFixed(2)} SC
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -514,8 +558,11 @@ export default function Admin() {
                               <div className="text-sm text-muted-foreground">
                                 {user.email}
                               </div>
-                              {user.role === 'admin' && (
-                                <Badge variant="outline" className="text-xs mt-1">
+                              {user.role === "admin" && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs mt-1"
+                                >
                                   <Crown className="w-3 h-3 mr-1" />
                                   Admin
                                 </Badge>
@@ -553,7 +600,9 @@ export default function Admin() {
                             {parseFloat(user.sweeps_coins).toFixed(2)}
                           </td>
                           <td className="p-2 text-sm">
-                            {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
+                            {user.last_login
+                              ? new Date(user.last_login).toLocaleDateString()
+                              : "Never"}
                           </td>
                           <td className="p-2">
                             <div className="flex gap-1">
@@ -563,12 +612,14 @@ export default function Admin() {
                               <Button size="sm" variant="outline">
                                 <Edit className="w-3 h-3" />
                               </Button>
-                              {user.status === 'active' ? (
+                              {user.status === "active" ? (
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   className="text-red-500"
-                                  onClick={() => handleUserStatusUpdate(user.id, 'suspended')}
+                                  onClick={() =>
+                                    handleUserStatusUpdate(user.id, "suspended")
+                                  }
                                 >
                                   <Ban className="w-3 h-3" />
                                 </Button>
@@ -577,7 +628,9 @@ export default function Admin() {
                                   size="sm"
                                   variant="outline"
                                   className="text-green-500"
-                                  onClick={() => handleUserStatusUpdate(user.id, 'active')}
+                                  onClick={() =>
+                                    handleUserStatusUpdate(user.id, "active")
+                                  }
                                 >
                                   <UserCheck className="w-3 h-3" />
                                 </Button>
@@ -624,7 +677,10 @@ export default function Admin() {
                             <div>
                               <div className="font-medium">{game.name}</div>
                               {game.is_featured && (
-                                <Badge variant="outline" className="text-xs mt-1">
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs mt-1"
+                                >
                                   Featured
                                 </Badge>
                               )}
@@ -635,9 +691,7 @@ export default function Admin() {
                           </td>
                           <td className="p-2">
                             <Badge
-                              variant={
-                                game.is_active ? "default" : "secondary"
-                              }
+                              variant={game.is_active ? "default" : "secondary"}
                             >
                               {game.is_active ? "Active" : "Inactive"}
                             </Badge>
@@ -647,7 +701,8 @@ export default function Admin() {
                           <td className="p-2">
                             <div className="text-sm">
                               <div className="text-gold-400">
-                                {(game.total_profit_gc / 1000).toLocaleString()} GC
+                                {(game.total_profit_gc / 1000).toLocaleString()}{" "}
+                                GC
                               </div>
                               <div className="text-casino-blue">
                                 {parseFloat(game.total_profit_sc).toFixed(2)} SC
@@ -657,10 +712,16 @@ export default function Admin() {
                           <td className="p-2">
                             <div className="text-sm">
                               <div className="text-gold-400 font-bold">
-                                {(game.current_jackpot_calculated / 1000).toLocaleString()} GC
+                                {(
+                                  game.current_jackpot_calculated / 1000
+                                ).toLocaleString()}{" "}
+                                GC
                               </div>
                               <div className="text-casino-blue font-bold">
-                                {parseFloat(game.current_jackpot_sc_calculated).toFixed(2)} SC
+                                {parseFloat(
+                                  game.current_jackpot_sc_calculated,
+                                ).toFixed(2)}{" "}
+                                SC
                               </div>
                             </div>
                           </td>
@@ -674,7 +735,12 @@ export default function Admin() {
                                     ? "text-orange-500"
                                     : "bg-green-500 hover:bg-green-600"
                                 }
-                                onClick={() => handleGameToggle(game.game_id, !game.is_active)}
+                                onClick={() =>
+                                  handleGameToggle(
+                                    game.game_id,
+                                    !game.is_active,
+                                  )
+                                }
                               >
                                 {game.is_active ? (
                                   <Pause className="w-3 h-3" />
@@ -726,13 +792,17 @@ export default function Admin() {
                         >
                           <td className="p-2">
                             <div>
-                              <div className="font-medium">{transaction.username}</div>
+                              <div className="font-medium">
+                                {transaction.username}
+                              </div>
                               <div className="text-sm text-muted-foreground">
                                 {transaction.email}
                               </div>
                             </div>
                           </td>
-                          <td className="p-2 capitalize">{transaction.transaction_type}</td>
+                          <td className="p-2 capitalize">
+                            {transaction.transaction_type}
+                          </td>
                           <td className="p-2 font-mono">
                             {transaction.amount} {transaction.currency}
                           </td>
@@ -752,7 +822,9 @@ export default function Admin() {
                           <td className="p-2 text-sm">
                             {new Date(transaction.created_at).toLocaleString()}
                           </td>
-                          <td className="p-2 text-sm">{transaction.description}</td>
+                          <td className="p-2 text-sm">
+                            {transaction.description}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -774,26 +846,31 @@ export default function Admin() {
                     <div
                       key={notification.id}
                       className={`border rounded-lg p-4 ${
-                        !notification.read_status ? 'bg-muted/20' : 'bg-card'
+                        !notification.read_status ? "bg-muted/20" : "bg-card"
                       }`}
-                      onClick={() => !notification.read_status && handleNotificationRead(notification.id)}
+                      onClick={() =>
+                        !notification.read_status &&
+                        handleNotificationRead(notification.id)
+                      }
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            {notification.notification_type === 'error' && (
+                            {notification.notification_type === "error" && (
                               <AlertTriangle className="w-4 h-4 text-red-500" />
                             )}
-                            {notification.notification_type === 'warning' && (
+                            {notification.notification_type === "warning" && (
                               <AlertTriangle className="w-4 h-4 text-orange-500" />
                             )}
-                            {notification.notification_type === 'info' && (
+                            {notification.notification_type === "info" && (
                               <Zap className="w-4 h-4 text-blue-500" />
                             )}
-                            {notification.notification_type === 'success' && (
+                            {notification.notification_type === "success" && (
                               <CheckCircle className="w-4 h-4 text-green-500" />
                             )}
-                            <span className="font-medium">{notification.title}</span>
+                            <span className="font-medium">
+                              {notification.title}
+                            </span>
                             {notification.ai_name && (
                               <Badge variant="outline" className="text-xs">
                                 <Bot className="w-3 h-3 mr-1" />

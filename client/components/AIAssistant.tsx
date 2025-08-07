@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { luckyAiService, AIMessage, VMInstance } from "@/services/luckyAiService";
+import {
+  luckyAiService,
+  AIMessage,
+  VMInstance,
+} from "@/services/luckyAiService";
 import {
   Bot,
   MessageSquare,
@@ -45,7 +49,7 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [vmInstances, setVmInstances] = useState<VMInstance[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load initial data and subscribe to updates
@@ -83,7 +87,7 @@ export default function AIAssistant() {
     try {
       await luckyAiService.sendMessage(currentMessage);
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
     } finally {
       setIsTyping(false);
     }
@@ -101,13 +105,16 @@ export default function AIAssistant() {
     }
   };
 
-  const handleVMAction = async (vmId: string, action: 'start' | 'stop' | 'restart') => {
+  const handleVMAction = async (
+    vmId: string,
+    action: "start" | "stop" | "restart",
+  ) => {
     try {
-      if (action === 'start') {
+      if (action === "start") {
         await luckyAiService.startVM(vmId);
-      } else if (action === 'stop') {
+      } else if (action === "stop") {
         await luckyAiService.stopVM(vmId);
-      } else if (action === 'restart') {
+      } else if (action === "restart") {
         await luckyAiService.stopVM(vmId);
         setTimeout(() => luckyAiService.startVM(vmId), 3000);
       }
@@ -118,19 +125,25 @@ export default function AIAssistant() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'running': return 'text-green-500';
-      case 'stopped': return 'text-red-500';
-      case 'starting': return 'text-yellow-500';
-      case 'stopping': return 'text-orange-500';
-      case 'error': return 'text-red-500';
-      default: return 'text-muted-foreground';
+      case "running":
+        return "text-green-500";
+      case "stopped":
+        return "text-red-500";
+      case "starting":
+        return "text-yellow-500";
+      case "stopping":
+        return "text-orange-500";
+      case "error":
+        return "text-red-500";
+      default:
+        return "text-muted-foreground";
     }
   };
 
   const getResourceColor = (usage: number) => {
-    if (usage > 80) return 'text-red-500';
-    if (usage > 60) return 'text-yellow-500';
-    return 'text-green-500';
+    if (usage > 80) return "text-red-500";
+    if (usage > 60) return "text-yellow-500";
+    return "text-green-500";
   };
 
   if (!isOpen) {
@@ -194,7 +207,11 @@ export default function AIAssistant() {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="flex-1 flex flex-col"
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="chat">
             <MessageSquare className="w-4 h-4 mr-2" />
@@ -221,13 +238,18 @@ export default function AIAssistant() {
               </div>
               <div className="text-center">
                 <div className="font-bold text-casino-blue">
-                  {vmInstances.filter(vm => vm.status === 'running').length}/{vmInstances.length}
+                  {vmInstances.filter((vm) => vm.status === "running").length}/
+                  {vmInstances.length}
                 </div>
                 <div className="text-muted-foreground">VMs Active</div>
               </div>
               <div className="text-center">
                 <div className="font-bold text-gold-500">
-                  {Math.round(vmInstances.reduce((sum, vm) => sum + vm.cpu, 0) / vmInstances.length)}%
+                  {Math.round(
+                    vmInstances.reduce((sum, vm) => sum + vm.cpu, 0) /
+                      vmInstances.length,
+                  )}
+                  %
                 </div>
                 <div className="text-muted-foreground">Avg CPU</div>
               </div>
@@ -269,7 +291,7 @@ export default function AIAssistant() {
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex justify-start">
                 <div className="max-w-[85%] p-3 rounded-lg text-sm bg-muted">
@@ -286,7 +308,7 @@ export default function AIAssistant() {
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -317,7 +339,9 @@ export default function AIAssistant() {
 
             {isVoiceMode && (
               <div className="text-xs text-center mt-2 text-muted-foreground">
-                {isListening ? "🎤 Listening... Speak now" : "Voice mode enabled"}
+                {isListening
+                  ? "🎤 Listening... Speak now"
+                  : "Voice mode enabled"}
               </div>
             )}
           </div>
@@ -328,8 +352,12 @@ export default function AIAssistant() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="font-bold">Virtual Machine Manager</h4>
-              <Badge variant="outline" className="text-green-500 border-green-500">
-                {vmInstances.filter(vm => vm.status === 'running').length} Running
+              <Badge
+                variant="outline"
+                className="text-green-500 border-green-500"
+              >
+                {vmInstances.filter((vm) => vm.status === "running").length}{" "}
+                Running
               </Badge>
             </div>
 
@@ -339,10 +367,12 @@ export default function AIAssistant() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-sm">{vm.name}</CardTitle>
-                      <p className="text-xs text-muted-foreground">{vm.purpose}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {vm.purpose}
+                      </p>
                     </div>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={getStatusColor(vm.status)}
                     >
                       {vm.status}
@@ -362,7 +392,9 @@ export default function AIAssistant() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className={`font-bold ${getResourceColor(vm.memory)}`}>
+                      <div
+                        className={`font-bold ${getResourceColor(vm.memory)}`}
+                      >
                         {vm.memory}%
                       </div>
                       <div className="text-muted-foreground flex items-center justify-center gap-1">
@@ -387,8 +419,10 @@ export default function AIAssistant() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleVMAction(vm.id, 'start')}
-                        disabled={vm.status === 'running' || vm.status === 'starting'}
+                        onClick={() => handleVMAction(vm.id, "start")}
+                        disabled={
+                          vm.status === "running" || vm.status === "starting"
+                        }
                         className="h-6 px-2"
                       >
                         <Play className="w-3 h-3" />
@@ -396,8 +430,10 @@ export default function AIAssistant() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleVMAction(vm.id, 'stop')}
-                        disabled={vm.status === 'stopped' || vm.status === 'stopping'}
+                        onClick={() => handleVMAction(vm.id, "stop")}
+                        disabled={
+                          vm.status === "stopped" || vm.status === "stopping"
+                        }
                         className="h-6 px-2"
                       >
                         <Square className="w-3 h-3" />
@@ -405,8 +441,8 @@ export default function AIAssistant() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleVMAction(vm.id, 'restart')}
-                        disabled={vm.status !== 'running'}
+                        onClick={() => handleVMAction(vm.id, "restart")}
+                        disabled={vm.status !== "running"}
                         className="h-6 px-2"
                       >
                         <RotateCcw className="w-3 h-3" />
@@ -421,11 +457,16 @@ export default function AIAssistant() {
                   <div className="bg-muted/20 rounded p-2">
                     <div className="flex items-center gap-1 mb-1">
                       <Terminal className="w-3 h-3 text-muted-foreground" />
-                      <span className="text-xs font-medium">Recent Activity</span>
+                      <span className="text-xs font-medium">
+                        Recent Activity
+                      </span>
                     </div>
                     <div className="space-y-1">
                       {vm.logs.slice(0, 2).map((log, index) => (
-                        <div key={index} className="text-xs text-muted-foreground">
+                        <div
+                          key={index}
+                          className="text-xs text-muted-foreground"
+                        >
                           • {log}
                         </div>
                       ))}
@@ -441,7 +482,7 @@ export default function AIAssistant() {
         <TabsContent value="metrics" className="flex-1 overflow-y-auto m-0 p-3">
           <div className="space-y-4">
             <h4 className="font-bold">AI Performance Metrics</h4>
-            
+
             {/* Capabilities */}
             <Card>
               <CardHeader className="pb-2">
@@ -450,13 +491,16 @@ export default function AIAssistant() {
               <CardContent>
                 <div className="space-y-2">
                   {luckyAiService.getCapabilities().map((capability) => (
-                    <div key={capability.id} className="flex items-center justify-between">
+                    <div
+                      key={capability.id}
+                      className="flex items-center justify-between"
+                    >
                       <span className="text-sm">{capability.name}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground">
                           {capability.performance.toFixed(1)}%
                         </span>
-                        <Badge 
+                        <Badge
                           variant={capability.enabled ? "default" : "secondary"}
                           className="text-xs"
                         >
@@ -483,19 +527,30 @@ export default function AIAssistant() {
                   <div>
                     <div className="text-muted-foreground">Running VMs</div>
                     <div className="font-bold text-green-500">
-                      {vmInstances.filter(vm => vm.status === 'running').length}
+                      {
+                        vmInstances.filter((vm) => vm.status === "running")
+                          .length
+                      }
                     </div>
                   </div>
                   <div>
                     <div className="text-muted-foreground">Avg CPU</div>
                     <div className="font-bold">
-                      {Math.round(vmInstances.reduce((sum, vm) => sum + vm.cpu, 0) / vmInstances.length)}%
+                      {Math.round(
+                        vmInstances.reduce((sum, vm) => sum + vm.cpu, 0) /
+                          vmInstances.length,
+                      )}
+                      %
                     </div>
                   </div>
                   <div>
                     <div className="text-muted-foreground">Avg Memory</div>
                     <div className="font-bold">
-                      {Math.round(vmInstances.reduce((sum, vm) => sum + vm.memory, 0) / vmInstances.length)}%
+                      {Math.round(
+                        vmInstances.reduce((sum, vm) => sum + vm.memory, 0) /
+                          vmInstances.length,
+                      )}
+                      %
                     </div>
                   </div>
                 </div>
@@ -512,17 +567,23 @@ export default function AIAssistant() {
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-3 h-3 text-green-500" />
                     <span>VM health check completed</span>
-                    <span className="text-muted-foreground ml-auto">2m ago</span>
+                    <span className="text-muted-foreground ml-auto">
+                      2m ago
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Activity className="w-3 h-3 text-blue-500" />
                     <span>Resource optimization applied</span>
-                    <span className="text-muted-foreground ml-auto">5m ago</span>
+                    <span className="text-muted-foreground ml-auto">
+                      5m ago
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Shield className="w-3 h-3 text-gold-500" />
                     <span>Security scan completed</span>
-                    <span className="text-muted-foreground ml-auto">8m ago</span>
+                    <span className="text-muted-foreground ml-auto">
+                      8m ago
+                    </span>
                   </div>
                 </div>
               </CardContent>

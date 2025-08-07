@@ -2,16 +2,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Bell, 
-  RefreshCw, 
-  Settings, 
-  Shield, 
-  Eye, 
+import {
+  Bell,
+  RefreshCw,
+  Settings,
+  Shield,
+  Eye,
   Activity,
   Database,
   Users,
-  Crown
+  Crown,
 } from "lucide-react";
 
 interface AdminToolbarProps {
@@ -20,10 +20,10 @@ interface AdminToolbarProps {
   refreshing: boolean;
 }
 
-export default function AdminToolbar({ 
-  unreadNotifications, 
-  onRefresh, 
-  refreshing 
+export default function AdminToolbar({
+  unreadNotifications,
+  onRefresh,
+  refreshing,
 }: AdminToolbarProps) {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -58,13 +58,13 @@ export default function AdminToolbar({
               ×
             </Button>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-2">
             {/* Quick Stats */}
             <div className="col-span-2 text-xs text-muted-foreground mb-2">
               Quick Access
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -79,15 +79,11 @@ export default function AdminToolbar({
               )}
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="relative"
-            >
+            <Button variant="outline" size="sm" className="relative">
               <Bell className="w-3 h-3" />
               {unreadNotifications > 0 && (
-                <Badge 
-                  variant="destructive" 
+                <Badge
+                  variant="destructive"
                   className="absolute -top-1 -right-1 h-4 w-4 text-xs p-0 flex items-center justify-center"
                 >
                   {unreadNotifications}
@@ -95,31 +91,19 @@ export default function AdminToolbar({
               )}
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-            >
+            <Button variant="outline" size="sm">
               <Users className="w-3 h-3" />
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-            >
+            <Button variant="outline" size="sm">
               <Activity className="w-3 h-3" />
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-            >
+            <Button variant="outline" size="sm">
               <Database className="w-3 h-3" />
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-            >
+            <Button variant="outline" size="sm">
               <Settings className="w-3 h-3" />
             </Button>
           </div>

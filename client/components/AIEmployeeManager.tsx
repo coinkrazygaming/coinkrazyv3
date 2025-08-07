@@ -45,7 +45,7 @@ export interface AIEmployee {
   role: string;
   description?: string;
   capabilities: string[];
-  status: 'active' | 'inactive' | 'maintenance';
+  status: "active" | "inactive" | "maintenance";
   performance_metrics: any;
   configuration: any;
   total_tasks_completed: number;
@@ -67,9 +67,9 @@ export interface TaskAssignment {
   id: string;
   employeeId: number;
   task: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
   deadline: Date;
-  status: 'pending' | 'in_progress' | 'completed' | 'failed';
+  status: "pending" | "in_progress" | "completed" | "failed";
   assignedAt: Date;
 }
 
@@ -77,14 +77,16 @@ export default function AIEmployeeManager() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [employees, setEmployees] = useState<AIEmployee[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<AIEmployee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<AIEmployee | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [tasks, setTasks] = useState<TaskAssignment[]>([]);
   const [newTaskText, setNewTaskText] = useState("");
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load data on component mount
@@ -103,11 +105,11 @@ export default function AIEmployeeManager() {
       const result = await databaseService.getAIEmployees();
       setEmployees(result);
     } catch (error) {
-      console.error('Failed to load AI employees:', error);
+      console.error("Failed to load AI employees:", error);
       toast({
         title: "Error",
         description: "Failed to load AI employee data.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -157,7 +159,7 @@ All systems are operational and team efficiency is at 97.8%. How can we assist y
       type: "text",
     };
 
-    setChatMessages(prev => [...prev, newMessage]);
+    setChatMessages((prev) => [...prev, newMessage]);
     setChatMessage("");
 
     // Simulate AI response
@@ -170,7 +172,7 @@ All systems are operational and team efficiency is at 97.8%. How can we assist y
         timestamp: new Date().toISOString(),
         type: "text",
       };
-      setChatMessages(prev => [...prev, aiResponse]);
+      setChatMessages((prev) => [...prev, aiResponse]);
     }, 1500);
   };
 
@@ -243,34 +245,38 @@ Our team excels at:
 What specific aspect of our AI operations would you like to discuss or optimize?`;
   };
 
-  const assignTask = async (employeeId: number, task: string, priority: string) => {
+  const assignTask = async (
+    employeeId: number,
+    task: string,
+    priority: string,
+  ) => {
     const newTask: TaskAssignment = {
       id: Date.now().toString(),
       employeeId,
       task,
       priority: priority as any,
       deadline: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-      status: 'pending',
-      assignedAt: new Date()
+      status: "pending",
+      assignedAt: new Date(),
     };
 
-    setTasks(prev => [...prev, newTask]);
+    setTasks((prev) => [...prev, newTask]);
     setNewTaskText("");
 
     // Update employee metrics
     try {
       await databaseService.updateAIEmployeeMetrics(employeeId, 1, 0);
       await loadEmployeeData(); // Refresh data
-      
+
       toast({
         title: "Task Assigned",
-        description: `Task assigned to ${employees.find(e => e.id === employeeId)?.name}`,
+        description: `Task assigned to ${employees.find((e) => e.id === employeeId)?.name}`,
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to assign task.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -278,10 +284,12 @@ What specific aspect of our AI operations would you like to discuss or optimize?
   const updateEmployeeStatus = async (employeeId: number, status: string) => {
     try {
       // In a real implementation, this would be an API call
-      setEmployees(prev => prev.map(emp => 
-        emp.id === employeeId ? { ...emp, status: status as any } : emp
-      ));
-      
+      setEmployees((prev) =>
+        prev.map((emp) =>
+          emp.id === employeeId ? { ...emp, status: status as any } : emp,
+        ),
+      );
+
       toast({
         title: "Status Updated",
         description: `Employee status updated to ${status}`,
@@ -290,17 +298,21 @@ What specific aspect of our AI operations would you like to discuss or optimize?
       toast({
         title: "Error",
         description: "Failed to update employee status.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "text-green-500 bg-green-500/10 border-green-500/20";
-      case "maintenance": return "text-orange-500 bg-orange-500/10 border-orange-500/20";
-      case "inactive": return "text-red-500 bg-red-500/10 border-red-500/20";
-      default: return "text-gray-500 bg-gray-500/10 border-gray-500/20";
+      case "active":
+        return "text-green-500 bg-green-500/10 border-green-500/20";
+      case "maintenance":
+        return "text-orange-500 bg-orange-500/10 border-orange-500/20";
+      case "inactive":
+        return "text-red-500 bg-red-500/10 border-red-500/20";
+      default:
+        return "text-gray-500 bg-gray-500/10 border-gray-500/20";
     }
   };
 
@@ -308,11 +320,11 @@ What specific aspect of our AI operations would you like to discuss or optimize?
     const metrics = employee.performance_metrics || {};
     return {
       tasksToday: Math.floor(Math.random() * 100) + 50,
-      efficiency: metrics.efficiency || (95 + Math.random() * 5),
-      accuracy: metrics.accuracy || (96 + Math.random() * 4),
-      uptime: metrics.uptime || (99 + Math.random() * 1),
+      efficiency: metrics.efficiency || 95 + Math.random() * 5,
+      accuracy: metrics.accuracy || 96 + Math.random() * 4,
+      uptime: metrics.uptime || 99 + Math.random() * 1,
       moneySavedToday: Math.floor(Math.random() * 1000) + 100,
-      issuesHandled: Math.floor(Math.random() * 50) + 10
+      issuesHandled: Math.floor(Math.random() * 50) + 10,
     };
   };
 
@@ -330,13 +342,11 @@ What specific aspect of our AI operations would you like to discuss or optimize?
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">AI Employee Manager</h2>
-          <p className="text-muted-foreground">Manage and monitor your AI workforce</p>
+          <p className="text-muted-foreground">
+            Manage and monitor your AI workforce
+          </p>
         </div>
-        <Button
-          onClick={refreshData}
-          disabled={refreshing}
-          variant="outline"
-        >
+        <Button onClick={refreshData} disabled={refreshing} variant="outline">
           {refreshing ? (
             <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
           ) : (
@@ -378,7 +388,9 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               <CardContent className="p-4 text-center">
                 <Bot className="w-8 h-8 text-gold-500 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{employees.length}</div>
-                <div className="text-sm text-muted-foreground">AI Employees</div>
+                <div className="text-sm text-muted-foreground">
+                  AI Employees
+                </div>
               </CardContent>
             </Card>
 
@@ -386,7 +398,7 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               <CardContent className="p-4 text-center">
                 <Activity className="w-8 h-8 text-green-500 mx-auto mb-2" />
                 <div className="text-2xl font-bold">
-                  {employees.filter(emp => emp.status === 'active').length}
+                  {employees.filter((emp) => emp.status === "active").length}
                 </div>
                 <div className="text-sm text-muted-foreground">Active Now</div>
               </CardContent>
@@ -396,7 +408,9 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               <CardContent className="p-4 text-center">
                 <TrendingUp className="w-8 h-8 text-casino-blue mx-auto mb-2" />
                 <div className="text-2xl font-bold">
-                  {employees.reduce((sum, emp) => sum + emp.total_tasks_completed, 0).toLocaleString()}
+                  {employees
+                    .reduce((sum, emp) => sum + emp.total_tasks_completed, 0)
+                    .toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">Total Tasks</div>
               </CardContent>
@@ -406,7 +420,10 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               <CardContent className="p-4 text-center">
                 <DollarSign className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                 <div className="text-2xl font-bold">
-                  ${employees.reduce((sum, emp) => sum + emp.money_saved_usd, 0).toLocaleString()}
+                  $
+                  {employees
+                    .reduce((sum, emp) => sum + emp.money_saved_usd, 0)
+                    .toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">Money Saved</div>
               </CardContent>
@@ -421,7 +438,9 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                   🍀
                 </div>
                 <div>
-                  <CardTitle className="text-xl">LuckyAI - Chief AI Assistant</CardTitle>
+                  <CardTitle className="text-xl">
+                    LuckyAI - Chief AI Assistant
+                  </CardTitle>
                   <p className="text-muted-foreground">
                     Managing all AI employees and coordinating casino operations
                   </p>
@@ -430,7 +449,10 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                       <Activity className="w-3 h-3 mr-1" />
                       Active
                     </Badge>
-                    <Badge variant="outline" className="border-gold-500 text-gold-400">
+                    <Badge
+                      variant="outline"
+                      className="border-gold-500 text-gold-400"
+                    >
                       <Crown className="w-3 h-3 mr-1" />
                       Chief Manager
                     </Badge>
@@ -442,23 +464,36 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gold-400">
-                    {employees.find(emp => emp.name === 'LuckyAI')?.total_tasks_completed?.toLocaleString() || '125,847'}
+                    {employees
+                      .find((emp) => emp.name === "LuckyAI")
+                      ?.total_tasks_completed?.toLocaleString() || "125,847"}
                   </div>
-                  <div className="text-sm text-muted-foreground">Tasks Managed</div>
+                  <div className="text-sm text-muted-foreground">
+                    Tasks Managed
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-500">99.7%</div>
                   <div className="text-sm text-muted-foreground">Accuracy</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-casino-blue">97.2%</div>
-                  <div className="text-sm text-muted-foreground">Efficiency</div>
+                  <div className="text-2xl font-bold text-casino-blue">
+                    97.2%
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Efficiency
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-500">
-                    ${employees.find(emp => emp.name === 'LuckyAI')?.money_saved_usd?.toLocaleString() || '285,000'}
+                    $
+                    {employees
+                      .find((emp) => emp.name === "LuckyAI")
+                      ?.money_saved_usd?.toLocaleString() || "285,000"}
                   </div>
-                  <div className="text-sm text-muted-foreground">Money Saved</div>
+                  <div className="text-sm text-muted-foreground">
+                    Money Saved
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -475,24 +510,37 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                   {employees.map((employee) => {
                     const metrics = calculateDailyMetrics(employee);
                     return (
-                      <div key={employee.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                      <div
+                        key={employee.id}
+                        className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
+                      >
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-casino-blue/20 to-gold/20 rounded-full flex items-center justify-center">
                             <Bot className="w-5 h-5 text-gold-500" />
                           </div>
                           <div>
                             <div className="font-bold">{employee.name}</div>
-                            <div className="text-sm text-muted-foreground">{employee.role}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {employee.role}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
                           <div className="text-center">
-                            <div className="font-bold text-green-500">{metrics.efficiency.toFixed(1)}%</div>
-                            <div className="text-xs text-muted-foreground">Efficiency</div>
+                            <div className="font-bold text-green-500">
+                              {metrics.efficiency.toFixed(1)}%
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Efficiency
+                            </div>
                           </div>
                           <div className="text-center">
-                            <div className="font-bold">{metrics.tasksToday}</div>
-                            <div className="text-xs text-muted-foreground">Tasks Today</div>
+                            <div className="font-bold">
+                              {metrics.tasksToday}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Tasks Today
+                            </div>
                           </div>
                           <Badge className={getStatusColor(employee.status)}>
                             {employee.status}
@@ -513,28 +561,42 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>SecurityBot detected and blocked 3 fraud attempts</span>
-                    <span className="text-muted-foreground ml-auto">2m ago</span>
+                    <span>
+                      SecurityBot detected and blocked 3 fraud attempts
+                    </span>
+                    <span className="text-muted-foreground ml-auto">
+                      2m ago
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Activity className="w-4 h-4 text-blue-500" />
-                    <span>SupportGenie resolved 12 customer tickets automatically</span>
-                    <span className="text-muted-foreground ml-auto">5m ago</span>
+                    <span>
+                      SupportGenie resolved 12 customer tickets automatically
+                    </span>
+                    <span className="text-muted-foreground ml-auto">
+                      5m ago
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <BarChart3 className="w-4 h-4 text-purple-500" />
                     <span>AnalyticsAI generated daily revenue report</span>
-                    <span className="text-muted-foreground ml-auto">8m ago</span>
+                    <span className="text-muted-foreground ml-auto">
+                      8m ago
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Settings className="w-4 h-4 text-orange-500" />
                     <span>GameMaster optimized RTP for 2 slot games</span>
-                    <span className="text-muted-foreground ml-auto">12m ago</span>
+                    <span className="text-muted-foreground ml-auto">
+                      12m ago
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Crown className="w-4 h-4 text-gold-500" />
                     <span>LuckyAI coordinated team weekly sync</span>
-                    <span className="text-muted-foreground ml-auto">15m ago</span>
+                    <span className="text-muted-foreground ml-auto">
+                      15m ago
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -548,16 +610,25 @@ What specific aspect of our AI operations would you like to discuss or optimize?
             {employees.map((employee) => {
               const metrics = calculateDailyMetrics(employee);
               return (
-                <Card key={employee.id} className="hover:shadow-lg transition-all duration-300">
+                <Card
+                  key={employee.id}
+                  className="hover:shadow-lg transition-all duration-300"
+                >
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-casino-blue/20 to-gold/20 rounded-full flex items-center justify-center">
                         <Bot className="w-6 h-6 text-gold-500" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{employee.name}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{employee.role}</p>
-                        <Badge className={`${getStatusColor(employee.status)} text-xs mt-1`}>
+                        <CardTitle className="text-lg">
+                          {employee.name}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {employee.role}
+                        </p>
+                        <Badge
+                          className={`${getStatusColor(employee.status)} text-xs mt-1`}
+                        >
                           {employee.status}
                         </Badge>
                       </div>
@@ -565,23 +636,37 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-bold text-sm mb-2">Daily Performance</h4>
+                      <h4 className="font-bold text-sm mb-2">
+                        Daily Performance
+                      </h4>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <span className="text-muted-foreground">Tasks:</span>
-                          <span className="font-bold ml-1">{metrics.tasksToday}</span>
+                          <span className="font-bold ml-1">
+                            {metrics.tasksToday}
+                          </span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Efficiency:</span>
-                          <span className="font-bold ml-1 text-green-500">{metrics.efficiency.toFixed(1)}%</span>
+                          <span className="text-muted-foreground">
+                            Efficiency:
+                          </span>
+                          <span className="font-bold ml-1 text-green-500">
+                            {metrics.efficiency.toFixed(1)}%
+                          </span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Accuracy:</span>
-                          <span className="font-bold ml-1 text-casino-blue">{metrics.accuracy.toFixed(1)}%</span>
+                          <span className="text-muted-foreground">
+                            Accuracy:
+                          </span>
+                          <span className="font-bold ml-1 text-casino-blue">
+                            {metrics.accuracy.toFixed(1)}%
+                          </span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Uptime:</span>
-                          <span className="font-bold ml-1 text-purple-500">{metrics.uptime.toFixed(1)}%</span>
+                          <span className="font-bold ml-1 text-purple-500">
+                            {metrics.uptime.toFixed(1)}%
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -589,11 +674,17 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                     <div>
                       <h4 className="font-bold text-sm mb-2">Capabilities</h4>
                       <div className="flex flex-wrap gap-1">
-                        {employee.capabilities?.slice(0, 3).map((capability, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {capability}
-                          </Badge>
-                        ))}
+                        {employee.capabilities
+                          ?.slice(0, 3)
+                          .map((capability, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {capability}
+                            </Badge>
+                          ))}
                         {employee.capabilities?.length > 3 && (
                           <Badge variant="outline" className="text-xs">
                             +{employee.capabilities.length - 3} more
@@ -612,10 +703,17 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                         <Eye className="w-3 h-3 mr-1" />
                         Details
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
-                        onClick={() => updateEmployeeStatus(employee.id, employee.status === 'active' ? 'maintenance' : 'active')}
+                        onClick={() =>
+                          updateEmployeeStatus(
+                            employee.id,
+                            employee.status === "active"
+                              ? "maintenance"
+                              : "active",
+                          )
+                        }
                       >
                         <Settings className="w-3 h-3 mr-1" />
                         Toggle
@@ -637,7 +735,9 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Task Description</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Task Description
+                  </label>
                   <Input
                     placeholder="Enter task description..."
                     value={newTaskText}
@@ -645,23 +745,29 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {employees.filter(emp => emp.status === 'active').map((employee) => (
-                    <Button
-                      key={employee.id}
-                      variant="outline"
-                      onClick={() => assignTask(employee.id, newTaskText, 'medium')}
-                      disabled={!newTaskText.trim()}
-                      className="h-auto p-3 justify-start"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Bot className="w-4 h-4 text-gold-500" />
-                        <div className="text-left">
-                          <div className="font-medium">{employee.name}</div>
-                          <div className="text-xs text-muted-foreground">{employee.role}</div>
+                  {employees
+                    .filter((emp) => emp.status === "active")
+                    .map((employee) => (
+                      <Button
+                        key={employee.id}
+                        variant="outline"
+                        onClick={() =>
+                          assignTask(employee.id, newTaskText, "medium")
+                        }
+                        disabled={!newTaskText.trim()}
+                        className="h-auto p-3 justify-start"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Bot className="w-4 h-4 text-gold-500" />
+                          <div className="text-left">
+                            <div className="font-medium">{employee.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {employee.role}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </Button>
-                  ))}
+                      </Button>
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -678,30 +784,47 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                     </div>
                   ) : (
                     tasks.map((task) => {
-                      const employee = employees.find(emp => emp.id === task.employeeId);
+                      const employee = employees.find(
+                        (emp) => emp.id === task.employeeId,
+                      );
                       return (
-                        <div key={task.id} className="p-3 bg-muted/20 rounded-lg">
+                        <div
+                          key={task.id}
+                          className="p-3 bg-muted/20 rounded-lg"
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               <Bot className="w-4 h-4 text-gold-500" />
-                              <span className="font-medium">{employee?.name}</span>
+                              <span className="font-medium">
+                                {employee?.name}
+                              </span>
                             </div>
-                            <Badge 
-                              variant={task.status === 'completed' ? 'default' : 'secondary'}
+                            <Badge
+                              variant={
+                                task.status === "completed"
+                                  ? "default"
+                                  : "secondary"
+                              }
                             >
                               {task.status}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">{task.task}</p>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {task.task}
+                          </p>
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-muted-foreground">
                               Assigned: {task.assignedAt.toLocaleString()}
                             </span>
-                            <span className={`font-medium ${
-                              task.priority === 'high' ? 'text-red-500' :
-                              task.priority === 'medium' ? 'text-orange-500' :
-                              'text-green-500'
-                            }`}>
+                            <span
+                              className={`font-medium ${
+                                task.priority === "high"
+                                  ? "text-red-500"
+                                  : task.priority === "medium"
+                                    ? "text-orange-500"
+                                    : "text-green-500"
+                              }`}
+                            >
                               {task.priority}
                             </span>
                           </div>
@@ -726,20 +849,36 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <div className="text-2xl font-bold text-green-500">97.8%</div>
-                      <div className="text-sm text-muted-foreground">Average Efficiency</div>
+                      <div className="text-2xl font-bold text-green-500">
+                        97.8%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Average Efficiency
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <div className="text-2xl font-bold text-casino-blue">99.9%</div>
-                      <div className="text-sm text-muted-foreground">Uptime</div>
+                      <div className="text-2xl font-bold text-casino-blue">
+                        99.9%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Uptime
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-500">0.2%</div>
-                      <div className="text-sm text-muted-foreground">Error Rate</div>
+                      <div className="text-2xl font-bold text-purple-500">
+                        0.2%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Error Rate
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-muted/20 rounded-lg">
-                      <div className="text-2xl font-bold text-gold-500">98.5%</div>
-                      <div className="text-sm text-muted-foreground">Task Success</div>
+                      <div className="text-2xl font-bold text-gold-500">
+                        98.5%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Task Success
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -753,21 +892,33 @@ What specific aspect of our AI operations would you like to discuss or optimize?
               <CardContent>
                 <div className="space-y-3">
                   {employees
-                    .sort((a, b) => b.total_tasks_completed - a.total_tasks_completed)
+                    .sort(
+                      (a, b) =>
+                        b.total_tasks_completed - a.total_tasks_completed,
+                    )
                     .slice(0, 5)
                     .map((employee, index) => (
-                      <div key={employee.id} className="flex items-center gap-3 p-2 bg-muted/20 rounded-lg">
+                      <div
+                        key={employee.id}
+                        className="flex items-center gap-3 p-2 bg-muted/20 rounded-lg"
+                      >
                         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gold-500 text-black font-bold text-sm">
                           {index + 1}
                         </div>
                         <Bot className="w-6 h-6 text-gold-500" />
                         <div className="flex-1">
                           <div className="font-medium">{employee.name}</div>
-                          <div className="text-sm text-muted-foreground">{employee.role}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {employee.role}
+                          </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold">{employee.total_tasks_completed.toLocaleString()}</div>
-                          <div className="text-xs text-muted-foreground">tasks</div>
+                          <div className="font-bold">
+                            {employee.total_tasks_completed.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            tasks
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -792,13 +943,17 @@ What specific aspect of our AI operations would you like to discuss or optimize?
             <CardContent className="flex-1 flex flex-col">
               {/* Active Team Members */}
               <div className="flex gap-2 mb-4 p-2 bg-muted/20 rounded-lg">
-                <span className="text-sm text-muted-foreground mr-2">Active Team:</span>
-                {employees.filter(emp => emp.status === 'active').map((emp) => (
-                  <Badge key={emp.id} variant="outline" className="text-xs">
-                    <Bot className="w-3 h-3 mr-1" />
-                    {emp.name}
-                  </Badge>
-                ))}
+                <span className="text-sm text-muted-foreground mr-2">
+                  Active Team:
+                </span>
+                {employees
+                  .filter((emp) => emp.status === "active")
+                  .map((emp) => (
+                    <Badge key={emp.id} variant="outline" className="text-xs">
+                      <Bot className="w-3 h-3 mr-1" />
+                      {emp.name}
+                    </Badge>
+                  ))}
               </div>
 
               {/* Chat Messages */}
@@ -820,13 +975,21 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                       {message.senderRole !== "admin" && (
                         <div className="flex items-center gap-1 mb-1">
                           <Bot className="w-3 h-3" />
-                          <span className="text-xs font-medium">{message.sender}</span>
+                          <span className="text-xs font-medium">
+                            {message.sender}
+                          </span>
                         </div>
                       )}
-                      <div className="text-sm whitespace-pre-wrap">{message.content}</div>
-                      <div className={`text-xs mt-1 ${
-                        message.senderRole === "admin" ? "text-black/70" : "text-white/70"
-                      }`}>
+                      <div className="text-sm whitespace-pre-wrap">
+                        {message.content}
+                      </div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          message.senderRole === "admin"
+                            ? "text-black/70"
+                            : "text-white/70"
+                        }`}
+                      >
                         {new Date(message.timestamp).toLocaleTimeString()}
                       </div>
                     </div>
@@ -868,7 +1031,9 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                 </div>
                 <div>
                   <CardTitle>{selectedEmployee.name}</CardTitle>
-                  <p className="text-muted-foreground">{selectedEmployee.role}</p>
+                  <p className="text-muted-foreground">
+                    {selectedEmployee.role}
+                  </p>
                 </div>
               </div>
               <Button
@@ -882,7 +1047,9 @@ What specific aspect of our AI operations would you like to discuss or optimize?
             <CardContent className="space-y-6">
               <div>
                 <h3 className="font-bold mb-3">Description</h3>
-                <p className="text-muted-foreground">{selectedEmployee.description}</p>
+                <p className="text-muted-foreground">
+                  {selectedEmployee.description}
+                </p>
               </div>
 
               <div>
@@ -900,20 +1067,40 @@ What specific aspect of our AI operations would you like to discuss or optimize?
                 <h3 className="font-bold mb-3">Performance Metrics</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-muted/20 rounded-lg">
-                    <div className="text-lg font-bold">{selectedEmployee.total_tasks_completed.toLocaleString()}</div>
-                    <div className="text-sm text-muted-foreground">Total Tasks</div>
+                    <div className="text-lg font-bold">
+                      {selectedEmployee.total_tasks_completed.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Total Tasks
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-muted/20 rounded-lg">
-                    <div className="text-lg font-bold text-green-500">${selectedEmployee.money_saved_usd.toLocaleString()}</div>
-                    <div className="text-sm text-muted-foreground">Money Saved</div>
+                    <div className="text-lg font-bold text-green-500">
+                      ${selectedEmployee.money_saved_usd.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Money Saved
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-muted/20 rounded-lg">
-                    <div className="text-lg font-bold">{new Date(selectedEmployee.created_at).toLocaleDateString()}</div>
-                    <div className="text-sm text-muted-foreground">Date Created</div>
+                    <div className="text-lg font-bold">
+                      {new Date(
+                        selectedEmployee.created_at,
+                      ).toLocaleDateString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Date Created
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-muted/20 rounded-lg">
-                    <div className="text-lg font-bold">{new Date(selectedEmployee.last_active).toLocaleTimeString()}</div>
-                    <div className="text-sm text-muted-foreground">Last Active</div>
+                    <div className="text-lg font-bold">
+                      {new Date(
+                        selectedEmployee.last_active,
+                      ).toLocaleTimeString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Last Active
+                    </div>
                   </div>
                 </div>
               </div>

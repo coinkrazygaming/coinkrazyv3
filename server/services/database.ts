@@ -1,7 +1,8 @@
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 // Database configuration
-const DATABASE_URL = 'postgresql://neondb_owner:npg_6y2rgiwaNFJS@ep-curly-sky-aeyyxvyw-pooler.c-2.us-east-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
+const DATABASE_URL =
+  "postgresql://neondb_owner:npg_6y2rgiwaNFJS@ep-curly-sky-aeyyxvyw-pooler.c-2.us-east-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require";
 
 class DatabaseService {
   private static instance: DatabaseService;
@@ -47,31 +48,33 @@ class DatabaseService {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id, email, username, created_at
     `;
-    const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    
+    const verificationToken =
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+
     const result = await this.query(query, [
       userData.email,
       userData.password_hash,
       userData.username,
       userData.first_name,
       userData.last_name,
-      verificationToken
+      verificationToken,
     ]);
-    
+
     // Create initial balance with welcome bonus
     await this.createUserBalance(result.rows[0].id, 10, 10);
-    
+
     return { ...result.rows[0], verification_token: verificationToken };
   }
 
   async getUserByEmail(email: string) {
-    const query = 'SELECT * FROM users WHERE email = $1';
+    const query = "SELECT * FROM users WHERE email = $1";
     const result = await this.query(query, [email]);
     return result.rows[0];
   }
 
   async getUserByUsername(username: string) {
-    const query = 'SELECT * FROM users WHERE username = $1';
+    const query = "SELECT * FROM users WHERE username = $1";
     const result = await this.query(query, [username]);
     return result.rows[0];
   }
@@ -113,11 +116,17 @@ class DatabaseService {
     return result.rows[0];
   }
 
-  async updateUserBalance(userId: number, gcChange: number, scChange: number, description: string, gameId?: string) {
+  async updateUserBalance(
+    userId: number,
+    gcChange: number,
+    scChange: number,
+    description: string,
+    gameId?: string,
+  ) {
     const client = await this.pool.connect();
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       // Update balance
       const balanceQuery = `
         UPDATE user_balances 
@@ -127,8 +136,12 @@ class DatabaseService {
         WHERE user_id = $1
         RETURNING *
       `;
-      const balanceResult = await client.query(balanceQuery, [userId, gcChange * 1000, scChange]);
-      
+      const balanceResult = await client.query(balanceQuery, [
+        userId,
+        gcChange * 1000,
+        scChange,
+      ]);
+
       // Record transactions
       if (gcChange !== 0) {
         const txnQuery = `
@@ -137,14 +150,14 @@ class DatabaseService {
         `;
         await client.query(txnQuery, [
           userId,
-          gcChange > 0 ? 'win' : 'bet',
+          gcChange > 0 ? "win" : "bet",
           Math.abs(gcChange * 1000),
           balanceResult.rows[0].gold_coins,
           description,
-          gameId
+          gameId,
         ]);
       }
-      
+
       if (scChange !== 0) {
         const txnQuery = `
           INSERT INTO transactions (user_id, transaction_type, currency, amount, balance_after, description, game_id, status)
@@ -152,18 +165,18 @@ class DatabaseService {
         `;
         await client.query(txnQuery, [
           userId,
-          scChange > 0 ? 'win' : 'bet',
+          scChange > 0 ? "win" : "bet",
           Math.abs(scChange),
           balanceResult.rows[0].sweeps_coins,
           description,
-          gameId
+          gameId,
         ]);
       }
-      
-      await client.query('COMMIT');
+
+      await client.query("COMMIT");
       return balanceResult.rows[0];
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -238,18 +251,18 @@ class DatabaseService {
   }
 
   async getLiveStats() {
-    const query = 'SELECT * FROM live_stats ORDER BY stat_name';
+    const query = "SELECT * FROM live_stats ORDER BY stat_name";
     const result = await this.query(query);
-    
+
     const stats: Record<string, any> = {};
-    result.rows.forEach(row => {
+    result.rows.forEach((row) => {
       stats[row.stat_name] = {
         value: parseFloat(row.stat_value),
         metadata: row.stat_metadata,
-        updated_at: row.updated_at
+        updated_at: row.updated_at,
       };
     });
-    
+
     return stats;
   }
 
@@ -268,12 +281,16 @@ class DatabaseService {
 
   // AI Employees
   async getAIEmployees() {
-    const query = 'SELECT * FROM ai_employees ORDER BY created_at ASC';
+    const query = "SELECT * FROM ai_employees ORDER BY created_at ASC";
     const result = await this.query(query);
     return result.rows;
   }
 
-  async updateAIEmployeeMetrics(id: number, tasksCompleted: number, moneySaved: number) {
+  async updateAIEmployeeMetrics(
+    id: number,
+    tasksCompleted: number,
+    moneySaved: number,
+  ) {
     const query = `
       UPDATE ai_employees 
       SET total_tasks_completed = total_tasks_completed + $2,
@@ -287,13 +304,27 @@ class DatabaseService {
   }
 
   // Notifications
-  async createAdminNotification(title: string, message: string, type: string, fromAI?: number, actionRequired: boolean = false, actionUrl?: string) {
+  async createAdminNotification(
+    title: string,
+    message: string,
+    type: string,
+    fromAI?: number,
+    actionRequired: boolean = false,
+    actionUrl?: string,
+  ) {
     const query = `
       INSERT INTO admin_notifications (title, message, notification_type, from_ai_employee, action_required, action_url)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
-    const result = await this.query(query, [title, message, type, fromAI, actionRequired, actionUrl]);
+    const result = await this.query(query, [
+      title,
+      message,
+      type,
+      fromAI,
+      actionRequired,
+      actionUrl,
+    ]);
     return result.rows[0];
   }
 
@@ -322,14 +353,19 @@ class DatabaseService {
 
   // Coin packages
   async getCoinPackages() {
-    const query = 'SELECT * FROM coin_packages WHERE is_active = TRUE ORDER BY sort_order, price_usd';
+    const query =
+      "SELECT * FROM coin_packages WHERE is_active = TRUE ORDER BY sort_order, price_usd";
     const result = await this.query(query);
     return result.rows;
   }
 
   // Daily wheel spins
-  async getDailyWheelSpin(userId: number, date: string = new Date().toISOString().split('T')[0]) {
-    const query = 'SELECT * FROM wheel_spins WHERE user_id = $1 AND spin_date = $2';
+  async getDailyWheelSpin(
+    userId: number,
+    date: string = new Date().toISOString().split("T")[0],
+  ) {
+    const query =
+      "SELECT * FROM wheel_spins WHERE user_id = $1 AND spin_date = $2";
     const result = await this.query(query, [userId, date]);
     return result.rows[0];
   }
@@ -337,8 +373,8 @@ class DatabaseService {
   async createWheelSpin(userId: number, scWon: number) {
     const client = await this.pool.connect();
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       // Create wheel spin record
       const spinQuery = `
         INSERT INTO wheel_spins (user_id, sc_won)
@@ -346,14 +382,14 @@ class DatabaseService {
         RETURNING *
       `;
       const spinResult = await client.query(spinQuery, [userId, scWon]);
-      
+
       // Update user balance
-      await this.updateUserBalance(userId, 0, scWon, 'Daily Wheel Spin');
-      
-      await client.query('COMMIT');
+      await this.updateUserBalance(userId, 0, scWon, "Daily Wheel Spin");
+
+      await client.query("COMMIT");
       return spinResult.rows[0];
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();

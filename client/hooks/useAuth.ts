@@ -1,5 +1,10 @@
-import { useState, useEffect } from 'react';
-import { authService, User, AuthResponse, RegisterData } from '../services/authService';
+import { useState, useEffect } from "react";
+import {
+  authService,
+  User,
+  AuthResponse,
+  RegisterData,
+} from "../services/authService";
 
 interface UseAuthReturn {
   user: User | null;
@@ -27,7 +32,10 @@ export const useAuth = (): UseAuthReturn => {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<AuthResponse> => {
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<AuthResponse> => {
     setLoading(true);
     try {
       const response = await authService.login(email, password);
@@ -74,7 +82,10 @@ export const useAuth = (): UseAuthReturn => {
     return authService.requestPasswordReset(email);
   };
 
-  const resetPassword = async (token: string, newPassword: string): Promise<AuthResponse> => {
+  const resetPassword = async (
+    token: string,
+    newPassword: string,
+  ): Promise<AuthResponse> => {
     return authService.resetPassword(token, newPassword);
   };
 
@@ -95,6 +106,6 @@ export const useAuth = (): UseAuthReturn => {
     verifyEmail,
     requestPasswordReset,
     resetPassword,
-    refreshUser
+    refreshUser,
   };
 };

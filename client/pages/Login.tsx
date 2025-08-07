@@ -282,23 +282,34 @@ export default function Login() {
                   )}
                 </Button>
 
-                {/* Temporary Admin Creation Helper */}
-                <Button
-                  type="button"
-                  onClick={createAdminUser}
-                  disabled={loading || isCreatingAdmin}
-                  variant="outline"
-                  className="w-full border-gold-500/50 text-gold-400 hover:bg-gold-500/10"
-                >
-                  {isCreatingAdmin ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating Admin...
-                    </>
-                  ) : (
-                    "Create Admin User"
-                  )}
-                </Button>
+                {/* Admin Setup Helper */}
+                <div className="space-y-2">
+                  <Button
+                    type="button"
+                    onClick={createAdminUser}
+                    disabled={loading || isCreatingAdmin}
+                    variant="outline"
+                    className="w-full border-gold-500/50 text-gold-400 hover:bg-gold-500/10"
+                  >
+                    {isCreatingAdmin ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Admin...
+                      </>
+                    ) : (
+                      "Quick Create Admin"
+                    )}
+                  </Button>
+
+                  <div className="text-center">
+                    <Link
+                      to="/admin-setup"
+                      className="text-xs text-muted-foreground hover:text-gold-400 transition-colors"
+                    >
+                      Need database setup? Use Full Admin Setup →
+                    </Link>
+                  </div>
+                </div>
               </form>
 
               <div className="text-center">

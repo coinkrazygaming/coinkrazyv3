@@ -69,53 +69,26 @@ export default function Navigation() {
       },
     );
 
-    // Load wallet balance if user is logged in
-    if (user?.isLoggedIn) {
-      loadWalletBalance();
-      const walletInterval = setInterval(loadWalletBalance, 5000); // Update every 5 seconds
-      return () => {
-        clearInterval(walletInterval);
-        unsubscribeAnalytics();
-        unsubscribePlayers();
-      };
-    }
-
     return () => {
       unsubscribeAnalytics();
       unsubscribePlayers();
     };
-  }, [user?.isLoggedIn, user?.id]);
-
-  const loadWalletBalance = async () => {
-    if (!user?.id) return;
-
-    try {
-      const balance = await analyticsService.getUserWalletBalance(user.id);
-      setWalletBalance(balance);
-    } catch (error) {
-      console.error("Failed to load wallet balance:", error);
-    }
-  };
+  }, []);
 
   const navItems = [
     { path: "/", label: "Home", icon: Crown },
     { path: "/games", label: "Games", icon: Coins },
     { path: "/store", label: "Store", icon: Plus },
-    { path: "/login", label: "Login", icon: Users, hideWhenLoggedIn: true },
-    { path: "/register", label: "Sign Up", icon: Gift, hideWhenLoggedIn: true },
     {
       path: "/dashboard",
       label: "Dashboard",
       icon: Users,
       requiresLogin: true,
     },
-    { path: "/admin", label: "Admin", icon: Settings, adminOnly: true },
   ];
 
   const filteredNavItems = navItems.filter((item) => {
-    if (item.hideWhenLoggedIn && user?.isLoggedIn) return false;
-    if (item.requiresLogin && !user?.isLoggedIn) return false;
-    if (item.adminOnly && (!user?.isLoggedIn || !user?.isAdmin)) return false;
+    if (item.requiresLogin && !user) return false;
     return true;
   });
 

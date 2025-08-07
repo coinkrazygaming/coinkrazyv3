@@ -31,6 +31,9 @@ import Contact from "./pages/Contact";
 import ResponsibleGaming from "./pages/ResponsibleGaming";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import EnhancedDashboard from "./pages/EnhancedDashboard";
+import GoldCoinStore from "./pages/GoldCoinStore";
+import DailyLuckyWheel from "./components/DailyLuckyWheel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

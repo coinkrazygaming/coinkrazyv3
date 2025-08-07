@@ -44,6 +44,7 @@ import Admin from "./pages/Admin";
 import HowToPlay from "./pages/HowToPlay";
 import SweepstakesRules from "./pages/SweepstakesRules";
 import Support from "./pages/Support";
+import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,6 +81,7 @@ const App = () => (
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/compliance" element={<Compliance />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
             <Route path="/how-to-play" element={<HowToPlay />} />
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
             <Route path="/support" element={<Support />} />

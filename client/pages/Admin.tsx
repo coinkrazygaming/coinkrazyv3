@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { adminService, AdminStats, AdminUser, AdminGame, AdminTransaction, AdminNotification } from "@/services/adminService";
 import AIEmployeeManager from "@/components/AIEmployeeManager";
 import CasinoAnalytics from "@/components/CasinoAnalytics";
 import CasinoBanking from "@/components/CasinoBanking";
 import PackageEditor from "@/components/PackageEditor";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
+import AdminToolbar from "@/components/AdminToolbar";
 import {
   Shield,
   Users,
@@ -42,168 +48,170 @@ import {
   Coins,
   Gift,
   Layout,
+  RefreshCw,
+  Crown,
+  Mail,
+  UserCheck,
+  UserX,
+  GamepadIcon,
+  Bell,
+  Loader2,
 } from "lucide-react";
 
-// Mock data
-const mockUsers = [
-  {
-    id: 1,
-    username: "player123",
-    email: "player123@email.com",
-    status: "active",
-    kyc: "verified",
-    gcBalance: 125000,
-    scBalance: 450,
-    joinDate: "2024-01-15",
-    lastLogin: "2024-03-20",
-  },
-  {
-    id: 2,
-    username: "casinofan",
-    email: "fan@email.com",
-    status: "suspended",
-    kyc: "pending",
-    gcBalance: 89000,
-    scBalance: 0,
-    joinDate: "2024-02-10",
-    lastLogin: "2024-03-19",
-  },
-  {
-    id: 3,
-    username: "highroller",
-    email: "high@email.com",
-    status: "active",
-    kyc: "verified",
-    gcBalance: 450000,
-    scBalance: 1250,
-    joinDate: "2024-01-05",
-    lastLogin: "2024-03-20",
-  },
-  {
-    id: 4,
-    username: "newbie2024",
-    email: "new@email.com",
-    status: "active",
-    kyc: "rejected",
-    gcBalance: 50000,
-    scBalance: 25,
-    joinDate: "2024-03-18",
-    lastLogin: "2024-03-20",
-  },
-];
-
-const mockGames = [
-  {
-    id: 1,
-    name: "Sweet Bonanza",
-    provider: "Pragmatic Play",
-    status: "active",
-    rtp: 96.48,
-    players: 423,
-    revenue24h: 12450,
-    enabled: true,
-  },
-  {
-    id: 2,
-    name: "Josey Duck Game",
-    provider: "CoinKrazy",
-    status: "active",
-    rtp: 96.8,
-    players: 723,
-    revenue24h: 18750,
-    enabled: true,
-  },
-  {
-    id: 3,
-    name: "Gates of Olympus",
-    provider: "Pragmatic Play",
-    status: "maintenance",
-    rtp: 96.5,
-    players: 0,
-    revenue24h: 0,
-    enabled: false,
-  },
-  {
-    id: 4,
-    name: "Colin Shots",
-    provider: "CoinKrazy",
-    status: "active",
-    rtp: 97.2,
-    players: 612,
-    revenue24h: 15250,
-    enabled: true,
-  },
-];
-
-const mockTransactions = [
-  {
-    id: 1,
-    user: "player123",
-    type: "withdrawal",
-    amount: 150,
-    currency: "SC",
-    status: "pending",
-    date: "2024-03-20 14:30",
-  },
-  {
-    id: 2,
-    user: "highroller",
-    type: "deposit",
-    amount: 500,
-    currency: "GC",
-    status: "completed",
-    date: "2024-03-20 13:15",
-  },
-  {
-    id: 3,
-    user: "casinofan",
-    type: "withdrawal",
-    amount: 75,
-    currency: "SC",
-    status: "flagged",
-    date: "2024-03-20 12:00",
-  },
-  {
-    id: 4,
-    user: "newbie2024",
-    type: "deposit",
-    amount: 100,
-    currency: "GC",
-    status: "completed",
-    date: "2024-03-20 11:45",
-  },
-];
-
 export default function Admin() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [liveStats, setLiveStats] = useState({
-    totalUsers: 15847,
-    activeNow: 2847,
-    pendingKyc: 23,
-    revenue24h: 45230,
-    pendingWithdrawals: 12,
-    systemHealth: 99.9,
-    fraudAlerts: 3,
-  });
+  const { user, isAdmin, logout } = useAuth();
+  const { toast } = useToast();
 
+  // Redirect if not admin
+  if (!isAdmin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Data states
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [games, setGames] = useState<AdminGame[]>([]);
+  const [transactions, setTransactions] = useState<AdminTransaction[]>([]);
+  const [notifications, setNotifications] = useState<AdminNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const usersPerPage = 20;
+
+  // Load initial data
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveStats((prev) => ({
-        ...prev,
-        activeNow: prev.activeNow + Math.floor(Math.random() * 20) - 10,
-        revenue24h: prev.revenue24h + Math.floor(Math.random() * 1000),
-        systemHealth: Math.max(
-          95,
-          Math.min(100, prev.systemHealth + (Math.random() - 0.5) * 0.1),
-        ),
-      }));
-    }, 3000);
-    return () => clearInterval(interval);
+    loadAllData();
+    
+    // Subscribe to real-time updates
+    const unsubscribeStats = adminService.subscribeToUpdates('stats', (newStats) => {
+      setStats(newStats);
+    });
+    
+    const unsubscribeNotifications = adminService.subscribeToUpdates('notifications', (newNotifications) => {
+      setNotifications(newNotifications);
+      setUnreadCount(newNotifications.filter((n: AdminNotification) => !n.read_status).length);
+    });
+
+    return () => {
+      unsubscribeStats();
+      unsubscribeNotifications();
+    };
   }, []);
+
+  const loadAllData = async () => {
+    try {
+      setLoading(true);
+      const [statsData, usersData, gamesData, transactionsData, notificationsData] = await Promise.all([
+        adminService.getDashboardStats(),
+        adminService.getAllUsers(currentPage, usersPerPage, searchTerm),
+        adminService.getAllGames(),
+        adminService.getRecentTransactions(),
+        adminService.getAdminNotifications()
+      ]);
+
+      setStats(statsData);
+      setUsers(usersData.users);
+      setTotalUsers(usersData.total);
+      setGames(gamesData);
+      setTransactions(transactionsData);
+      setNotifications(notificationsData);
+      setUnreadCount(notificationsData.filter(n => !n.read_status).length);
+    } catch (error) {
+      console.error('Failed to load admin data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load admin data. Please refresh the page.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadAllData();
+    setRefreshing(false);
+    toast({
+      title: "Data Refreshed",
+      description: "All admin data has been updated.",
+    });
+  };
+
+  const handleUserStatusUpdate = async (userId: number, newStatus: string) => {
+    try {
+      await adminService.updateUserStatus(userId, newStatus);
+      await loadAllData(); // Refresh data
+      toast({
+        title: "User Updated",
+        description: `User status updated to ${newStatus}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update user status.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleGameToggle = async (gameId: string, isActive: boolean) => {
+    try {
+      await adminService.updateGameStatus(gameId, isActive);
+      await loadAllData(); // Refresh data
+      toast({
+        title: "Game Updated",
+        description: `Game ${isActive ? 'activated' : 'deactivated'} successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update game status.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleNotificationRead = async (notificationId: number) => {
+    try {
+      await adminService.markNotificationRead(notificationId);
+      setNotifications(prev => prev.map(n => 
+        n.id === notificationId ? { ...n, read_status: true } : n
+      ));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Admin Toolbar */}
+      <AdminToolbar 
+        unreadNotifications={unreadCount}
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
+      />
+
       {/* Admin Header */}
       <div className="bg-gradient-to-r from-casino-blue/10 via-gold/5 to-casino-blue/10 py-6 border-b border-border/50">
         <div className="container mx-auto px-4">
@@ -220,14 +228,28 @@ export default function Admin() {
                 className="border-gold-500 text-gold-400"
               >
                 <Shield className="w-3 h-3 mr-1" />
-                Admin: coinkrazy00@gmail.com
+                Admin: {user?.email}
               </Badge>
               <Button
                 variant="outline"
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="bg-green-500/10 border-green-500 text-green-400"
+              >
+                {refreshing ? (
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                )}
+                Refresh Data
+              </Button>
+              <Button
+                variant="outline"
+                onClick={logout}
                 className="bg-red-500/10 border-red-500 text-red-400"
               >
                 <XCircle className="w-4 h-4 mr-2" />
-                Emergency Stop
+                Logout
               </Button>
             </div>
           </div>
@@ -236,105 +258,123 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-6">
         {/* Live Stats Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
-          <Card className="bg-gradient-to-br from-casino-blue/10 to-casino-blue/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Users</p>
-                  <p className="text-2xl font-bold">
-                    {liveStats.totalUsers.toLocaleString()}
-                  </p>
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
+            <Card className="bg-gradient-to-br from-casino-blue/10 to-casino-blue/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Users</p>
+                    <p className="text-2xl font-bold">
+                      {stats.totalUsers.toLocaleString()}
+                    </p>
+                  </div>
+                  <Users className="w-8 h-8 text-casino-blue" />
                 </div>
-                <Users className="w-8 h-8 text-casino-blue" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Active Now</p>
-                  <p className="text-2xl font-bold">
-                    {liveStats.activeNow.toLocaleString()}
-                  </p>
+            <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Active Now</p>
+                    <p className="text-2xl font-bold">
+                      {stats.activeNow.toLocaleString()}
+                    </p>
+                  </div>
+                  <Activity className="w-8 h-8 text-green-500" />
                 </div>
-                <Activity className="w-8 h-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Pending KYC</p>
-                  <p className="text-2xl font-bold">{liveStats.pendingKyc}</p>
+            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Pending KYC</p>
+                    <p className="text-2xl font-bold">{stats.pendingKyc}</p>
+                  </div>
+                  <FileText className="w-8 h-8 text-orange-500" />
                 </div>
-                <FileText className="w-8 h-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-gold-500/10 to-gold-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Revenue 24h</p>
-                  <p className="text-2xl font-bold">
-                    ${liveStats.revenue24h.toLocaleString()}
-                  </p>
+            <Card className="bg-gradient-to-br from-gold-500/10 to-gold-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Revenue 24h</p>
+                    <p className="text-2xl font-bold">
+                      ${stats.revenue24h.toLocaleString()}
+                    </p>
+                  </div>
+                  <DollarSign className="w-8 h-8 text-gold-500" />
                 </div>
-                <DollarSign className="w-8 h-8 text-gold-500" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Withdrawals</p>
-                  <p className="text-2xl font-bold">
-                    {liveStats.pendingWithdrawals}
-                  </p>
+            <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Withdrawals</p>
+                    <p className="text-2xl font-bold">
+                      {stats.pendingWithdrawals}
+                    </p>
+                  </div>
+                  <CreditCard className="w-8 h-8 text-blue-500" />
                 </div>
-                <CreditCard className="w-8 h-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">System Health</p>
-                  <p className="text-2xl font-bold">
-                    {liveStats.systemHealth.toFixed(1)}%
-                  </p>
+            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">System Health</p>
+                    <p className="text-2xl font-bold">
+                      {stats.systemHealth.toFixed(1)}%
+                    </p>
+                  </div>
+                  <Database className="w-8 h-8 text-purple-500" />
                 </div>
-                <Database className="w-8 h-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Fraud Alerts</p>
-                  <p className="text-2xl font-bold">{liveStats.fraudAlerts}</p>
+            <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Alerts</p>
+                    <p className="text-2xl font-bold">{stats.fraudAlerts}</p>
+                  </div>
+                  <AlertTriangle className="w-8 h-8 text-red-500" />
                 </div>
-                <AlertTriangle className="w-8 h-8 text-red-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Admin Tools Tabs */}
-        <Tabs defaultValue="ai-manager" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-11">
+            <TabsTrigger value="dashboard">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="users">
+              <Users className="w-4 h-4 mr-2" />
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="games">
+              <GamepadIcon className="w-4 h-4 mr-2" />
+              Games
+            </TabsTrigger>
+            <TabsTrigger value="transactions">
+              <CreditCard className="w-4 h-4 mr-2" />
+              Transactions
+            </TabsTrigger>
             <TabsTrigger value="ai-manager">
               <Bot className="w-4 h-4 mr-2" />
               AI Manager
@@ -343,179 +383,83 @@ export default function Admin() {
               <Store className="w-4 h-4 mr-2" />
               Gold Store
             </TabsTrigger>
-            <TabsTrigger value="package-editor">
-              <Edit className="w-4 h-4 mr-2" />
-              Package Editor
-            </TabsTrigger>
-            <TabsTrigger value="users">
-              <Users className="w-4 h-4 mr-2" />
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="games">
-              <Settings className="w-4 h-4 mr-2" />
-              Games
-            </TabsTrigger>
-            <TabsTrigger value="payments">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Payments
+            <TabsTrigger value="bonus">
+              <Gift className="w-4 h-4 mr-2" />
+              Bonuses
             </TabsTrigger>
             <TabsTrigger value="analytics">
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="ai">
-              <Bot className="w-4 h-4 mr-2" />
-              AI Assistant
-            </TabsTrigger>
-            <TabsTrigger value="bonus">
-              <Gift className="w-4 h-4 mr-2" />
-              Bonuses
-            </TabsTrigger>
             <TabsTrigger value="cms">
               <Layout className="w-4 h-4 mr-2" />
               CMS
             </TabsTrigger>
-            <TabsTrigger value="audit">
-              <FileText className="w-4 h-4 mr-2" />
-              Audit Logs
+            <TabsTrigger value="notifications">
+              <Bell className="w-4 h-4 mr-2" />
+              Notifications
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 w-5 text-xs p-0 flex items-center justify-center">
+                  {unreadCount}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
             </TabsTrigger>
           </TabsList>
 
-          {/* AI Employee Manager */}
-          <TabsContent value="ai-manager" className="mt-6">
-            <AIEmployeeManager />
-          </TabsContent>
-
-          {/* Package Editor */}
-          <TabsContent value="package-editor" className="mt-6">
-            <PackageEditor />
-          </TabsContent>
-
-          {/* Gold Coin Store Management */}
-          <TabsContent value="store" className="mt-6">
-            <div className="space-y-6">
+          {/* Dashboard Overview */}
+          <TabsContent value="dashboard" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Recent Activity */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Store className="w-5 h-5 text-gold-500" />
-                    Gold Coin Store Management
-                  </CardTitle>
+                  <CardTitle>Recent Activity</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card className="text-center p-6">
-                      <Coins className="w-12 h-12 text-gold-500 mx-auto mb-4" />
-                      <h3 className="font-bold mb-2">Package Editor</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Create and edit Gold Coin packages with AI-assisted
-                        visual builder
-                      </p>
-                      <Button
-                        className="bg-gold-500 hover:bg-gold-600 text-black"
-                        onClick={() =>
-                          window.open("/admin?tab=package-editor", "_blank")
-                        }
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Open Editor
-                      </Button>
-                    </Card>
-
-                    <Card className="text-center p-6">
-                      <CreditCard className="w-12 h-12 text-casino-blue mx-auto mb-4" />
-                      <h3 className="font-bold mb-2">Payment Settings</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Configure payment processors and security settings
-                      </p>
-                      <Button variant="outline">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Configure
-                      </Button>
-                    </Card>
-
-                    <Card className="text-center p-6">
-                      <BarChart3 className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                      <h3 className="font-bold mb-2">Sales Analytics</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        View detailed sales metrics and performance data
-                      </p>
-                      <Button variant="outline">
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Reports
-                      </Button>
-                    </Card>
+                  <div className="space-y-4">
+                    {transactions.slice(0, 5).map((transaction) => (
+                      <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                        <div>
+                          <p className="font-medium">{transaction.username}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.description}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">{transaction.amount} {transaction.currency}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.transaction_type}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="mt-8">
-                    <h3 className="font-bold text-lg mb-4">Current Packages</h3>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-border">
-                            <th className="text-left p-2">Package</th>
-                            <th className="text-left p-2">Gold Coins</th>
-                            <th className="text-left p-2">Sweeps Coins</th>
-                            <th className="text-left p-2">Price</th>
-                            <th className="text-left p-2">Status</th>
-                            <th className="text-left p-2">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {[
-                            {
-                              name: "Starter Pack",
-                              gc: 50000,
-                              sc: 25,
-                              price: 9.99,
-                              status: "active",
-                            },
-                            {
-                              name: "Popular Pack",
-                              gc: 125000,
-                              sc: 75,
-                              price: 19.99,
-                              status: "active",
-                            },
-                            {
-                              name: "Premium Pack",
-                              gc: 300000,
-                              sc: 200,
-                              price: 49.99,
-                              status: "active",
-                            },
-                            {
-                              name: "VIP Pack",
-                              gc: 750000,
-                              sc: 500,
-                              price: 99.99,
-                              status: "active",
-                            },
-                          ].map((pkg, index) => (
-                            <tr
-                              key={index}
-                              className="border-b border-border/50 hover:bg-muted/50"
-                            >
-                              <td className="p-2 font-medium">{pkg.name}</td>
-                              <td className="p-2">{pkg.gc.toLocaleString()}</td>
-                              <td className="p-2">{pkg.sc}</td>
-                              <td className="p-2">${pkg.price}</td>
-                              <td className="p-2">
-                                <Badge variant="default">Active</Badge>
-                              </td>
-                              <td className="p-2">
-                                <div className="flex gap-1">
-                                  <Button size="sm" variant="outline">
-                                    <Edit className="w-3 h-3" />
-                                  </Button>
-                                  <Button size="sm" variant="outline">
-                                    <Eye className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+              {/* System Status */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span>Database Connection</span>
+                      <Badge variant="default" className="bg-green-500">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Healthy
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Active Games</span>
+                      <span className="font-bold">{stats?.activeGames || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Total Currency in Circulation</span>
+                      <div className="text-right">
+                        <p className="font-bold">{(stats?.totalGC || 0).toLocaleString()} GC</p>
+                        <p className="text-sm text-muted-foreground">{(stats?.totalSC || 0).toFixed(2)} SC</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -559,7 +503,7 @@ export default function Admin() {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockUsers.map((user) => (
+                      {users.map((user) => (
                         <tr
                           key={user.id}
                           className="border-b border-border/50 hover:bg-muted/50"
@@ -570,6 +514,12 @@ export default function Admin() {
                               <div className="text-sm text-muted-foreground">
                                 {user.email}
                               </div>
+                              {user.role === 'admin' && (
+                                <Badge variant="outline" className="text-xs mt-1">
+                                  <Crown className="w-3 h-3 mr-1" />
+                                  Admin
+                                </Badge>
+                              )}
                             </div>
                           </td>
                           <td className="p-2">
@@ -586,23 +536,25 @@ export default function Admin() {
                           <td className="p-2">
                             <Badge
                               variant={
-                                user.kyc === "verified"
+                                user.kyc_status === "verified"
                                   ? "default"
-                                  : user.kyc === "pending"
+                                  : user.kyc_status === "pending"
                                     ? "secondary"
                                     : "destructive"
                               }
                             >
-                              {user.kyc}
+                              {user.kyc_status}
                             </Badge>
                           </td>
                           <td className="p-2 font-mono">
-                            {user.gcBalance.toLocaleString()}
+                            {(user.gold_coins / 1000).toLocaleString()}
                           </td>
                           <td className="p-2 font-mono text-gold-400">
-                            {user.scBalance}
+                            {parseFloat(user.sweeps_coins).toFixed(2)}
                           </td>
-                          <td className="p-2 text-sm">{user.lastLogin}</td>
+                          <td className="p-2 text-sm">
+                            {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
+                          </td>
                           <td className="p-2">
                             <div className="flex gap-1">
                               <Button size="sm" variant="outline">
@@ -611,13 +563,25 @@ export default function Admin() {
                               <Button size="sm" variant="outline">
                                 <Edit className="w-3 h-3" />
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-red-500"
-                              >
-                                <Ban className="w-3 h-3" />
-                              </Button>
+                              {user.status === 'active' ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-red-500"
+                                  onClick={() => handleUserStatusUpdate(user.id, 'suspended')}
+                                >
+                                  <Ban className="w-3 h-3" />
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-green-500"
+                                  onClick={() => handleUserStatusUpdate(user.id, 'active')}
+                                >
+                                  <UserCheck className="w-3 h-3" />
+                                </Button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -629,7 +593,7 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
-          {/* Game Control */}
+          {/* Game Management */}
           <TabsContent value="games" className="mt-6">
             <Card>
               <CardHeader>
@@ -645,48 +609,74 @@ export default function Admin() {
                         <th className="text-left p-2">Status</th>
                         <th className="text-left p-2">RTP</th>
                         <th className="text-left p-2">Players</th>
-                        <th className="text-left p-2">Revenue 24h</th>
+                        <th className="text-left p-2">Profit</th>
+                        <th className="text-left p-2">Jackpot (45%)</th>
                         <th className="text-left p-2">Controls</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {mockGames.map((game) => (
+                      {games.map((game) => (
                         <tr
                           key={game.id}
                           className="border-b border-border/50 hover:bg-muted/50"
                         >
-                          <td className="p-2 font-medium">{game.name}</td>
+                          <td className="p-2">
+                            <div>
+                              <div className="font-medium">{game.name}</div>
+                              {game.is_featured && (
+                                <Badge variant="outline" className="text-xs mt-1">
+                                  Featured
+                                </Badge>
+                              )}
+                            </div>
+                          </td>
                           <td className="p-2 text-muted-foreground">
                             {game.provider}
                           </td>
                           <td className="p-2">
                             <Badge
                               variant={
-                                game.status === "active"
-                                  ? "default"
-                                  : "secondary"
+                                game.is_active ? "default" : "secondary"
                               }
                             >
-                              {game.status}
+                              {game.is_active ? "Active" : "Inactive"}
                             </Badge>
                           </td>
                           <td className="p-2 font-mono">{game.rtp}%</td>
-                          <td className="p-2">{game.players}</td>
-                          <td className="p-2 text-gold-400">
-                            ${game.revenue24h.toLocaleString()}
+                          <td className="p-2">{game.total_players}</td>
+                          <td className="p-2">
+                            <div className="text-sm">
+                              <div className="text-gold-400">
+                                {(game.total_profit_gc / 1000).toLocaleString()} GC
+                              </div>
+                              <div className="text-casino-blue">
+                                {parseFloat(game.total_profit_sc).toFixed(2)} SC
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-2">
+                            <div className="text-sm">
+                              <div className="text-gold-400 font-bold">
+                                {(game.current_jackpot_calculated / 1000).toLocaleString()} GC
+                              </div>
+                              <div className="text-casino-blue font-bold">
+                                {parseFloat(game.current_jackpot_sc_calculated).toFixed(2)} SC
+                              </div>
+                            </div>
                           </td>
                           <td className="p-2">
                             <div className="flex gap-1">
                               <Button
                                 size="sm"
-                                variant={game.enabled ? "outline" : "default"}
+                                variant={game.is_active ? "outline" : "default"}
                                 className={
-                                  game.enabled
+                                  game.is_active
                                     ? "text-orange-500"
                                     : "bg-green-500 hover:bg-green-600"
                                 }
+                                onClick={() => handleGameToggle(game.game_id, !game.is_active)}
                               >
-                                {game.enabled ? (
+                                {game.is_active ? (
                                   <Pause className="w-3 h-3" />
                                 ) : (
                                   <Play className="w-3 h-3" />
@@ -709,192 +699,141 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
-          {/* Payment Management */}
-          <TabsContent value="payments" className="mt-6">
-            <CasinoBanking />
-          </TabsContent>
-
-          {/* Analytics */}
-          <TabsContent value="analytics" className="mt-6">
-            <CasinoAnalytics />
-          </TabsContent>
-
-          {/* AI Assistant */}
-          <TabsContent value="ai" className="mt-6">
+          {/* Transactions */}
+          <TabsContent value="transactions" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bot className="w-6 h-6 text-gold-500" />
-                  AI Assistant "Lucky" - Fraud Detection & Support
-                </CardTitle>
+                <CardTitle>Recent Transactions</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="font-bold text-lg">Recent AI Alerts</h3>
-                    <div className="space-y-3">
-                      <div className="border border-red-500/20 rounded-lg p-3 bg-red-500/5">
-                        <div className="flex items-center gap-2 mb-2">
-                          <AlertTriangle className="w-4 h-4 text-red-500" />
-                          <span className="font-medium text-red-400">
-                            Suspicious Pattern Detected
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="border-red-500 text-red-400"
-                          >
-                            HIGH
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          User "casinofan" showing unusual betting patterns. 47
-                          consecutive losses followed by large win.
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          2 minutes ago
-                        </p>
-                      </div>
-
-                      <div className="border border-orange-500/20 rounded-lg p-3 bg-orange-500/5">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Zap className="w-4 h-4 text-orange-500" />
-                          <span className="font-medium text-orange-400">
-                            RTP Anomaly
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="border-orange-500 text-orange-400"
-                          >
-                            MEDIUM
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          "Sweet Bonanza" RTP deviation detected: 102.3% over
-                          last 1000 spins.
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          15 minutes ago
-                        </p>
-                      </div>
-
-                      <div className="border border-blue-500/20 rounded-lg p-3 bg-blue-500/5">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Bot className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium text-blue-400">
-                            Auto-Resolved Support
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="border-blue-500 text-blue-400"
-                          >
-                            INFO
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Automatically resolved 3 password reset requests and 1
-                          bonus claim inquiry.
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          1 hour ago
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-bold text-lg">AI Chat Interface</h3>
-                    <div className="border border-border rounded-lg p-4 h-64 bg-muted/20 flex items-center justify-center">
-                      <div className="text-center">
-                        <Bot className="w-12 h-12 text-gold-500 mx-auto mb-4" />
-                        <p className="text-muted-foreground">
-                          Lucky AI Assistant
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Voice + Text interface integration
-                        </p>
-                        <Button className="mt-4 bg-gold-500 text-black hover:bg-gold-600">
-                          Activate Lucky
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-2">User</th>
+                        <th className="text-left p-2">Type</th>
+                        <th className="text-left p-2">Amount</th>
+                        <th className="text-left p-2">Status</th>
+                        <th className="text-left p-2">Date</th>
+                        <th className="text-left p-2">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transactions.map((transaction) => (
+                        <tr
+                          key={transaction.id}
+                          className="border-b border-border/50 hover:bg-muted/50"
+                        >
+                          <td className="p-2">
+                            <div>
+                              <div className="font-medium">{transaction.username}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {transaction.email}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-2 capitalize">{transaction.transaction_type}</td>
+                          <td className="p-2 font-mono">
+                            {transaction.amount} {transaction.currency}
+                          </td>
+                          <td className="p-2">
+                            <Badge
+                              variant={
+                                transaction.status === "completed"
+                                  ? "default"
+                                  : transaction.status === "pending"
+                                    ? "secondary"
+                                    : "destructive"
+                              }
+                            >
+                              {transaction.status}
+                            </Badge>
+                          </td>
+                          <td className="p-2 text-sm">
+                            {new Date(transaction.created_at).toLocaleString()}
+                          </td>
+                          <td className="p-2 text-sm">{transaction.description}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Audit Logs */}
-          <TabsContent value="audit" className="mt-6">
+          {/* Notifications */}
+          <TabsContent value="notifications" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>System Audit Logs & Compliance</CardTitle>
+                <CardTitle>Admin Notifications</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex gap-4">
-                    <Button variant="outline">
-                      <Download className="w-4 h-4 mr-2" />
-                      Export Logs
-                    </Button>
-                    <Button variant="outline">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload Report
-                    </Button>
-                    <Button variant="outline">
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Refresh
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="bg-green-500/5 border-green-500/20">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                          <span className="font-medium">RTP Compliance</span>
+                  {notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`border rounded-lg p-4 ${
+                        !notification.read_status ? 'bg-muted/20' : 'bg-card'
+                      }`}
+                      onClick={() => !notification.read_status && handleNotificationRead(notification.id)}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            {notification.notification_type === 'error' && (
+                              <AlertTriangle className="w-4 h-4 text-red-500" />
+                            )}
+                            {notification.notification_type === 'warning' && (
+                              <AlertTriangle className="w-4 h-4 text-orange-500" />
+                            )}
+                            {notification.notification_type === 'info' && (
+                              <Zap className="w-4 h-4 text-blue-500" />
+                            )}
+                            {notification.notification_type === 'success' && (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            )}
+                            <span className="font-medium">{notification.title}</span>
+                            {notification.ai_name && (
+                              <Badge variant="outline" className="text-xs">
+                                <Bot className="w-3 h-3 mr-1" />
+                                {notification.ai_name}
+                              </Badge>
+                            )}
+                            {!notification.read_status && (
+                              <Badge variant="destructive" className="text-xs">
+                                New
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {new Date(notification.created_at).toLocaleString()}
+                          </p>
                         </div>
-                        <p className="text-2xl font-bold text-green-400">
-                          ✓ Passed
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Last audit: 2 hours ago
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-blue-500/5 border-blue-500/20">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Shield className="w-5 h-5 text-blue-500" />
-                          <span className="font-medium">Security Scan</span>
-                        </div>
-                        <p className="text-2xl font-bold text-blue-400">
-                          ✓ Clean
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Last scan: 30 minutes ago
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-orange-500/5 border-orange-500/20">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Clock className="w-5 h-5 text-orange-500" />
-                          <span className="font-medium">Backup Status</span>
-                        </div>
-                        <p className="text-2xl font-bold text-orange-400">
-                          ⚠ Due
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Last backup: 22 hours ago
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
+                      </div>
+                    </div>
+                  ))}
+                  {notifications.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No notifications available
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* AI Employee Manager */}
+          <TabsContent value="ai-manager" className="mt-6">
+            <AIEmployeeManager />
+          </TabsContent>
+
+          {/* Gold Coin Store Management */}
+          <TabsContent value="store" className="mt-6">
+            <PackageEditor />
           </TabsContent>
 
           {/* Bonus Management */}
@@ -902,9 +841,69 @@ export default function Admin() {
             <BonusManagement />
           </TabsContent>
 
+          {/* Analytics */}
+          <TabsContent value="analytics" className="mt-6">
+            <CasinoAnalytics />
+          </TabsContent>
+
           {/* CMS Management */}
           <TabsContent value="cms" className="mt-6">
             <CmsManagement />
+          </TabsContent>
+
+          {/* Settings */}
+          <TabsContent value="settings" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span>Maintenance Mode</span>
+                      <Button variant="outline" size="sm">
+                        Disabled
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Auto-Backup</span>
+                      <Button variant="default" size="sm">
+                        Enabled
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>AI Monitoring</span>
+                      <Button variant="default" size="sm">
+                        Active
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Database Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span>Connection Pool</span>
+                      <span className="text-green-500">20/20 Active</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Last Backup</span>
+                      <span>2 hours ago</span>
+                    </div>
+                    <Button className="w-full">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Backup
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

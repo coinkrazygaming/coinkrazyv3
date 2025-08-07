@@ -107,25 +107,9 @@ class AuthService {
   }
 
   private initializeDefaultUsers(): void {
+    // No default users - users must register normally
     if (this.users.size === 0) {
-      const defaultUser: User = {
-        id: "user-1",
-        email: "demo@coinfrazy.com",
-        firstName: "Demo",
-        lastName: "User",
-        username: "demouser",
-        emailVerified: true,
-        status: "active",
-        kycStatus: "verified",
-        gcBalance: 250000,
-        scBalance: 125.5,
-        bonusBalance: 0,
-        joinDate: new Date("2024-01-15"),
-        lastLogin: new Date(),
-      };
-
-      this.users.set(defaultUser.id, defaultUser);
-      this.saveUsersToStorage();
+      console.log("No default users - registration required");
     }
   }
 

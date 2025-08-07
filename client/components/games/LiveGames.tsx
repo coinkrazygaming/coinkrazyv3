@@ -83,7 +83,8 @@ interface LiveGameProvider {
 
 export default function LiveGames() {
   const { toast } = useToast();
-  const userId = "demo@coinfrazy.com";
+  const { user } = useAuth();
+  const userId = user?.id || user?.email || "guest";
 
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>('GC');
   const [providers, setProviders] = useState<LiveGameProvider[]>([]);

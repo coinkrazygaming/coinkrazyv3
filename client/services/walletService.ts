@@ -159,15 +159,6 @@ class WalletService {
         lifetimeWins: 0,
         lifetimeLosses: 0,
       },
-      {
-        userId: "demo@coinfrazy.com",
-        goldCoins: 250000,
-        sweepsCoins: 125.5,
-        cashBalance: 0,
-        totalDeposited: 100,
-        lifetimeWins: 1750.25,
-        lifetimeLosses: 1650.75,
-      },
     ];
 
     defaultUsers.forEach((user) => {

@@ -1140,9 +1140,23 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   </Badge>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm text-muted-foreground mb-2">
                   {game.provider}
                 </p>
+
+                {game.isJackpot && game.currentJackpot !== undefined && (
+                  <div className="bg-gradient-to-r from-purple-500/20 to-gold-500/20 border border-purple-500/30 rounded-lg p-2 mb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <Trophy className="w-4 h-4 text-gold-400" />
+                        <span className="text-xs font-medium text-purple-300">Jackpot:</span>
+                      </div>
+                      <div className="text-sm font-bold text-gold-400">
+                        {game.jackpotFormatted || `$${game.currentJackpot?.toFixed(0)}`}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1">

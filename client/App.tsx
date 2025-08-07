@@ -55,6 +55,7 @@ const App = () => (
             <Route path="/games" element={<Games />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/store" element={<Store />} />
             <Route path="/sportsbook" element={<Sportsbook />} />

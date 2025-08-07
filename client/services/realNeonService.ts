@@ -398,20 +398,6 @@ class RealNeonService {
       } as UserData;
     }
 
-    if (email === "demo@coinfrazy.com") {
-      return {
-        id: "demo_user_001",
-        email: "demo@coinfrazy.com",
-        username: "DemoUser",
-        firstName: "Demo",
-        lastName: "User",
-        emailVerified: true,
-        status: "active",
-        gcBalance: 25000,
-        scBalance: 75.5,
-        joinDate: new Date(),
-      } as UserData;
-    }
 
     return null;
   }

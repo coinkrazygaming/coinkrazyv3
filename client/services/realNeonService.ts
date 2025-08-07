@@ -115,7 +115,6 @@ class RealNeonService {
     return neon(this.connectionString);
   }
 
-
   private async createTables() {
     try {
       // Users table
@@ -351,17 +350,17 @@ class RealNeonService {
   // User management methods
   async createUser(userData: Partial<UserData>): Promise<UserData> {
     // Temporarily disable database calls to prevent "body stream already read" errors
-    console.log('Creating user (fallback mode):', userData.email);
+    console.log("Creating user (fallback mode):", userData.email);
 
     // Return mock user for demo
     const mockUser: UserData = {
       id: `user_${Date.now()}_mock`,
-      email: userData.email || '',
-      username: userData.username || userData.email?.split("@")[0] || '',
+      email: userData.email || "",
+      username: userData.username || userData.email?.split("@")[0] || "",
       firstName: userData.firstName,
       lastName: userData.lastName,
       emailVerified: userData.emailVerified || false,
-      status: userData.status || 'pending_verification',
+      status: userData.status || "pending_verification",
       gcBalance: userData.gcBalance || 0,
       scBalance: userData.scBalance || 0,
       joinDate: new Date(),
@@ -380,36 +379,36 @@ class RealNeonService {
 
   async getUserByEmail(email: string): Promise<UserData | null> {
     // Temporarily disable database calls to prevent "body stream already read" errors
-    console.log('Getting user by email (fallback mode):', email);
+    console.log("Getting user by email (fallback mode):", email);
 
     // Return mock data for demo
-    if (email === 'coinkrazy00@gmail.com') {
+    if (email === "coinkrazy00@gmail.com") {
       return {
-        id: 'admin_coinkrazy_001',
-        email: 'coinkrazy00@gmail.com',
-        username: 'CoinKrazy Admin',
-        firstName: 'CoinKrazy',
-        lastName: 'Admin',
+        id: "admin_coinkrazy_001",
+        email: "coinkrazy00@gmail.com",
+        username: "CoinKrazy Admin",
+        firstName: "CoinKrazy",
+        lastName: "Admin",
         emailVerified: true,
-        status: 'active',
-        role: 'admin',
+        status: "active",
+        role: "admin",
         gcBalance: 1000000,
-        scBalance: 500.00,
+        scBalance: 500.0,
         joinDate: new Date(),
       } as UserData;
     }
 
-    if (email === 'demo@coinfrazy.com') {
+    if (email === "demo@coinfrazy.com") {
       return {
-        id: 'demo_user_001',
-        email: 'demo@coinfrazy.com',
-        username: 'DemoUser',
-        firstName: 'Demo',
-        lastName: 'User',
+        id: "demo_user_001",
+        email: "demo@coinfrazy.com",
+        username: "DemoUser",
+        firstName: "Demo",
+        lastName: "User",
         emailVerified: true,
-        status: 'active',
+        status: "active",
         gcBalance: 25000,
-        scBalance: 75.50,
+        scBalance: 75.5,
         joinDate: new Date(),
       } as UserData;
     }

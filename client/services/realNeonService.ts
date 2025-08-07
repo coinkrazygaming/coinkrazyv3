@@ -1,12 +1,12 @@
-import { neon, neonConfig } from "@neondatabase/serverless";
-import { User } from "../types/auth";
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { User } from '../types/auth';
 
 // Configure Neon for edge runtime
 neonConfig.fetchConnectionCache = true;
 
 export interface UserData extends User {
   password_hash?: string;
-  role?: "user" | "admin" | "vip";
+  role?: 'user' | 'admin' | 'vip';
   vip_level?: number;
   total_deposited?: number;
   lifetime_gc_earned?: number;
@@ -26,7 +26,7 @@ export interface GameSession {
   user_id: string;
   game_id: string;
   provider: string;
-  game_type: "slot" | "table" | "live" | "sports" | "bingo" | "poker";
+  game_type: 'slot' | 'table' | 'live' | 'sports' | 'bingo' | 'poker';
   start_time: Date;
   end_time?: Date;
   total_wagered_gc: number;
@@ -36,29 +36,22 @@ export interface GameSession {
   session_length: number;
   ip_address?: string;
   device_info?: Record<string, any>;
-  status: "active" | "completed" | "disconnected";
+  status: 'active' | 'completed' | 'disconnected';
 }
 
 export interface Transaction {
   id: string;
   user_id: string;
-  type:
-    | "deposit"
-    | "withdrawal"
-    | "game_win"
-    | "game_loss"
-    | "bonus"
-    | "purchase"
-    | "redemption";
+  type: 'deposit' | 'withdrawal' | 'game_win' | 'game_loss' | 'bonus' | 'purchase' | 'redemption';
   amount: number;
-  currency: "GC" | "SC" | "USD";
+  currency: 'GC' | 'SC' | 'USD';
   balance_before: number;
   balance_after: number;
   description: string;
   reference_id?: string;
   game_session_id?: string;
   payment_method?: string;
-  status: "pending" | "completed" | "failed" | "cancelled";
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   metadata?: Record<string, any>;
   created_at: Date;
   updated_at: Date;
@@ -87,12 +80,12 @@ export interface AdminAction {
   id: string;
   admin_user_id: string;
   action: string;
-  target_type: "user" | "transaction" | "game_session" | "system";
+  target_type: 'user' | 'transaction' | 'game_session' | 'system';
   target_id?: string;
   details: Record<string, any>;
   ip_address?: string;
   user_agent?: string;
-  severity: "info" | "warning" | "error" | "critical";
+  severity: 'info' | 'warning' | 'error' | 'critical';
   created_at: Date;
 }
 
@@ -102,30 +95,30 @@ class RealNeonService {
   private connectionString: string;
 
   constructor() {
-    this.connectionString =
-      process.env.VITE_NEON_CONNECTION_STRING ||
-      "postgresql://coinfrazy_user:secure_password@ep-silent-surf-a1b2c3d4.us-east-1.aws.neon.tech/coinfrazy_production?sslmode=require";
-
+    this.connectionString = import.meta.env.VITE_NEON_CONNECTION_STRING ||
+      'postgresql://coinfrazy_user:secure_password@ep-silent-surf-a1b2c3d4.us-east-1.aws.neon.tech/coinfrazy_production?sslmode=require';
+    
     this.sql = neon(this.connectionString);
     this.initializeDatabase();
   }
 
   private async initializeDatabase() {
     try {
-      console.log("🔗 Connecting to Neon PostgreSQL...");
-
+      console.log('🔗 Connecting to Neon PostgreSQL...');
+      
       // Test connection
       await this.sql`SELECT NOW() as current_time`;
       this.isConnected = true;
-      console.log("✅ Neon Database connected successfully");
+      console.log('✅ Neon Database connected successfully');
 
       // Initialize tables
       await this.createTables();
-
+      
       // Insert default data
       await this.insertDefaultData();
+      
     } catch (error) {
-      console.error("❌ Failed to connect to Neon:", error);
+      console.error('❌ Failed to connect to Neon:', error);
       this.isConnected = false;
     }
   }
@@ -250,24 +243,17 @@ class RealNeonService {
       `;
 
       // Create indexes for better performance
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`;
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`;
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id)`;
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at)`;
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_game_sessions_user_id ON game_sessions(user_id)`;
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_game_sessions_start_time ON game_sessions(start_time)`;
-      await this
-        .sql`CREATE INDEX IF NOT EXISTS idx_admin_actions_created_at ON admin_actions(created_at)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_game_sessions_user_id ON game_sessions(user_id)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_game_sessions_start_time ON game_sessions(start_time)`;
+      await this.sql`CREATE INDEX IF NOT EXISTS idx_admin_actions_created_at ON admin_actions(created_at)`;
 
-      console.log("📋 Database tables created/verified successfully");
+      console.log('📋 Database tables created/verified successfully');
     } catch (error) {
-      console.error("Failed to create tables:", error);
+      console.error('Failed to create tables:', error);
       throw error;
     }
   }
@@ -326,7 +312,7 @@ class RealNeonService {
           )
         `;
 
-        console.log("✅ Default admin user created");
+        console.log('✅ Default admin user created');
       }
 
       // Create sample demo user if not exists
@@ -355,17 +341,18 @@ class RealNeonService {
           )
         `;
 
-        console.log("✅ Demo user created");
+        console.log('✅ Demo user created');
       }
+
     } catch (error) {
-      console.error("Failed to insert default data:", error);
+      console.error('Failed to insert default data:', error);
     }
   }
 
   // User management methods
   async createUser(userData: Partial<UserData>): Promise<UserData> {
     const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
+    
     const [user] = await this.sql`
       INSERT INTO users (
         id, email, username, first_name, last_name,
@@ -374,12 +361,12 @@ class RealNeonService {
       ) VALUES (
         ${id},
         ${userData.email},
-        ${userData.username || userData.email?.split("@")[0]},
-        ${userData.firstName || ""},
-        ${userData.lastName || ""},
+        ${userData.username || userData.email?.split('@')[0]},
+        ${userData.firstName || ''},
+        ${userData.lastName || ''},
         ${userData.emailVerified || false},
-        ${userData.status || "pending_verification"},
-        ${userData.kycStatus || "none"},
+        ${userData.status || 'pending_verification'},
+        ${userData.kycStatus || 'none'},
         ${userData.gcBalance || 0},
         ${userData.scBalance || 0},
         ${JSON.stringify(userData.preferences || {})},
@@ -394,7 +381,7 @@ class RealNeonService {
     const [user] = await this.sql`
       SELECT * FROM users WHERE id = ${id}
     `;
-
+    
     return user ? this.mapUserFromDb(user) : null;
   }
 
@@ -402,23 +389,21 @@ class RealNeonService {
     const [user] = await this.sql`
       SELECT * FROM users WHERE email = ${email}
     `;
-
+    
     return user ? this.mapUserFromDb(user) : null;
   }
 
   async updateUser(id: string, updates: Partial<UserData>): Promise<UserData> {
-    const setClause = Object.keys(updates)
-      .map((key) => {
-        const dbKey = this.camelToSnake(key);
-        return `${dbKey} = $${dbKey}`;
-      })
-      .join(", ");
+    const setClause = Object.keys(updates).map(key => {
+      const dbKey = this.camelToSnake(key);
+      return `${dbKey} = $${dbKey}`;
+    }).join(', ');
 
     const values = Object.fromEntries(
       Object.entries(updates).map(([key, value]) => [
         this.camelToSnake(key),
-        typeof value === "object" ? JSON.stringify(value) : value,
-      ]),
+        typeof value === 'object' ? JSON.stringify(value) : value
+      ])
     );
 
     const [user] = await this.sql`
@@ -431,25 +416,20 @@ class RealNeonService {
     return this.mapUserFromDb(user);
   }
 
-  async getAllUsers(
-    limit: number = 100,
-    offset: number = 0,
-  ): Promise<UserData[]> {
+  async getAllUsers(limit: number = 100, offset: number = 0): Promise<UserData[]> {
     const users = await this.sql`
       SELECT * FROM users 
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
     `;
-
+    
     return users.map(this.mapUserFromDb);
   }
 
   // Transaction methods
-  async createTransaction(
-    transaction: Omit<Transaction, "id" | "created_at" | "updated_at">,
-  ): Promise<Transaction> {
+  async createTransaction(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {
     const id = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
+    
     const [result] = await this.sql`
       INSERT INTO transactions (
         id, user_id, type, amount, currency, balance_before, balance_after,
@@ -465,17 +445,14 @@ class RealNeonService {
     return this.mapTransactionFromDb(result);
   }
 
-  async getUserTransactions(
-    userId: string,
-    limit: number = 50,
-  ): Promise<Transaction[]> {
+  async getUserTransactions(userId: string, limit: number = 50): Promise<Transaction[]> {
     const transactions = await this.sql`
       SELECT * FROM transactions 
       WHERE user_id = ${userId} 
       ORDER BY created_at DESC 
       LIMIT ${limit}
     `;
-
+    
     return transactions.map(this.mapTransactionFromDb);
   }
 
@@ -484,14 +461,11 @@ class RealNeonService {
     const [vip] = await this.sql`
       SELECT * FROM vip_programs WHERE user_id = ${userId}
     `;
-
+    
     return vip ? this.mapVIPFromDb(vip) : null;
   }
 
-  async updateVIPProgram(
-    userId: string,
-    updates: Partial<VIPProgram>,
-  ): Promise<VIPProgram> {
+  async updateVIPProgram(userId: string, updates: Partial<VIPProgram>): Promise<VIPProgram> {
     const [vip] = await this.sql`
       UPDATE vip_programs 
       SET level = ${updates.level}, level_name = ${updates.level_name},
@@ -509,11 +483,9 @@ class RealNeonService {
   }
 
   // Admin methods
-  async logAdminAction(
-    action: Omit<AdminAction, "id" | "created_at">,
-  ): Promise<void> {
+  async logAdminAction(action: Omit<AdminAction, 'id' | 'created_at'>): Promise<void> {
     const id = `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
+    
     await this.sql`
       INSERT INTO admin_actions (
         id, admin_user_id, action, target_type, target_id,
@@ -532,7 +504,7 @@ class RealNeonService {
       ORDER BY created_at DESC 
       LIMIT ${limit}
     `;
-
+    
     return actions.map(this.mapAdminActionFromDb);
   }
 
@@ -558,9 +530,7 @@ class RealNeonService {
       affiliateCode: user.affiliate_code,
       referredBy: user.referred_by,
       loginStreak: user.login_streak,
-      lastLoginBonus: user.last_login_bonus
-        ? new Date(user.last_login_bonus)
-        : undefined,
+      lastLoginBonus: user.last_login_bonus ? new Date(user.last_login_bonus) : undefined,
       complianceVerified: user.compliance_verified,
       kycDocuments: user.kyc_documents || {},
       preferences: user.preferences || {},
@@ -627,7 +597,7 @@ class RealNeonService {
   }
 
   private camelToSnake(str: string): string {
-    return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
   }
 
   // Status methods
@@ -635,24 +605,19 @@ class RealNeonService {
     return this.isConnected;
   }
 
-  async healthCheck(): Promise<{
-    status: string;
-    timestamp: Date;
-    database: string;
-  }> {
+  async healthCheck(): Promise<{ status: string; timestamp: Date; database: string }> {
     try {
-      const result = await this
-        .sql`SELECT NOW() as current_time, current_database() as db_name`;
+      const result = await this.sql`SELECT NOW() as current_time, current_database() as db_name`;
       return {
-        status: "healthy",
+        status: 'healthy',
         timestamp: new Date(result[0].current_time),
-        database: result[0].db_name,
+        database: result[0].db_name
       };
     } catch (error) {
       return {
-        status: "unhealthy",
+        status: 'unhealthy',
         timestamp: new Date(),
-        database: "unknown",
+        database: 'unknown'
       };
     }
   }

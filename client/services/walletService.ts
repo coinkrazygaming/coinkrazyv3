@@ -555,13 +555,13 @@ class WalletService {
 
   private async syncTransactionToNeon(transaction: WalletTransaction) {
     try {
-      if (this.neonClient?.connected) {
-        // In production, this would insert the transaction into Neon database
+      if (this.neonService) {
+        await this.neonService.saveTransaction(transaction);
         transaction.metadata = { ...transaction.metadata, neonSynced: true };
-        console.log("Syncing transaction to Neon:", transaction);
+        console.log("✅ Transaction synced to Neon:", transaction.id);
       }
     } catch (error) {
-      console.error("Failed to sync transaction to Neon:", error);
+      console.error("❌ Failed to sync transaction to Neon:", error);
     }
   }
 

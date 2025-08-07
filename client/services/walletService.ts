@@ -169,7 +169,12 @@ class WalletService {
         totalWithdrawn: 0,
         lifetimeWins: user.lifetimeWins,
         lifetimeLosses: user.lifetimeLosses,
+        preferredCurrency: "GC",
+        realTimeUpdateEnabled: true,
       });
+
+      // Initialize empty deposit history for each user
+      this.deposits.set(user.userId, []);
     });
   }
 

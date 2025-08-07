@@ -98,7 +98,7 @@ export interface AdminAction {
 
 class RealNeonService {
   private sql: any;
-  private isConnected: boolean = false;
+  private connected: boolean = false;
   private connectionString: string;
 
   constructor() {

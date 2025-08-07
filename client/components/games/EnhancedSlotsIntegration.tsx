@@ -330,6 +330,35 @@ const EnhancedSlotsIntegration: React.FC = () => {
     }
   };
 
+  const setupJackpotUpdates = () => {
+    // Set up jackpot update callback
+    const handleJackpotUpdate = (jackpot: Jackpot) => {
+      setGames((prevGames) =>
+        prevGames.map((game) =>
+          game.id === jackpot.gameId
+            ? {
+                ...game,
+                currentJackpot: jackpot.amount,
+                jackpotFormatted: new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(jackpot.amount),
+              }
+            : game
+        )
+      );
+    };
+
+    jackpotService.onJackpotUpdate(handleJackpotUpdate);
+
+    // Cleanup on unmount
+    return () => {
+      jackpotService.removeJackpotUpdateCallback(handleJackpotUpdate);
+    };
+  };
+
   const handleGameSelect = async (game: SlotGame) => {
     setCurrentGame(game);
     setIsGameLoaded(false);

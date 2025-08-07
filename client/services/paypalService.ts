@@ -396,34 +396,31 @@ class PayPalService {
         throw new Error('Payment capture failed');
       }
 
-      // Calculate coins to award
-      const goldCoinsToAward = packageData.goldCoins;
+      // Calculate bonus amounts
+      const bonusGC = Math.floor(packageData.goldCoins * (packageData.bonusPercentage || 0) / 100);
       const bonusSC = Math.floor(packageData.sweepCoins * (packageData.bonusPercentage || 0) / 100);
-      const totalSC = packageData.sweepCoins + bonusSC;
 
-      // Award coins to user account
-      await walletService.addBalance(userId, goldCoinsToAward, 'GC');
-      await walletService.addBalance(userId, totalSC, 'SC');
+      // Process deposit through enhanced wallet service
+      const deposit = await walletService.processDeposit(
+        userId,
+        parseFloat(capture.amount.value),
+        'PayPal',
+        capture.id,
+        {
+          goldCoins: packageData.goldCoins,
+          bonusGC: bonusGC,
+          sweepsCoins: packageData.sweepCoins + bonusSC
+        },
+        `PayPal purchase: Package ${packageData.id} - Order ${orderId}`
+      );
 
-      // Record transaction
-      const transaction = {
-        id: capture.id,
-        orderId: orderId,
-        userId: userId,
-        packageId: packageData.id,
-        amount: parseFloat(capture.amount.value),
-        currency: capture.amount.currency_code,
-        goldCoinsAwarded: goldCoinsToAward,
-        sweepCoinsAwarded: totalSC,
-        status: 'completed',
-        paymentMethod: 'PayPal',
-        paypalCaptureId: capture.id,
-        createdAt: new Date(capture.create_time),
-        updatedAt: new Date(capture.update_time)
-      };
-
-      // Store transaction (in real app, this would go to your backend database)
-      localStorage.setItem(`transaction_${transaction.id}`, JSON.stringify(transaction));
+      // Update user's preferred currency based on their purchase pattern
+      const currentCurrency = currencyToggleService.getUserCurrency(userId);
+      if (packageData.goldCoins > packageData.sweepCoins) {
+        currencyToggleService.setUserCurrency(userId, 'GC');
+      } else if (packageData.sweepCoins > 0) {
+        currencyToggleService.setUserCurrency(userId, 'SC');
+      }
 
       console.log('Payment processed successfully:', transaction);
 

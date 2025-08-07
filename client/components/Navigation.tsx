@@ -27,14 +27,31 @@ export default function Navigation() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
-  const [walletBalance, setWalletBalance] = useState<UserWalletBalance | null>(
-    null,
-  );
-  const [showWalletCurrency, setShowWalletCurrency] = useState(false);
   const [playerCount, setPlayerCount] = useState<number>(0);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Real user authentication state
-  const { user, isLoading: authLoading } = useAuth();
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        const currentUser = authService.getUserByToken(token);
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const handleAuthChange = () => checkAuth();
+    window.addEventListener('auth-change', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('auth-change', handleAuthChange);
+    };
+  }, []);
 
   useEffect(() => {
     // Subscribe to real-time analytics data

@@ -75,6 +75,7 @@ class WalletService {
   private depositListeners: Map<string, Set<(deposits: DepositRecord[]) => void>> = new Map();
   private neonClient: any = null; // This would be the actual Neon client in production
   private realTimeUpdateInterval: NodeJS.Timeout | null = null;
+  private neonService: any = null;
 
   static getInstance(): WalletService {
     if (!WalletService.instance) {

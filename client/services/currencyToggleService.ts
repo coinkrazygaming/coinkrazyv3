@@ -78,8 +78,7 @@ class CurrencyToggleService {
   private initializeDefaultPreferences() {
     // Set default preferences for demo users
     const defaultUsers = [
-      'user-1', 'user-2', 'user-3', 
-      'coinkrazy00@gmail.com', 'demo@coinfrazy.com'
+      'user-1', 'user-2', 'user-3'
     ];
 
     defaultUsers.forEach(userId => {

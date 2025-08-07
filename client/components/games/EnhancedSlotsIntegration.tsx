@@ -81,6 +81,8 @@ interface SlotGame {
   isJackpot: boolean;
   popularity: number;
   releaseDate: Date;
+  currentJackpot?: number;
+  jackpotFormatted?: string;
 }
 
 interface GameSession {

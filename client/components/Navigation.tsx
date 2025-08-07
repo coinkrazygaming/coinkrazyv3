@@ -164,15 +164,13 @@ export default function Navigation() {
               <div className="px-3 py-2 text-center">
                 <Badge
                   variant="outline"
-                  className="border-gold-500 text-gold-400 mb-2"
+                  className="border-purple-500 text-purple-400 bg-purple-500/10 mb-2"
                 >
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
                   <Users className="w-3 h-3 mr-1" />
-                  {realTimeData
-                    ? realTimeData.playersOnline.toLocaleString()
-                    : "..."}{" "}
-                  Online
+                  {playerCount > 0 ? playerCount.toLocaleString() : "..."} Online
                 </Badge>
-                {user?.isLoggedIn && (
+                {user && (
                   <div className="mt-2">
                     <CurrencyToggle
                       compact={false}
@@ -202,21 +200,13 @@ export default function Navigation() {
                   </Link>
                 );
               })}
-              <div className="pt-4 mt-4 border-t border-border/50">
-                <Button className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
-                  Play Now
-                </Button>
+
+              {/* Mobile User Account Section */}
+              <div className="px-3 py-2">
+                <UserAccountHeader />
               </div>
             </div>
           </div>
-        )}
-
-        {/* Click outside to close wallet dropdown */}
-        {showWalletCurrency && (
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowWalletCurrency(false)}
-          />
         )}
       </div>
     </nav>

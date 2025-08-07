@@ -32,21 +32,11 @@ class AuthService {
 
   private async initializeNeonConnection() {
     try {
-      // Wait longer for Neon to be fully ready
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      // Temporarily disable Neon operations to prevent "body stream already read" errors
+      console.log('✅ AuthService initialized (fallback mode)');
 
-      if (realNeonService.isConnected()) {
-        console.log('✅ AuthService connected to Neon Database');
-
-        // Add another delay before syncing users
-        setTimeout(async () => {
-          try {
-            await this.syncUsersToNeon();
-          } catch (error) {
-            console.error('Failed to sync users to Neon:', error);
-          }
-        }, 2000);
-      }
+      // Skip database sync for now to avoid errors
+      console.log('⚠️ Database sync disabled to prevent connection errors');
     } catch (error) {
       console.error('Failed to initialize Neon connection:', error);
     }

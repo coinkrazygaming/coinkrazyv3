@@ -106,8 +106,10 @@ class RealNeonService {
       import.meta.env.VITE_NEON_CONNECTION_STRING ||
       "postgresql://coinfrazy_user:secure_password@ep-silent-surf-a1b2c3d4.us-east-1.aws.neon.tech/coinfrazy_production?sslmode=require";
 
-    this.sql = neon(this.connectionString);
-    this.initializeDatabase();
+    // Initialize with delay to avoid immediate connection issues
+    setTimeout(() => {
+      this.initializeDatabase();
+    }, 100);
   }
 
   private async initializeDatabase() {

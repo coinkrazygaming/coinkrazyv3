@@ -1,13 +1,26 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
+import React, { useState, useEffect, useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
 import {
   Search,
   Filter,
@@ -36,13 +49,20 @@ import {
   VolumeX,
   Settings,
   Maximize,
-  RotateCcw
-} from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
-import { gameProviderService, type ProviderGame, type GameProvider } from '../services/gameProviderService';
-import { currencyToggleService, type GameCurrencyType } from '../services/currencyToggleService';
-import { walletService } from '../services/walletService';
+  RotateCcw,
+} from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import {
+  gameProviderService,
+  type ProviderGame,
+  type GameProvider,
+} from "../services/gameProviderService";
+import {
+  currencyToggleService,
+  type GameCurrencyType,
+} from "../services/currencyToggleService";
+import { walletService } from "../services/walletService";
 
 interface GamesLibraryProps {
   showHeader?: boolean;
@@ -51,29 +71,29 @@ interface GamesLibraryProps {
   maxResults?: number;
 }
 
-export default function GamesLibrary({ 
-  showHeader = true, 
+export default function GamesLibrary({
+  showHeader = true,
   embedded = false,
-  defaultCategory = 'all',
-  maxResults = 50
+  defaultCategory = "all",
+  maxResults = 50,
 }: GamesLibraryProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  
+
   const [games, setGames] = useState<ProviderGame[]>([]);
   const [providers, setProviders] = useState<GameProvider[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-  const [selectedProvider, setSelectedProvider] = useState('all');
-  const [selectedVolatility, setSelectedVolatility] = useState('all');
-  const [sortBy, setSortBy] = useState('popularity');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedProvider, setSelectedProvider] = useState("all");
+  const [selectedVolatility, setSelectedVolatility] = useState("all");
+  const [sortBy, setSortBy] = useState("popularity");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [selectedGame, setSelectedGame] = useState<ProviderGame | null>(null);
   const [gameDialogOpen, setGameDialogOpen] = useState(false);
-  const [currency, setCurrency] = useState<GameCurrencyType>('GC');
+  const [currency, setCurrency] = useState<GameCurrencyType>("GC");
 
   useEffect(() => {
     loadGamesData();
@@ -86,7 +106,7 @@ export default function GamesLibrary({
         user.id,
         (newCurrency) => {
           setCurrency(newCurrency);
-        }
+        },
       );
       return unsubscribe;
     }
@@ -95,21 +115,23 @@ export default function GamesLibrary({
   const loadGamesData = async () => {
     try {
       setLoading(true);
-      
+
       // Load providers and games
       const allProviders = gameProviderService.getActiveProviders();
       const allGames = gameProviderService.getAllGames();
-      
+
       setProviders(allProviders);
       setGames(allGames);
-      
-      console.log(`✅ Loaded ${allGames.length} games from ${allProviders.length} providers`);
+
+      console.log(
+        `✅ Loaded ${allGames.length} games from ${allProviders.length} providers`,
+      );
     } catch (error) {
-      console.error('Failed to load games:', error);
+      console.error("Failed to load games:", error);
       toast({
         title: "Error",
         description: "Failed to load games library",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -118,34 +140,44 @@ export default function GamesLibrary({
 
   const loadUserPreferences = () => {
     try {
-      const savedFavorites = localStorage.getItem(`favorites_${user?.id || 'guest'}`);
+      const savedFavorites = localStorage.getItem(
+        `favorites_${user?.id || "guest"}`,
+      );
       if (savedFavorites) {
         setFavorites(JSON.parse(savedFavorites));
       }
 
-      const savedViewMode = localStorage.getItem('games_view_mode');
-      if (savedViewMode && (savedViewMode === 'grid' || savedViewMode === 'list')) {
-        setViewMode(savedViewMode as 'grid' | 'list');
+      const savedViewMode = localStorage.getItem("games_view_mode");
+      if (
+        savedViewMode &&
+        (savedViewMode === "grid" || savedViewMode === "list")
+      ) {
+        setViewMode(savedViewMode as "grid" | "list");
       }
     } catch (error) {
-      console.error('Failed to load user preferences:', error);
+      console.error("Failed to load user preferences:", error);
     }
   };
 
   const saveFavorites = (newFavorites: string[]) => {
     setFavorites(newFavorites);
-    localStorage.setItem(`favorites_${user?.id || 'guest'}`, JSON.stringify(newFavorites));
+    localStorage.setItem(
+      `favorites_${user?.id || "guest"}`,
+      JSON.stringify(newFavorites),
+    );
   };
 
   const toggleFavorite = (gameId: string) => {
     const newFavorites = favorites.includes(gameId)
-      ? favorites.filter(id => id !== gameId)
+      ? favorites.filter((id) => id !== gameId)
       : [...favorites, gameId];
     saveFavorites(newFavorites);
-    
+
     toast({
-      title: favorites.includes(gameId) ? "Removed from Favorites" : "Added to Favorites",
-      description: `Game ${favorites.includes(gameId) ? 'removed from' : 'added to'} your favorites`,
+      title: favorites.includes(gameId)
+        ? "Removed from Favorites"
+        : "Added to Favorites",
+      description: `Game ${favorites.includes(gameId) ? "removed from" : "added to"} your favorites`,
     });
   };
 
@@ -155,79 +187,142 @@ export default function GamesLibrary({
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(game =>
-        game.name.toLowerCase().includes(query) ||
-        game.description.toLowerCase().includes(query) ||
-        game.tags.some(tag => tag.toLowerCase().includes(query)) ||
-        game.category.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (game) =>
+          game.name.toLowerCase().includes(query) ||
+          game.description.toLowerCase().includes(query) ||
+          game.tags.some((tag) => tag.toLowerCase().includes(query)) ||
+          game.category.toLowerCase().includes(query),
       );
     }
 
     // Apply category filter
-    if (selectedCategory !== 'all') {
-      if (selectedCategory === 'favorites') {
-        filtered = filtered.filter(game => favorites.includes(game.id));
-      } else if (selectedCategory === 'new') {
-        filtered = filtered.filter(game => game.isNew);
-      } else if (selectedCategory === 'popular') {
-        filtered = filtered.filter(game => game.isPopular);
-      } else if (selectedCategory === 'featured') {
-        filtered = filtered.filter(game => game.isFeatured);
+    if (selectedCategory !== "all") {
+      if (selectedCategory === "favorites") {
+        filtered = filtered.filter((game) => favorites.includes(game.id));
+      } else if (selectedCategory === "new") {
+        filtered = filtered.filter((game) => game.isNew);
+      } else if (selectedCategory === "popular") {
+        filtered = filtered.filter((game) => game.isPopular);
+      } else if (selectedCategory === "featured") {
+        filtered = filtered.filter((game) => game.isFeatured);
       } else {
-        filtered = filtered.filter(game => game.type === selectedCategory);
+        filtered = filtered.filter((game) => game.type === selectedCategory);
       }
     }
 
     // Apply provider filter
-    if (selectedProvider !== 'all') {
-      filtered = filtered.filter(game => game.providerId === selectedProvider);
+    if (selectedProvider !== "all") {
+      filtered = filtered.filter(
+        (game) => game.providerId === selectedProvider,
+      );
     }
 
     // Apply volatility filter
-    if (selectedVolatility !== 'all') {
-      filtered = filtered.filter(game => game.volatility === selectedVolatility);
+    if (selectedVolatility !== "all") {
+      filtered = filtered.filter(
+        (game) => game.volatility === selectedVolatility,
+      );
     }
 
     // Apply currency filter (some games may not support certain currencies)
-    filtered = filtered.filter(game => {
-      const provider = providers.find(p => p.id === game.providerId);
+    filtered = filtered.filter((game) => {
+      const provider = providers.find((p) => p.id === game.providerId);
       return provider?.supportedCurrencies.includes(currency) ?? true;
     });
 
     // Sort games
     switch (sortBy) {
-      case 'name':
+      case "name":
         filtered.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      case 'rating':
+      case "rating":
         filtered.sort((a, b) => b.rating - a.rating);
         break;
-      case 'newest':
-        filtered.sort((a, b) => b.releaseDate.getTime() - a.releaseDate.getTime());
+      case "newest":
+        filtered.sort(
+          (a, b) => b.releaseDate.getTime() - a.releaseDate.getTime(),
+        );
         break;
-      case 'rtp':
+      case "rtp":
         filtered.sort((a, b) => b.rtp - a.rtp);
         break;
-      case 'popularity':
+      case "popularity":
       default:
         filtered.sort((a, b) => b.playCount - a.playCount);
         break;
     }
 
     return filtered.slice(0, maxResults);
-  }, [games, searchQuery, selectedCategory, selectedProvider, selectedVolatility, sortBy, favorites, currency, maxResults, providers]);
+  }, [
+    games,
+    searchQuery,
+    selectedCategory,
+    selectedProvider,
+    selectedVolatility,
+    sortBy,
+    favorites,
+    currency,
+    maxResults,
+    providers,
+  ]);
 
   const categories = [
-    { id: 'all', name: 'All Games', icon: Grid3X3, count: games.length },
-    { id: 'slot', name: 'Slots', icon: Crown, count: games.filter(g => g.type === 'slot').length },
-    { id: 'live', name: 'Live Casino', icon: Users, count: games.filter(g => g.type === 'live').length },
-    { id: 'sports', name: 'Sports', icon: Trophy, count: games.filter(g => g.type === 'sports').length },
-    { id: 'bingo', name: 'Bingo', icon: Gift, count: games.filter(g => g.type === 'bingo').length },
-    { id: 'poker', name: 'Poker', icon: Star, count: games.filter(g => g.type === 'poker').length },
-    { id: 'popular', name: 'Popular', icon: Flame, count: games.filter(g => g.isPopular).length },
-    { id: 'new', name: 'New Games', icon: Zap, count: games.filter(g => g.isNew).length },
-    { id: 'featured', name: 'Featured', icon: Star, count: games.filter(g => g.isFeatured).length },
-    { id: 'favorites', name: 'Favorites', icon: Heart, count: favorites.length }
+    { id: "all", name: "All Games", icon: Grid3X3, count: games.length },
+    {
+      id: "slot",
+      name: "Slots",
+      icon: Crown,
+      count: games.filter((g) => g.type === "slot").length,
+    },
+    {
+      id: "live",
+      name: "Live Casino",
+      icon: Users,
+      count: games.filter((g) => g.type === "live").length,
+    },
+    {
+      id: "sports",
+      name: "Sports",
+      icon: Trophy,
+      count: games.filter((g) => g.type === "sports").length,
+    },
+    {
+      id: "bingo",
+      name: "Bingo",
+      icon: Gift,
+      count: games.filter((g) => g.type === "bingo").length,
+    },
+    {
+      id: "poker",
+      name: "Poker",
+      icon: Star,
+      count: games.filter((g) => g.type === "poker").length,
+    },
+    {
+      id: "popular",
+      name: "Popular",
+      icon: Flame,
+      count: games.filter((g) => g.isPopular).length,
+    },
+    {
+      id: "new",
+      name: "New Games",
+      icon: Zap,
+      count: games.filter((g) => g.isNew).length,
+    },
+    {
+      id: "featured",
+      name: "Featured",
+      icon: Star,
+      count: games.filter((g) => g.isFeatured).length,
+    },
+    {
+      id: "favorites",
+      name: "Favorites",
+      icon: Heart,
+      count: favorites.length,
+    },
   ];
 
   const handlePlayGame = async (game: ProviderGame) => {
@@ -235,28 +330,33 @@ export default function GamesLibrary({
       toast({
         title: "Login Required",
         description: "Please log in to play games",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     try {
       const wallet = await walletService.getUserWallet(user.id);
-      const minBet = currency === 'GC' ? game.minBet.GC : game.minBet.SC;
-      const currentBalance = currency === 'GC' ? wallet.goldCoins : wallet.sweepsCoins;
+      const minBet = currency === "GC" ? game.minBet.GC : game.minBet.SC;
+      const currentBalance =
+        currency === "GC" ? wallet.goldCoins : wallet.sweepsCoins;
 
       if (currentBalance < minBet) {
         toast({
           title: "Insufficient Balance",
           description: `You need at least ${minBet} ${currency} to play this game`,
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
 
       // Create game session
-      const session = await gameProviderService.createGameSession(user.id, game.id, currency);
-      
+      const session = await gameProviderService.createGameSession(
+        user.id,
+        game.id,
+        currency,
+      );
+
       // Open game in new window or iframe
       if (embedded) {
         // For embedded mode, we could show an iframe
@@ -264,32 +364,35 @@ export default function GamesLibrary({
         setGameDialogOpen(true);
       } else {
         // Open in new window
-        window.open(session.gameUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        window.open(
+          session.gameUrl,
+          "_blank",
+          "width=1200,height=800,scrollbars=yes,resizable=yes",
+        );
       }
 
       toast({
         title: "Game Launched",
         description: `${game.name} is starting...`,
       });
-
     } catch (error) {
-      console.error('Failed to launch game:', error);
+      console.error("Failed to launch game:", error);
       toast({
         title: "Error",
         description: "Failed to launch game",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   const getProviderLogo = (providerId: string) => {
-    const provider = providers.find(p => p.id === providerId);
-    return provider?.logoUrl || '/providers/default.png';
+    const provider = providers.find((p) => p.id === providerId);
+    return provider?.logoUrl || "/providers/default.png";
   };
 
   const getProviderName = (providerId: string) => {
-    const provider = providers.find(p => p.id === providerId);
-    return provider?.displayName || 'Unknown Provider';
+    const provider = providers.find((p) => p.id === providerId);
+    return provider?.displayName || "Unknown Provider";
   };
 
   if (loading) {
@@ -304,7 +407,7 @@ export default function GamesLibrary({
   }
 
   return (
-    <div className={`${embedded ? '' : 'container mx-auto px-4 py-6'}`}>
+    <div className={`${embedded ? "" : "container mx-auto px-4 py-6"}`}>
       {showHeader && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -317,16 +420,25 @@ export default function GamesLibrary({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="border-gold-500 text-gold-400">
+              <Badge
+                variant="outline"
+                className="border-gold-500 text-gold-400"
+              >
                 <Coins className="w-3 h-3 mr-1" />
                 {currency} Mode
               </Badge>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                onClick={() =>
+                  setViewMode(viewMode === "grid" ? "list" : "grid")
+                }
               >
-                {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
+                {viewMode === "grid" ? (
+                  <List className="w-4 h-4" />
+                ) : (
+                  <Grid3X3 className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -342,15 +454,18 @@ export default function GamesLibrary({
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex gap-2">
-              <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+              <Select
+                value={selectedProvider}
+                onValueChange={setSelectedProvider}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Provider" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Providers</SelectItem>
-                  {providers.map(provider => (
+                  {providers.map((provider) => (
                     <SelectItem key={provider.id} value={provider.id}>
                       {provider.displayName}
                     </SelectItem>
@@ -378,7 +493,11 @@ export default function GamesLibrary({
               >
                 <Filter className="w-4 h-4" />
                 Filters
-                {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {showFilters ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -389,8 +508,13 @@ export default function GamesLibrary({
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Volatility</label>
-                    <Select value={selectedVolatility} onValueChange={setSelectedVolatility}>
+                    <label className="text-sm font-medium mb-2 block">
+                      Volatility
+                    </label>
+                    <Select
+                      value={selectedVolatility}
+                      onValueChange={setSelectedVolatility}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Any" />
                       </SelectTrigger>
@@ -402,9 +526,11 @@ export default function GamesLibrary({
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Min RTP</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Min RTP
+                    </label>
                     <Select value="all">
                       <SelectTrigger>
                         <SelectValue placeholder="Any RTP" />
@@ -419,7 +545,9 @@ export default function GamesLibrary({
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Features</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Features
+                    </label>
                     <Select value="all">
                       <SelectTrigger>
                         <SelectValue placeholder="Any Features" />
@@ -428,7 +556,9 @@ export default function GamesLibrary({
                         <SelectItem value="all">Any Features</SelectItem>
                         <SelectItem value="free-spins">Free Spins</SelectItem>
                         <SelectItem value="multipliers">Multipliers</SelectItem>
-                        <SelectItem value="bonus-rounds">Bonus Rounds</SelectItem>
+                        <SelectItem value="bonus-rounds">
+                          Bonus Rounds
+                        </SelectItem>
                         <SelectItem value="progressive">Progressive</SelectItem>
                       </SelectContent>
                     </Select>
@@ -441,13 +571,17 @@ export default function GamesLibrary({
       )}
 
       {/* Categories Tabs */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
+      <Tabs
+        value={selectedCategory}
+        onValueChange={setSelectedCategory}
+        className="mb-6"
+      >
         <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 h-auto p-1">
-          {categories.map(category => {
+          {categories.map((category) => {
             const Icon = category.icon;
             return (
-              <TabsTrigger 
-                key={category.id} 
+              <TabsTrigger
+                key={category.id}
                 value={category.id}
                 className="flex flex-col items-center gap-1 py-3 text-xs"
               >
@@ -463,22 +597,25 @@ export default function GamesLibrary({
       </Tabs>
 
       {/* Games Grid/List */}
-      <div className={`
-        ${viewMode === 'grid' 
-          ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4' 
-          : 'space-y-4'
+      <div
+        className={`
+        ${
+          viewMode === "grid"
+            ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            : "space-y-4"
         }
-      `}>
-        {filteredAndSortedGames.map(game => (
-          <Card 
+      `}
+      >
+        {filteredAndSortedGames.map((game) => (
+          <Card
             key={game.id}
             className={`
               group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-105 cursor-pointer
-              ${viewMode === 'list' ? 'flex' : ''}
+              ${viewMode === "list" ? "flex" : ""}
             `}
             onClick={() => handlePlayGame(game)}
           >
-            {viewMode === 'grid' ? (
+            {viewMode === "grid" ? (
               <>
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img
@@ -487,10 +624,10 @@ export default function GamesLibrary({
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = '/games/placeholder.jpg';
+                      target.src = "/games/placeholder.jpg";
                     }}
                   />
-                  
+
                   {/* Overlay with badges */}
                   <div className="absolute top-2 left-2 flex flex-col gap-1">
                     {game.isNew && (
@@ -523,8 +660,8 @@ export default function GamesLibrary({
                       toggleFavorite(game.id);
                     }}
                   >
-                    <Heart 
-                      className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-red-500 text-red-500' : 'text-white'}`} 
+                    <Heart
+                      className={`w-4 h-4 ${favorites.includes(game.id) ? "fill-red-500 text-red-500" : "text-white"}`}
                     />
                   </Button>
 
@@ -548,7 +685,7 @@ export default function GamesLibrary({
                         {game.rating.toFixed(1)}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{getProviderName(game.providerId)}</span>
                       <span>RTP: {game.rtp.toFixed(1)}%</span>
@@ -559,7 +696,8 @@ export default function GamesLibrary({
                         {game.volatility}
                       </Badge>
                       <div className="text-xs text-muted-foreground">
-                        {currency === 'GC' ? game.minBet.GC : game.minBet.SC} {currency} min
+                        {currency === "GC" ? game.minBet.GC : game.minBet.SC}{" "}
+                        {currency} min
                       </div>
                     </div>
                   </div>
@@ -575,27 +713,39 @@ export default function GamesLibrary({
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = '/games/placeholder.jpg';
+                      target.src = "/games/placeholder.jpg";
                     }}
                   />
                 </div>
-                
+
                 <CardContent className="flex-1 p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-semibold">{game.name}</h3>
                         <div className="flex gap-1">
-                          {game.isNew && <Badge className="bg-green-600 text-white text-xs">New</Badge>}
-                          {game.isFeatured && <Badge className="bg-purple-600 text-white text-xs">Featured</Badge>}
-                          {game.isPopular && <Badge className="bg-orange-600 text-white text-xs">Popular</Badge>}
+                          {game.isNew && (
+                            <Badge className="bg-green-600 text-white text-xs">
+                              New
+                            </Badge>
+                          )}
+                          {game.isFeatured && (
+                            <Badge className="bg-purple-600 text-white text-xs">
+                              Featured
+                            </Badge>
+                          )}
+                          {game.isPopular && (
+                            <Badge className="bg-orange-600 text-white text-xs">
+                              Popular
+                            </Badge>
+                          )}
                         </div>
                       </div>
-                      
+
                       <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                         {game.description}
                       </p>
-                      
+
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>{getProviderName(game.providerId)}</span>
                         <span>RTP: {game.rtp.toFixed(1)}%</span>
@@ -606,7 +756,7 @@ export default function GamesLibrary({
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 ml-4">
                       <Button
                         variant="ghost"
@@ -616,8 +766,8 @@ export default function GamesLibrary({
                           toggleFavorite(game.id);
                         }}
                       >
-                        <Heart 
-                          className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-red-500 text-red-500' : ''}`} 
+                        <Heart
+                          className={`w-4 h-4 ${favorites.includes(game.id) ? "fill-red-500 text-red-500" : ""}`}
                         />
                       </Button>
                       <Button size="sm" className="gap-2">
@@ -641,13 +791,13 @@ export default function GamesLibrary({
           <p className="text-muted-foreground mb-4">
             Try adjusting your search or filter criteria
           </p>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('all');
-              setSelectedProvider('all');
-              setSelectedVolatility('all');
+              setSearchQuery("");
+              setSelectedCategory("all");
+              setSelectedProvider("all");
+              setSelectedVolatility("all");
             }}
           >
             Clear Filters
@@ -661,13 +811,13 @@ export default function GamesLibrary({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedGame?.name}
-              <Badge variant="outline">{getProviderName(selectedGame?.providerId || '')}</Badge>
+              <Badge variant="outline">
+                {getProviderName(selectedGame?.providerId || "")}
+              </Badge>
             </DialogTitle>
-            <DialogDescription>
-              {selectedGame?.description}
-            </DialogDescription>
+            <DialogDescription>{selectedGame?.description}</DialogDescription>
           </DialogHeader>
-          
+
           {selectedGame && (
             <div className="space-y-4">
               {/* Game iframe would go here in production */}
@@ -680,7 +830,7 @@ export default function GamesLibrary({
                   </p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <label className="font-medium">RTP</label>
@@ -696,7 +846,12 @@ export default function GamesLibrary({
                 </div>
                 <div>
                   <label className="font-medium">Min Bet</label>
-                  <p>{currency === 'GC' ? selectedGame.minBet.GC : selectedGame.minBet.SC} {currency}</p>
+                  <p>
+                    {currency === "GC"
+                      ? selectedGame.minBet.GC
+                      : selectedGame.minBet.SC}{" "}
+                    {currency}
+                  </p>
                 </div>
               </div>
             </div>

@@ -33,7 +33,10 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import EnhancedDashboard from "./pages/EnhancedDashboard";
 import GoldCoinStore from "./pages/GoldCoinStore";
+import PaymentsPage from "./pages/PaymentsPage";
 import DailyLuckyWheel from "./components/DailyLuckyWheel";
+import BankingTab from "./components/BankingTab";
+import SweepstakesCompliance from "./components/SweepstakesCompliance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

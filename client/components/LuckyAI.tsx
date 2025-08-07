@@ -471,7 +471,7 @@ const LuckyAI: React.FC = () => {
                           <span>CPU: {vm.cpu}%</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Memory className="w-4 h-4 text-green-500" />
+                          <Database className="w-4 h-4 text-green-500" />
                           <span>RAM: {vm.memory}%</span>
                         </div>
                         <div className="flex items-center space-x-1">

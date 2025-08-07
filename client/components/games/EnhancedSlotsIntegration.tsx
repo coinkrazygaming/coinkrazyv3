@@ -104,6 +104,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
   const [currentGame, setCurrentGame] = useState<SlotGame | null>(null);
   const [isGameLoaded, setIsGameLoaded] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>("GC");
+  const [jackpots, setJackpots] = useState<Map<string, Jackpot>>(new Map());
 
   // Betting state
   const [betAmount, setBetAmount] = useState(10);

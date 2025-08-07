@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState, useEffect, useRef } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Coins,
   Star,
@@ -52,11 +52,14 @@ import {
   Activity,
   AlertCircle,
   CheckCircle,
-} from 'lucide-react';
-import CurrencySelector from '../CurrencySelector';
-import { gameInterfaceService, SlotSpinResult } from '../../services/gameInterfaceService';
-import { walletService, CurrencyType } from '../../services/walletService';
-import { useToast } from '@/hooks/use-toast';
+} from "lucide-react";
+import CurrencySelector from "../CurrencySelector";
+import {
+  gameInterfaceService,
+  SlotSpinResult,
+} from "../../services/gameInterfaceService";
+import { walletService, CurrencyType } from "../../services/walletService";
+import { useToast } from "@/hooks/use-toast";
 
 interface SlotGame {
   id: string;
@@ -64,7 +67,7 @@ interface SlotGame {
   provider: string;
   thumbnail: string;
   rtp: number;
-  volatility: 'low' | 'medium' | 'high';
+  volatility: "low" | "medium" | "high";
   maxWin: number;
   features: string[];
   minBet: { GC: number; SC: number };
@@ -91,14 +94,14 @@ interface GameSession {
 
 const EnhancedSlotsIntegration: React.FC = () => {
   const { toast } = useToast();
-  const userId = 'demo@coinfrazy.com'; // In production, this would come from auth context
-  
+  const userId = "demo@coinfrazy.com"; // In production, this would come from auth context
+
   // Game state
   const [games, setGames] = useState<SlotGame[]>([]);
   const [currentGame, setCurrentGame] = useState<SlotGame | null>(null);
   const [isGameLoaded, setIsGameLoaded] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>('GC');
-  
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>("GC");
+
   // Betting state
   const [betAmount, setBetAmount] = useState(10);
   const [betLines, setBetLines] = useState(25);
@@ -106,7 +109,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
   const [autoPlay, setAutoPlay] = useState(false);
   const [autoPlayCount, setAutoPlayCount] = useState(0);
   const [autoPlaySpins, setAutoPlaySpins] = useState(10);
-  
+
   // Game session
   const [session, setSession] = useState<GameSession>({
     totalSpins: 0,
@@ -117,17 +120,21 @@ const EnhancedSlotsIntegration: React.FC = () => {
     currentStreak: 0,
     sessionTime: 0,
   });
-  
+
   // UI state
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'popularity' | 'rtp' | 'name'>('popularity');
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"popularity" | "rtp" | "name">(
+    "popularity",
+  );
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [showGameInfo, setShowGameInfo] = useState(false);
-  const [lastSpinResult, setLastSpinResult] = useState<SlotSpinResult | null>(null);
-  
+  const [lastSpinResult, setLastSpinResult] = useState<SlotSpinResult | null>(
+    null,
+  );
+
   // Refs
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const sessionStartRef = useRef<Date>(new Date());
@@ -135,7 +142,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
   useEffect(() => {
     loadSlotGames();
     startSessionTimer();
-    
+
     return () => {
       if (autoPlayRef.current) {
         clearInterval(autoPlayRef.current);
@@ -147,13 +154,13 @@ const EnhancedSlotsIntegration: React.FC = () => {
     if (autoPlay && autoPlayCount < autoPlaySpins && !isSpinning) {
       autoPlayRef.current = setTimeout(() => {
         handleSpin();
-        setAutoPlayCount(prev => prev + 1);
+        setAutoPlayCount((prev) => prev + 1);
       }, 2000);
     } else if (autoPlayCount >= autoPlaySpins) {
       setAutoPlay(false);
       setAutoPlayCount(0);
       toast({
-        title: 'Auto Play Complete',
+        title: "Auto Play Complete",
         description: `Completed ${autoPlaySpins} spins`,
       });
     }
@@ -168,8 +175,10 @@ const EnhancedSlotsIntegration: React.FC = () => {
   const startSessionTimer = () => {
     setInterval(() => {
       const now = new Date();
-      const sessionTime = Math.floor((now.getTime() - sessionStartRef.current.getTime()) / 1000);
-      setSession(prev => ({ ...prev, sessionTime }));
+      const sessionTime = Math.floor(
+        (now.getTime() - sessionStartRef.current.getTime()) / 1000,
+      );
+      setSession((prev) => ({ ...prev, sessionTime }));
     }, 1000);
   };
 
@@ -179,94 +188,94 @@ const EnhancedSlotsIntegration: React.FC = () => {
       // Simulate loading slot games
       const mockGames: SlotGame[] = [
         {
-          id: 'sweet-bonanza',
-          name: 'Sweet Bonanza',
-          provider: 'Pragmatic Play',
-          thumbnail: '/api/placeholder/300/200',
+          id: "sweet-bonanza",
+          name: "Sweet Bonanza",
+          provider: "Pragmatic Play",
+          thumbnail: "/api/placeholder/300/200",
           rtp: 96.48,
-          volatility: 'high',
+          volatility: "high",
           maxWin: 21100,
-          features: ['Free Spins', 'Multipliers', 'Tumble'],
+          features: ["Free Spins", "Multipliers", "Tumble"],
           minBet: { GC: 10, SC: 0.1 },
           maxBet: { GC: 5000, SC: 50 },
           paylines: 0,
           reels: 6,
-          category: ['featured', 'popular', 'bonus'],
+          category: ["featured", "popular", "bonus"],
           isNew: false,
           isFeatured: true,
           isJackpot: false,
           popularity: 95,
-          releaseDate: new Date('2019-06-27'),
+          releaseDate: new Date("2019-06-27"),
         },
         {
-          id: 'gates-olympus',
-          name: 'Gates of Olympus',
-          provider: 'Pragmatic Play',
-          thumbnail: '/api/placeholder/300/200',
+          id: "gates-olympus",
+          name: "Gates of Olympus",
+          provider: "Pragmatic Play",
+          thumbnail: "/api/placeholder/300/200",
           rtp: 96.5,
-          volatility: 'high',
+          volatility: "high",
           maxWin: 5000,
-          features: ['Free Spins', 'Multipliers', 'Ante Bet'],
+          features: ["Free Spins", "Multipliers", "Ante Bet"],
           minBet: { GC: 10, SC: 0.1 },
           maxBet: { GC: 5000, SC: 50 },
           paylines: 20,
           reels: 6,
-          category: ['featured', 'high-rtp', 'bonus'],
+          category: ["featured", "high-rtp", "bonus"],
           isNew: false,
           isFeatured: true,
           isJackpot: false,
           popularity: 92,
-          releaseDate: new Date('2021-02-13'),
+          releaseDate: new Date("2021-02-13"),
         },
         {
-          id: 'coinfrazy-special',
-          name: 'CoinKrazy Special',
-          provider: 'CoinKrazy',
-          thumbnail: '/api/placeholder/300/200',
+          id: "coinfrazy-special",
+          name: "CoinKrazy Special",
+          provider: "CoinKrazy",
+          thumbnail: "/api/placeholder/300/200",
           rtp: 97.2,
-          volatility: 'medium',
+          volatility: "medium",
           maxWin: 10000,
-          features: ['Progressive Jackpot', 'Free Spins', 'Wild Multipliers'],
+          features: ["Progressive Jackpot", "Free Spins", "Wild Multipliers"],
           minBet: { GC: 5, SC: 0.05 },
           maxBet: { GC: 10000, SC: 100 },
           paylines: 50,
           reels: 5,
-          category: ['featured', 'jackpot', 'high-rtp', 'new'],
+          category: ["featured", "jackpot", "high-rtp", "new"],
           isNew: true,
           isFeatured: true,
           isJackpot: true,
           popularity: 98,
-          releaseDate: new Date('2024-01-15'),
+          releaseDate: new Date("2024-01-15"),
         },
         {
-          id: 'classic-777',
-          name: 'Classic 777',
-          provider: 'CoinKrazy',
-          thumbnail: '/api/placeholder/300/200',
+          id: "classic-777",
+          name: "Classic 777",
+          provider: "CoinKrazy",
+          thumbnail: "/api/placeholder/300/200",
           rtp: 96.8,
-          volatility: 'low',
+          volatility: "low",
           maxWin: 1000,
-          features: ['Classic Symbols', 'Simple Gameplay'],
+          features: ["Classic Symbols", "Simple Gameplay"],
           minBet: { GC: 1, SC: 0.01 },
           maxBet: { GC: 100, SC: 1 },
           paylines: 1,
           reels: 3,
-          category: ['classic'],
+          category: ["classic"],
           isNew: false,
           isFeatured: false,
           isJackpot: false,
           popularity: 75,
-          releaseDate: new Date('2023-06-01'),
+          releaseDate: new Date("2023-06-01"),
         },
       ];
 
       setGames(mockGames);
     } catch (error) {
-      console.error('Error loading slot games:', error);
+      console.error("Error loading slot games:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to load slot games',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to load slot games",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -276,25 +285,28 @@ const EnhancedSlotsIntegration: React.FC = () => {
   const handleGameSelect = async (game: SlotGame) => {
     setCurrentGame(game);
     setIsGameLoaded(false);
-    
+
     // Start a new game session
     try {
-      await gameInterfaceService.startGameSession(userId, 'slots', selectedCurrency);
-      
+      await gameInterfaceService.startGameSession(
+        userId,
+        "slots",
+        selectedCurrency,
+      );
+
       // Simulate game loading
       setTimeout(() => {
         setIsGameLoaded(true);
         toast({
-          title: 'Game Loaded',
+          title: "Game Loaded",
           description: `${game.name} is ready to play`,
         });
       }, 2000);
-      
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to load game',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to load game",
+        variant: "destructive",
       });
     }
   };
@@ -305,21 +317,21 @@ const EnhancedSlotsIntegration: React.FC = () => {
     // Validate bet amount
     const minBet = currentGame.minBet[selectedCurrency];
     const maxBet = currentGame.maxBet[selectedCurrency];
-    
+
     if (betAmount < minBet) {
       toast({
-        title: 'Bet Too Low',
+        title: "Bet Too Low",
         description: `Minimum bet is ${minBet} ${selectedCurrency}`,
-        variant: 'destructive',
+        variant: "destructive",
       });
       return;
     }
-    
+
     if (betAmount > maxBet) {
       toast({
-        title: 'Bet Too High',
+        title: "Bet Too High",
         description: `Maximum bet is ${maxBet} ${selectedCurrency}`,
-        variant: 'destructive',
+        variant: "destructive",
       });
       return;
     }
@@ -332,13 +344,13 @@ const EnhancedSlotsIntegration: React.FC = () => {
         userId,
         currentGame.id,
         betAmount,
-        selectedCurrency
+        selectedCurrency,
       );
 
       setLastSpinResult(result.result);
 
       // Update session stats
-      setSession(prev => ({
+      setSession((prev) => ({
         ...prev,
         totalSpins: prev.totalSpins + 1,
         totalBet: prev.totalBet + betAmount,
@@ -351,30 +363,29 @@ const EnhancedSlotsIntegration: React.FC = () => {
       // Show result notification
       if (result.result.totalWin > 0) {
         toast({
-          title: 'Winner!',
+          title: "Winner!",
           description: `You won ${result.result.totalWin.toFixed(2)} ${selectedCurrency}`,
         });
       }
 
       if (result.result.isBonus) {
         toast({
-          title: 'Bonus Round!',
-          description: 'You triggered a bonus feature!',
+          title: "Bonus Round!",
+          description: "You triggered a bonus feature!",
         });
       }
 
       if (result.result.isFreeSpins) {
         toast({
-          title: 'Free Spins!',
+          title: "Free Spins!",
           description: `You won ${result.result.freeSpinsRemaining} free spins!`,
         });
       }
-
     } catch (error) {
       toast({
-        title: 'Spin Failed',
+        title: "Spin Failed",
         description: (error as Error).message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } finally {
       setTimeout(() => {
@@ -403,7 +414,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
   };
 
   const toggleFavorite = (gameId: string) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(gameId)) {
         newFavorites.delete(gameId);
@@ -414,29 +425,37 @@ const EnhancedSlotsIntegration: React.FC = () => {
     });
   };
 
-  const filteredGames = games.filter(game => {
-    const matchesSearch = game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         game.provider.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || game.category.includes(selectedCategory);
-    return matchesSearch && matchesCategory;
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case 'popularity': return b.popularity - a.popularity;
-      case 'rtp': return b.rtp - a.rtp;
-      case 'name': return a.name.localeCompare(b.name);
-      default: return 0;
-    }
-  });
+  const filteredGames = games
+    .filter((game) => {
+      const matchesSearch =
+        game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        game.provider.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || game.category.includes(selectedCategory);
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "popularity":
+          return b.popularity - a.popularity;
+        case "rtp":
+          return b.rtp - a.rtp;
+        case "name":
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
     }
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes}:${secs.toString().padStart(2, "0")}`;
   };
 
   if (currentGame && isGameLoaded) {
@@ -455,7 +474,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   <ArrowLeft className="w-4 h-4" />
                   Back to Games
                 </Button>
-                
+
                 <div className="flex items-center gap-3">
                   <img
                     src={currentGame.thumbnail}
@@ -464,16 +483,24 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   />
                   <div>
                     <h1 className="text-xl font-bold">{currentGame.name}</h1>
-                    <p className="text-sm text-muted-foreground">{currentGame.provider}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {currentGame.provider}
+                    </p>
                   </div>
                 </div>
 
-                <Badge variant="outline" className="border-green-500 text-green-400">
+                <Badge
+                  variant="outline"
+                  className="border-green-500 text-green-400"
+                >
                   RTP: {currentGame.rtp}%
                 </Badge>
 
                 {currentGame.isJackpot && (
-                  <Badge variant="outline" className="border-gold-500 text-gold-400">
+                  <Badge
+                    variant="outline"
+                    className="border-gold-500 text-gold-400"
+                  >
                     <Crown className="w-3 h-3 mr-1" />
                     Jackpot
                   </Badge>
@@ -485,9 +512,13 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => toggleFavorite(currentGame.id)}
-                  className={favorites.has(currentGame.id) ? 'text-red-500' : ''}
+                  className={
+                    favorites.has(currentGame.id) ? "text-red-500" : ""
+                  }
                 >
-                  <Heart className={`w-4 h-4 ${favorites.has(currentGame.id) ? 'fill-current' : ''}`} />
+                  <Heart
+                    className={`w-4 h-4 ${favorites.has(currentGame.id) ? "fill-current" : ""}`}
+                  />
                 </Button>
 
                 <Button
@@ -503,7 +534,11 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   size="sm"
                   onClick={() => setSoundEnabled(!soundEnabled)}
                 >
-                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  {soundEnabled ? (
+                    <Volume2 className="w-4 h-4" />
+                  ) : (
+                    <VolumeX className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -539,24 +574,31 @@ const EnhancedSlotsIntegration: React.FC = () => {
                             </div>
                           ))}
                         </div>
-                        
+
                         {lastSpinResult.totalWin > 0 && (
                           <div className="text-gold-400 font-bold text-xl">
-                            WIN: {lastSpinResult.totalWin.toFixed(2)} {selectedCurrency}
+                            WIN: {lastSpinResult.totalWin.toFixed(2)}{" "}
+                            {selectedCurrency}
                           </div>
                         )}
-                        
+
                         {lastSpinResult.paylines.length > 0 && (
                           <div className="mt-2 text-sm">
-                            <p>Winning Lines: {lastSpinResult.paylines.length}</p>
+                            <p>
+                              Winning Lines: {lastSpinResult.paylines.length}
+                            </p>
                           </div>
                         )}
                       </div>
                     ) : (
                       <div className="text-center text-white">
                         <Gamepad2 className="w-16 h-16 text-gold-500 mx-auto mb-4" />
-                        <p className="text-xl font-bold mb-2">{currentGame.name}</p>
-                        <p className="text-muted-foreground">Press SPIN to start playing</p>
+                        <p className="text-xl font-bold mb-2">
+                          {currentGame.name}
+                        </p>
+                        <p className="text-muted-foreground">
+                          Press SPIN to start playing
+                        </p>
                       </div>
                     )}
                   </div>
@@ -576,16 +618,20 @@ const EnhancedSlotsIntegration: React.FC = () => {
                           >
                             <Minus className="w-4 h-4" />
                           </Button>
-                          
+
                           <Input
                             type="number"
                             value={betAmount}
-                            onChange={(e) => setBetAmount(Math.max(1, parseFloat(e.target.value) || 1))}
+                            onChange={(e) =>
+                              setBetAmount(
+                                Math.max(1, parseFloat(e.target.value) || 1),
+                              )
+                            }
                             className="text-center"
                             min={currentGame.minBet[selectedCurrency]}
                             max={currentGame.maxBet[selectedCurrency]}
                           />
-                          
+
                           <Button
                             variant="outline"
                             size="sm"
@@ -594,10 +640,12 @@ const EnhancedSlotsIntegration: React.FC = () => {
                             <Plus className="w-4 h-4" />
                           </Button>
                         </div>
-                        
+
                         <div className="text-xs text-muted-foreground">
-                          Min: {currentGame.minBet[selectedCurrency]} {selectedCurrency} | 
-                          Max: {currentGame.maxBet[selectedCurrency]} {selectedCurrency}
+                          Min: {currentGame.minBet[selectedCurrency]}{" "}
+                          {selectedCurrency} | Max:{" "}
+                          {currentGame.maxBet[selectedCurrency]}{" "}
+                          {selectedCurrency}
                         </div>
                       </CardContent>
                     </Card>
@@ -617,9 +665,9 @@ const EnhancedSlotsIntegration: React.FC = () => {
                             ) : (
                               <Play className="w-4 h-4 mr-2" />
                             )}
-                            {isSpinning ? 'Spinning...' : 'SPIN'}
+                            {isSpinning ? "Spinning..." : "SPIN"}
                           </Button>
-                          
+
                           <Button
                             variant="outline"
                             onClick={toggleAutoPlay}
@@ -648,12 +696,17 @@ const EnhancedSlotsIntegration: React.FC = () => {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span>Spins:</span>
-                            <span className="font-medium">{session.totalSpins}</span>
+                            <span className="font-medium">
+                              {session.totalSpins}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span>Net:</span>
-                            <span className={`font-medium ${session.netResult >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {session.netResult >= 0 ? '+' : ''}{session.netResult.toFixed(2)} {selectedCurrency}
+                            <span
+                              className={`font-medium ${session.netResult >= 0 ? "text-green-400" : "text-red-400"}`}
+                            >
+                              {session.netResult >= 0 ? "+" : ""}
+                              {session.netResult.toFixed(2)} {selectedCurrency}
                             </span>
                           </div>
                           <div className="flex justify-between">
@@ -693,22 +746,28 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-muted-foreground">Time Played</p>
-                      <p className="font-bold">{formatTime(session.sessionTime)}</p>
+                      <p className="font-bold">
+                        {formatTime(session.sessionTime)}
+                      </p>
                     </div>
-                    
+
                     <div>
                       <p className="text-muted-foreground">Win Streak</p>
                       <p className="font-bold">{session.currentStreak}</p>
                     </div>
-                    
+
                     <div>
                       <p className="text-muted-foreground">Total Bet</p>
-                      <p className="font-bold">{session.totalBet.toFixed(2)} {selectedCurrency}</p>
+                      <p className="font-bold">
+                        {session.totalBet.toFixed(2)} {selectedCurrency}
+                      </p>
                     </div>
-                    
+
                     <div>
                       <p className="text-muted-foreground">Total Won</p>
-                      <p className="font-bold text-green-400">{session.totalWin.toFixed(2)} {selectedCurrency}</p>
+                      <p className="font-bold text-green-400">
+                        {session.totalWin.toFixed(2)} {selectedCurrency}
+                      </p>
                     </div>
                   </div>
 
@@ -716,9 +775,18 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span>Win Rate</span>
-                        <span>{((session.totalWin / session.totalBet) * 100).toFixed(1)}%</span>
+                        <span>
+                          {(
+                            (session.totalWin / session.totalBet) *
+                            100
+                          ).toFixed(1)}
+                          %
+                        </span>
                       </div>
-                      <Progress value={(session.totalWin / session.totalBet) * 100} className="h-2" />
+                      <Progress
+                        value={(session.totalWin / session.totalBet) * 100}
+                        className="h-2"
+                      />
                     </div>
                   )}
                 </CardContent>
@@ -731,12 +799,15 @@ const EnhancedSlotsIntegration: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {currentGame.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm">
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 text-sm"
+                    >
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       <span>{feature}</span>
                     </div>
                   ))}
-                  
+
                   <div className="pt-3 border-t space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Reels:</span>
@@ -745,17 +816,21 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     {currentGame.paylines > 0 && (
                       <div className="flex justify-between">
                         <span>Paylines:</span>
-                        <span className="font-medium">{currentGame.paylines}</span>
+                        <span className="font-medium">
+                          {currentGame.paylines}
+                        </span>
                       </div>
                     )}
                     <div className="flex justify-between">
                       <span>Volatility:</span>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={
-                          currentGame.volatility === 'high' ? 'border-red-500 text-red-400' :
-                          currentGame.volatility === 'medium' ? 'border-yellow-500 text-yellow-400' :
-                          'border-green-500 text-green-400'
+                          currentGame.volatility === "high"
+                            ? "border-red-500 text-red-400"
+                            : currentGame.volatility === "medium"
+                              ? "border-yellow-500 text-yellow-400"
+                              : "border-green-500 text-green-400"
                         }
                       >
                         {currentGame.volatility}
@@ -763,7 +838,9 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span>Max Win:</span>
-                      <span className="font-medium text-gold-400">{currentGame.maxWin}x</span>
+                      <span className="font-medium text-gold-400">
+                        {currentGame.maxWin}x
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -785,7 +862,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
                 {currentGame.name}
               </DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -801,26 +878,36 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span>Release Date:</span>
-                      <span>{currentGame.releaseDate.toLocaleDateString()}</span>
+                      <span>
+                        {currentGame.releaseDate.toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
-                  <h4 className="font-medium mb-2">Bet Limits ({selectedCurrency})</h4>
+                  <h4 className="font-medium mb-2">
+                    Bet Limits ({selectedCurrency})
+                  </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Minimum:</span>
-                      <span>{currentGame.minBet[selectedCurrency]} {selectedCurrency}</span>
+                      <span>
+                        {currentGame.minBet[selectedCurrency]}{" "}
+                        {selectedCurrency}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Maximum:</span>
-                      <span>{currentGame.maxBet[selectedCurrency]} {selectedCurrency}</span>
+                      <span>
+                        {currentGame.maxBet[selectedCurrency]}{" "}
+                        {selectedCurrency}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <h4 className="font-medium mb-2">Features</h4>
                 <div className="flex flex-wrap gap-2">
@@ -845,9 +932,11 @@ const EnhancedSlotsIntegration: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold">Slot Games</h1>
-            <p className="text-muted-foreground">Choose from hundreds of exciting slot games</p>
+            <p className="text-muted-foreground">
+              Choose from hundreds of exciting slot games
+            </p>
           </div>
-          
+
           <CurrencySelector
             userId={userId}
             gameType="slots"
@@ -925,7 +1014,7 @@ const EnhancedSlotsIntegration: React.FC = () => {
                   alt={game.name}
                   className="aspect-video w-full object-cover rounded-t-lg"
                 />
-                
+
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-300 flex items-center justify-center rounded-t-lg">
                   <Button
                     size="lg"
@@ -960,7 +1049,9 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     toggleFavorite(game.id);
                   }}
                 >
-                  <Heart className={`w-4 h-4 ${favorites.has(game.id) ? 'fill-current text-red-500' : 'text-white'}`} />
+                  <Heart
+                    className={`w-4 h-4 ${favorites.has(game.id) ? "fill-current text-red-500" : "text-white"}`}
+                  />
                 </Button>
               </div>
 
@@ -971,29 +1062,37 @@ const EnhancedSlotsIntegration: React.FC = () => {
                     {game.rtp}%
                   </Badge>
                 </div>
-                
-                <p className="text-sm text-muted-foreground mb-3">{game.provider}</p>
-                
+
+                <p className="text-sm text-muted-foreground mb-3">
+                  {game.provider}
+                </p>
+
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1">
                     <span className="text-muted-foreground">Min:</span>
-                    <span className="font-medium">{game.minBet[selectedCurrency]} {selectedCurrency}</span>
+                    <span className="font-medium">
+                      {game.minBet[selectedCurrency]} {selectedCurrency}
+                    </span>
                   </div>
-                  
+
                   <Badge
                     variant="outline"
                     className={
-                      game.volatility === 'high' ? 'border-red-500 text-red-400' :
-                      game.volatility === 'medium' ? 'border-yellow-500 text-yellow-400' :
-                      'border-green-500 text-green-400'
+                      game.volatility === "high"
+                        ? "border-red-500 text-red-400"
+                        : game.volatility === "medium"
+                          ? "border-yellow-500 text-yellow-400"
+                          : "border-green-500 text-green-400"
                     }
                   >
                     {game.volatility}
                   </Badge>
-                  
+
                   <div className="flex items-center gap-1">
                     <span className="text-muted-foreground">Max:</span>
-                    <span className="font-medium text-gold-400">{game.maxWin}x</span>
+                    <span className="font-medium text-gold-400">
+                      {game.maxWin}x
+                    </span>
                   </div>
                 </div>
               </CardContent>

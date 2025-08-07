@@ -1,22 +1,22 @@
-import { walletService, CurrencyType } from './walletService';
-import { useToast } from '@/hooks/use-toast';
+import { walletService, CurrencyType } from "./walletService";
+import { useToast } from "@/hooks/use-toast";
 
 export interface GameBet {
   id: string;
   userId: string;
   gameId: string;
-  gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook';
+  gameType: "slots" | "table" | "live" | "bingo" | "sportsbook";
   currency: CurrencyType;
   betAmount: number;
   timestamp: Date;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: "pending" | "processing" | "completed" | "failed";
   result?: GameResult;
 }
 
 export interface GameResult {
   id: string;
   betId: string;
-  outcome: 'win' | 'lose' | 'push';
+  outcome: "win" | "lose" | "push";
   winAmount: number;
   multiplier?: number;
   details?: Record<string, any>;
@@ -26,7 +26,7 @@ export interface GameResult {
 export interface GameSession {
   id: string;
   userId: string;
-  gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook';
+  gameType: "slots" | "table" | "live" | "bingo" | "sportsbook";
   currency: CurrencyType;
   startTime: Date;
   endTime?: Date;
@@ -34,7 +34,7 @@ export interface GameSession {
   totalWins: number;
   netResult: number;
   betCount: number;
-  status: 'active' | 'paused' | 'ended';
+  status: "active" | "paused" | "ended";
 }
 
 export interface SlotSpinResult {
@@ -52,7 +52,7 @@ export interface SlotSpinResult {
 }
 
 export interface TableGameResult {
-  gameType: 'blackjack' | 'roulette' | 'baccarat' | 'poker';
+  gameType: "blackjack" | "roulette" | "baccarat" | "poker";
   playerHand?: any;
   dealerHand?: any;
   outcome: string;
@@ -72,7 +72,7 @@ export interface SportsGameResult {
   betType: string;
   selection: string;
   odds: number;
-  outcome: 'win' | 'lose' | 'void';
+  outcome: "win" | "lose" | "void";
   settlement: number;
 }
 
@@ -95,7 +95,7 @@ class GameInterfaceService {
 
   private loadActiveSessions() {
     try {
-      const sessionsData = localStorage.getItem('active_game_sessions');
+      const sessionsData = localStorage.getItem("active_game_sessions");
       if (sessionsData) {
         const sessions = JSON.parse(sessionsData);
         sessions.forEach((session: GameSession) => {
@@ -107,46 +107,54 @@ class GameInterfaceService {
         });
       }
     } catch (error) {
-      console.error('Failed to load active sessions:', error);
+      console.error("Failed to load active sessions:", error);
     }
   }
 
   private saveSessions() {
     try {
       const sessions = Array.from(this.activeSessions.values());
-      localStorage.setItem('active_game_sessions', JSON.stringify(sessions));
+      localStorage.setItem("active_game_sessions", JSON.stringify(sessions));
     } catch (error) {
-      console.error('Failed to save sessions:', error);
+      console.error("Failed to save sessions:", error);
     }
   }
 
   // Currency Management
-  setUserCurrency(userId: string, currency: CurrencyType, gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook') {
+  setUserCurrency(
+    userId: string,
+    currency: CurrencyType,
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook",
+  ) {
     // Validate currency for game type
-    if (gameType === 'sportsbook' && currency !== 'SC') {
-      throw new Error('Sportsbook only accepts Sweeps Coins (SC)');
+    if (gameType === "sportsbook" && currency !== "SC") {
+      throw new Error("Sportsbook only accepts Sweeps Coins (SC)");
     }
 
     this.currentCurrency.set(`${userId}-${gameType}`, currency);
     localStorage.setItem(`currency-${userId}-${gameType}`, currency);
   }
 
-  getUserCurrency(userId: string, gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook'): CurrencyType {
-    const stored = this.currentCurrency.get(`${userId}-${gameType}`) || 
-                   localStorage.getItem(`currency-${userId}-${gameType}`) as CurrencyType;
-    
+  getUserCurrency(
+    userId: string,
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook",
+  ): CurrencyType {
+    const stored =
+      this.currentCurrency.get(`${userId}-${gameType}`) ||
+      (localStorage.getItem(`currency-${userId}-${gameType}`) as CurrencyType);
+
     // Default to SC for sportsbook, GC for others
-    return stored || (gameType === 'sportsbook' ? 'SC' : 'GC');
+    return stored || (gameType === "sportsbook" ? "SC" : "GC");
   }
 
   // Session Management
   async startGameSession(
     userId: string,
-    gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook',
-    currency?: CurrencyType
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook",
+    currency?: CurrencyType,
   ): Promise<GameSession> {
     const sessionCurrency = currency || this.getUserCurrency(userId, gameType);
-    
+
     const session: GameSession = {
       id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       userId,
@@ -157,7 +165,7 @@ class GameInterfaceService {
       totalWins: 0,
       netResult: 0,
       betCount: 0,
-      status: 'active',
+      status: "active",
     };
 
     this.activeSessions.set(session.id, session);
@@ -171,19 +179,23 @@ class GameInterfaceService {
     if (!session) return null;
 
     session.endTime = new Date();
-    session.status = 'ended';
-    
+    session.status = "ended";
+
     this.activeSessions.set(sessionId, session);
     this.saveSessions();
 
     return session;
   }
 
-  getActiveSession(userId: string, gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook'): GameSession | null {
+  getActiveSession(
+    userId: string,
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook",
+  ): GameSession | null {
     const activeSessions = Array.from(this.activeSessions.values()).filter(
-      s => s.userId === userId && s.gameType === gameType && s.status === 'active'
+      (s) =>
+        s.userId === userId && s.gameType === gameType && s.status === "active",
     );
-    
+
     return activeSessions[0] || null;
   }
 
@@ -191,12 +203,12 @@ class GameInterfaceService {
   async placeBet(
     userId: string,
     gameId: string,
-    gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook',
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook",
     betAmount: number,
-    currency?: CurrencyType
+    currency?: CurrencyType,
   ): Promise<GameBet> {
     const betCurrency = currency || this.getUserCurrency(userId, gameType);
-    
+
     // Validate minimum bet
     const minBet = this.getMinimumBet(gameType, betCurrency);
     if (betAmount < minBet) {
@@ -211,7 +223,13 @@ class GameInterfaceService {
 
     // Check user balance and place bet
     try {
-      await walletService.placeBet(userId, betAmount, betCurrency, gameId, gameType);
+      await walletService.placeBet(
+        userId,
+        betAmount,
+        betCurrency,
+        gameId,
+        gameType,
+      );
     } catch (error) {
       throw new Error(`Failed to place bet: ${error}`);
     }
@@ -224,7 +242,7 @@ class GameInterfaceService {
       currency: betCurrency,
       betAmount,
       timestamp: new Date(),
-      status: 'processing',
+      status: "processing",
     };
 
     // Update session
@@ -242,9 +260,9 @@ class GameInterfaceService {
 
   async processGameResult(
     bet: GameBet,
-    outcome: 'win' | 'lose' | 'push',
+    outcome: "win" | "lose" | "push",
     winAmount: number = 0,
-    details?: Record<string, any>
+    details?: Record<string, any>,
   ): Promise<GameResult> {
     const result: GameResult = {
       id: `result-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -258,7 +276,7 @@ class GameInterfaceService {
 
     // Update bet
     bet.result = result;
-    bet.status = 'completed';
+    bet.status = "completed";
 
     // Process winnings
     if (winAmount > 0) {
@@ -267,7 +285,7 @@ class GameInterfaceService {
         winAmount,
         bet.currency,
         bet.gameId,
-        bet.gameType
+        bet.gameType,
       );
     }
 
@@ -291,19 +309,25 @@ class GameInterfaceService {
     userId: string,
     gameId: string,
     betAmount: number,
-    currency?: CurrencyType
+    currency?: CurrencyType,
   ): Promise<{ bet: GameBet; result: SlotSpinResult }> {
-    const bet = await this.placeBet(userId, gameId, 'slots', betAmount, currency);
-    
+    const bet = await this.placeBet(
+      userId,
+      gameId,
+      "slots",
+      betAmount,
+      currency,
+    );
+
     // Simulate slot spin
     const spinResult = this.generateSlotResult(betAmount);
-    
+
     // Process result
     const gameResult = await this.processGameResult(
       bet,
-      spinResult.totalWin > 0 ? 'win' : 'lose',
+      spinResult.totalWin > 0 ? "win" : "lose",
       spinResult.totalWin,
-      { slotResult: spinResult }
+      { slotResult: spinResult },
     );
 
     return {
@@ -315,22 +339,28 @@ class GameInterfaceService {
   async playTableGame(
     userId: string,
     gameId: string,
-    gameSubType: 'blackjack' | 'roulette' | 'baccarat' | 'poker',
+    gameSubType: "blackjack" | "roulette" | "baccarat" | "poker",
     betAmount: number,
     gameAction: any,
-    currency?: CurrencyType
+    currency?: CurrencyType,
   ): Promise<{ bet: GameBet; result: TableGameResult }> {
-    const bet = await this.placeBet(userId, gameId, 'table', betAmount, currency);
-    
+    const bet = await this.placeBet(
+      userId,
+      gameId,
+      "table",
+      betAmount,
+      currency,
+    );
+
     // Simulate table game
     const gameResult = this.generateTableResult(gameSubType, gameAction);
-    
+
     // Process result
     await this.processGameResult(
       bet,
-      gameResult.winnings > 0 ? 'win' : 'lose',
+      gameResult.winnings > 0 ? "win" : "lose",
       gameResult.winnings,
-      { tableResult: gameResult }
+      { tableResult: gameResult },
     );
 
     return {
@@ -343,20 +373,26 @@ class GameInterfaceService {
     userId: string,
     gameId: string,
     cardCount: number,
-    currency?: CurrencyType
+    currency?: CurrencyType,
   ): Promise<{ bet: GameBet; result: BingoGameResult }> {
-    const betAmount = cardCount * this.getBingoCost(currency || 'GC');
-    const bet = await this.placeBet(userId, gameId, 'bingo', betAmount, currency);
-    
+    const betAmount = cardCount * this.getBingoCost(currency || "GC");
+    const bet = await this.placeBet(
+      userId,
+      gameId,
+      "bingo",
+      betAmount,
+      currency,
+    );
+
     // Simulate bingo game
     const bingoResult = this.generateBingoResult(cardCount);
-    
+
     // Process result
     await this.processGameResult(
       bet,
-      bingoResult.prize > 0 ? 'win' : 'lose',
+      bingoResult.prize > 0 ? "win" : "lose",
       bingoResult.prize,
-      { bingoResult }
+      { bingoResult },
     );
 
     return {
@@ -371,14 +407,20 @@ class GameInterfaceService {
     betType: string,
     selection: string,
     odds: number,
-    betAmount: number
+    betAmount: number,
   ): Promise<{ bet: GameBet; pending: boolean }> {
     // Sportsbook only accepts SC
-    const bet = await this.placeBet(userId, gameId, 'sportsbook', betAmount, 'SC');
-    
+    const bet = await this.placeBet(
+      userId,
+      gameId,
+      "sportsbook",
+      betAmount,
+      "SC",
+    );
+
     // Sports bets are pending until event completes
-    bet.status = 'pending';
-    
+    bet.status = "pending";
+
     return {
       bet,
       pending: true,
@@ -387,9 +429,9 @@ class GameInterfaceService {
 
   // Game result generators
   private generateSlotResult(betAmount: number): SlotSpinResult {
-    const symbols = ['🍒', '🍋', '🍊', '🍇', '⭐', '💎', '7️⃣', '🔔'];
+    const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "7️⃣", "🔔"];
     const reels: string[][] = [];
-    
+
     // Generate 5 reels with 3 symbols each
     for (let i = 0; i < 5; i++) {
       const reel: string[] = [];
@@ -404,9 +446,15 @@ class GameInterfaceService {
     let totalWin = 0;
 
     // Check main payline (middle row)
-    const mainLine = [reels[0][1], reels[1][1], reels[2][1], reels[3][1], reels[4][1]];
+    const mainLine = [
+      reels[0][1],
+      reels[1][1],
+      reels[2][1],
+      reels[3][1],
+      reels[4][1],
+    ];
     const { win, multiplier } = this.calculateLineWin(mainLine, betAmount);
-    
+
     if (win > 0) {
       paylines.push({
         line: 1,
@@ -431,24 +479,38 @@ class GameInterfaceService {
       totalWin,
       isBonus,
       isFreeSpins,
-      freeSpinsRemaining: isFreeSpins ? Math.floor(Math.random() * 10) + 5 : undefined,
+      freeSpinsRemaining: isFreeSpins
+        ? Math.floor(Math.random() * 10) + 5
+        : undefined,
     };
   }
 
-  private calculateLineWin(line: string[], betAmount: number): { win: number; multiplier: number } {
+  private calculateLineWin(
+    line: string[],
+    betAmount: number,
+  ): { win: number; multiplier: number } {
     const symbolCounts = new Map<string, number>();
-    line.forEach(symbol => {
+    line.forEach((symbol) => {
       symbolCounts.set(symbol, (symbolCounts.get(symbol) || 0) + 1);
     });
 
     // Check for winning combinations
     for (const [symbol, count] of symbolCounts.entries()) {
       if (count >= 3) {
-        const multipliers = { '💎': 100, '7️⃣': 50, '⭐': 25, '🔔': 15, '🍇': 10, '🍊': 8, '🍋': 5, '🍒': 3 };
+        const multipliers = {
+          "💎": 100,
+          "7️⃣": 50,
+          "⭐": 25,
+          "🔔": 15,
+          "🍇": 10,
+          "🍊": 8,
+          "🍋": 5,
+          "🍒": 3,
+        };
         const baseMultiplier = (multipliers as any)[symbol] || 2;
         const countMultiplier = count === 5 ? 10 : count === 4 ? 5 : 1;
         const multiplier = baseMultiplier * countMultiplier;
-        
+
         return {
           win: betAmount * multiplier,
           multiplier,
@@ -462,34 +524,54 @@ class GameInterfaceService {
   private generateTableResult(gameType: string, action: any): TableGameResult {
     // Simplified table game simulation
     const isWin = Math.random() < 0.47; // Slightly less than 50% to account for house edge
-    const winMultipliers = { blackjack: 2, roulette: 35, baccarat: 2, poker: 5 };
+    const winMultipliers = {
+      blackjack: 2,
+      roulette: 35,
+      baccarat: 2,
+      poker: 5,
+    };
     const multiplier = (winMultipliers as any)[gameType] || 2;
 
     return {
       gameType: gameType as any,
       playerHand: this.generateHand(gameType),
-      dealerHand: gameType === 'blackjack' ? this.generateHand(gameType) : undefined,
-      outcome: isWin ? 'win' : 'lose',
+      dealerHand:
+        gameType === "blackjack" ? this.generateHand(gameType) : undefined,
+      outcome: isWin ? "win" : "lose",
       winnings: isWin ? action.betAmount * multiplier : 0,
       details: { action, multiplier },
     };
   }
 
   private generateHand(gameType: string): any {
-    if (gameType === 'blackjack') {
-      const cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-      const suits = ['♠', '♥', '♦', '♣'];
+    if (gameType === "blackjack") {
+      const cards = [
+        "A",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K",
+      ];
+      const suits = ["♠", "♥", "♦", "♣"];
       const hand = [];
-      
+
       for (let i = 0; i < 2; i++) {
         const card = cards[Math.floor(Math.random() * cards.length)];
         const suit = suits[Math.floor(Math.random() * suits.length)];
         hand.push(`${card}${suit}`);
       }
-      
+
       return hand;
     }
-    
+
     return {};
   }
 
@@ -513,7 +595,7 @@ class GameInterfaceService {
     // Simulate called numbers
     const calledNumbers: number[] = [];
     const totalNumbers = Math.floor(Math.random() * 30) + 30; // 30-60 numbers
-    
+
     for (let i = 0; i < totalNumbers; i++) {
       let num;
       do {
@@ -528,7 +610,7 @@ class GameInterfaceService {
 
     // Check horizontal lines
     for (let i = 0; i < 5; i++) {
-      if (card[i].every(num => num === 0 || calledNumbers.includes(num))) {
+      if (card[i].every((num) => num === 0 || calledNumbers.includes(num))) {
         completedLines.push(`Row ${i + 1}`);
         prize += 50; // Base prize per line
       }
@@ -536,20 +618,26 @@ class GameInterfaceService {
 
     // Check vertical lines
     for (let j = 0; j < 5; j++) {
-      if (card.every(row => row[j] === 0 || calledNumbers.includes(row[j]))) {
+      if (card.every((row) => row[j] === 0 || calledNumbers.includes(row[j]))) {
         completedLines.push(`Column ${j + 1}`);
         prize += 50;
       }
     }
 
     // Check diagonals
-    if (card.every((row, i) => row[i] === 0 || calledNumbers.includes(row[i]))) {
-      completedLines.push('Diagonal 1');
+    if (
+      card.every((row, i) => row[i] === 0 || calledNumbers.includes(row[i]))
+    ) {
+      completedLines.push("Diagonal 1");
       prize += 100;
     }
 
-    if (card.every((row, i) => row[4 - i] === 0 || calledNumbers.includes(row[4 - i]))) {
-      completedLines.push('Diagonal 2');
+    if (
+      card.every(
+        (row, i) => row[4 - i] === 0 || calledNumbers.includes(row[4 - i]),
+      )
+    ) {
+      completedLines.push("Diagonal 2");
       prize += 100;
     }
 
@@ -588,17 +676,17 @@ class GameInterfaceService {
   }
 
   private getBingoCost(currency: CurrencyType): number {
-    return currency === 'GC' ? 100 : 1;
+    return currency === "GC" ? 100 : 1;
   }
 
   // Event handling
   subscribeToGameResults(
     userId: string,
-    gameType: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook',
-    callback: (result: GameResult) => void
+    gameType: "slots" | "table" | "live" | "bingo" | "sportsbook",
+    callback: (result: GameResult) => void,
   ): () => void {
     const key = `${userId}-${gameType}`;
-    
+
     if (!this.gameCallbacks.has(key)) {
       this.gameCallbacks.set(key, new Set());
     }
@@ -610,18 +698,24 @@ class GameInterfaceService {
     };
   }
 
-  private notifyGameResult(userId: string, gameType: string, result: GameResult) {
+  private notifyGameResult(
+    userId: string,
+    gameType: string,
+    result: GameResult,
+  ) {
     const key = `${userId}-${gameType}`;
     const callbacks = this.gameCallbacks.get(key);
-    
+
     if (callbacks) {
-      callbacks.forEach(callback => callback(result));
+      callbacks.forEach((callback) => callback(result));
     }
   }
 
   // Admin methods
   getAllActiveSessions(): GameSession[] {
-    return Array.from(this.activeSessions.values()).filter(s => s.status === 'active');
+    return Array.from(this.activeSessions.values()).filter(
+      (s) => s.status === "active",
+    );
   }
 
   getSessionStats(): {
@@ -632,10 +726,10 @@ class GameInterfaceService {
     netResult: number;
   } {
     const sessions = Array.from(this.activeSessions.values());
-    
+
     return {
       totalSessions: sessions.length,
-      activeSessions: sessions.filter(s => s.status === 'active').length,
+      activeSessions: sessions.filter((s) => s.status === "active").length,
       totalBets: sessions.reduce((sum, s) => sum + s.totalBets, 0),
       totalWins: sessions.reduce((sum, s) => sum + s.totalWins, 0),
       netResult: sessions.reduce((sum, s) => sum + s.netResult, 0),

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Coins,
   Star,
@@ -24,13 +24,17 @@ import {
   DollarSign,
   Settings,
   AlertCircle,
-} from 'lucide-react';
-import { walletService, UserWallet, CurrencyType } from '../services/walletService';
-import { useToast } from '@/hooks/use-toast';
+} from "lucide-react";
+import {
+  walletService,
+  UserWallet,
+  CurrencyType,
+} from "../services/walletService";
+import { useToast } from "@/hooks/use-toast";
 
 interface CurrencySelectorProps {
   userId: string;
-  gameType?: 'slots' | 'table' | 'live' | 'bingo' | 'sportsbook';
+  gameType?: "slots" | "table" | "live" | "bingo" | "sportsbook";
   onCurrencyChange?: (currency: CurrencyType) => void;
   className?: string;
   compact?: boolean;
@@ -40,15 +44,15 @@ interface CurrencySelectorProps {
 
 const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   userId,
-  gameType = 'slots',
+  gameType = "slots",
   onCurrencyChange,
-  className = '',
+  className = "",
   compact = false,
   showSettings = true,
   allowedCurrencies,
 }) => {
   const [wallet, setWallet] = useState<UserWallet | null>(null);
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>('GC');
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>("GC");
   const [isVisible, setIsVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
@@ -59,16 +63,16 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   // Determine allowed currencies based on game type
   const getAvailableCurrencies = (): CurrencyType[] => {
     if (allowedCurrencies) return allowedCurrencies;
-    
+
     switch (gameType) {
-      case 'sportsbook':
-        return ['SC']; // Sportsbook only allows Sweeps Coins
-      case 'slots':
-      case 'table':
-      case 'live':
-      case 'bingo':
+      case "sportsbook":
+        return ["SC"]; // Sportsbook only allows Sweeps Coins
+      case "slots":
+      case "table":
+      case "live":
+      case "bingo":
       default:
-        return ['GC', 'SC']; // All other games allow both currencies
+        return ["GC", "SC"]; // All other games allow both currencies
     }
   };
 
@@ -76,22 +80,25 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 
   useEffect(() => {
     loadWallet();
-    
+
     // Subscribe to real-time wallet updates
-    const unsubscribe = walletService.subscribeToWalletUpdates(userId, (newWallet) => {
-      setPreviousWallet(wallet);
-      setWallet(newWallet);
-      setLastUpdate(new Date());
-    });
+    const unsubscribe = walletService.subscribeToWalletUpdates(
+      userId,
+      (newWallet) => {
+        setPreviousWallet(wallet);
+        setWallet(newWallet);
+        setLastUpdate(new Date());
+      },
+    );
 
     return unsubscribe;
   }, [userId]);
 
   useEffect(() => {
     // Set default currency based on game type
-    if (gameType === 'sportsbook' && selectedCurrency !== 'SC') {
-      setSelectedCurrency('SC');
-      onCurrencyChange?.('SC');
+    if (gameType === "sportsbook" && selectedCurrency !== "SC") {
+      setSelectedCurrency("SC");
+      onCurrencyChange?.("SC");
     } else if (!availableCurrencies.includes(selectedCurrency)) {
       const defaultCurrency = availableCurrencies[0];
       setSelectedCurrency(defaultCurrency);
@@ -106,11 +113,11 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
       setWallet(userWallet);
       setLastUpdate(new Date());
     } catch (error) {
-      console.error('Error loading wallet:', error);
+      console.error("Error loading wallet:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to load wallet balance',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to load wallet balance",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -120,37 +127,37 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   const handleCurrencySwitch = (currency: CurrencyType) => {
     if (!availableCurrencies.includes(currency)) {
       toast({
-        title: 'Currency Not Available',
+        title: "Currency Not Available",
         description: `${currency} is not available for ${gameType}`,
-        variant: 'destructive',
+        variant: "destructive",
       });
       return;
     }
 
     setSelectedCurrency(currency);
     onCurrencyChange?.(currency);
-    
+
     toast({
-      title: 'Currency Changed',
-      description: `Now playing with ${currency === 'GC' ? 'Gold Coins' : 'Sweeps Coins'}`,
+      title: "Currency Changed",
+      description: `Now playing with ${currency === "GC" ? "Gold Coins" : "Sweeps Coins"}`,
     });
   };
 
   const handleRefresh = async () => {
     await loadWallet();
     toast({
-      title: 'Wallet Refreshed',
-      description: 'Balance updated successfully',
+      title: "Wallet Refreshed",
+      description: "Balance updated successfully",
     });
   };
 
   const formatBalance = (amount: number, currency: CurrencyType): string => {
-    if (currency === 'GC') {
-      return amount >= 1000000 
+    if (currency === "GC") {
+      return amount >= 1000000
         ? `${(amount / 1000000).toFixed(2)}M`
-        : amount >= 1000 
-        ? `${(amount / 1000).toFixed(1)}K`
-        : amount.toLocaleString();
+        : amount >= 1000
+          ? `${(amount / 1000).toFixed(1)}K`
+          : amount.toLocaleString();
     } else {
       return amount.toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -161,33 +168,51 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 
   const getCurrencyIcon = (currency: CurrencyType) => {
     switch (currency) {
-      case 'GC': return <Coins className="w-4 h-4 text-gold-500" />;
-      case 'SC': return <Star className="w-4 h-4 text-purple-500" />;
-      case 'USD': return <DollarSign className="w-4 h-4 text-green-500" />;
-      default: return <Coins className="w-4 h-4" />;
+      case "GC":
+        return <Coins className="w-4 h-4 text-gold-500" />;
+      case "SC":
+        return <Star className="w-4 h-4 text-purple-500" />;
+      case "USD":
+        return <DollarSign className="w-4 h-4 text-green-500" />;
+      default:
+        return <Coins className="w-4 h-4" />;
     }
   };
 
   const getCurrencyName = (currency: CurrencyType): string => {
     switch (currency) {
-      case 'GC': return 'Gold Coins';
-      case 'SC': return 'Sweeps Coins';
-      case 'USD': return 'US Dollars';
-      default: return currency;
+      case "GC":
+        return "Gold Coins";
+      case "SC":
+        return "Sweeps Coins";
+      case "USD":
+        return "US Dollars";
+      default:
+        return currency;
     }
   };
 
-  const getChangeIndicator = (current: number, previous: number | undefined) => {
+  const getChangeIndicator = (
+    current: number,
+    previous: number | undefined,
+  ) => {
     if (!previous || current === previous) return null;
 
     const isIncrease = current > previous;
     const difference = Math.abs(current - previous);
 
     return (
-      <div className={`flex items-center gap-1 text-xs ${isIncrease ? 'text-green-400' : 'text-red-400'}`}>
-        {isIncrease ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+      <div
+        className={`flex items-center gap-1 text-xs ${isIncrease ? "text-green-400" : "text-red-400"}`}
+      >
+        {isIncrease ? (
+          <TrendingUp className="w-3 h-3" />
+        ) : (
+          <TrendingDown className="w-3 h-3" />
+        )}
         <span>
-          {isIncrease ? '+' : '-'}{formatBalance(difference, selectedCurrency)}
+          {isIncrease ? "+" : "-"}
+          {formatBalance(difference, selectedCurrency)}
         </span>
       </div>
     );
@@ -196,20 +221,28 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   const getCurrentBalance = (): number => {
     if (!wallet) return 0;
     switch (selectedCurrency) {
-      case 'GC': return wallet.goldCoins;
-      case 'SC': return wallet.sweepsCoins;
-      case 'USD': return wallet.cashBalance || 0;
-      default: return 0;
+      case "GC":
+        return wallet.goldCoins;
+      case "SC":
+        return wallet.sweepsCoins;
+      case "USD":
+        return wallet.cashBalance || 0;
+      default:
+        return 0;
     }
   };
 
   const getPreviousBalance = (): number | undefined => {
     if (!previousWallet) return undefined;
     switch (selectedCurrency) {
-      case 'GC': return previousWallet.goldCoins;
-      case 'SC': return previousWallet.sweepsCoins;
-      case 'USD': return previousWallet.cashBalance || 0;
-      default: return undefined;
+      case "GC":
+        return previousWallet.goldCoins;
+      case "SC":
+        return previousWallet.sweepsCoins;
+      case "USD":
+        return previousWallet.cashBalance || 0;
+      default:
+        return undefined;
     }
   };
 
@@ -234,15 +267,15 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             availableCurrencies.map((currency) => (
               <Button
                 key={currency}
-                variant={selectedCurrency === currency ? 'default' : 'outline'}
+                variant={selectedCurrency === currency ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleCurrencySwitch(currency)}
                 className={`h-8 ${
                   selectedCurrency === currency
-                    ? currency === 'GC'
-                      ? 'bg-gold-500 hover:bg-gold-600 text-black'
-                      : 'bg-purple-500 hover:bg-purple-600 text-white'
-                    : ''
+                    ? currency === "GC"
+                      ? "bg-gold-500 hover:bg-gold-600 text-black"
+                      : "bg-purple-500 hover:bg-purple-600 text-white"
+                    : ""
                 }`}
               >
                 {getCurrencyIcon(currency)}
@@ -253,9 +286,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             <Badge
               variant="outline"
               className={`${
-                selectedCurrency === 'GC'
-                  ? 'border-gold-500 text-gold-400'
-                  : 'border-purple-500 text-purple-400'
+                selectedCurrency === "GC"
+                  ? "border-gold-500 text-gold-400"
+                  : "border-purple-500 text-purple-400"
               }`}
             >
               {getCurrencyIcon(selectedCurrency)}
@@ -272,14 +305,22 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             onClick={() => setIsVisible(!isVisible)}
             className="p-1 h-auto"
           >
-            {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {isVisible ? (
+              <Eye className="w-4 h-4" />
+            ) : (
+              <EyeOff className="w-4 h-4" />
+            )}
           </Button>
 
           <div className="flex items-center gap-2">
             <span className="font-bold">
-              {isVisible ? formatBalance(getCurrentBalance(), selectedCurrency) : '••••••'}
+              {isVisible
+                ? formatBalance(getCurrentBalance(), selectedCurrency)
+                : "••••••"}
             </span>
-            <span className="text-xs text-muted-foreground">{selectedCurrency}</span>
+            <span className="text-xs text-muted-foreground">
+              {selectedCurrency}
+            </span>
             {getChangeIndicator(getCurrentBalance(), getPreviousBalance())}
           </div>
 
@@ -290,7 +331,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             disabled={isLoading}
             className="p-1 h-auto"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+            />
           </Button>
         </div>
       </div>
@@ -298,7 +341,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   }
 
   return (
-    <Card className={`${className} bg-gradient-to-r from-card via-card to-card border-border/50 shadow-lg`}>
+    <Card
+      className={`${className} bg-gradient-to-r from-card via-card to-card border-border/50 shadow-lg`}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -319,7 +364,11 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
               onClick={() => setIsVisible(!isVisible)}
               className="p-1 h-auto"
             >
-              {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+              {isVisible ? (
+                <Eye className="w-4 h-4" />
+              ) : (
+                <EyeOff className="w-4 h-4" />
+              )}
             </Button>
 
             <Button
@@ -329,7 +378,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
               disabled={isLoading}
               className="p-1 h-auto"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+              />
             </Button>
 
             {showSettings && (
@@ -342,18 +393,18 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                 <PopoverContent className="w-80">
                   <div className="space-y-4">
                     <h4 className="font-medium">Wallet Settings</h4>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Auto-refresh balance</span>
                         <Switch defaultChecked />
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Show balance changes</span>
                         <Switch defaultChecked />
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Low balance alerts</span>
                         <Switch defaultChecked />
@@ -391,17 +442,19 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
               {availableCurrencies.map((currency) => (
                 <Button
                   key={currency}
-                  variant={selectedCurrency === currency ? 'default' : 'outline'}
+                  variant={
+                    selectedCurrency === currency ? "default" : "outline"
+                  }
                   size="sm"
                   onClick={() => handleCurrencySwitch(currency)}
                   className={`flex-1 ${
                     selectedCurrency === currency
-                      ? currency === 'GC'
-                        ? 'bg-gold-500 hover:bg-gold-600 text-black'
-                        : currency === 'SC'
-                        ? 'bg-purple-500 hover:bg-purple-600 text-white'
-                        : 'bg-green-500 hover:bg-green-600 text-white'
-                      : ''
+                      ? currency === "GC"
+                        ? "bg-gold-500 hover:bg-gold-600 text-black"
+                        : currency === "SC"
+                          ? "bg-purple-500 hover:bg-purple-600 text-white"
+                          : "bg-green-500 hover:bg-green-600 text-white"
+                      : ""
                   }`}
                 >
                   {getCurrencyIcon(currency)}
@@ -417,9 +470,14 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {getCurrencyIcon(selectedCurrency)}
-              <span className="font-medium">{getCurrencyName(selectedCurrency)}</span>
-              {selectedCurrency === 'SC' && (
-                <Badge variant="outline" className="text-xs border-purple-500 text-purple-400">
+              <span className="font-medium">
+                {getCurrencyName(selectedCurrency)}
+              </span>
+              {selectedCurrency === "SC" && (
+                <Badge
+                  variant="outline"
+                  className="text-xs border-purple-500 text-purple-400"
+                >
                   REDEEMABLE
                 </Badge>
               )}
@@ -429,7 +487,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 
           <div className="flex items-baseline gap-2">
             <div className="text-3xl font-bold">
-              {isVisible ? formatBalance(getCurrentBalance(), selectedCurrency) : '••••••'}
+              {isVisible
+                ? formatBalance(getCurrentBalance(), selectedCurrency)
+                : "••••••"}
             </div>
             <span className="text-muted-foreground">{selectedCurrency}</span>
           </div>
@@ -439,26 +499,30 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Coins className="w-3 h-3 text-gold-500" />
-                <span className="text-xs text-muted-foreground">Gold Coins</span>
+                <span className="text-xs text-muted-foreground">
+                  Gold Coins
+                </span>
               </div>
               <div className="text-sm font-medium">
-                {isVisible ? formatBalance(wallet.goldCoins, 'GC') : '••••••'}
+                {isVisible ? formatBalance(wallet.goldCoins, "GC") : "••••••"}
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Star className="w-3 h-3 text-purple-500" />
-                <span className="text-xs text-muted-foreground">Sweeps Coins</span>
+                <span className="text-xs text-muted-foreground">
+                  Sweeps Coins
+                </span>
               </div>
               <div className="text-sm font-medium">
-                {isVisible ? formatBalance(wallet.sweepsCoins, 'SC') : '••••••'}
+                {isVisible ? formatBalance(wallet.sweepsCoins, "SC") : "••••••"}
               </div>
             </div>
           </div>
 
           {/* Game Type Notice */}
-          {gameType === 'sportsbook' && (
+          {gameType === "sportsbook" && (
             <div className="flex items-center gap-2 p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg">
               <AlertCircle className="w-4 h-4 text-purple-500" />
               <span className="text-xs text-purple-400">
@@ -472,7 +536,8 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             <div className="flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/20 rounded-lg">
               <AlertCircle className="w-4 h-4 text-orange-500" />
               <span className="text-xs text-orange-400">
-                Low balance - Consider adding more {getCurrencyName(selectedCurrency)}
+                Low balance - Consider adding more{" "}
+                {getCurrencyName(selectedCurrency)}
               </span>
             </div>
           )}

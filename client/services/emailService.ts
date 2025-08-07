@@ -1,4 +1,4 @@
-import { User } from '../types/auth';
+import { User } from "../types/auth";
 
 export interface SMTPConfig {
   host: string;
@@ -17,7 +17,13 @@ export interface EmailTemplate {
   htmlContent: string;
   textContent: string;
   variables: string[];
-  category: 'welcome' | 'verification' | 'bonus' | 'password_reset' | 'notification' | 'promotional';
+  category:
+    | "welcome"
+    | "verification"
+    | "bonus"
+    | "password_reset"
+    | "notification"
+    | "promotional";
   active: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -28,7 +34,7 @@ export interface EmailJob {
   templateId: string;
   to: string;
   variables: Record<string, any>;
-  status: 'pending' | 'sending' | 'sent' | 'failed';
+  status: "pending" | "sending" | "sent" | "failed";
   attempts: number;
   scheduledAt?: Date;
   sentAt?: Date;
@@ -56,22 +62,22 @@ class EmailService {
   // SMTP Configuration Methods
   async loadSMTPConfig(): Promise<void> {
     try {
-      const config = localStorage.getItem('smtp_config');
+      const config = localStorage.getItem("smtp_config");
       if (config) {
         this.smtpConfig = JSON.parse(config);
       }
     } catch (error) {
-      console.error('Failed to load SMTP config:', error);
+      console.error("Failed to load SMTP config:", error);
     }
   }
 
   async saveSMTPConfig(config: SMTPConfig): Promise<void> {
     try {
       this.smtpConfig = config;
-      localStorage.setItem('smtp_config', JSON.stringify(config));
+      localStorage.setItem("smtp_config", JSON.stringify(config));
     } catch (error) {
-      console.error('Failed to save SMTP config:', error);
-      throw new Error('Failed to save SMTP configuration');
+      console.error("Failed to save SMTP config:", error);
+      throw new Error("Failed to save SMTP configuration");
     }
   }
 
@@ -81,13 +87,13 @@ class EmailService {
 
   async testSMTPConnection(): Promise<{ success: boolean; message: string }> {
     if (!this.smtpConfig) {
-      return { success: false, message: 'No SMTP configuration found' };
+      return { success: false, message: "No SMTP configuration found" };
     }
 
     try {
       // Simulate SMTP connection test
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { success: true, message: 'SMTP connection successful' };
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return { success: true, message: "SMTP connection successful" };
     } catch (error) {
       return { success: false, message: `SMTP connection failed: ${error}` };
     }
@@ -96,7 +102,7 @@ class EmailService {
   // Template Management Methods
   private loadTemplates(): void {
     try {
-      const templatesData = localStorage.getItem('email_templates');
+      const templatesData = localStorage.getItem("email_templates");
       if (templatesData) {
         const templates = JSON.parse(templatesData);
         templates.forEach((template: EmailTemplate) => {
@@ -104,16 +110,16 @@ class EmailService {
         });
       }
     } catch (error) {
-      console.error('Failed to load email templates:', error);
+      console.error("Failed to load email templates:", error);
     }
   }
 
   private saveTemplates(): void {
     try {
       const templates = Array.from(this.templates.values());
-      localStorage.setItem('email_templates', JSON.stringify(templates));
+      localStorage.setItem("email_templates", JSON.stringify(templates));
     } catch (error) {
-      console.error('Failed to save email templates:', error);
+      console.error("Failed to save email templates:", error);
     }
   }
 
@@ -121,9 +127,9 @@ class EmailService {
     if (this.templates.size === 0) {
       const defaultTemplates: EmailTemplate[] = [
         {
-          id: 'welcome-bonus',
-          name: 'Welcome Bonus Email',
-          subject: 'Welcome to CoinKrazy! Your 10 GC + 10 SC Bonus Awaits! 🎉',
+          id: "welcome-bonus",
+          name: "Welcome Bonus Email",
+          subject: "Welcome to CoinKrazy! Your 10 GC + 10 SC Bonus Awaits! 🎉",
           htmlContent: `
             <!DOCTYPE html>
             <html>
@@ -268,16 +274,28 @@ The CoinKrazy Team
 CoinKrazy - Where Fun Meets Fortune™
 This email was sent to {{email}}.
 © 2024 CoinKrazy. All rights reserved. 18+ Only. Play Responsibly.`,
-          variables: ['firstName', 'email', 'bonusDescription', 'bonusExpiry', 'playNowLink', 'facebookLink', 'twitterLink', 'instagramLink', 'unsubscribeLink', 'privacyLink', 'termsLink'],
-          category: 'welcome',
+          variables: [
+            "firstName",
+            "email",
+            "bonusDescription",
+            "bonusExpiry",
+            "playNowLink",
+            "facebookLink",
+            "twitterLink",
+            "instagramLink",
+            "unsubscribeLink",
+            "privacyLink",
+            "termsLink",
+          ],
+          category: "welcome",
           active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          id: 'email-verification',
-          name: 'Email Verification',
-          subject: 'Verify Your CoinKrazy Account - Almost Ready to Play! 🎰',
+          id: "email-verification",
+          name: "Email Verification",
+          subject: "Verify Your CoinKrazy Account - Almost Ready to Play! 🎰",
           htmlContent: `
             <!DOCTYPE html>
             <html>
@@ -367,16 +385,16 @@ If you didn't create this account, please ignore this email.
 Questions? Contact our support team at support@coinfrazy.com
 
 © 2024 CoinKrazy. All rights reserved. 18+ Only. Play Responsibly.`,
-          variables: ['firstName', 'verificationLink', 'verificationCode'],
-          category: 'verification',
+          variables: ["firstName", "verificationLink", "verificationCode"],
+          category: "verification",
           active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          id: 'password-reset',
-          name: 'Password Reset',
-          subject: 'Reset Your CoinKrazy Password 🔐',
+          id: "password-reset",
+          name: "Password Reset",
+          subject: "Reset Your CoinKrazy Password 🔐",
           htmlContent: `
             <!DOCTYPE html>
             <html>
@@ -436,16 +454,16 @@ Reset your password: {{resetLink}}
 If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
 
 © 2024 CoinKrazy. All rights reserved.`,
-          variables: ['firstName', 'resetLink'],
-          category: 'password_reset',
+          variables: ["firstName", "resetLink"],
+          category: "password_reset",
           active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          id: 'bonus-notification',
-          name: 'Bonus Notification',
-          subject: '🎁 New Bonus Available - {{bonusTitle}}',
+          id: "bonus-notification",
+          name: "Bonus Notification",
+          subject: "🎁 New Bonus Available - {{bonusTitle}}",
           htmlContent: `
             <!DOCTYPE html>
             <html>
@@ -512,15 +530,22 @@ Happy Gaming!
 The CoinKrazy Team
 
 © 2024 CoinKrazy. All rights reserved.`,
-          variables: ['firstName', 'bonusTitle', 'bonusDescription', 'bonusValue', 'bonusExpiry', 'claimLink'],
-          category: 'bonus',
+          variables: [
+            "firstName",
+            "bonusTitle",
+            "bonusDescription",
+            "bonusValue",
+            "bonusExpiry",
+            "claimLink",
+          ],
+          category: "bonus",
           active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
 
-      defaultTemplates.forEach(template => {
+      defaultTemplates.forEach((template) => {
         this.templates.set(template.id, template);
       });
       this.saveTemplates();
@@ -535,14 +560,18 @@ The CoinKrazy Team
     return this.templates.get(id);
   }
 
-  getTemplatesByCategory(category: EmailTemplate['category']): EmailTemplate[] {
-    return Array.from(this.templates.values()).filter(template => template.category === category);
+  getTemplatesByCategory(category: EmailTemplate["category"]): EmailTemplate[] {
+    return Array.from(this.templates.values()).filter(
+      (template) => template.category === category,
+    );
   }
 
-  async saveTemplate(template: Omit<EmailTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<EmailTemplate> {
+  async saveTemplate(
+    template: Omit<EmailTemplate, "id" | "createdAt" | "updatedAt">,
+  ): Promise<EmailTemplate> {
     const newTemplate: EmailTemplate = {
       ...template,
-      id: template.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
+      id: template.name.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -552,7 +581,10 @@ The CoinKrazy Team
     return newTemplate;
   }
 
-  async updateTemplate(id: string, updates: Partial<EmailTemplate>): Promise<EmailTemplate | null> {
+  async updateTemplate(
+    id: string,
+    updates: Partial<EmailTemplate>,
+  ): Promise<EmailTemplate | null> {
     const template = this.templates.get(id);
     if (!template) return null;
 
@@ -579,20 +611,22 @@ The CoinKrazy Team
 
   // Email Sending Methods
   async sendWelcomeEmail(user: User, bonus: BonusInfo): Promise<boolean> {
-    const template = this.getTemplate('welcome-bonus');
+    const template = this.getTemplate("welcome-bonus");
     if (!template) {
-      throw new Error('Welcome email template not found');
+      throw new Error("Welcome email template not found");
     }
 
     const variables = {
-      firstName: user.firstName || user.email.split('@')[0],
+      firstName: user.firstName || user.email.split("@")[0],
       email: user.email,
       bonusDescription: bonus.description,
-      bonusExpiry: bonus.expiresAt ? bonus.expiresAt.toLocaleDateString() : 'Never',
+      bonusExpiry: bonus.expiresAt
+        ? bonus.expiresAt.toLocaleDateString()
+        : "Never",
       playNowLink: `${window.location.origin}/games`,
-      facebookLink: 'https://facebook.com/coinfrazy',
-      twitterLink: 'https://twitter.com/coinfrazy',
-      instagramLink: 'https://instagram.com/coinfrazy',
+      facebookLink: "https://facebook.com/coinfrazy",
+      twitterLink: "https://twitter.com/coinfrazy",
+      instagramLink: "https://instagram.com/coinfrazy",
       unsubscribeLink: `${window.location.origin}/unsubscribe?email=${encodeURIComponent(user.email)}`,
       privacyLink: `${window.location.origin}/privacy`,
       termsLink: `${window.location.origin}/terms`,
@@ -601,14 +635,18 @@ The CoinKrazy Team
     return this.sendEmail(template.id, user.email, variables);
   }
 
-  async sendVerificationEmail(user: User, verificationCode: string, verificationLink: string): Promise<boolean> {
-    const template = this.getTemplate('email-verification');
+  async sendVerificationEmail(
+    user: User,
+    verificationCode: string,
+    verificationLink: string,
+  ): Promise<boolean> {
+    const template = this.getTemplate("email-verification");
     if (!template) {
-      throw new Error('Verification email template not found');
+      throw new Error("Verification email template not found");
     }
 
     const variables = {
-      firstName: user.firstName || user.email.split('@')[0],
+      firstName: user.firstName || user.email.split("@")[0],
       verificationCode,
       verificationLink,
     };
@@ -616,46 +654,60 @@ The CoinKrazy Team
     return this.sendEmail(template.id, user.email, variables);
   }
 
-  async sendPasswordResetEmail(user: User, resetLink: string): Promise<boolean> {
-    const template = this.getTemplate('password-reset');
+  async sendPasswordResetEmail(
+    user: User,
+    resetLink: string,
+  ): Promise<boolean> {
+    const template = this.getTemplate("password-reset");
     if (!template) {
-      throw new Error('Password reset email template not found');
+      throw new Error("Password reset email template not found");
     }
 
     const variables = {
-      firstName: user.firstName || user.email.split('@')[0],
+      firstName: user.firstName || user.email.split("@")[0],
       resetLink,
     };
 
     return this.sendEmail(template.id, user.email, variables);
   }
 
-  async sendBonusNotification(user: User, bonus: BonusInfo, bonusTitle: string, claimLink: string): Promise<boolean> {
-    const template = this.getTemplate('bonus-notification');
+  async sendBonusNotification(
+    user: User,
+    bonus: BonusInfo,
+    bonusTitle: string,
+    claimLink: string,
+  ): Promise<boolean> {
+    const template = this.getTemplate("bonus-notification");
     if (!template) {
-      throw new Error('Bonus notification template not found');
+      throw new Error("Bonus notification template not found");
     }
 
     const variables = {
-      firstName: user.firstName || user.email.split('@')[0],
+      firstName: user.firstName || user.email.split("@")[0],
       bonusTitle,
       bonusDescription: bonus.description,
       bonusValue: `${bonus.goldCoins} GC + ${bonus.sweepsCoins} SC`,
-      bonusExpiry: bonus.expiresAt ? bonus.expiresAt.toLocaleDateString() : 'Never',
+      bonusExpiry: bonus.expiresAt
+        ? bonus.expiresAt.toLocaleDateString()
+        : "Never",
       claimLink,
     };
 
     return this.sendEmail(template.id, user.email, variables);
   }
 
-  async sendEmail(templateId: string, to: string, variables: Record<string, any>): Promise<boolean> {
+  async sendEmail(
+    templateId: string,
+    to: string,
+    variables: Record<string, any>,
+  ): Promise<boolean> {
     const template = this.getTemplate(templateId);
     if (!template) {
       throw new Error(`Template ${templateId} not found`);
     }
 
     if (!this.smtpConfig) {
-      throw new Error('SMTP configuration not set');
+      throw new Error("SMTP configuration not set");
     }
 
     const emailJob: EmailJob = {
@@ -663,7 +715,7 @@ The CoinKrazy Team
       templateId,
       to,
       variables,
-      status: 'pending',
+      status: "pending",
       attempts: 0,
     };
 
@@ -673,7 +725,7 @@ The CoinKrazy Team
 
   private async processEmailJob(job: EmailJob): Promise<boolean> {
     try {
-      job.status = 'sending';
+      job.status = "sending";
       job.attempts++;
 
       const template = this.getTemplate(job.templateId);
@@ -682,33 +734,43 @@ The CoinKrazy Team
       }
 
       // Replace variables in email content
-      const htmlContent = this.replaceVariables(template.htmlContent, job.variables);
-      const textContent = this.replaceVariables(template.textContent, job.variables);
+      const htmlContent = this.replaceVariables(
+        template.htmlContent,
+        job.variables,
+      );
+      const textContent = this.replaceVariables(
+        template.textContent,
+        job.variables,
+      );
       const subject = this.replaceVariables(template.subject, job.variables);
 
       // Simulate email sending (in production, this would use nodemailer or similar)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Log email for debugging
-      console.log('Email sent:', {
+      console.log("Email sent:", {
         to: job.to,
         subject,
         template: template.name,
         variables: job.variables,
       });
 
-      job.status = 'sent';
+      job.status = "sent";
       job.sentAt = new Date();
       return true;
     } catch (error) {
-      job.status = 'failed';
-      job.errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Failed to send email:', error);
+      job.status = "failed";
+      job.errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("Failed to send email:", error);
       return false;
     }
   }
 
-  private replaceVariables(content: string, variables: Record<string, any>): string {
+  private replaceVariables(
+    content: string,
+    variables: Record<string, any>,
+  ): string {
     return content.replace(/\{\{(\w+)\}\}/g, (match, key) => {
       return variables[key] || match;
     });
@@ -727,18 +789,20 @@ The CoinKrazy Team
   } {
     return {
       total: this.emailQueue.length,
-      sent: this.emailQueue.filter(job => job.status === 'sent').length,
-      failed: this.emailQueue.filter(job => job.status === 'failed').length,
-      pending: this.emailQueue.filter(job => job.status === 'pending').length,
+      sent: this.emailQueue.filter((job) => job.status === "sent").length,
+      failed: this.emailQueue.filter((job) => job.status === "failed").length,
+      pending: this.emailQueue.filter((job) => job.status === "pending").length,
     };
   }
 
   async retryFailedEmails(): Promise<number> {
-    const failedJobs = this.emailQueue.filter(job => job.status === 'failed' && job.attempts < 3);
+    const failedJobs = this.emailQueue.filter(
+      (job) => job.status === "failed" && job.attempts < 3,
+    );
     let retried = 0;
 
     for (const job of failedJobs) {
-      job.status = 'pending';
+      job.status = "pending";
       if (await this.processEmailJob(job)) {
         retried++;
       }

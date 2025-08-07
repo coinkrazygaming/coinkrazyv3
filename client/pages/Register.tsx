@@ -123,7 +123,9 @@ export default function Register() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         username: formData.username,
-        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
+        dateOfBirth: formData.dateOfBirth
+          ? new Date(formData.dateOfBirth)
+          : undefined,
         acceptTerms: formData.agreeTerms,
         acceptPrivacy: formData.agreeTerms,
         newsletterOptIn: formData.agreeMarketing,
@@ -169,26 +171,34 @@ export default function Register() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Check Your Email!</h2>
             <p className="text-muted-foreground mb-8">
-              We've sent a verification email to <strong>{formData.email}</strong>.
-              Click the verification link to activate your account and claim your welcome bonus!
+              We've sent a verification email to{" "}
+              <strong>{formData.email}</strong>. Click the verification link to
+              activate your account and claim your welcome bonus!
             </p>
 
             <div className="bg-gradient-to-r from-gold/10 to-casino-blue/10 border border-gold-500/20 rounded-lg p-6 mb-8">
-              <h3 className="font-bold text-lg mb-4">🎁 Your Welcome Bonus Awaits!</h3>
+              <h3 className="font-bold text-lg mb-4">
+                🎁 Your Welcome Bonus Awaits!
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-card rounded-lg">
                   <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-gold-500">10</div>
-                  <div className="text-sm text-muted-foreground">Gold Coins</div>
+                  <div className="text-sm text-muted-foreground">
+                    Gold Coins
+                  </div>
                 </div>
                 <div className="text-center p-4 bg-card rounded-lg">
                   <Star className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-purple-500">10</div>
-                  <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                  <div className="text-sm text-muted-foreground">
+                    Sweeps Coins
+                  </div>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
-                Verify your email to instantly receive your bonus and start playing!
+                Verify your email to instantly receive your bonus and start
+                playing!
               </p>
             </div>
 
@@ -662,8 +672,10 @@ export default function Register() {
                       <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                       Creating Account...
                     </div>
+                  ) : currentStep === 4 ? (
+                    "Create Account & Get Bonus"
                   ) : (
-                    currentStep === 4 ? "Create Account & Get Bonus" : "Next"
+                    "Next"
                   )}
                 </Button>
               </div>

@@ -1,22 +1,28 @@
-import { 
-  User, 
-  RegisterData, 
-  LoginData, 
-  AuthResponse, 
-  VerificationData, 
-  ResetPasswordData, 
+import {
+  User,
+  RegisterData,
+  LoginData,
+  AuthResponse,
+  VerificationData,
+  ResetPasswordData,
   NewPasswordData,
   WelcomeBonus,
   Transaction,
-  UserBonus
-} from '../types/auth';
-import { emailService } from './emailService';
+  UserBonus,
+} from "../types/auth";
+import { emailService } from "./emailService";
 
 class AuthService {
   private users: Map<string, User> = new Map();
   private sessions: Map<string, string> = new Map(); // token -> userId
-  private verificationCodes: Map<string, { code: string; expires: Date; userId: string }> = new Map();
-  private resetTokens: Map<string, { token: string; expires: Date; userId: string }> = new Map();
+  private verificationCodes: Map<
+    string,
+    { code: string; expires: Date; userId: string }
+  > = new Map();
+  private resetTokens: Map<
+    string,
+    { token: string; expires: Date; userId: string }
+  > = new Map();
 
   constructor() {
     this.loadUsersFromStorage();
@@ -25,7 +31,7 @@ class AuthService {
 
   private loadUsersFromStorage(): void {
     try {
-      const usersData = localStorage.getItem('users');
+      const usersData = localStorage.getItem("users");
       if (usersData) {
         const users = JSON.parse(usersData);
         users.forEach((user: User) => {
@@ -37,34 +43,34 @@ class AuthService {
         });
       }
     } catch (error) {
-      console.error('Failed to load users from storage:', error);
+      console.error("Failed to load users from storage:", error);
     }
   }
 
   private saveUsersToStorage(): void {
     try {
       const users = Array.from(this.users.values());
-      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem("users", JSON.stringify(users));
     } catch (error) {
-      console.error('Failed to save users to storage:', error);
+      console.error("Failed to save users to storage:", error);
     }
   }
 
   private initializeDefaultUsers(): void {
     if (this.users.size === 0) {
       const defaultUser: User = {
-        id: 'user-1',
-        email: 'demo@coinfrazy.com',
-        firstName: 'Demo',
-        lastName: 'User',
-        username: 'demouser',
+        id: "user-1",
+        email: "demo@coinfrazy.com",
+        firstName: "Demo",
+        lastName: "User",
+        username: "demouser",
         emailVerified: true,
-        status: 'active',
-        kycStatus: 'verified',
+        status: "active",
+        kycStatus: "verified",
         gcBalance: 250000,
-        scBalance: 125.50,
+        scBalance: 125.5,
         bonusBalance: 0,
-        joinDate: new Date('2024-01-15'),
+        joinDate: new Date("2024-01-15"),
         lastLogin: new Date(),
       };
 
@@ -90,18 +96,33 @@ class AuthService {
     return emailRegex.test(email);
   }
 
-  private validatePassword(password: string): { valid: boolean; message?: string } {
+  private validatePassword(password: string): {
+    valid: boolean;
+    message?: string;
+  } {
     if (password.length < 8) {
-      return { valid: false, message: 'Password must be at least 8 characters long' };
+      return {
+        valid: false,
+        message: "Password must be at least 8 characters long",
+      };
     }
     if (!/(?=.*[a-z])/.test(password)) {
-      return { valid: false, message: 'Password must contain at least one lowercase letter' };
+      return {
+        valid: false,
+        message: "Password must contain at least one lowercase letter",
+      };
     }
     if (!/(?=.*[A-Z])/.test(password)) {
-      return { valid: false, message: 'Password must contain at least one uppercase letter' };
+      return {
+        valid: false,
+        message: "Password must contain at least one uppercase letter",
+      };
     }
     if (!/(?=.*\d)/.test(password)) {
-      return { valid: false, message: 'Password must contain at least one number' };
+      return {
+        valid: false,
+        message: "Password must contain at least one number",
+      };
     }
     return { valid: true };
   }
@@ -113,7 +134,8 @@ class AuthService {
     return {
       goldCoins: 10,
       sweepsCoins: 10,
-      description: 'Welcome to CoinKrazy! Enjoy your 10 Gold Coins + 10 Sweeps Coins bonus to get started!',
+      description:
+        "Welcome to CoinKrazy! Enjoy your 10 Gold Coins + 10 Sweeps Coins bonus to get started!",
       expiresAt,
       claimed: false,
     };
@@ -121,22 +143,22 @@ class AuthService {
 
   private async awardWelcomeBonus(user: User): Promise<WelcomeBonus> {
     const welcomeBonus = this.createWelcomeBonus();
-    
+
     // Add bonus to user account
     user.gcBalance += welcomeBonus.goldCoins;
     user.scBalance += welcomeBonus.sweepsCoins;
-    
+
     // Create transaction record
     const transaction: Transaction = {
       id: `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       userId: user.id,
-      type: 'bonus',
+      type: "bonus",
       amount: welcomeBonus.goldCoins,
-      currency: 'GC',
-      status: 'completed',
-      description: 'Welcome Bonus - Gold Coins',
+      currency: "GC",
+      status: "completed",
+      description: "Welcome Bonus - Gold Coins",
       metadata: {
-        bonusType: 'welcome',
+        bonusType: "welcome",
         sweepsCoins: welcomeBonus.sweepsCoins,
       },
       createdAt: new Date(),
@@ -145,21 +167,23 @@ class AuthService {
     };
 
     // Store transaction (in a real app, this would go to a database)
-    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    const transactions = JSON.parse(
+      localStorage.getItem("transactions") || "[]",
+    );
     transactions.push(transaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem("transactions", JSON.stringify(transactions));
 
     // Create Sweeps Coins transaction
     const scTransaction: Transaction = {
       ...transaction,
       id: `tx-${Date.now() + 1}-${Math.random().toString(36).substr(2, 9)}`,
       amount: welcomeBonus.sweepsCoins,
-      currency: 'SC',
-      description: 'Welcome Bonus - Sweeps Coins',
+      currency: "SC",
+      description: "Welcome Bonus - Sweeps Coins",
     };
 
     transactions.push(scTransaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem("transactions", JSON.stringify(transactions));
 
     this.users.set(user.id, user);
     this.saveUsersToStorage();
@@ -174,7 +198,7 @@ class AuthService {
     try {
       // Validate input
       if (!this.validateEmail(data.email)) {
-        return { success: false, error: 'Invalid email format' };
+        return { success: false, error: "Invalid email format" };
       }
 
       const passwordValidation = this.validatePassword(data.password);
@@ -183,13 +207,21 @@ class AuthService {
       }
 
       if (!data.acceptTerms || !data.acceptPrivacy) {
-        return { success: false, error: 'You must accept the terms and privacy policy' };
+        return {
+          success: false,
+          error: "You must accept the terms and privacy policy",
+        };
       }
 
       // Check if user already exists
-      const existingUser = Array.from(this.users.values()).find(u => u.email === data.email);
+      const existingUser = Array.from(this.users.values()).find(
+        (u) => u.email === data.email,
+      );
       if (existingUser) {
-        return { success: false, error: 'An account with this email already exists' };
+        return {
+          success: false,
+          error: "An account with this email already exists",
+        };
       }
 
       // Create new user
@@ -199,18 +231,18 @@ class AuthService {
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
-        username: data.username || data.email.split('@')[0],
+        username: data.username || data.email.split("@")[0],
         emailVerified: false,
-        status: 'pending_verification',
-        kycStatus: 'none',
+        status: "pending_verification",
+        kycStatus: "none",
         gcBalance: 0,
         scBalance: 0,
         bonusBalance: 0,
         joinDate: new Date(),
         preferences: {
-          theme: 'auto',
-          language: 'en',
-          currency: 'USD',
+          theme: "auto",
+          language: "en",
+          currency: "USD",
           notifications: {
             email: data.newsletterOptIn || true,
             sms: false,
@@ -233,39 +265,55 @@ class AuthService {
       // Send verification email
       const verificationCode = this.generateVerificationCode();
       const verificationLink = `${window.location.origin}/verify-email?code=${verificationCode}&email=${encodeURIComponent(data.email)}`;
-      
+
       this.verificationCodes.set(data.email, {
         code: verificationCode,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         userId,
       });
 
-      await emailService.sendVerificationEmail(user, verificationCode, verificationLink);
+      await emailService.sendVerificationEmail(
+        user,
+        verificationCode,
+        verificationLink,
+      );
 
       return {
         success: true,
         user,
-        message: 'Registration successful! Please check your email to verify your account and claim your welcome bonus.',
+        message:
+          "Registration successful! Please check your email to verify your account and claim your welcome bonus.",
       };
     } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, error: 'Registration failed. Please try again.' };
+      console.error("Registration error:", error);
+      return {
+        success: false,
+        error: "Registration failed. Please try again.",
+      };
     }
   }
 
   async login(data: LoginData): Promise<AuthResponse> {
     try {
-      const user = Array.from(this.users.values()).find(u => u.email === data.email);
+      const user = Array.from(this.users.values()).find(
+        (u) => u.email === data.email,
+      );
       if (!user) {
-        return { success: false, error: 'Invalid email or password' };
+        return { success: false, error: "Invalid email or password" };
       }
 
-      if (user.status === 'banned') {
-        return { success: false, error: 'Account has been banned. Please contact support.' };
+      if (user.status === "banned") {
+        return {
+          success: false,
+          error: "Account has been banned. Please contact support.",
+        };
       }
 
-      if (user.status === 'suspended') {
-        return { success: false, error: 'Account is suspended. Please contact support.' };
+      if (user.status === "suspended") {
+        return {
+          success: false,
+          error: "Account is suspended. Please contact support.",
+        };
       }
 
       // In a real app, you'd verify the password hash here
@@ -284,11 +332,11 @@ class AuthService {
         success: true,
         user,
         token,
-        message: 'Login successful!',
+        message: "Login successful!",
       };
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'Login failed. Please try again.' };
+      console.error("Login error:", error);
+      return { success: false, error: "Login failed. Please try again." };
     }
   }
 
@@ -296,26 +344,29 @@ class AuthService {
     try {
       const verification = this.verificationCodes.get(data.email);
       if (!verification) {
-        return { success: false, error: 'Invalid or expired verification code' };
+        return {
+          success: false,
+          error: "Invalid or expired verification code",
+        };
       }
 
       if (verification.expires < new Date()) {
         this.verificationCodes.delete(data.email);
-        return { success: false, error: 'Verification code has expired' };
+        return { success: false, error: "Verification code has expired" };
       }
 
       if (verification.code !== data.code.toUpperCase()) {
-        return { success: false, error: 'Invalid verification code' };
+        return { success: false, error: "Invalid verification code" };
       }
 
       const user = this.users.get(verification.userId);
       if (!user) {
-        return { success: false, error: 'User not found' };
+        return { success: false, error: "User not found" };
       }
 
       // Mark email as verified and activate account
       user.emailVerified = true;
-      user.status = 'active';
+      user.status = "active";
 
       // Award welcome bonus
       const welcomeBonus = await this.awardWelcomeBonus(user);
@@ -344,59 +395,74 @@ class AuthService {
         message: `Email verified successfully! Your welcome bonus of ${welcomeBonus.goldCoins} Gold Coins + ${welcomeBonus.sweepsCoins} Sweeps Coins has been added to your account!`,
       };
     } catch (error) {
-      console.error('Email verification error:', error);
-      return { success: false, error: 'Email verification failed. Please try again.' };
+      console.error("Email verification error:", error);
+      return {
+        success: false,
+        error: "Email verification failed. Please try again.",
+      };
     }
   }
 
   async resendVerification(email: string): Promise<AuthResponse> {
     try {
-      const user = Array.from(this.users.values()).find(u => u.email === email);
+      const user = Array.from(this.users.values()).find(
+        (u) => u.email === email,
+      );
       if (!user) {
-        return { success: false, error: 'User not found' };
+        return { success: false, error: "User not found" };
       }
 
       if (user.emailVerified) {
-        return { success: false, error: 'Email is already verified' };
+        return { success: false, error: "Email is already verified" };
       }
 
       // Generate new verification code
       const verificationCode = this.generateVerificationCode();
       const verificationLink = `${window.location.origin}/verify-email?code=${verificationCode}&email=${encodeURIComponent(email)}`;
-      
+
       this.verificationCodes.set(email, {
         code: verificationCode,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         userId: user.id,
       });
 
-      await emailService.sendVerificationEmail(user, verificationCode, verificationLink);
+      await emailService.sendVerificationEmail(
+        user,
+        verificationCode,
+        verificationLink,
+      );
 
       return {
         success: true,
-        message: 'Verification email sent! Please check your email.',
+        message: "Verification email sent! Please check your email.",
       };
     } catch (error) {
-      console.error('Resend verification error:', error);
-      return { success: false, error: 'Failed to resend verification email. Please try again.' };
+      console.error("Resend verification error:", error);
+      return {
+        success: false,
+        error: "Failed to resend verification email. Please try again.",
+      };
     }
   }
 
   async resetPassword(data: ResetPasswordData): Promise<AuthResponse> {
     try {
-      const user = Array.from(this.users.values()).find(u => u.email === data.email);
+      const user = Array.from(this.users.values()).find(
+        (u) => u.email === data.email,
+      );
       if (!user) {
         // Don't reveal if email exists for security
         return {
           success: true,
-          message: 'If an account with this email exists, a password reset link has been sent.',
+          message:
+            "If an account with this email exists, a password reset link has been sent.",
         };
       }
 
       // Generate reset token
       const resetToken = this.generateToken();
       const resetLink = `${window.location.origin}/reset-password?token=${resetToken}`;
-      
+
       this.resetTokens.set(resetToken, {
         token: resetToken,
         expires: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
@@ -407,11 +473,15 @@ class AuthService {
 
       return {
         success: true,
-        message: 'If an account with this email exists, a password reset link has been sent.',
+        message:
+          "If an account with this email exists, a password reset link has been sent.",
       };
     } catch (error) {
-      console.error('Password reset error:', error);
-      return { success: false, error: 'Failed to send password reset email. Please try again.' };
+      console.error("Password reset error:", error);
+      return {
+        success: false,
+        error: "Failed to send password reset email. Please try again.",
+      };
     }
   }
 
@@ -419,16 +489,16 @@ class AuthService {
     try {
       const resetData = this.resetTokens.get(data.token);
       if (!resetData) {
-        return { success: false, error: 'Invalid or expired reset token' };
+        return { success: false, error: "Invalid or expired reset token" };
       }
 
       if (resetData.expires < new Date()) {
         this.resetTokens.delete(data.token);
-        return { success: false, error: 'Reset token has expired' };
+        return { success: false, error: "Reset token has expired" };
       }
 
       if (data.password !== data.confirmPassword) {
-        return { success: false, error: 'Passwords do not match' };
+        return { success: false, error: "Passwords do not match" };
       }
 
       const passwordValidation = this.validatePassword(data.password);
@@ -438,7 +508,7 @@ class AuthService {
 
       const user = this.users.get(resetData.userId);
       if (!user) {
-        return { success: false, error: 'User not found' };
+        return { success: false, error: "User not found" };
       }
 
       // In a real app, you'd hash the password here
@@ -448,19 +518,26 @@ class AuthService {
 
       return {
         success: true,
-        message: 'Password updated successfully! You can now log in with your new password.',
+        message:
+          "Password updated successfully! You can now log in with your new password.",
       };
     } catch (error) {
-      console.error('Set new password error:', error);
-      return { success: false, error: 'Failed to update password. Please try again.' };
+      console.error("Set new password error:", error);
+      return {
+        success: false,
+        error: "Failed to update password. Please try again.",
+      };
     }
   }
 
-  async updateProfile(userId: string, updates: Partial<User>): Promise<AuthResponse> {
+  async updateProfile(
+    userId: string,
+    updates: Partial<User>,
+  ): Promise<AuthResponse> {
     try {
       const user = this.users.get(userId);
       if (!user) {
-        return { success: false, error: 'User not found' };
+        return { success: false, error: "User not found" };
       }
 
       const updatedUser = { ...user, ...updates };
@@ -470,11 +547,14 @@ class AuthService {
       return {
         success: true,
         user: updatedUser,
-        message: 'Profile updated successfully!',
+        message: "Profile updated successfully!",
       };
     } catch (error) {
-      console.error('Update profile error:', error);
-      return { success: false, error: 'Failed to update profile. Please try again.' };
+      console.error("Update profile error:", error);
+      return {
+        success: false,
+        error: "Failed to update profile. Please try again.",
+      };
     }
   }
 
@@ -501,7 +581,7 @@ class AuthService {
     const user = this.users.get(userId);
     if (!user) return false;
 
-    user.status = 'suspended';
+    user.status = "suspended";
     this.users.set(userId, user);
     this.saveUsersToStorage();
     return true;
@@ -511,7 +591,7 @@ class AuthService {
     const user = this.users.get(userId);
     if (!user) return false;
 
-    user.status = 'active';
+    user.status = "active";
     this.users.set(userId, user);
     this.saveUsersToStorage();
     return true;
@@ -527,10 +607,10 @@ class AuthService {
     const users = Array.from(this.users.values());
     return {
       total: users.length,
-      active: users.filter(u => u.status === 'active').length,
-      suspended: users.filter(u => u.status === 'suspended').length,
-      pending: users.filter(u => u.status === 'pending_verification').length,
-      verified: users.filter(u => u.emailVerified).length,
+      active: users.filter((u) => u.status === "active").length,
+      suspended: users.filter((u) => u.status === "suspended").length,
+      pending: users.filter((u) => u.status === "pending_verification").length,
+      verified: users.filter((u) => u.emailVerified).length,
     };
   }
 }

@@ -5,8 +5,8 @@ export interface User {
   lastName?: string;
   username?: string;
   emailVerified: boolean;
-  status: 'active' | 'suspended' | 'banned' | 'pending_verification';
-  kycStatus: 'none' | 'pending' | 'verified' | 'rejected';
+  status: "active" | "suspended" | "banned" | "pending_verification";
+  kycStatus: "none" | "pending" | "verified" | "rejected";
   gcBalance: number;
   scBalance: number;
   bonusBalance: number;
@@ -39,7 +39,7 @@ export interface UserProfile {
 }
 
 export interface UserPreferences {
-  theme: 'light' | 'dark' | 'auto';
+  theme: "light" | "dark" | "auto";
   language: string;
   currency: string;
   notifications: {
@@ -126,10 +126,10 @@ export interface AuthContextType {
 export interface Transaction {
   id: string;
   userId: string;
-  type: 'deposit' | 'withdrawal' | 'bonus' | 'win' | 'bet' | 'refund';
+  type: "deposit" | "withdrawal" | "bonus" | "win" | "bet" | "refund";
   amount: number;
-  currency: 'GC' | 'SC' | 'USD';
-  status: 'pending' | 'completed' | 'failed' | 'cancelled';
+  currency: "GC" | "SC" | "USD";
+  status: "pending" | "completed" | "failed" | "cancelled";
   description: string;
   referenceId?: string;
   gameId?: string;
@@ -142,7 +142,7 @@ export interface Transaction {
 
 export interface Bonus {
   id: string;
-  type: 'welcome' | 'deposit' | 'no_deposit' | 'reload' | 'loyalty' | 'special';
+  type: "welcome" | "deposit" | "no_deposit" | "reload" | "loyalty" | "special";
   title: string;
   description: string;
   goldCoins: number;
@@ -166,7 +166,7 @@ export interface UserBonus {
   userId: string;
   bonusId: string;
   bonus: Bonus;
-  status: 'pending' | 'active' | 'completed' | 'expired' | 'forfeited';
+  status: "pending" | "active" | "completed" | "expired" | "forfeited";
   claimedAt: Date;
   expiresAt?: Date;
   completedAt?: Date;

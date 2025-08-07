@@ -11,6 +11,7 @@ import {
   UserBonus,
 } from "../types/auth";
 import { emailService } from "./emailService";
+import { realNeonService, UserData } from "./realNeonService";
 
 class AuthService {
   private users: Map<string, User> = new Map();

@@ -265,10 +265,17 @@ class AuthService {
         };
       }
 
-      // Check if user already exists
-      const existingUser = Array.from(this.users.values()).find(
-        (u) => u.email === data.email,
-      );
+      // Check if user already exists in Neon
+      let existingUser = null;
+      if (realNeonService.isConnected()) {
+        existingUser = await realNeonService.getUserByEmail(data.email);
+      } else {
+        // Fallback to local storage
+        existingUser = Array.from(this.users.values()).find(
+          (u) => u.email === data.email,
+        );
+      }
+
       if (existingUser) {
         return {
           success: false,
@@ -276,10 +283,8 @@ class AuthService {
         };
       }
 
-      // Create new user
-      const userId = this.generateId();
-      const user: User = {
-        id: userId,
+      // Create user data
+      const userData: Partial<UserData> = {
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -290,7 +295,6 @@ class AuthService {
         gcBalance: 0,
         scBalance: 0,
         bonusBalance: 0,
-        joinDate: new Date(),
         preferences: {
           theme: "auto",
           language: "en",
@@ -311,8 +315,50 @@ class AuthService {
         },
       };
 
-      this.users.set(userId, user);
-      this.saveUsersToStorage();
+      let user: User;
+
+      if (realNeonService.isConnected()) {
+        // Create user in Neon database
+        const neonUser = await realNeonService.createUser(userData);
+        user = this.mapNeonUserToLocal(neonUser);
+
+        // Log registration action
+        await realNeonService.logAdminAction({
+          admin_user_id: 'system',
+          action: 'user_registered',
+          target_type: 'user',
+          target_id: user.id,
+          details: {
+            email: user.email,
+            registrationMethod: 'web',
+            acceptedTerms: data.acceptTerms,
+            acceptedPrivacy: data.acceptPrivacy,
+            newsletterOptIn: data.newsletterOptIn
+          },
+          severity: 'info'
+        });
+      } else {
+        // Fallback to local storage
+        const userId = this.generateId();
+        user = {
+          id: userId,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          username: data.username || data.email.split("@")[0],
+          emailVerified: false,
+          status: "pending_verification",
+          kycStatus: "none",
+          gcBalance: 0,
+          scBalance: 0,
+          bonusBalance: 0,
+          joinDate: new Date(),
+          preferences: userData.preferences,
+        };
+
+        this.users.set(userId, user);
+        this.saveUsersToStorage();
+      }
 
       // Send verification email
       const verificationCode = this.generateVerificationCode();
@@ -321,7 +367,7 @@ class AuthService {
       this.verificationCodes.set(data.email, {
         code: verificationCode,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-        userId,
+        userId: user.id,
       });
 
       await emailService.sendVerificationEmail(

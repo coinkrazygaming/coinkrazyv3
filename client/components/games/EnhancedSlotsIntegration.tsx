@@ -61,6 +61,7 @@ import {
 import { walletService, CurrencyType } from "../../services/walletService";
 import { jackpotService, Jackpot } from "../../services/jackpotService";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "../../hooks/useAuth";
 
 interface SlotGame {
   id: string;

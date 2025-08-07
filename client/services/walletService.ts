@@ -29,6 +29,25 @@ export interface WalletTransaction {
   transactionDate: Date;
   balanceAfter: Record<CurrencyType, number>;
   metadata?: Record<string, any>;
+  paymentId?: string;
+  isDeposit?: boolean;
+  depositMethod?: string;
+  adminNotes?: string;
+}
+
+export interface DepositRecord {
+  id: string;
+  userId: string;
+  amount: number;
+  usdAmount: number;
+  gcAwarded: number;
+  scAwarded: number;
+  paymentMethod: string;
+  paymentId: string;
+  status: "pending" | "completed" | "failed" | "refunded";
+  timestamp: Date;
+  adminNotes?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface GameSession {

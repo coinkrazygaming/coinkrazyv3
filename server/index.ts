@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import apiRoutes from "./routes/api";
 import initAdminRoutes from "./routes/init-admin";
+import seedRoutes from "./routes/seed";
 
 export function createServer() {
   const app = express();
@@ -26,6 +27,9 @@ export function createServer() {
 
   // Admin initialization route
   app.use("/api", initAdminRoutes);
+
+  // Database seeding route
+  app.use("/api", seedRoutes);
 
   return app;
 }

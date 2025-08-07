@@ -35,9 +35,6 @@ export default function Navigation() {
     null,
   );
   const [showWalletCurrency, setShowWalletCurrency] = useState(false);
-  const [currentCurrency, setCurrentCurrency] = useState<"USD" | "BTC" | "ETH">(
-    "USD",
-  );
   const [playerCount, setPlayerCount] = useState<number>(0);
 
   // Real user authentication state

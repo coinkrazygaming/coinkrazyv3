@@ -26,6 +26,7 @@ import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import VerifyEmail from "./pages/VerifyEmail";
 import Dashboard from "./pages/Dashboard";
 import Store from "./pages/Store";
 import Sportsbook from "./pages/Sportsbook";

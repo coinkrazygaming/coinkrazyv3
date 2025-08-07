@@ -13,7 +13,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Shield,
   Smartphone,
   AlertTriangle,
   Loader2,
@@ -276,7 +275,7 @@ export default function Login() {
                     "700+ slot games from top providers like Pragmatic Play and NetEnt",
                 },
                 {
-                  icon: Shield,
+                  icon: CheckCircle,
                   title: "Secure & Legal",
                   description:
                     "Fully compliant sweepstakes model with advanced security measures",
@@ -328,7 +327,7 @@ export default function Login() {
         <div className="mt-12 text-center">
           <div className="flex flex-wrap justify-center gap-4 mb-4">
             <Badge variant="outline" className="border-gold-500 text-gold-400">
-              <Shield className="w-3 h-3 mr-1" />
+              <AlertTriangle className="w-3 h-3 mr-1" />
               18+ Only
             </Badge>
             <Badge

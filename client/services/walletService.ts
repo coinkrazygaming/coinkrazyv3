@@ -11,6 +11,8 @@ export interface UserWallet {
   totalWithdrawn?: number;
   lifetimeWins?: number;
   lifetimeLosses?: number;
+  preferredCurrency?: CurrencyType;
+  realTimeUpdateEnabled?: boolean;
 }
 
 export interface WalletTransaction {

@@ -912,6 +912,11 @@ export default function Admin() {
           <TabsContent value="cms" className="mt-6">
             <CmsManagement />
           </TabsContent>
+
+          {/* Email Templates */}
+          <TabsContent value="email" className="mt-6">
+            <EmailTemplates />
+          </TabsContent>
         </Tabs>
       </div>
     </div>

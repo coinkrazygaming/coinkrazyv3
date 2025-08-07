@@ -71,6 +71,7 @@ const App = () => (
             <Route path="/support" element={<Support />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/responsible-gaming" element={<ResponsibleGaming />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

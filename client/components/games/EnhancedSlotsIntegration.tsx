@@ -59,6 +59,7 @@ import {
   SlotSpinResult,
 } from "../../services/gameInterfaceService";
 import { walletService, CurrencyType } from "../../services/walletService";
+import { jackpotService, Jackpot } from "../../services/jackpotService";
 import { useToast } from "@/hooks/use-toast";
 
 interface SlotGame {

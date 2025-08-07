@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/ui/Logo";
 import { playerCountService } from "@/services/playerCountService";
-import RealTimeBalance from "@/components/RealTimeBalance";
-import WalletBalance from "@/components/WalletBalance";
+import UserAccountHeader from "@/components/UserAccountHeader";
 import CurrencyToggle from "@/components/CurrencyToggle";
 import {
   Coins,
@@ -15,17 +14,14 @@ import {
   Gift,
   Phone,
   Plus,
-  Wallet,
-  RefreshCw,
-  ChevronDown,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   analyticsService,
   type RealTimeData,
-  type UserWalletBalance,
 } from "../services/realTimeAnalytics";
-import { useAuth } from "../hooks/useAuth";
+import { authService } from "../services/authService";
+import { User } from "../types/auth";
 
 export default function Navigation() {
   const location = useLocation();

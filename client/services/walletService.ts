@@ -688,7 +688,21 @@ class WalletService {
     lastSync: Date;
     endpoint: string;
     database: string;
+    connectionCount?: number;
+    totalQueries?: number;
   } {
+    if (this.neonService) {
+      const status = this.neonService.getNeonStatus();
+      return {
+        connected: status.connected,
+        lastSync: status.lastSync,
+        endpoint: status.host,
+        database: status.database,
+        connectionCount: status.connectionCount,
+        totalQueries: status.totalQueries,
+      };
+    }
+
     return {
       connected: this.neonClient?.connected || false,
       lastSync: this.neonClient?.lastSync || new Date(),

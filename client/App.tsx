@@ -87,4 +87,19 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Ensure root is only created once
+const container = document.getElementById("root")!;
+let root: any;
+
+if (!root) {
+  root = createRoot(container);
+}
+
+root.render(<App />);
+
+// HMR support
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    root.render(<App />);
+  });
+}

@@ -89,6 +89,34 @@ export default function Login() {
     });
   };
 
+  const initializeAdmin = async () => {
+    try {
+      setSuccess("Initializing admin user...");
+      const response = await fetch("/api/init-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess(result.message);
+        setError("");
+        // Auto-fill admin credentials after creation
+        fillAdminCredentials();
+      } else {
+        setError(result.error || "Failed to initialize admin user");
+        setSuccess("");
+      }
+    } catch (error) {
+      setError("Failed to initialize admin user");
+      setSuccess("");
+      console.error("Admin initialization error:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
@@ -274,15 +302,26 @@ export default function Login() {
                   <p className="text-muted-foreground">
                     <strong>Admin Account:</strong> coinkrazy00@gmail.com
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={fillAdminCredentials}
-                    disabled={loading}
-                    className="w-full"
-                  >
-                    Fill Admin Credentials
-                  </Button>
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={fillAdminCredentials}
+                      disabled={loading}
+                      className="w-full"
+                    >
+                      Fill Admin Credentials
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={initializeAdmin}
+                      disabled={loading}
+                      className="w-full text-xs"
+                    >
+                      Initialize Admin User
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>

@@ -377,6 +377,10 @@ export default function Admin() {
               <Layout className="w-4 h-4 mr-2" />
               CMS
             </TabsTrigger>
+            <TabsTrigger value="email">
+              <Mail className="w-4 h-4 mr-2" />
+              Email Templates
+            </TabsTrigger>
             <TabsTrigger value="audit">
               <FileText className="w-4 h-4 mr-2" />
               Audit Logs

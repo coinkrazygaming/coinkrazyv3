@@ -184,6 +184,11 @@ class WalletService {
       await this.syncWithNeon();
     }, 2000);
 
+    // Enhanced real-time updates every 1 second for active users
+    this.realTimeUpdateInterval = setInterval(() => {
+      this.performRealTimeUpdates();
+    }, 1000);
+
     // Simulate real-time balance changes
     setInterval(
       () => {

@@ -89,6 +89,7 @@ const App = () => (
             <Route path="/dashboard/wheel" element={<AuthGuard><DailyLuckyWheel /></AuthGuard>} />
             <Route path="/dashboard/banking" element={<AuthGuard><BankingTab /></AuthGuard>} />
             <Route path="/casino" element={<AuthGuard><InHouseCasino /></AuthGuard>} />
+            <Route path="/game-aggregator" element={<AuthGuard><RealGameAggregator /></AuthGuard>} />
 
             {/* Admin Only Routes */}
             <Route path="/analytics" element={<AuthGuard requireAdmin><Analytics /></AuthGuard>} />

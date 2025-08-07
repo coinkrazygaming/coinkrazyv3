@@ -4,10 +4,12 @@ import "./services/globalErrorHandler"; // Load WebSocket error protection
 // Emergency error suppression for getReadyStateText and HMR issues
 if (typeof window !== "undefined") {
   window.onerror = (msg, url, line, col, error) => {
-    const msgStr = msg?.toString() || '';
-    if (msgStr.includes("getReadyStateText") ||
-        msgStr.includes("send was called before connect") ||
-        msgStr.includes("WebSocket")) {
+    const msgStr = msg?.toString() || "";
+    if (
+      msgStr.includes("getReadyStateText") ||
+      msgStr.includes("send was called before connect") ||
+      msgStr.includes("WebSocket")
+    ) {
       console.log("Emergency: Suppressed HMR/WebSocket error:", msgStr);
       return true; // Prevent default error handling
     }
@@ -112,7 +114,7 @@ if (import.meta.hot) {
         globalThis.__APP_ROOT__.render(<App />);
       }
     } catch (error) {
-      console.warn('HMR update failed:', error);
+      console.warn("HMR update failed:", error);
       // Fallback: recreate root if needed
       if (!globalThis.__APP_ROOT__) {
         globalThis.__APP_ROOT__ = createRoot(container);

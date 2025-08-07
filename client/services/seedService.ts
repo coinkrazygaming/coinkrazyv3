@@ -3,7 +3,7 @@ class SeedService {
   private baseUrl: string;
 
   private constructor() {
-    this.baseUrl = '/api';
+    this.baseUrl = "/api";
   }
 
   static getInstance(): SeedService {
@@ -13,12 +13,16 @@ class SeedService {
     return SeedService.instance;
   }
 
-  async seedDatabase(): Promise<{success: boolean, message?: string, error?: string}> {
+  async seedDatabase(): Promise<{
+    success: boolean;
+    message?: string;
+    error?: string;
+  }> {
     try {
       const response = await fetch(`${this.baseUrl}/seed-database`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -29,10 +33,11 @@ class SeedService {
       const result = await response.json();
       return result;
     } catch (error) {
-      console.error('Database seeding error:', error);
+      console.error("Database seeding error:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }

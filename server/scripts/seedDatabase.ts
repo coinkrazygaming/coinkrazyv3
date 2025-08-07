@@ -7,7 +7,7 @@ const seedData = {
     password: "Woot6969!",
     username: "admin",
     first_name: "Admin",
-    last_name: "User"
+    last_name: "User",
   },
   games: [
     {
@@ -21,9 +21,10 @@ const seedData = {
       max_bet_gc: 10000,
       min_bet_sc: 1,
       max_bet_sc: 100,
-      image_url: "https://cdn.pragmaticplay.net/game_pic/rec/200/vs20olympgate.png",
+      image_url:
+        "https://cdn.pragmaticplay.net/game_pic/rec/200/vs20olympgate.png",
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       game_id: "book-of-dead",
@@ -36,9 +37,10 @@ const seedData = {
       max_bet_gc: 10000,
       min_bet_sc: 1,
       max_bet_sc: 100,
-      image_url: "https://www.playngo.com/wp-content/uploads/game-icons/BookofDead.jpg",
+      image_url:
+        "https://www.playngo.com/wp-content/uploads/game-icons/BookofDead.jpg",
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       game_id: "sweet-bonanza",
@@ -51,9 +53,10 @@ const seedData = {
       max_bet_gc: 10000,
       min_bet_sc: 1,
       max_bet_sc: 100,
-      image_url: "https://cdn.pragmaticplay.net/game_pic/rec/200/vs20fruitswx.png",
+      image_url:
+        "https://cdn.pragmaticplay.net/game_pic/rec/200/vs20fruitswx.png",
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       game_id: "starburst",
@@ -66,9 +69,10 @@ const seedData = {
       max_bet_gc: 10000,
       min_bet_sc: 1,
       max_bet_sc: 100,
-      image_url: "https://www.netent.com/content/uploads/2018/10/starburst_thumbnail.jpg",
+      image_url:
+        "https://www.netent.com/content/uploads/2018/10/starburst_thumbnail.jpg",
       is_active: true,
-      is_featured: false
+      is_featured: false,
     },
     {
       game_id: "gonzo-quest",
@@ -81,33 +85,35 @@ const seedData = {
       max_bet_gc: 10000,
       min_bet_sc: 1,
       max_bet_sc: 100,
-      image_url: "https://www.netent.com/content/uploads/2018/10/gonzos_quest_thumbnail.jpg",
+      image_url:
+        "https://www.netent.com/content/uploads/2018/10/gonzos_quest_thumbnail.jpg",
       is_active: true,
-      is_featured: false
-    }
+      is_featured: false,
+    },
   ],
   aiEmployees: [
     {
       name: "LuckyAI",
       role: "Customer Support",
-      description: "Primary AI assistant for customer support and general inquiries",
+      description:
+        "Primary AI assistant for customer support and general inquiries",
       capabilities: "Customer support, game guidance, account assistance",
-      status: "active"
+      status: "active",
     },
     {
       name: "SecurityBot",
       role: "Security Monitor",
       description: "Monitors platform security and fraud detection",
       capabilities: "Fraud detection, security monitoring, risk assessment",
-      status: "active"
+      status: "active",
     },
     {
       name: "GameMaster",
       role: "Game Operations",
       description: "Manages game operations and RTP monitoring",
       capabilities: "Game monitoring, RTP analysis, jackpot management",
-      status: "active"
-    }
+      status: "active",
+    },
   ],
   coinPackages: [
     {
@@ -119,7 +125,7 @@ const seedData = {
       bonus_sweeps_coins: 10,
       price_usd: 4.99,
       is_active: true,
-      sort_order: 1
+      sort_order: 1,
     },
     {
       name: "Bronze Pack",
@@ -130,7 +136,7 @@ const seedData = {
       bonus_sweeps_coins: 25,
       price_usd: 9.99,
       is_active: true,
-      sort_order: 2
+      sort_order: 2,
     },
     {
       name: "Silver Pack",
@@ -141,7 +147,7 @@ const seedData = {
       bonus_sweeps_coins: 60,
       price_usd: 19.99,
       is_active: true,
-      sort_order: 3
+      sort_order: 3,
     },
     {
       name: "Gold Pack",
@@ -152,14 +158,14 @@ const seedData = {
       bonus_sweeps_coins: 150,
       price_usd: 49.99,
       is_active: true,
-      sort_order: 4
-    }
-  ]
+      sort_order: 4,
+    },
+  ],
 };
 
 async function createTables() {
   console.log("Creating database tables...");
-  
+
   // Users table
   await databaseService.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -327,12 +333,13 @@ async function createTables() {
 
 async function seedAdmin() {
   console.log("Seeding admin user...");
-  
+
   const bcrypt = await import("bcryptjs");
   const passwordHash = await bcrypt.default.hash(seedData.admin.password, 12);
-  
+
   try {
-    const result = await databaseService.query(`
+    const result = await databaseService.query(
+      `
       INSERT INTO users (email, username, password_hash, first_name, last_name, role, status, is_email_verified)
       VALUES ($1, $2, $3, $4, $5, 'admin', 'active', TRUE)
       ON CONFLICT (email) DO UPDATE SET
@@ -342,25 +349,30 @@ async function seedAdmin() {
         is_email_verified = TRUE,
         updated_at = CURRENT_TIMESTAMP
       RETURNING id
-    `, [
-      seedData.admin.email,
-      seedData.admin.username,
-      passwordHash,
-      seedData.admin.first_name,
-      seedData.admin.last_name
-    ]);
-    
+    `,
+      [
+        seedData.admin.email,
+        seedData.admin.username,
+        passwordHash,
+        seedData.admin.first_name,
+        seedData.admin.last_name,
+      ],
+    );
+
     const adminId = result.rows[0].id;
-    
+
     // Create admin balance
-    await databaseService.query(`
+    await databaseService.query(
+      `
       INSERT INTO user_balances (user_id, gold_coins, sweeps_coins)
       VALUES ($1, 1000000, 1000)
       ON CONFLICT (user_id) DO UPDATE SET
         gold_coins = GREATEST(user_balances.gold_coins, 1000000),
         sweeps_coins = GREATEST(user_balances.sweeps_coins, 1000)
-    `, [adminId]);
-    
+    `,
+      [adminId],
+    );
+
     console.log("Admin user seeded successfully!");
   } catch (error) {
     console.error("Error seeding admin:", error);
@@ -369,10 +381,11 @@ async function seedAdmin() {
 
 async function seedGames() {
   console.log("Seeding games...");
-  
+
   for (const game of seedData.games) {
     try {
-      await databaseService.query(`
+      await databaseService.query(
+        `
         INSERT INTO games (
           game_id, name, provider, category, rtp, max_win_multiplier,
           min_bet_gc, max_bet_gc, min_bet_sc, max_bet_sc, image_url,
@@ -393,26 +406,38 @@ async function seedGames() {
           is_active = $12,
           is_featured = $13,
           updated_at = CURRENT_TIMESTAMP
-      `, [
-        game.game_id, game.name, game.provider, game.category,
-        game.rtp, game.max_win_multiplier, game.min_bet_gc, game.max_bet_gc,
-        game.min_bet_sc, game.max_bet_sc, game.image_url,
-        game.is_active, game.is_featured
-      ]);
+      `,
+        [
+          game.game_id,
+          game.name,
+          game.provider,
+          game.category,
+          game.rtp,
+          game.max_win_multiplier,
+          game.min_bet_gc,
+          game.max_bet_gc,
+          game.min_bet_sc,
+          game.max_bet_sc,
+          game.image_url,
+          game.is_active,
+          game.is_featured,
+        ],
+      );
     } catch (error) {
       console.error(`Error seeding game ${game.name}:`, error);
     }
   }
-  
+
   console.log("Games seeded successfully!");
 }
 
 async function seedAIEmployees() {
   console.log("Seeding AI employees...");
-  
+
   for (const employee of seedData.aiEmployees) {
     try {
-      await databaseService.query(`
+      await databaseService.query(
+        `
         INSERT INTO ai_employees (name, role, description, capabilities, status)
         VALUES ($1, $2, $3, $4, $5)
         ON CONFLICT (name) DO UPDATE SET
@@ -420,24 +445,30 @@ async function seedAIEmployees() {
           description = $3,
           capabilities = $4,
           status = $5
-      `, [
-        employee.name, employee.role, employee.description,
-        employee.capabilities, employee.status
-      ]);
+      `,
+        [
+          employee.name,
+          employee.role,
+          employee.description,
+          employee.capabilities,
+          employee.status,
+        ],
+      );
     } catch (error) {
       console.error(`Error seeding AI employee ${employee.name}:`, error);
     }
   }
-  
+
   console.log("AI employees seeded successfully!");
 }
 
 async function seedCoinPackages() {
   console.log("Seeding coin packages...");
-  
+
   for (const pkg of seedData.coinPackages) {
     try {
-      await databaseService.query(`
+      await databaseService.query(
+        `
         INSERT INTO coin_packages (
           name, description, gold_coins, sweeps_coins,
           bonus_gold_coins, bonus_sweeps_coins, price_usd,
@@ -453,60 +484,79 @@ async function seedCoinPackages() {
           price_usd = $7,
           is_active = $8,
           sort_order = $9
-      `, [
-        pkg.name, pkg.description, pkg.gold_coins, pkg.sweeps_coins,
-        pkg.bonus_gold_coins, pkg.bonus_sweeps_coins, pkg.price_usd,
-        pkg.is_active, pkg.sort_order
-      ]);
+      `,
+        [
+          pkg.name,
+          pkg.description,
+          pkg.gold_coins,
+          pkg.sweeps_coins,
+          pkg.bonus_gold_coins,
+          pkg.bonus_sweeps_coins,
+          pkg.price_usd,
+          pkg.is_active,
+          pkg.sort_order,
+        ],
+      );
     } catch (error) {
       console.error(`Error seeding coin package ${pkg.name}:`, error);
     }
   }
-  
+
   console.log("Coin packages seeded successfully!");
 }
 
 async function seedLiveStats() {
   console.log("Seeding live stats...");
-  
+
   const stats = [
     { name: "total_users", value: 1, metadata: { type: "counter" } },
     { name: "active_players", value: 0, metadata: { type: "gauge" } },
     { name: "total_games_played", value: 0, metadata: { type: "counter" } },
-    { name: "total_jackpot_gc", value: 0, metadata: { type: "currency", currency: "GC" } },
-    { name: "total_jackpot_sc", value: 0, metadata: { type: "currency", currency: "SC" } },
-    { name: "platform_rtp", value: 96.5, metadata: { type: "percentage" } }
+    {
+      name: "total_jackpot_gc",
+      value: 0,
+      metadata: { type: "currency", currency: "GC" },
+    },
+    {
+      name: "total_jackpot_sc",
+      value: 0,
+      metadata: { type: "currency", currency: "SC" },
+    },
+    { name: "platform_rtp", value: 96.5, metadata: { type: "percentage" } },
   ];
-  
+
   for (const stat of stats) {
     try {
-      await databaseService.query(`
+      await databaseService.query(
+        `
         INSERT INTO live_stats (stat_name, stat_value, stat_metadata)
         VALUES ($1, $2, $3)
         ON CONFLICT (stat_name) DO UPDATE SET
           stat_value = EXCLUDED.stat_value,
           stat_metadata = EXCLUDED.stat_metadata,
           updated_at = CURRENT_TIMESTAMP
-      `, [stat.name, stat.value, JSON.stringify(stat.metadata)]);
+      `,
+        [stat.name, stat.value, JSON.stringify(stat.metadata)],
+      );
     } catch (error) {
       console.error(`Error seeding stat ${stat.name}:`, error);
     }
   }
-  
+
   console.log("Live stats seeded successfully!");
 }
 
 export async function seedDatabase() {
   try {
     console.log("Starting database seeding...");
-    
+
     await createTables();
     await seedAdmin();
     await seedGames();
     await seedAIEmployees();
     await seedCoinPackages();
     await seedLiveStats();
-    
+
     console.log("Database seeding completed successfully!");
     return { success: true, message: "Database seeded successfully" };
   } catch (error) {
@@ -517,7 +567,7 @@ export async function seedDatabase() {
 
 // Run seeding if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  seedDatabase().then(result => {
+  seedDatabase().then((result) => {
     console.log("Seeding result:", result);
     process.exit(result.success ? 0 : 1);
   });

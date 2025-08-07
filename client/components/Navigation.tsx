@@ -106,23 +106,6 @@ export default function Navigation() {
     return true;
   });
 
-  const formatCurrency = (amount: number, currency: string) => {
-    switch (currency) {
-      case "BTC":
-        return `₿${(amount / 45000).toFixed(6)}`; // Rough BTC conversion
-      case "ETH":
-        return `Ξ${(amount / 2500).toFixed(4)}`; // Rough ETH conversion
-      default:
-        return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-  };
-
-  const toggleCurrency = () => {
-    const currencies: ("USD" | "BTC" | "ETH")[] = ["USD", "BTC", "ETH"];
-    const currentIndex = currencies.indexOf(currentCurrency);
-    const nextIndex = (currentIndex + 1) % currencies.length;
-    setCurrentCurrency(currencies[nextIndex]);
-  };
 
   return (
     <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">

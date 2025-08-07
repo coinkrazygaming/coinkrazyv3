@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 import {
   Gift,
   Shield,
@@ -11,9 +14,6 @@ import {
   Star,
   Crown,
   Check,
-  Upload,
-  Camera,
-  CreditCard,
   AlertTriangle,
   MapPin,
   Calendar,
@@ -24,11 +24,16 @@ import {
   FileText,
   Eye,
   EyeOff,
+  Loader2,
+  CheckCircle,
 } from "lucide-react";
 
 const blockedStates = ["WA", "ID", "MT", "NV", "NY"];
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { register, loading } = useAuth();
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     username: "",
@@ -43,51 +48,66 @@ export default function Register() {
     city: "",
     state: "",
     zipCode: "",
-    ssn: "",
     agreeTerms: false,
     agreeMarketing: false,
     verifyAge: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [kycDocuments, setKycDocuments] = useState({
-    frontId: null,
-    backId: null,
-    selfie: null,
-    addressProof: null,
-  });
+  const [error, setError] = useState("");
   const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError(""); // Clear error when user starts typing
   };
 
   const isStateBlocked = (state: string) => {
     return blockedStates.includes(state.toUpperCase());
   };
 
+  const validateAge = (dateOfBirth: string) => {
+    if (!dateOfBirth) return false;
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      return age - 1 >= 18;
+    }
+    return age >= 18;
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const validateStep = (step: number) => {
     switch (step) {
       case 1:
         return (
-          formData.username &&
-          formData.email &&
-          formData.password &&
+          formData.username.length >= 3 &&
+          validateEmail(formData.email) &&
+          formData.password.length >= 6 &&
           formData.confirmPassword &&
           formData.password === formData.confirmPassword
         );
       case 2:
         return (
-          formData.firstName &&
-          formData.lastName &&
+          formData.firstName.length >= 2 &&
+          formData.lastName.length >= 2 &&
           formData.dateOfBirth &&
-          formData.phone
+          validateAge(formData.dateOfBirth) &&
+          formData.phone.length >= 10
         );
       case 3:
         return (
-          formData.address &&
-          formData.city &&
-          formData.state &&
-          formData.zipCode &&
+          formData.address.length >= 5 &&
+          formData.city.length >= 2 &&
+          formData.state.length >= 2 &&
+          formData.zipCode.length >= 5 &&
           !isStateBlocked(formData.state)
         );
       case 4:
@@ -100,7 +120,7 @@ export default function Register() {
   const nextStep = () => {
     if (validateStep(currentStep)) {
       if (currentStep === 4) {
-        setRegistrationComplete(true);
+        handleRegistration();
       } else {
         setCurrentStep((prev) => prev + 1);
       }
@@ -110,6 +130,93 @@ export default function Register() {
   const prevStep = () => {
     setCurrentStep((prev) => prev - 1);
   };
+
+  const handleRegistration = async () => {
+    try {
+      const registrationData = {
+        email: formData.email.toLowerCase(),
+        username: formData.username,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        dateOfBirth: formData.dateOfBirth,
+      };
+
+      const response = await register(registrationData);
+      
+      if (response.success) {
+        if (response.requiresEmailVerification) {
+          setPendingVerification(true);
+          toast({
+            title: "Registration Successful!",
+            description: "Please check your email to verify your account and claim your welcome bonus.",
+          });
+        } else {
+          setRegistrationComplete(true);
+        }
+      } else {
+        setError(response.message || "Registration failed");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Registration error:", error);
+    }
+  };
+
+  if (pendingVerification) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="max-w-2xl mx-auto border-gold-500/20 bg-gradient-to-r from-gold/5 to-casino-blue/5">
+          <CardContent className="p-12 text-center">
+            <div className="w-20 h-20 bg-gradient-to-r from-casino-blue to-casino-blue-dark rounded-full flex items-center justify-center mx-auto mb-6">
+              <Mail className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Check Your Email!</h2>
+            <p className="text-muted-foreground mb-8">
+              We've sent a verification link to <strong>{formData.email}</strong>. 
+              Click the link in your email to verify your account and claim your welcome bonus!
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="text-center p-4 bg-card rounded-lg">
+                <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-gold-500">10</div>
+                <div className="text-sm text-muted-foreground">Gold Coins</div>
+              </div>
+              <div className="text-center p-4 bg-card rounded-lg">
+                <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
+                <div className="text-2xl font-bold text-casino-blue">10</div>
+                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Alert className="border-blue-500/20 bg-blue-500/10">
+                <Mail className="w-4 h-4 text-blue-500" />
+                <AlertDescription className="text-blue-400">
+                  <strong>Awaiting Email Verification</strong><br />
+                  Your welcome bonus will be credited automatically after email verification.
+                </AlertDescription>
+              </Alert>
+              
+              <Link to="/login">
+                <Button
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                >
+                  Back to Login
+                </Button>
+              </Link>
+              
+              <p className="text-sm text-muted-foreground">
+                Didn't receive the email? Check your spam folder or contact support.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (registrationComplete) {
     return (
@@ -121,37 +228,31 @@ export default function Register() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Welcome to CoinKrazy!</h2>
             <p className="text-muted-foreground mb-8">
-              Your account has been created successfully. You've received your
-              welcome bonus!
+              Your account has been created successfully. You've received your welcome bonus!
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="text-center p-4 bg-card rounded-lg">
                 <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gold-500">100,000</div>
+                <div className="text-2xl font-bold text-gold-500">10</div>
                 <div className="text-sm text-muted-foreground">Gold Coins</div>
               </div>
               <div className="text-center p-4 bg-card rounded-lg">
                 <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
-                <div className="text-2xl font-bold text-casino-blue">50</div>
-                <div className="text-sm text-muted-foreground">
-                  Sweeps Coins
-                </div>
-              </div>
-              <div className="text-center p-4 bg-card rounded-lg">
-                <Star className="w-8 h-8 text-gold-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gold-500">7</div>
-                <div className="text-sm text-muted-foreground">Days VIP</div>
+                <div className="text-2xl font-bold text-casino-blue">10</div>
+                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <Button
-                size="lg"
-                className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-              >
-                Start Playing Now
-              </Button>
+              <Link to="/games">
+                <Button
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                >
+                  Start Playing Now
+                </Button>
+              </Link>
               <p className="text-sm text-muted-foreground">
                 Complete KYC verification to unlock Sweeps Coin withdrawals
               </p>
@@ -185,28 +286,19 @@ export default function Register() {
             <CardContent className="p-6 text-center">
               <Gift className="w-12 h-12 text-gold-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-4">Welcome Bonus Package</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">
-                    100,000
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Free Gold Coins
-                  </div>
+                  <div className="text-2xl font-bold text-gold-500 mb-1">10</div>
+                  <div className="text-sm text-muted-foreground">Free Gold Coins</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-casino-blue mb-1">
-                    50
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Sweeps Coins
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">7</div>
-                  <div className="text-sm text-muted-foreground">Days VIP</div>
+                  <div className="text-2xl font-bold text-casino-blue mb-1">10</div>
+                  <div className="text-sm text-muted-foreground">Sweeps Coins</div>
                 </div>
               </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Bonus awarded after email verification
+              </p>
             </CardContent>
           </Card>
 
@@ -242,6 +334,15 @@ export default function Register() {
             </div>
           </div>
 
+          {error && (
+            <Alert className="mb-6 border-red-500/20 bg-red-500/10">
+              <AlertTriangle className="w-4 h-4 text-red-500" />
+              <AlertDescription className="text-red-400">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>
@@ -262,12 +363,14 @@ export default function Register() {
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
-                        placeholder="Choose a username"
+                        placeholder="Choose a username (3+ characters)"
                         value={formData.username}
                         onChange={(e) =>
                           handleInputChange("username", e.target.value)
                         }
                         className="pl-10"
+                        disabled={loading}
+                        autoComplete="username"
                       />
                     </div>
                   </div>
@@ -286,6 +389,8 @@ export default function Register() {
                           handleInputChange("email", e.target.value)
                         }
                         className="pl-10"
+                        disabled={loading}
+                        autoComplete="email"
                       />
                     </div>
                   </div>
@@ -298,17 +403,20 @@ export default function Register() {
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Create a strong password"
+                        placeholder="Create a strong password (6+ characters)"
                         value={formData.password}
                         onChange={(e) =>
                           handleInputChange("password", e.target.value)
                         }
                         className="pl-10 pr-10"
+                        disabled={loading}
+                        autoComplete="new-password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        disabled={loading}
                       >
                         {showPassword ? (
                           <EyeOff className="w-4 h-4" />
@@ -333,6 +441,8 @@ export default function Register() {
                           handleInputChange("confirmPassword", e.target.value)
                         }
                         className="pl-10"
+                        disabled={loading}
+                        autoComplete="new-password"
                       />
                     </div>
                     {formData.password &&
@@ -360,6 +470,8 @@ export default function Register() {
                         onChange={(e) =>
                           handleInputChange("firstName", e.target.value)
                         }
+                        disabled={loading}
+                        autoComplete="given-name"
                       />
                     </div>
                     <div>
@@ -372,6 +484,8 @@ export default function Register() {
                         onChange={(e) =>
                           handleInputChange("lastName", e.target.value)
                         }
+                        disabled={loading}
+                        autoComplete="family-name"
                       />
                     </div>
                   </div>
@@ -389,11 +503,18 @@ export default function Register() {
                           handleInputChange("dateOfBirth", e.target.value)
                         }
                         className="pl-10"
+                        disabled={loading}
+                        autoComplete="bday"
                       />
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       Must be 18+ years old
                     </p>
+                    {formData.dateOfBirth && !validateAge(formData.dateOfBirth) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        You must be 18 or older to register
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -410,6 +531,8 @@ export default function Register() {
                           handleInputChange("phone", e.target.value)
                         }
                         className="pl-10"
+                        disabled={loading}
+                        autoComplete="tel"
                       />
                     </div>
                   </div>
@@ -432,6 +555,8 @@ export default function Register() {
                           handleInputChange("address", e.target.value)
                         }
                         className="pl-10"
+                        disabled={loading}
+                        autoComplete="street-address"
                       />
                     </div>
                   </div>
@@ -447,6 +572,8 @@ export default function Register() {
                         onChange={(e) =>
                           handleInputChange("city", e.target.value)
                         }
+                        disabled={loading}
+                        autoComplete="address-level2"
                       />
                     </div>
                     <div>
@@ -462,6 +589,8 @@ export default function Register() {
                         className={
                           isStateBlocked(formData.state) ? "border-red-500" : ""
                         }
+                        disabled={loading}
+                        autoComplete="address-level1"
                       />
                       {isStateBlocked(formData.state) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -480,6 +609,8 @@ export default function Register() {
                         onChange={(e) =>
                           handleInputChange("zipCode", e.target.value)
                         }
+                        disabled={loading}
+                        autoComplete="postal-code"
                       />
                     </div>
                   </div>
@@ -512,6 +643,7 @@ export default function Register() {
                           handleInputChange("verifyAge", e.target.checked)
                         }
                         className="mt-1"
+                        disabled={loading}
                       />
                       <div>
                         <label htmlFor="verifyAge" className="font-medium">
@@ -532,6 +664,7 @@ export default function Register() {
                           handleInputChange("agreeTerms", e.target.checked)
                         }
                         className="mt-1"
+                        disabled={loading}
                       />
                       <div>
                         <label htmlFor="agreeTerms" className="font-medium">
@@ -553,6 +686,7 @@ export default function Register() {
                           handleInputChange("agreeMarketing", e.target.checked)
                         }
                         className="mt-1"
+                        disabled={loading}
                       />
                       <div>
                         <label htmlFor="agreeMarketing" className="font-medium">
@@ -586,16 +720,23 @@ export default function Register() {
                 <Button
                   variant="outline"
                   onClick={prevStep}
-                  disabled={currentStep === 1}
+                  disabled={currentStep === 1 || loading}
                 >
                   Previous
                 </Button>
                 <Button
                   onClick={nextStep}
-                  disabled={!validateStep(currentStep)}
+                  disabled={!validateStep(currentStep) || loading}
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
-                  {currentStep === 4 ? "Create Account" : "Next"}
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    currentStep === 4 ? "Create Account" : "Next"
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -627,6 +768,15 @@ export default function Register() {
             <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
               CoinKrazy operates as a legal sweepstakes casino. Play
               responsibly. If you have a gambling problem, call 1-800-GAMBLER.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-gold-400 hover:text-gold-300 font-medium"
+              >
+                Sign in here
+              </Link>
             </p>
           </div>
         </div>

@@ -116,7 +116,7 @@ class RealNeonService {
 
       // Test connection
       await this.sql`SELECT NOW() as current_time`;
-      this.isConnected = true;
+      this.connected = true;
       console.log("✅ Neon Database connected successfully");
 
       // Initialize tables
@@ -126,7 +126,7 @@ class RealNeonService {
       await this.insertDefaultData();
     } catch (error) {
       console.error("❌ Failed to connect to Neon:", error);
-      this.isConnected = false;
+      this.connected = false;
     }
   }
 

@@ -116,7 +116,7 @@ class RealNeonService {
 
       // Test connection with timeout
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Connection timeout')), 10000)
+        setTimeout(() => reject(new Error("Connection timeout")), 10000),
       );
 
       const connectionTest = this.sql`SELECT NOW() as current_time`;
@@ -134,7 +134,6 @@ class RealNeonService {
           console.error("Failed to initialize tables:", error);
         }
       }, 1000);
-
     } catch (error) {
       console.error("❌ Failed to connect to Neon:", error);
       this.connected = false;

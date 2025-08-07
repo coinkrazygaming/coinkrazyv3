@@ -137,25 +137,14 @@ export default function Navigation() {
               </Badge>
             </div>
 
-            {/* Currency Toggle and Balance (logged in users only) */}
-            {user?.isLoggedIn && (
-              <CurrencyToggle
-                compact={true}
-                showBalance={true}
-                showDropdown={true}
-              />
-            )}
-
             {/* Contact Phone */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="w-4 h-4" />
               <span>319-473-0416</span>
             </div>
 
-            {/* Play Now Button */}
-            <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
-              Play Now
-            </Button>
+            {/* User Account or Login */}
+            <UserAccountHeader />
           </div>
 
           {/* Mobile Menu Button */}

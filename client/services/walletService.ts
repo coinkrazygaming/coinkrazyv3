@@ -86,8 +86,20 @@ class WalletService {
 
   constructor() {
     this.initializeNeonConnection();
+    this.initializeNeonService();
     this.initializeDefaultWallets();
     this.startRealTimeSync();
+  }
+
+  private async initializeNeonService() {
+    try {
+      // Dynamically import to avoid circular dependencies
+      const { neonDatabaseService } = await import('./neonDatabaseService');
+      this.neonService = neonDatabaseService;
+      console.log('✅ Neon Database Service integrated with Wallet Service');
+    } catch (error) {
+      console.error('Failed to initialize Neon Database Service:', error);
+    }
   }
 
   private async initializeNeonConnection() {

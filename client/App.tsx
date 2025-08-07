@@ -89,17 +89,21 @@ const App = () => (
 
 // Ensure root is only created once
 const container = document.getElementById("root")!;
-let root: any;
 
-if (!root) {
-  root = createRoot(container);
+// Store root reference globally to persist across HMR updates
+declare global {
+  var __APP_ROOT__: any;
 }
 
-root.render(<App />);
+if (!globalThis.__APP_ROOT__) {
+  globalThis.__APP_ROOT__ = createRoot(container);
+}
+
+globalThis.__APP_ROOT__.render(<App />);
 
 // HMR support
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
-    root.render(<App />);
+    globalThis.__APP_ROOT__.render(<App />);
   });
 }

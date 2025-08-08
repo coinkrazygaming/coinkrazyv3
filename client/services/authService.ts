@@ -125,6 +125,16 @@ class AuthService {
         body: JSON.stringify({ email, password }),
       });
 
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Login API error:", response.status, errorText);
+        return {
+          success: false,
+          message: `Login failed: ${response.status} ${response.statusText}`
+        };
+      }
+
       const result = await response.json();
 
       if (result.success && result.user) {

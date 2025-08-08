@@ -45,13 +45,15 @@ export default function Navigation() {
   // Debug logging
   useEffect(() => {
     console.log("Navigation: Auth state changed", {
-      user: user ? {
-        id: user.id,
-        email: user.email,
-        isLoggedIn: user.isLoggedIn,
-        isAdmin: user.isAdmin
-      } : null,
-      authLoading
+      user: user
+        ? {
+            id: user.id,
+            email: user.email,
+            isLoggedIn: user.isLoggedIn,
+            isAdmin: user.isAdmin,
+          }
+        : null,
+      authLoading,
     });
   }, [user, authLoading]);
 
@@ -297,7 +299,10 @@ export default function Navigation() {
                         Login
                       </Button>
                     </Link>
-                    <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+                    <Link
+                      to="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       <Button className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
                         Register
                       </Button>

@@ -627,7 +627,11 @@ export default function Register() {
                   disabled={!validateStep(currentStep) || isLoading}
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
-                  {isLoading ? "Creating Account..." : currentStep === 4 ? "Create Account" : "Next"}
+                  {isLoading
+                    ? "Creating Account..."
+                    : currentStep === 4
+                      ? "Create Account"
+                      : "Next"}
                 </Button>
               </div>
             </CardContent>

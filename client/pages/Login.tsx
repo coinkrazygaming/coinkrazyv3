@@ -147,119 +147,128 @@ export default function Login() {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      handleInputChange("password", e.target.value)
-                    }
-                    className="pl-10 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={(e) =>
-                      handleInputChange("rememberMe", e.target.checked)
-                    }
-                  />
-                  <label htmlFor="rememberMe" className="text-sm">
-                    Remember me
-                  </label>
-                </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-gold-400 hover:text-gold-300"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              {loginError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <div className="flex items-center gap-2 text-red-500">
-                    <AlertTriangle className="w-4 h-4" />
-                    <span className="text-sm">{loginError}</span>
-                  </div>
-                </div>
-              )}
-
-              <Button
-                onClick={handleLogin}
-                disabled={!formData.email || !formData.password || isLoading}
-                className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-                type="button"
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleLogin();
+                }}
+                className="space-y-6"
               >
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
 
-              <div className="text-center">
-                <p className="text-muted-foreground">
-                  Don't have an account?{" "}
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
+                      className="pl-10 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      checked={formData.rememberMe}
+                      onChange={(e) =>
+                        handleInputChange("rememberMe", e.target.checked)
+                      }
+                    />
+                    <label htmlFor="rememberMe" className="text-sm">
+                      Remember me
+                    </label>
+                  </div>
                   <Link
-                    to="/register"
-                    className="text-gold-400 hover:text-gold-300 font-medium"
+                    to="/forgot-password"
+                    className="text-sm text-gold-400 hover:text-gold-300"
                   >
-                    Sign up here
+                    Forgot password?
                   </Link>
-                </p>
-              </div>
+                </div>
 
-              {/* Admin Login Demo */}
-              <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="w-4 h-4 text-casino-blue" />
-                  <span className="text-sm font-medium">Demo Accounts</span>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <strong>Admin:</strong> coinkrazy00@gmail.com / Tabletop123!
+                {loginError && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 text-red-500">
+                      <AlertTriangle className="w-4 h-4" />
+                      <span className="text-sm">{loginError}</span>
+                    </div>
                   </div>
-                  <div>
-                    <strong>Player:</strong> demo@player.com / password123
+                )}
+
+                <Button
+                  onClick={handleLogin}
+                  disabled={!formData.email || !formData.password || isLoading}
+                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                  type="button"
+                >
+                  {isLoading ? "Logging in..." : "Login"}
+                </Button>
+
+                <div className="text-center">
+                  <p className="text-muted-foreground">
+                    Don't have an account?{" "}
+                    <Link
+                      to="/register"
+                      className="text-gold-400 hover:text-gold-300 font-medium"
+                    >
+                      Sign up here
+                    </Link>
+                  </p>
+                </div>
+
+                {/* Admin Login Demo */}
+                <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="w-4 h-4 text-casino-blue" />
+                    <span className="text-sm font-medium">Demo Accounts</span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <strong>Admin:</strong> coinkrazy00@gmail.com /
+                      Tabletop123!
+                    </div>
+                    <div>
+                      <strong>Player:</strong> demo@player.com / password123
+                    </div>
                   </div>
                 </div>
-              </div>
               </form>
             </CardContent>
           </Card>

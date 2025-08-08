@@ -1,10 +1,5 @@
 import { useState } from "react";
-<<<<<<< HEAD
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-=======
 import { Link, useNavigate } from "react-router-dom";
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,16 +31,11 @@ import {
 const blockedStates = ["WA", "ID", "MT", "NV", "NY"];
 
 export default function Register() {
-<<<<<<< HEAD
-  const { login, isLoading } = useAuth();
-  const navigate = useNavigate();
-=======
   const navigate = useNavigate();
   const { register, loading } = useAuth();
 
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
   const [currentStep, setCurrentStep] = useState(1);
-  const [registrationError, setRegistrationError] = useState("");
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -64,7 +54,6 @@ export default function Register() {
     verifyAge: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
 
@@ -98,30 +87,36 @@ export default function Register() {
     return emailRegex.test(email);
   };
 
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
+
   const validateStep = (step: number) => {
     switch (step) {
       case 1:
         return (
-          formData.username.length >= 3 &&
+          formData.username &&
+          formData.email &&
           validateEmail(formData.email) &&
-          formData.password.length >= 6 &&
+          formData.password &&
+          validatePassword(formData.password) &&
           formData.confirmPassword &&
           formData.password === formData.confirmPassword
         );
       case 2:
         return (
-          formData.firstName.length >= 2 &&
-          formData.lastName.length >= 2 &&
+          formData.firstName &&
+          formData.lastName &&
           formData.dateOfBirth &&
           validateAge(formData.dateOfBirth) &&
-          formData.phone.length >= 10
+          formData.phone
         );
       case 3:
         return (
-          formData.address.length >= 5 &&
-          formData.city.length >= 2 &&
-          formData.state.length >= 2 &&
-          formData.zipCode.length >= 5 &&
+          formData.address &&
+          formData.city &&
+          formData.state &&
+          formData.zipCode &&
           !isStateBlocked(formData.state)
         );
       case 4:
@@ -134,27 +129,38 @@ export default function Register() {
   const nextStep = async () => {
     if (validateStep(currentStep)) {
       if (currentStep === 4) {
-<<<<<<< HEAD
         // Complete registration
-        setRegistrationError("");
+        setError("");
 
         try {
-          // In a real app, you'd create the account via API first
-          // For now, we'll just log them in
-          const success = await login(formData.email, formData.password);
+          const response = await register({
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            dateOfBirth: formData.dateOfBirth,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.zipCode,
+            agreeMarketing: formData.agreeMarketing,
+          });
 
-          if (success) {
-            setRegistrationComplete(true);
+          if (response.success) {
+            if (response.requiresEmailVerification) {
+              setPendingVerification(true);
+            } else {
+              setRegistrationComplete(true);
+            }
           } else {
-            setRegistrationError("Registration failed. Please try again.");
+            setError(response.message || "Registration failed");
           }
         } catch (error) {
           console.error("Registration error:", error);
-          setRegistrationError("Registration failed. Please try again.");
+          setError("Registration failed. Please try again.");
         }
-=======
-        handleRegistration();
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
       } else {
         setCurrentStep((prev) => prev + 1);
       }
@@ -165,52 +171,20 @@ export default function Register() {
     setCurrentStep((prev) => prev - 1);
   };
 
-  const handleRegistration = async () => {
-    try {
-      const registrationData = {
-        email: formData.email.toLowerCase(),
-        username: formData.username,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dateOfBirth: formData.dateOfBirth,
-      };
-
-      const response = await register(registrationData);
-
-      if (response.success) {
-        if (response.requiresEmailVerification) {
-          setPendingVerification(true);
-          toast({
-            title: "Registration Successful!",
-            description:
-              "Please check your email to verify your account and claim your welcome bonus.",
-          });
-        } else {
-          setRegistrationComplete(true);
-        }
-      } else {
-        setError(response.message || "Registration failed");
-      }
-    } catch (error) {
-      setError("An unexpected error occurred. Please try again.");
-      console.error("Registration error:", error);
-    }
-  };
-
   if (pendingVerification) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-2xl mx-auto border-gold-500/20 bg-gradient-to-r from-gold/5 to-casino-blue/5">
           <CardContent className="p-12 text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-casino-blue to-casino-blue-dark rounded-full flex items-center justify-center mx-auto mb-6">
-              <Mail className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Mail className="w-10 h-10 text-black" />
             </div>
             <h2 className="text-3xl font-bold mb-4">Check Your Email!</h2>
             <p className="text-muted-foreground mb-8">
               We've sent a verification link to{" "}
-              <strong>{formData.email}</strong>. Click the link in your email to
-              verify your account and claim your welcome bonus!
+              <strong>{formData.email}</strong>. Please check your inbox and
+              click the link to verify your account and claim your welcome
+              bonus!
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -229,29 +203,20 @@ export default function Register() {
             </div>
 
             <div className="space-y-4">
-              <Alert className="border-blue-500/20 bg-blue-500/10">
-                <Mail className="w-4 h-4 text-blue-500" />
-                <AlertDescription className="text-blue-400">
-                  <strong>Awaiting Email Verification</strong>
-                  <br />
-                  Your welcome bonus will be credited automatically after email
-                  verification.
-                </AlertDescription>
-              </Alert>
-
+              <p className="text-sm text-muted-foreground">
+                Didn't receive the email? Check your spam folder or{" "}
+                <button className="text-gold-400 hover:text-gold-300 underline">
+                  resend verification email
+                </button>
+              </p>
               <Link to="/login">
                 <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                  variant="outline"
+                  className="border-gold-500/50 text-gold-400"
                 >
                   Back to Login
                 </Button>
               </Link>
-
-              <p className="text-sm text-muted-foreground">
-                Didn't receive the email? Check your spam folder or contact
-                support.
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -289,24 +254,13 @@ export default function Register() {
             </div>
 
             <div className="space-y-4">
-<<<<<<< HEAD
               <Button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/games")}
                 size="lg"
                 className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
               >
                 Start Playing Now
               </Button>
-=======
-              <Link to="/games">
-                <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-                >
-                  Start Playing Now
-                </Button>
-              </Link>
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
               <p className="text-sm text-muted-foreground">
                 Complete KYC verification to unlock Sweeps Coin withdrawals
               </p>
@@ -342,9 +296,7 @@ export default function Register() {
               <h2 className="text-2xl font-bold mb-4">Welcome Bonus Package</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">
-                    10
-                  </div>
+                  <div className="text-2xl font-bold text-gold-500 mb-1">10</div>
                   <div className="text-sm text-muted-foreground">
                     Free Gold Coins
                   </div>
@@ -358,9 +310,6 @@ export default function Register() {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mt-4">
-                Bonus awarded after email verification
-              </p>
             </CardContent>
           </Card>
 
@@ -396,15 +345,6 @@ export default function Register() {
             </div>
           </div>
 
-          {error && (
-            <Alert className="mb-6 border-red-500/20 bg-red-500/10">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
-              <AlertDescription className="text-red-400">
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-
           <Card>
             <CardHeader>
               <CardTitle>
@@ -415,6 +355,16 @@ export default function Register() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Error Display */}
+              {error && (
+                <Alert className="border-red-500/20 bg-red-500/10">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  <AlertDescription className="text-red-400">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Step 1: Account Creation */}
               {currentStep === 1 && (
                 <div className="space-y-4">
@@ -425,14 +375,13 @@ export default function Register() {
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
-                        placeholder="Choose a username (3+ characters)"
+                        placeholder="Choose a username"
                         value={formData.username}
                         onChange={(e) =>
                           handleInputChange("username", e.target.value)
                         }
                         className="pl-10"
                         disabled={loading}
-                        autoComplete="username"
                       />
                     </div>
                   </div>
@@ -452,9 +401,13 @@ export default function Register() {
                         }
                         className="pl-10"
                         disabled={loading}
-                        autoComplete="email"
                       />
                     </div>
+                    {formData.email && !validateEmail(formData.email) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Please enter a valid email address
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -465,14 +418,13 @@ export default function Register() {
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Create a strong password (6+ characters)"
+                        placeholder="Create a strong password"
                         value={formData.password}
                         onChange={(e) =>
                           handleInputChange("password", e.target.value)
                         }
                         className="pl-10 pr-10"
                         disabled={loading}
-                        autoComplete="new-password"
                       />
                       <button
                         type="button"
@@ -487,6 +439,11 @@ export default function Register() {
                         )}
                       </button>
                     </div>
+                    {formData.password && !validatePassword(formData.password) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Password must be at least 8 characters long
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -504,7 +461,6 @@ export default function Register() {
                         }
                         className="pl-10"
                         disabled={loading}
-                        autoComplete="new-password"
                       />
                     </div>
                     {formData.password &&
@@ -533,7 +489,6 @@ export default function Register() {
                           handleInputChange("firstName", e.target.value)
                         }
                         disabled={loading}
-                        autoComplete="given-name"
                       />
                     </div>
                     <div>
@@ -547,7 +502,6 @@ export default function Register() {
                           handleInputChange("lastName", e.target.value)
                         }
                         disabled={loading}
-                        autoComplete="family-name"
                       />
                     </div>
                   </div>
@@ -566,7 +520,6 @@ export default function Register() {
                         }
                         className="pl-10"
                         disabled={loading}
-                        autoComplete="bday"
                       />
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -575,7 +528,7 @@ export default function Register() {
                     {formData.dateOfBirth &&
                       !validateAge(formData.dateOfBirth) && (
                         <p className="text-red-500 text-sm mt-1">
-                          You must be 18 or older to register
+                          You must be at least 18 years old to register
                         </p>
                       )}
                   </div>
@@ -595,7 +548,6 @@ export default function Register() {
                         }
                         className="pl-10"
                         disabled={loading}
-                        autoComplete="tel"
                       />
                     </div>
                   </div>
@@ -619,7 +571,6 @@ export default function Register() {
                         }
                         className="pl-10"
                         disabled={loading}
-                        autoComplete="street-address"
                       />
                     </div>
                   </div>
@@ -636,7 +587,6 @@ export default function Register() {
                           handleInputChange("city", e.target.value)
                         }
                         disabled={loading}
-                        autoComplete="address-level2"
                       />
                     </div>
                     <div>
@@ -653,7 +603,6 @@ export default function Register() {
                           isStateBlocked(formData.state) ? "border-red-500" : ""
                         }
                         disabled={loading}
-                        autoComplete="address-level1"
                       />
                       {isStateBlocked(formData.state) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -673,7 +622,6 @@ export default function Register() {
                           handleInputChange("zipCode", e.target.value)
                         }
                         disabled={loading}
-                        autoComplete="postal-code"
                       />
                     </div>
                   </div>
@@ -681,9 +629,7 @@ export default function Register() {
                   <div className="bg-muted/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Shield className="w-5 h-5 text-casino-blue" />
-                      <span className="font-medium">
-                        State Compliance Check
-                      </span>
+                      <span className="font-medium">State Compliance Check</span>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       We verify your location to ensure compliance with local
@@ -763,9 +709,7 @@ export default function Register() {
                   <div className="bg-gold/5 border border-gold-500/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <FileText className="w-5 h-5 text-gold-500" />
-                      <span className="font-medium">
-                        Sweepstakes Legal Notice
-                      </span>
+                      <span className="font-medium">Sweepstakes Legal Notice</span>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p>• No purchase necessary to play or win</p>
@@ -778,41 +722,17 @@ export default function Register() {
                 </div>
               )}
 
-              {/* Registration Error */}
-              {registrationError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <div className="flex items-center gap-2 text-red-500">
-                    <AlertTriangle className="w-4 h-4" />
-                    <span className="text-sm">{registrationError}</span>
-                  </div>
-                </div>
-              )}
-
               {/* Navigation Buttons */}
               <div className="flex justify-between pt-6">
                 <Button
                   variant="outline"
                   onClick={prevStep}
-<<<<<<< HEAD
-                  disabled={currentStep === 1 || isLoading}
-=======
                   disabled={currentStep === 1 || loading}
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
                 >
                   Previous
                 </Button>
                 <Button
                   onClick={nextStep}
-<<<<<<< HEAD
-                  disabled={!validateStep(currentStep) || isLoading}
-                  className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-                >
-                  {isLoading
-                    ? "Creating Account..."
-                    : currentStep === 4
-                      ? "Create Account"
-                      : "Next"}
-=======
                   disabled={!validateStep(currentStep) || loading}
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
@@ -826,7 +746,6 @@ export default function Register() {
                   ) : (
                     "Next"
                   )}
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
                 </Button>
               </div>
             </CardContent>
@@ -835,10 +754,7 @@ export default function Register() {
           {/* Legal Footer */}
           <div className="mt-8 text-center">
             <div className="flex flex-wrap justify-center gap-4 mb-4">
-              <Badge
-                variant="outline"
-                className="border-gold-500 text-gold-400"
-              >
+              <Badge variant="outline" className="border-gold-500 text-gold-400">
                 <Shield className="w-3 h-3 mr-1" />
                 18+ Only
               </Badge>
@@ -856,17 +772,8 @@ export default function Register() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-              CoinKrazy operates as a legal sweepstakes casino. Play
-              responsibly. If you have a gambling problem, call 1-800-GAMBLER.
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-gold-400 hover:text-gold-300 font-medium"
-              >
-                Sign in here
-              </Link>
+              CoinKrazy operates as a legal sweepstakes casino. Play responsibly.
+              If you have a gambling problem, call 1-800-GAMBLER.
             </p>
           </div>
         </div>

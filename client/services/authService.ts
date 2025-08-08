@@ -1,5 +1,4 @@
-import bcrypt from "bcryptjs";
-import { databaseService } from "./database";
+// Client-side auth service using API calls
 
 export interface User {
   id: number;
@@ -88,75 +87,16 @@ class AuthService {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      // Validate input
-      if (!data.email || !data.username || !data.password) {
-        return {
-          success: false,
-          message: "Email, username, and password are required",
-        };
-      }
-
-      if (data.password.length < 6) {
-        return {
-          success: false,
-          message: "Password must be at least 6 characters long",
-        };
-      }
-
-      // Check age requirement (18+)
-      if (data.dateOfBirth) {
-        const birthDate = new Date(data.dateOfBirth);
-        const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
-        if (age < 18) {
-          return {
-            success: false,
-            message: "You must be 18 or older to register",
-          };
-        }
-      }
-
-      // Check if email already exists
-      const existingEmail = await databaseService.getUserByEmail(data.email);
-      if (existingEmail) {
-        return {
-          success: false,
-          message: "Email address is already registered",
-        };
-      }
-
-      // Check if username already exists
-      const existingUsername = await databaseService.getUserByUsername(
-        data.username,
-      );
-      if (existingUsername) {
-        return { success: false, message: "Username is already taken" };
-      }
-
-      // Hash password
-      const passwordHash = await bcrypt.hash(data.password, 12);
-
-      // Create user
-      const newUser = await databaseService.createUser({
-        email: data.email.toLowerCase(),
-        password_hash: passwordHash,
-        username: data.username,
-        first_name: data.firstName,
-        last_name: data.lastName,
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
 
-      // Send verification email (simulate for now)
-      await this.sendVerificationEmail(
-        newUser.email,
-        newUser.verification_token,
-      );
-
-      return {
-        success: true,
-        message:
-          "Registration successful! Please check your email to verify your account and claim your welcome bonus.",
-        requiresEmailVerification: true,
-      };
+      const result = await response.json();
+      return result;
     } catch (error) {
       console.error("Registration error:", error);
       return {
@@ -168,74 +108,21 @@ class AuthService {
 
   async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      if (!email || !password) {
-        return { success: false, message: "Email and password are required" };
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.user) {
+        this.saveSession(result.user, result.token);
       }
 
-      // Get user by email
-      const user = await databaseService.getUserByEmail(email.toLowerCase());
-      if (!user) {
-        return { success: false, message: "Invalid email or password" };
-      }
-
-      // Check if account is active
-      if (user.status === "banned") {
-        return {
-          success: false,
-          message: "Account has been suspended. Contact support.",
-        };
-      }
-
-      // Verify password
-      const passwordValid = await bcrypt.compare(password, user.password_hash);
-      if (!passwordValid) {
-        return { success: false, message: "Invalid email or password" };
-      }
-
-      // Check email verification
-      if (!user.is_email_verified) {
-        return {
-          success: false,
-          message:
-            "Please verify your email address before logging in. Check your inbox for the verification link.",
-          requiresEmailVerification: true,
-        };
-      }
-
-      // Update last login
-      await databaseService.query(
-        "UPDATE users SET last_login = CURRENT_TIMESTAMP, ip_address = $2 WHERE id = $1",
-        [user.id, "127.0.0.1"], // In production, get real IP
-      );
-
-      // Generate session token
-      const token = this.generateToken();
-
-      // Clean user object (remove sensitive data)
-      const cleanUser: User = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        role: user.role,
-        status: user.status,
-        kyc_status: user.kyc_status,
-        is_email_verified: user.is_email_verified,
-        vip_expires_at: user.vip_expires_at,
-        created_at: user.created_at,
-        last_login: new Date(),
-      };
-
-      // Save session
-      this.saveSession(cleanUser, token);
-
-      return {
-        success: true,
-        user: cleanUser,
-        token,
-        message: "Login successful!",
-      };
+      return result;
     } catch (error) {
       console.error("Login error:", error);
       return { success: false, message: "Login failed. Please try again." };

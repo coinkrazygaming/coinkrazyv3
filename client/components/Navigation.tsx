@@ -42,6 +42,19 @@ export default function Navigation() {
   // Real user authentication state
   const { user, logout, isLoading: authLoading } = useAuth();
 
+  // Debug logging
+  useEffect(() => {
+    console.log("Navigation: Auth state changed", {
+      user: user ? {
+        id: user.id,
+        email: user.email,
+        isLoggedIn: user.isLoggedIn,
+        isAdmin: user.isAdmin
+      } : null,
+      authLoading
+    });
+  }, [user, authLoading]);
+
   useEffect(() => {
     // Subscribe to real-time analytics data
     const unsubscribeAnalytics = analyticsService.subscribe(

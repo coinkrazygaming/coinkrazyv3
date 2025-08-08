@@ -149,7 +149,10 @@ class AuthService {
       }
 
       const result = await response.json();
-      console.log("Login result:", { success: result.success, hasUser: !!result.user });
+      console.log("Login result:", {
+        success: result.success,
+        hasUser: !!result.user,
+      });
 
       if (result.success && result.user) {
         // Save session
@@ -175,7 +178,11 @@ class AuthService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Email verification API error:", response.status, errorText);
+        console.error(
+          "Email verification API error:",
+          response.status,
+          errorText,
+        );
         return {
           success: false,
           message: "Invalid or expired verification token",
@@ -192,7 +199,8 @@ class AuthService {
 
       return {
         success: true,
-        message: "Email verified successfully! Your welcome bonus is ready to claim.",
+        message:
+          "Email verified successfully! Your welcome bonus is ready to claim.",
       };
     } catch (error) {
       console.error("Email verification error:", error);
@@ -239,7 +247,8 @@ class AuthService {
       // For now, just return a success message (password reset API not implemented yet)
       return {
         success: true,
-        message: "If an account with that email exists, a password reset link has been sent.",
+        message:
+          "If an account with that email exists, a password reset link has been sent.",
       };
     } catch (error) {
       console.error("Password reset error:", error);
@@ -265,7 +274,8 @@ class AuthService {
       // For now, just return a message (password reset API not implemented yet)
       return {
         success: false,
-        message: "Password reset functionality is not yet available. Please contact support.",
+        message:
+          "Password reset functionality is not yet available. Please contact support.",
       };
     } catch (error) {
       console.error("Password reset error:", error);

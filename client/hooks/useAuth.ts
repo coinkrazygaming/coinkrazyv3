@@ -91,6 +91,7 @@ const useMockAuth = () => {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    console.log("Login attempt:", { email, password: "***" });
     setIsLoading(true);
 
     try {
@@ -100,6 +101,7 @@ const useMockAuth = () => {
       // Mock login logic
       if (email && password) {
         const isAdmin = await analyticsService.checkAdminStatus(email);
+        console.log("Admin status check:", { email, isAdmin });
 
         const newUser: User = {
           id:
@@ -117,12 +119,14 @@ const useMockAuth = () => {
           lastLogin: new Date(),
         };
 
+        console.log("Setting user:", newUser);
         setUser(newUser);
         localStorage.setItem("coinkrazy_user", JSON.stringify(newUser));
         setIsLoading(false);
         return true;
       }
 
+      console.log("Login failed: missing email or password");
       setIsLoading(false);
       return false;
     } catch (error) {

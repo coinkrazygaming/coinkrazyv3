@@ -12,6 +12,10 @@ export default defineConfig(({ mode }) => ({
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
+    hmr: {
+      overlay: false,
+      port: 24678,
+    },
   },
   build: {
     outDir: "dist/spa",
@@ -22,6 +26,9 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
+  },
+  optimizeDeps: {
+    exclude: ['@vite/client'],
   },
 }));
 

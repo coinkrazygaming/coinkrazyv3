@@ -1,38 +1,101 @@
 import { useState } from "react";
+<<<<<<< HEAD
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+=======
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 import {
   Crown,
   Mail,
   Lock,
   Eye,
   EyeOff,
-  Shield,
   Smartphone,
   AlertTriangle,
+  Loader2,
+  CheckCircle,
 } from "lucide-react";
 
 export default function Login() {
+<<<<<<< HEAD
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+=======
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { login, loading } = useAuth();
+
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+<<<<<<< HEAD
   const [is2FARequired, setIs2FARequired] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [loginError, setLoginError] = useState("");
+=======
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+
+  // Check for verification success message
+  const verified = searchParams.get("verified");
+  const verifyError = searchParams.get("verify_error");
+
+  const createAdminUser = async () => {
+    setIsCreatingAdmin(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch("/api/init-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess(
+          "✅ Admin user created! You can now login with coinkrazy00@gmail.com / Woot6969!",
+        );
+        // Auto-fill credentials
+        setFormData({
+          email: "coinkrazy00@gmail.com",
+          password: "Woot6969!",
+          rememberMe: false,
+        });
+      } else {
+        setError(result.error || "Failed to create admin user");
+      }
+    } catch (error) {
+      setError("Failed to create admin user");
+      console.error("Admin creation error:", error);
+    } finally {
+      setIsCreatingAdmin(false);
+    }
+  };
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError(""); // Clear error when user starts typing
   };
 
+<<<<<<< HEAD
   const handleLogin = async () => {
     if (!formData.email || !formData.password) {
       setLoginError("Please enter both email and password");
@@ -57,65 +120,45 @@ export default function Login() {
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("Login failed. Please try again.");
+=======
+  const handleLogin = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
+    try {
+      const response = await login(formData.email, formData.password);
+
+      if (response.success && response.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been logged in successfully.",
+        });
+
+        // Redirect based on user role
+        if (response.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/games");
+        }
+      } else {
+        setError(response.message || "Login failed");
+
+        if (response.requiresEmailVerification) {
+          setError(
+            "Please verify your email address before logging in. Check your inbox for the verification link.",
+          );
+        }
+      }
+    } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
     }
   };
-
-  const handle2FASubmit = () => {
-    if (twoFactorCode.length === 6) {
-      console.log("2FA verified, login complete");
-      // Redirect to admin panel or dashboard
-    }
-  };
-
-  if (is2FARequired) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md border-gold-500/20">
-          <CardHeader className="text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-6 h-6 text-black" />
-            </div>
-            <CardTitle>Two-Factor Authentication</CardTitle>
-            <p className="text-muted-foreground">
-              Enter the 6-digit code from your authenticator app
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Verification Code
-              </label>
-              <Input
-                type="text"
-                placeholder="000000"
-                value={twoFactorCode}
-                onChange={(e) => setTwoFactorCode(e.target.value)}
-                maxLength={6}
-                className="text-center text-2xl tracking-widest"
-              />
-            </div>
-
-            <Button
-              onClick={handle2FASubmit}
-              disabled={twoFactorCode.length !== 6}
-              className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-            >
-              Verify & Login
-            </Button>
-
-            <div className="text-center">
-              <button
-                className="text-sm text-muted-foreground hover:text-foreground"
-                onClick={() => setIs2FARequired(false)}
-              >
-                Back to login
-              </button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +190,7 @@ export default function Login() {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
+<<<<<<< HEAD
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -154,6 +198,48 @@ export default function Login() {
                 }}
                 className="space-y-6"
               >
+=======
+              {/* Success/Error Messages */}
+              {verified && (
+                <Alert className="border-green-500/20 bg-green-500/10">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <AlertDescription className="text-green-400">
+                    Email verified successfully! Your welcome bonus has been
+                    added to your account. You can now log in.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {verifyError && (
+                <Alert className="border-red-500/20 bg-red-500/10">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  <AlertDescription className="text-red-400">
+                    Email verification failed. The link may be invalid or
+                    expired.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {error && (
+                <Alert className="border-red-500/20 bg-red-500/10">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  <AlertDescription className="text-red-400">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {success && (
+                <Alert className="border-green-500/20 bg-green-500/10">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <AlertDescription className="text-green-400">
+                    {success}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleLogin} className="space-y-6">
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Email Address
@@ -168,9 +254,122 @@ export default function Login() {
                         handleInputChange("email", e.target.value)
                       }
                       className="pl-10"
+<<<<<<< HEAD
                     />
                   </div>
                 </div>
+=======
+                      disabled={loading}
+                      autoComplete="email"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
+                      className="pl-10 pr-10"
+                      disabled={loading}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      disabled={loading}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      checked={formData.rememberMe}
+                      onChange={(e) =>
+                        handleInputChange("rememberMe", e.target.checked)
+                      }
+                      disabled={loading}
+                    />
+                    <label htmlFor="rememberMe" className="text-sm">
+                      Remember me
+                    </label>
+                  </div>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-gold-400 hover:text-gold-300"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={
+                    !formData.email ||
+                    !formData.password ||
+                    loading ||
+                    isCreatingAdmin
+                  }
+                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
+
+                {/* Admin Setup Helper */}
+                <div className="space-y-2">
+                  <Button
+                    type="button"
+                    onClick={createAdminUser}
+                    disabled={loading || isCreatingAdmin}
+                    variant="outline"
+                    className="w-full border-gold-500/50 text-gold-400 hover:bg-gold-500/10"
+                  >
+                    {isCreatingAdmin ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Admin...
+                      </>
+                    ) : (
+                      "Quick Create Admin"
+                    )}
+                  </Button>
+
+                  <div className="text-center">
+                    <Link
+                      to="/admin-setup"
+                      className="text-xs text-muted-foreground hover:text-gold-400 transition-colors"
+                    >
+                      Need database setup? Use Full Admin Setup →
+                    </Link>
+                  </div>
+                </div>
+              </form>
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
@@ -221,6 +420,7 @@ export default function Login() {
                   >
                     Forgot password?
                   </Link>
+<<<<<<< HEAD
                 </div>
 
                 {loginError && (
@@ -270,6 +470,10 @@ export default function Login() {
                   </div>
                 </div>
               </form>
+=======
+                </p>
+              </div>
+>>>>>>> ced1cff90766550d756d2fe323dd56584effa147
             </CardContent>
           </Card>
 
@@ -292,7 +496,7 @@ export default function Login() {
                     "700+ slot games from top providers like Pragmatic Play and NetEnt",
                 },
                 {
-                  icon: Shield,
+                  icon: CheckCircle,
                   title: "Secure & Legal",
                   description:
                     "Fully compliant sweepstakes model with advanced security measures",
@@ -328,8 +532,8 @@ export default function Login() {
             <div className="bg-gradient-to-r from-gold/5 to-casino-blue/5 rounded-lg p-6 border border-gold-500/20">
               <h3 className="font-bold text-lg mb-2">New Player Bonus</h3>
               <p className="text-muted-foreground mb-4">
-                Get started with 100,000 Gold Coins + 50 Sweeps Coins + 7 Days
-                VIP when you sign up!
+                Get started with 10 Gold Coins + 10 Sweeps Coins when you verify
+                your email!
               </p>
               <Link to="/register">
                 <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
@@ -344,7 +548,7 @@ export default function Login() {
         <div className="mt-12 text-center">
           <div className="flex flex-wrap justify-center gap-4 mb-4">
             <Badge variant="outline" className="border-gold-500 text-gold-400">
-              <Shield className="w-3 h-3 mr-1" />
+              <AlertTriangle className="w-3 h-3 mr-1" />
               18+ Only
             </Badge>
             <Badge

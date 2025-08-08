@@ -603,21 +603,31 @@ export default function Register() {
                 </div>
               )}
 
+              {/* Registration Error */}
+              {registrationError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-red-500">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span className="text-sm">{registrationError}</span>
+                  </div>
+                </div>
+              )}
+
               {/* Navigation Buttons */}
               <div className="flex justify-between pt-6">
                 <Button
                   variant="outline"
                   onClick={prevStep}
-                  disabled={currentStep === 1}
+                  disabled={currentStep === 1 || isLoading}
                 >
                   Previous
                 </Button>
                 <Button
                   onClick={nextStep}
-                  disabled={!validateStep(currentStep)}
+                  disabled={!validateStep(currentStep) || isLoading}
                   className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
-                  {currentStep === 4 ? "Create Account" : "Next"}
+                  {isLoading ? "Creating Account..." : currentStep === 4 ? "Create Account" : "Next"}
                 </Button>
               </div>
             </CardContent>

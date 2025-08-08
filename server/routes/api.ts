@@ -4,6 +4,173 @@ import databaseService from "../services/database.js";
 
 const router = express.Router();
 
+// Authentication endpoints
+router.post("/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    // Get user by email
+    const user = await databaseService.getUserByEmail(email.toLowerCase());
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    // Check if account is active
+    if (user.status === "banned") {
+      return res.status(403).json({
+        success: false,
+        message: "Account has been suspended. Contact support.",
+      });
+    }
+
+    // Verify password
+    const passwordValid = await bcrypt.compare(password, user.password_hash);
+    if (!passwordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    // Check email verification
+    if (!user.is_email_verified) {
+      return res.status(403).json({
+        success: false,
+        message: "Please verify your email address before logging in. Check your inbox for the verification link.",
+        requiresEmailVerification: true,
+      });
+    }
+
+    // Update last login
+    await databaseService.query(
+      "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
+      [user.id],
+    );
+
+    // Generate session token
+    const token = Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15) +
+      Date.now().toString(36);
+
+    // Clean user object (remove sensitive data)
+    const cleanUser = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      role: user.role,
+      status: user.status,
+      kyc_status: user.kyc_status,
+      is_email_verified: user.is_email_verified,
+      vip_expires_at: user.vip_expires_at,
+      created_at: user.created_at,
+      last_login: new Date(),
+      isLoggedIn: true,
+      isAdmin: user.role === "admin"
+    };
+
+    res.json({
+      success: true,
+      user: cleanUser,
+      token,
+      message: "Login successful!",
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Login failed. Please try again."
+    });
+  }
+});
+
+router.post("/auth/register", async (req, res) => {
+  try {
+    const { email, username, password, firstName, lastName, dateOfBirth } = req.body;
+
+    // Validate input
+    if (!email || !username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, username, and password are required",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters long",
+      });
+    }
+
+    // Check age requirement (18+)
+    if (dateOfBirth) {
+      const birthDate = new Date(dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 18) {
+        return res.status(400).json({
+          success: false,
+          message: "You must be 18 or older to register",
+        });
+      }
+    }
+
+    // Check if email already exists
+    const existingEmail = await databaseService.getUserByEmail(email);
+    if (existingEmail) {
+      return res.status(409).json({
+        success: false,
+        message: "Email address is already registered",
+      });
+    }
+
+    // Check if username already exists
+    const existingUsername = await databaseService.getUserByUsername(username);
+    if (existingUsername) {
+      return res.status(409).json({
+        success: false,
+        message: "Username is already taken"
+      });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // Create user
+    const newUser = await databaseService.createUser({
+      email: email.toLowerCase(),
+      password_hash: passwordHash,
+      username: username,
+      first_name: firstName,
+      last_name: lastName,
+    });
+
+    res.json({
+      success: true,
+      message: "Registration successful! Please check your email to verify your account and claim your welcome bonus.",
+      requiresEmailVerification: true,
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Registration failed. Please try again.",
+    });
+  }
+});
+
 // User management endpoints
 router.post("/users", async (req, res) => {
   try {

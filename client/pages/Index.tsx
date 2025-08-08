@@ -394,6 +394,17 @@ export default function Index() {
                 No purchase necessary • 18+ only • Play responsibly
               </p>
             </div>
+
+            {/* Admin Setup Section */}
+            <div className="mt-8 max-w-md mx-auto">
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-purple-400 mb-2">Admin Setup</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Initialize database and create admin user (coinkrazy00@gmail.com)
+                </p>
+                <AdminInitButton />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

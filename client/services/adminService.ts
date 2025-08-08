@@ -216,15 +216,12 @@ class AdminService {
     this.checkAdminAccess();
 
     try {
-      const result = await databaseService.query(`
-        SELECT *, 
-          (total_profit_gc * 0.45) as current_jackpot_calculated,
-          (total_profit_sc * 0.45) as current_jackpot_sc_calculated
-        FROM games 
-        ORDER BY is_featured DESC, name ASC
-      `);
-
-      return result.rows;
+      const response = await fetch("/api/games");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const games = await response.json();
+      return games;
     } catch (error) {
       console.error("Failed to fetch games:", error);
       throw error;
@@ -272,18 +269,12 @@ class AdminService {
     this.checkAdminAccess();
 
     try {
-      const result = await databaseService.query(
-        `
-        SELECT t.*, u.username, u.email
-        FROM transactions t
-        JOIN users u ON t.user_id = u.id
-        ORDER BY t.created_at DESC
-        LIMIT $1
-      `,
-        [limit],
-      );
-
-      return result.rows;
+      const response = await fetch(`/api/admin/transactions?limit=${limit}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const transactions = await response.json();
+      return transactions;
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
       throw error;

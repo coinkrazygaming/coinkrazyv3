@@ -227,6 +227,7 @@ export default function Login() {
                 onClick={handleLogin}
                 disabled={!formData.email || !formData.password || isLoading}
                 className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                type="button"
               >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>

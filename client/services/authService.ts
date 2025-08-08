@@ -1,5 +1,4 @@
-import bcrypt from "bcryptjs";
-import { databaseService } from "./database";
+// Remove direct database access - use API endpoints only
 
 export interface User {
   id: number;

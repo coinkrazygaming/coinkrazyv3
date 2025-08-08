@@ -125,6 +125,8 @@ class AuthService {
         return { success: false, message: "Email and password are required" };
       }
 
+      console.log("Attempting login for:", email);
+
       // Call the login API
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -133,6 +135,8 @@ class AuthService {
         },
         body: JSON.stringify({ email, password }),
       });
+
+      console.log("Login response status:", response.status);
 
       // Check if response is ok before trying to parse JSON
       if (!response.ok) {
@@ -145,6 +149,7 @@ class AuthService {
       }
 
       const result = await response.json();
+      console.log("Login result:", { success: result.success, hasUser: !!result.user });
 
       if (result.success && result.user) {
         // Save session

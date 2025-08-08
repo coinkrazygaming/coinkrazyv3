@@ -102,10 +102,26 @@ export default function Register() {
     }
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (validateStep(currentStep)) {
       if (currentStep === 4) {
-        setRegistrationComplete(true);
+        // Complete registration
+        setRegistrationError("");
+
+        try {
+          // In a real app, you'd create the account via API first
+          // For now, we'll just log them in
+          const success = await login(formData.email, formData.password);
+
+          if (success) {
+            setRegistrationComplete(true);
+          } else {
+            setRegistrationError("Registration failed. Please try again.");
+          }
+        } catch (error) {
+          console.error("Registration error:", error);
+          setRegistrationError("Registration failed. Please try again.");
+        }
       } else {
         setCurrentStep((prev) => prev + 1);
       }

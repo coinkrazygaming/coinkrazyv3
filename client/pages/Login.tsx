@@ -147,6 +147,7 @@ export default function Login() {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
+              <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Email Address
@@ -259,6 +260,7 @@ export default function Login() {
                   </div>
                 </div>
               </div>
+              </form>
             </CardContent>
           </Card>
 

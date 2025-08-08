@@ -178,6 +178,8 @@ const mockTransactions = [
 ];
 
 export default function Admin() {
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [liveStats, setLiveStats] = useState({

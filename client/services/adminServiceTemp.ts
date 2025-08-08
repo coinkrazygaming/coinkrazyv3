@@ -266,6 +266,44 @@ class AdminService {
 
     return () => clearInterval(interval);
   }
+
+  // Alias for subscribeToUpdates to match Admin page expectations
+  subscribeToUpdates(callback: (data: { stats: AdminStats; users: AdminUser[]; games: AdminGame[]; transactions: AdminTransaction[]; notifications: AdminNotification[] }) => void): () => void {
+    const intervals: NodeJS.Timeout[] = [];
+
+    const fetchAllData = async () => {
+      try {
+        const [stats, usersResult, games, transactions, notifications] = await Promise.all([
+          this.getDashboardStats(),
+          this.getAllUsers(),
+          this.getAllGames(),
+          this.getRecentTransactions(),
+          this.getAdminNotifications()
+        ]);
+
+        callback({
+          stats,
+          users: usersResult.users,
+          games,
+          transactions,
+          notifications
+        });
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchAllData();
+
+    // Set up interval for updates
+    const interval = setInterval(fetchAllData, 10000); // Update every 10 seconds
+    intervals.push(interval);
+
+    return () => {
+      intervals.forEach(interval => clearInterval(interval));
+    };
+  }
 }
 
 export const adminService = AdminService.getInstance();

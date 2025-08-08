@@ -482,7 +482,181 @@ export default function Games() {
             </div>
           </TabsContent>
 
-          {/* Add more TabsContent for other categories */}
+          <TabsContent value="table">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredGames.filter(g => g.category === 'table').map(game => (
+                <Card
+                  key={game.id}
+                  className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
+                  onClick={() => playGame(game.game_id)}
+                >
+                  <CardContent className="p-3">
+                    <div className="aspect-video bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg mb-2 overflow-hidden relative">
+                      <img
+                        src={game.image_url}
+                        alt={game.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white">
+                          <Spade className="w-4 h-4 mr-1" />
+                          Play
+                        </Button>
+                      </div>
+                    </div>
+
+                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-green-400">
+                        RTP {game.rtp}%
+                      </span>
+                      <Badge variant="outline" className="border-green-500 text-green-400 text-xs">
+                        Table
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="live">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredGames.filter(g => g.category === 'live').map(game => (
+                <Card
+                  key={game.id}
+                  className="group cursor-pointer border-border hover:border-red-500/50 transition-all duration-300"
+                  onClick={() => playGame(game.game_id)}
+                >
+                  <CardContent className="p-3">
+                    <div className="aspect-video bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-lg mb-2 overflow-hidden relative">
+                      <img
+                        src={game.image_url}
+                        alt={game.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <Badge className="bg-red-500/90 text-white animate-pulse">
+                          LIVE
+                        </Badge>
+                      </div>
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white">
+                          <Users className="w-4 h-4 mr-1" />
+                          Join
+                        </Button>
+                      </div>
+                    </div>
+
+                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-red-400">
+                        Live Dealer
+                      </span>
+                      <span className="text-green-400">
+                        {Math.floor(Math.random() * 50) + 1} players
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="jackpot">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredGames.filter(g => g.current_jackpot_gc > 100000).map(game => (
+                <Card
+                  key={game.id}
+                  className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
+                  onClick={() => playGame(game.game_id)}
+                >
+                  <CardContent className="p-3">
+                    <div className="aspect-video bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-lg mb-2 overflow-hidden relative">
+                      <img
+                        src={game.image_url}
+                        alt={game.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-2 left-2">
+                        <Badge className="bg-gold-500/90 text-black animate-pulse">
+                          <Trophy className="w-3 h-3 mr-1" />
+                          JACKPOT
+                        </Badge>
+                      </div>
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
+                          <Crown className="w-4 h-4 mr-1" />
+                          Win Big
+                        </Button>
+                      </div>
+                    </div>
+
+                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-green-400">
+                        RTP {game.rtp}%
+                      </span>
+                      <span className="text-gold-400 font-mono font-bold">
+                        {formatJackpot(game.current_jackpot_gc)}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="new">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredGames.slice(0, 12).map(game => (
+                <Card
+                  key={game.id}
+                  className="group cursor-pointer border-border hover:border-blue-500/50 transition-all duration-300"
+                  onClick={() => playGame(game.game_id)}
+                >
+                  <CardContent className="p-3">
+                    <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-lg mb-2 overflow-hidden relative">
+                      <img
+                        src={game.image_url}
+                        alt={game.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <Badge className="bg-blue-500/90 text-white">
+                          NEW
+                        </Badge>
+                      </div>
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+                          <Star className="w-4 h-4 mr-1" />
+                          Try Now
+                        </Button>
+                      </div>
+                    </div>
+
+                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-green-400">
+                        RTP {game.rtp}%
+                      </span>
+                      <span className="text-blue-400">
+                        New Release
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
         </Tabs>
 
         {/* Game Stats */}

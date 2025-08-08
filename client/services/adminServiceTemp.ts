@@ -105,11 +105,13 @@ class AdminService {
 
     try {
       const statsResponse = await fetch("/api/admin/stats", {
-        headers: { 'Accept': 'application/json' }
+        headers: { Accept: "application/json" },
       });
 
       if (!statsResponse.ok) {
-        console.warn(`Stats API returned ${statsResponse.status}, using fallback data`);
+        console.warn(
+          `Stats API returned ${statsResponse.status}, using fallback data`,
+        );
         return fallbackStats;
       }
 
@@ -128,36 +130,49 @@ class AdminService {
         activeGames: fallbackStats.activeGames,
       };
     } catch (error) {
-      console.warn("Failed to fetch dashboard stats, using fallback data:", error);
+      console.warn(
+        "Failed to fetch dashboard stats, using fallback data:",
+        error,
+      );
       return fallbackStats;
     }
   }
 
-  async getAllUsers(page: number = 1, limit: number = 50): Promise<{ users: AdminUser[]; total: number }> {
+  async getAllUsers(
+    page: number = 1,
+    limit: number = 50,
+  ): Promise<{ users: AdminUser[]; total: number }> {
     this.checkAdminAccess();
 
     // Fallback admin user data
-    const fallbackUsers = [{
-      id: 1,
-      username: "admin",
-      email: "coinkrazy00@gmail.com",
-      status: "active",
-      kyc_status: "verified",
-      gold_coins: 1000000,
-      sweeps_coins: 1000,
-      created_at: new Date().toISOString(),
-      last_login: new Date().toISOString(),
-      role: "admin"
-    }];
+    const fallbackUsers = [
+      {
+        id: 1,
+        username: "admin",
+        email: "coinkrazy00@gmail.com",
+        status: "active",
+        kyc_status: "verified",
+        gold_coins: 1000000,
+        sweeps_coins: 1000,
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        role: "admin",
+      },
+    ];
 
     try {
       const offset = (page - 1) * limit;
-      const response = await fetch(`/api/admin/users?limit=${limit}&offset=${offset}`, {
-        headers: { 'Accept': 'application/json' }
-      });
+      const response = await fetch(
+        `/api/admin/users?limit=${limit}&offset=${offset}`,
+        {
+          headers: { Accept: "application/json" },
+        },
+      );
 
       if (!response.ok) {
-        console.warn(`Users API returned ${response.status}, using fallback data`);
+        console.warn(
+          `Users API returned ${response.status}, using fallback data`,
+        );
         return { users: fallbackUsers, total: fallbackUsers.length };
       }
 
@@ -192,7 +207,7 @@ class AdminService {
         current_jackpot_calculated: 22500,
         current_jackpot_sc_calculated: 45,
         total_plays: 1234,
-        total_players: 567
+        total_players: 567,
       },
       {
         id: 2,
@@ -208,17 +223,19 @@ class AdminService {
         current_jackpot_calculated: 33750,
         current_jackpot_sc_calculated: 67,
         total_plays: 2345,
-        total_players: 890
-      }
+        total_players: 890,
+      },
     ];
 
     try {
       const response = await fetch("/api/games", {
-        headers: { 'Accept': 'application/json' }
+        headers: { Accept: "application/json" },
       });
 
       if (!response.ok) {
-        console.warn(`Games API returned ${response.status}, using fallback data`);
+        console.warn(
+          `Games API returned ${response.status}, using fallback data`,
+        );
         return fallbackGames;
       }
 
@@ -244,7 +261,7 @@ class AdminService {
         amount: 1000000,
         status: "completed",
         created_at: new Date().toISOString(),
-        description: "Welcome bonus"
+        description: "Welcome bonus",
       },
       {
         id: 2,
@@ -255,17 +272,19 @@ class AdminService {
         amount: 1000,
         status: "completed",
         created_at: new Date().toISOString(),
-        description: "Welcome bonus"
-      }
+        description: "Welcome bonus",
+      },
     ];
 
     try {
       const response = await fetch(`/api/admin/transactions?limit=${limit}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: { Accept: "application/json" },
       });
 
       if (!response.ok) {
-        console.warn(`Transactions API returned ${response.status}, using fallback data`);
+        console.warn(
+          `Transactions API returned ${response.status}, using fallback data`,
+        );
         return fallbackTransactions;
       }
 
@@ -292,7 +311,7 @@ class AdminService {
         ai_name: "LuckyAI",
         read_status: false,
         action_required: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
       {
         id: 2,
@@ -304,24 +323,31 @@ class AdminService {
         ai_name: "SecurityBot",
         read_status: false,
         action_required: false,
-        created_at: new Date().toISOString()
-      }
+        created_at: new Date().toISOString(),
+      },
     ];
 
     try {
       const response = await fetch("/api/notifications/unread", {
-        headers: { 'Accept': 'application/json' }
+        headers: { Accept: "application/json" },
       });
 
       if (!response.ok) {
-        console.warn(`Notifications API returned ${response.status}, using fallback data`);
+        console.warn(
+          `Notifications API returned ${response.status}, using fallback data`,
+        );
         return fallbackNotifications;
       }
 
       const notifications = await response.json();
-      return Array.isArray(notifications) ? notifications : fallbackNotifications;
+      return Array.isArray(notifications)
+        ? notifications
+        : fallbackNotifications;
     } catch (error) {
-      console.warn("Failed to fetch notifications, using fallback data:", error);
+      console.warn(
+        "Failed to fetch notifications, using fallback data:",
+        error,
+      );
       return fallbackNotifications;
     }
   }
@@ -350,16 +376,25 @@ class AdminService {
   async markNotificationRead(notificationId: number): Promise<void> {
     this.checkAdminAccess();
     try {
-      await fetch(`/api/notifications/${notificationId}/read`, { method: 'POST' });
+      await fetch(`/api/notifications/${notificationId}/read`, {
+        method: "POST",
+      });
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
     }
   }
 
   // Other placeholder methods
-  async adjustUserBalance(userId: number, gcAmount: number, scAmount: number, reason: string): Promise<void> {
+  async adjustUserBalance(
+    userId: number,
+    gcAmount: number,
+    scAmount: number,
+    reason: string,
+  ): Promise<void> {
     this.checkAdminAccess();
-    console.log(`Adjust user ${userId} balance: GC ${gcAmount}, SC ${scAmount}, reason: ${reason}`);
+    console.log(
+      `Adjust user ${userId} balance: GC ${gcAmount}, SC ${scAmount}, reason: ${reason}`,
+    );
   }
 
   async resetGameJackpot(gameId: string): Promise<void> {

@@ -88,75 +88,17 @@ class AuthService {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      // Validate input
-      if (!data.email || !data.username || !data.password) {
-        return {
-          success: false,
-          message: "Email, username, and password are required",
-        };
-      }
-
-      if (data.password.length < 6) {
-        return {
-          success: false,
-          message: "Password must be at least 6 characters long",
-        };
-      }
-
-      // Check age requirement (18+)
-      if (data.dateOfBirth) {
-        const birthDate = new Date(data.dateOfBirth);
-        const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
-        if (age < 18) {
-          return {
-            success: false,
-            message: "You must be 18 or older to register",
-          };
-        }
-      }
-
-      // Check if email already exists
-      const existingEmail = await databaseService.getUserByEmail(data.email);
-      if (existingEmail) {
-        return {
-          success: false,
-          message: "Email address is already registered",
-        };
-      }
-
-      // Check if username already exists
-      const existingUsername = await databaseService.getUserByUsername(
-        data.username,
-      );
-      if (existingUsername) {
-        return { success: false, message: "Username is already taken" };
-      }
-
-      // Hash password
-      const passwordHash = await bcrypt.hash(data.password, 12);
-
-      // Create user
-      const newUser = await databaseService.createUser({
-        email: data.email.toLowerCase(),
-        password_hash: passwordHash,
-        username: data.username,
-        first_name: data.firstName,
-        last_name: data.lastName,
+      // Call the register API
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
 
-      // Send verification email (simulate for now)
-      await this.sendVerificationEmail(
-        newUser.email,
-        newUser.verification_token,
-      );
-
-      return {
-        success: true,
-        message:
-          "Registration successful! Please check your email to verify your account and claim your welcome bonus.",
-        requiresEmailVerification: true,
-      };
+      const result = await response.json();
+      return result;
     } catch (error) {
       console.error("Registration error:", error);
       return {

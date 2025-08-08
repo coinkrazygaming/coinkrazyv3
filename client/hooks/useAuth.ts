@@ -120,6 +120,7 @@ const useMockAuth = () => {
   };
 
   const logout = () => {
+    console.log("Logout called");
     setUser(null);
     localStorage.removeItem("coinkrazy_user");
   };

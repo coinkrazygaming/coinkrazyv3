@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
-<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-=======
-import { Navigate } from "react-router-dom";
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import {
   adminService,
@@ -27,11 +22,8 @@ import CasinoBanking from "@/components/CasinoBanking";
 import PackageEditor from "@/components/PackageEditor";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
-<<<<<<< HEAD
 import GameManagement from "@/components/GameManagement";
-=======
 import AdminToolbar from "@/components/AdminToolbar";
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 import {
   Shield,
   Users,
@@ -75,20 +67,9 @@ import {
 } from "lucide-react";
 
 export default function Admin() {
-<<<<<<< HEAD
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [liveStats, setLiveStats] = useState({
-    totalUsers: 15847,
-    activeNow: 2847,
-    pendingKyc: 23,
-    revenue24h: 45230,
-    pendingWithdrawals: 12,
-    systemHealth: 99.9,
-    fraudAlerts: 3,
-  });
+  const { toast } = useToast();
 
   // Check admin access
   useEffect(() => {
@@ -96,15 +77,6 @@ export default function Admin() {
       navigate("/");
     }
   }, [isLoading, user, navigate]);
-
-=======
-  const { user, isAdmin, logout } = useAuth();
-  const { toast } = useToast();
-
-  // Redirect if not admin
-  if (!isAdmin) {
-    return <Navigate to="/login" replace />;
-  }
 
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
@@ -126,7 +98,6 @@ export default function Admin() {
   const usersPerPage = 20;
 
   // Load initial data
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
   useEffect(() => {
     loadAllData();
 
@@ -155,15 +126,6 @@ export default function Admin() {
     };
   }, []);
 
-<<<<<<< HEAD
-  // Show loading while checking auth
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-=======
   const loadAllData = async () => {
     try {
       setLoading(true);
@@ -258,26 +220,39 @@ export default function Admin() {
     }
   };
 
+  const handleLogout = () => {
+    // Implementation for logout
+    navigate("/");
+  };
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not admin (will redirect)
+  if (!user?.isLoggedIn || !user?.isAdmin) {
+    return null;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading admin panel...</p>
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
         </div>
       </div>
     );
   }
 
-<<<<<<< HEAD
-  // Show nothing if not admin (will redirect)
-  if (!user?.isLoggedIn || !user?.isAdmin) {
-    return null;
-  }
-
-=======
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
   return (
     <div className="min-h-screen bg-background">
       {/* Admin Toolbar */}
@@ -320,7 +295,7 @@ export default function Admin() {
               </Button>
               <Button
                 variant="outline"
-                onClick={logout}
+                onClick={handleLogout}
                 className="bg-red-500/10 border-red-500 text-red-400"
               >
                 <XCircle className="w-4 h-4 mr-2" />
@@ -434,12 +409,8 @@ export default function Admin() {
         )}
 
         {/* Admin Tools Tabs */}
-<<<<<<< HEAD
-        <Tabs defaultValue="ai-manager" className="w-full">
-          <TabsList className="grid w-full grid-cols-12">
-=======
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-12">
             <TabsTrigger value="dashboard">
               <BarChart3 className="w-4 h-4 mr-2" />
               Dashboard
@@ -452,11 +423,14 @@ export default function Admin() {
               <GamepadIcon className="w-4 h-4 mr-2" />
               Games
             </TabsTrigger>
+            <TabsTrigger value="game-management">
+              <Settings className="w-4 h-4 mr-2" />
+              Game Mgmt
+            </TabsTrigger>
             <TabsTrigger value="transactions">
               <CreditCard className="w-4 h-4 mr-2" />
               Transactions
             </TabsTrigger>
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
             <TabsTrigger value="ai-manager">
               <Bot className="w-4 h-4 mr-2" />
               AI Manager
@@ -465,31 +439,9 @@ export default function Admin() {
               <Store className="w-4 h-4 mr-2" />
               Gold Store
             </TabsTrigger>
-<<<<<<< HEAD
-            <TabsTrigger value="package-editor">
-              <Edit className="w-4 h-4 mr-2" />
-              Package Editor
-            </TabsTrigger>
-            <TabsTrigger value="users">
-              <Users className="w-4 h-4 mr-2" />
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="games">
-              <Settings className="w-4 h-4 mr-2" />
-              Games
-            </TabsTrigger>
-            <TabsTrigger value="game-management">
-              <Gamepad2 className="w-4 h-4 mr-2" />
-              Game Mgmt
-            </TabsTrigger>
-            <TabsTrigger value="payments">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Payments
-=======
             <TabsTrigger value="bonus">
               <Gift className="w-4 h-4 mr-2" />
               Bonuses
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
             </TabsTrigger>
             <TabsTrigger value="analytics">
               <BarChart3 className="w-4 h-4 mr-2" />
@@ -843,28 +795,13 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
-<<<<<<< HEAD
           {/* Game Management - SlotsAI Integration */}
           <TabsContent value="game-management" className="mt-6">
             <GameManagement />
           </TabsContent>
 
-          {/* Payment Management */}
-          <TabsContent value="payments" className="mt-6">
-            <CasinoBanking />
-          </TabsContent>
-
-          {/* Analytics */}
-          <TabsContent value="analytics" className="mt-6">
-            <CasinoAnalytics />
-          </TabsContent>
-
-          {/* AI Assistant */}
-          <TabsContent value="ai" className="mt-6">
-=======
           {/* Transactions */}
           <TabsContent value="transactions" className="mt-6">
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
             <Card>
               <CardHeader>
                 <CardTitle>Recent Transactions</CardTitle>

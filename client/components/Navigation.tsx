@@ -40,7 +40,7 @@ export default function Navigation() {
   const [playerCount, setPlayerCount] = useState<number>(0);
 
   // Real user authentication state
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
     // Subscribe to real-time analytics data

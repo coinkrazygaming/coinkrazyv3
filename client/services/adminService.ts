@@ -285,15 +285,12 @@ class AdminService {
     this.checkAdminAccess();
 
     try {
-      const result = await databaseService.query(`
-        SELECT an.*, ae.name as ai_name
-        FROM admin_notifications an
-        LEFT JOIN ai_employees ae ON an.from_ai_employee = ae.id
-        ORDER BY an.priority DESC, an.created_at DESC
-        LIMIT 50
-      `);
-
-      return result.rows;
+      const response = await fetch("/api/notifications/unread");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const notifications = await response.json();
+      return notifications;
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
       throw error;

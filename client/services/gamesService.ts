@@ -27,12 +27,12 @@ export interface GameSession {
   session_id: string;
   user_id: number;
   game_id: string;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   initial_balance: number;
   current_balance: number;
   total_bet: number;
   total_win: number;
-  status: 'active' | 'completed' | 'paused';
+  status: "active" | "completed" | "paused";
   created_at: string;
 }
 
@@ -79,38 +79,42 @@ class GamesService {
       return await response.json();
     } catch (error) {
       console.error("Error fetching active games:", error);
-      return this.getFallbackGames().filter(game => game.is_active);
+      return this.getFallbackGames().filter((game) => game.is_active);
     }
   }
 
   async getFeaturedGames(): Promise<Game[]> {
     const games = await this.getActiveGames();
-    return games.filter(game => game.is_featured);
+    return games.filter((game) => game.is_featured);
   }
 
   async getGamesByCategory(category: string): Promise<Game[]> {
     const games = await this.getActiveGames();
-    return games.filter(game => game.category === category);
+    return games.filter((game) => game.category === category);
   }
 
   async getGameById(gameId: string): Promise<Game | null> {
     const games = await this.getAllGames();
-    return games.find(game => game.game_id === gameId) || null;
+    return games.find((game) => game.game_id === gameId) || null;
   }
 
-  async startGameSession(userId: number, gameId: string, currency: 'GC' | 'SC'): Promise<GameSession> {
+  async startGameSession(
+    userId: number,
+    gameId: string,
+    currency: "GC" | "SC",
+  ): Promise<GameSession> {
     const sessionId = `${userId}_${gameId}_${Date.now()}`;
     const session: GameSession = {
       session_id: sessionId,
       user_id: userId,
       game_id: gameId,
       currency,
-      initial_balance: currency === 'GC' ? 1000000 : 1000,
-      current_balance: currency === 'GC' ? 1000000 : 1000,
+      initial_balance: currency === "GC" ? 1000000 : 1000,
+      current_balance: currency === "GC" ? 1000000 : 1000,
       total_bet: 0,
       total_win: 0,
-      status: 'active',
-      created_at: new Date().toISOString()
+      status: "active",
+      created_at: new Date().toISOString(),
     };
 
     this.activeSessions.set(sessionId, session);
@@ -126,8 +130,9 @@ class GamesService {
     // Simple RTP-based calculation
     const rtp = 0.96;
     const randomFactor = Math.random();
-    const winAmount = randomFactor < rtp ? Math.floor(betAmount * (1 + Math.random())) : 0;
-    
+    const winAmount =
+      randomFactor < rtp ? Math.floor(betAmount * (1 + Math.random())) : 0;
+
     const balanceChange = winAmount - betAmount;
     session.current_balance += balanceChange;
     session.total_bet += betAmount;
@@ -139,19 +144,26 @@ class GamesService {
       balance_change: balanceChange,
       new_balance: session.current_balance,
       win_amount: winAmount,
-      message: winAmount > 0 ? `You won ${winAmount} ${session.currency}!` : `You bet ${betAmount} ${session.currency}`
+      message:
+        winAmount > 0
+          ? `You won ${winAmount} ${session.currency}!`
+          : `You bet ${betAmount} ${session.currency}`,
     };
   }
 
   async endGameSession(sessionId: string): Promise<void> {
     const session = this.activeSessions.get(sessionId);
     if (session) {
-      session.status = 'completed';
+      session.status = "completed";
       this.activeSessions.delete(sessionId);
     }
   }
 
-  generateGameUrl(gameId: string, currency: 'GC' | 'SC', sessionId: string): string {
+  generateGameUrl(
+    gameId: string,
+    currency: "GC" | "SC",
+    sessionId: string,
+  ): string {
     const baseUrl = window.location.origin;
     return `${baseUrl}/game-player/${gameId}?currency=${currency}&session=${sessionId}&mode=play`;
   }
@@ -171,7 +183,8 @@ class GamesService {
         min_bet_sc: 1,
         max_bet_sc: 100,
         image_url: "/games/gates-of-olympus.jpg",
-        description: "Enter the realm of the gods and claim divine rewards in this thrilling slot adventure.",
+        description:
+          "Enter the realm of the gods and claim divine rewards in this thrilling slot adventure.",
         total_plays: 12543,
         total_profit_gc: 2847561,
         total_profit_sc: 4821,
@@ -180,7 +193,7 @@ class GamesService {
         is_active: true,
         is_featured: true,
         created_at: "2024-01-01T00:00:00Z",
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       {
         id: 2,
@@ -195,7 +208,8 @@ class GamesService {
         min_bet_sc: 1,
         max_bet_sc: 100,
         image_url: "/games/sweet-bonanza.jpg",
-        description: "Dive into a world of candy and sweets where massive multipliers await.",
+        description:
+          "Dive into a world of candy and sweets where massive multipliers await.",
         total_plays: 18654,
         total_profit_gc: 4129387,
         total_profit_sc: 7821,
@@ -204,7 +218,7 @@ class GamesService {
         is_active: true,
         is_featured: true,
         created_at: "2024-01-01T00:00:00Z",
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       {
         id: 3,
@@ -219,7 +233,8 @@ class GamesService {
         min_bet_sc: 1,
         max_bet_sc: 100,
         image_url: "/games/book-of-dead.jpg",
-        description: "Join Rich Wilde on an Egyptian adventure filled with expanding symbols and big wins.",
+        description:
+          "Join Rich Wilde on an Egyptian adventure filled with expanding symbols and big wins.",
         total_plays: 9876,
         total_profit_gc: 1876423,
         total_profit_sc: 3421,
@@ -228,7 +243,7 @@ class GamesService {
         is_active: true,
         is_featured: false,
         created_at: "2024-01-01T00:00:00Z",
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       {
         id: 4,
@@ -243,7 +258,8 @@ class GamesService {
         min_bet_sc: 1,
         max_bet_sc: 100,
         image_url: "/games/starburst.jpg",
-        description: "The classic cosmic slot that started it all. Simple, elegant, and rewarding.",
+        description:
+          "The classic cosmic slot that started it all. Simple, elegant, and rewarding.",
         total_plays: 15432,
         total_profit_gc: 2341876,
         total_profit_sc: 4987,
@@ -252,7 +268,7 @@ class GamesService {
         is_active: true,
         is_featured: false,
         created_at: "2024-01-01T00:00:00Z",
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       {
         id: 5,
@@ -267,7 +283,8 @@ class GamesService {
         min_bet_sc: 1,
         max_bet_sc: 100,
         image_url: "/games/gonzo-quest.jpg",
-        description: "Follow Gonzo's quest for El Dorado with cascading reels and increasing multipliers.",
+        description:
+          "Follow Gonzo's quest for El Dorado with cascading reels and increasing multipliers.",
         total_plays: 11298,
         total_profit_gc: 2087654,
         total_profit_sc: 4123,
@@ -276,8 +293,8 @@ class GamesService {
         is_active: true,
         is_featured: false,
         created_at: "2024-01-01T00:00:00Z",
-        updated_at: new Date().toISOString()
-      }
+        updated_at: new Date().toISOString(),
+      },
     ];
   }
 }

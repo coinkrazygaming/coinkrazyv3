@@ -12,11 +12,11 @@ import CurrencyToggle from "@/components/CurrencyToggle";
 import GamePlayer from "@/components/GamePlayer";
 import CoinKrazySlots from "@/components/games/CoinKrazySlots";
 import MiniGames from "@/components/games/MiniGames";
-import { 
-  Play, 
-  Search, 
-  TrendingUp, 
-  Crown, 
+import {
+  Play,
+  Search,
+  TrendingUp,
+  Crown,
   Zap,
   Filter,
   Star,
@@ -28,14 +28,14 @@ import {
   Target,
   Gift,
   AlertTriangle,
-  Loader2
+  Loader2,
 } from "lucide-react";
 
 export default function Games() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  
-  const [selectedCurrency, setSelectedCurrency] = useState<'GC' | 'SC'>('GC');
+
+  const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
   const [games, setGames] = useState<Game[]>([]);
   const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,9 +57,9 @@ export default function Games() {
       setLoading(true);
       const [allGames, featured] = await Promise.all([
         gamesService.getActiveGames(),
-        gamesService.getFeaturedGames()
+        gamesService.getFeaturedGames(),
       ]);
-      
+
       setGames(allGames);
       setFeaturedGames(featured);
     } catch (error) {
@@ -69,24 +69,30 @@ export default function Games() {
     }
   };
 
-  const filteredGames = games.filter(game => {
-    const matchesSearch = game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         game.provider.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || game.category === selectedCategory;
-    const matchesProvider = selectedProvider === "all" || game.provider === selectedProvider;
-    
+  const filteredGames = games.filter((game) => {
+    const matchesSearch =
+      game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      game.provider.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || game.category === selectedCategory;
+    const matchesProvider =
+      selectedProvider === "all" || game.provider === selectedProvider;
+
     return matchesSearch && matchesCategory && matchesProvider;
   });
 
   const categories = ["all", "slots", "table", "live", "jackpot", "mini"];
-  const providers = ["all", ...Array.from(new Set(games.map(g => g.provider)))];
+  const providers = [
+    "all",
+    ...Array.from(new Set(games.map((g) => g.provider))),
+  ];
 
   const playGame = (gameId: string) => {
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
-    
+
     setSelectedGameId(gameId);
     setShowGamePlayer(true);
   };
@@ -153,7 +159,7 @@ export default function Games() {
               </Button>
             </div>
           </div>
-          
+
           <CoinKrazySlots
             currency={selectedCurrency}
             betAmount={betAmount}
@@ -176,15 +182,12 @@ export default function Games() {
                 selectedCurrency={selectedCurrency}
                 onCurrencyChange={setSelectedCurrency}
               />
-              <Button
-                variant="outline"
-                onClick={() => setShowMiniGames(false)}
-              >
+              <Button variant="outline" onClick={() => setShowMiniGames(false)}>
                 Back to Games
               </Button>
             </div>
           </div>
-          
+
           <MiniGames
             currency={selectedCurrency}
             onGameComplete={handleSpinComplete}
@@ -201,12 +204,15 @@ export default function Games() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Game Lobby</h1>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                Game Lobby
+              </h1>
               <p className="text-muted-foreground text-lg">
-                {games.length}+ Premium Games • Real-Time Jackpots • Instant Play
+                {games.length}+ Premium Games • Real-Time Jackpots • Instant
+                Play
               </p>
             </div>
-            
+
             <CurrencyToggle
               selectedCurrency={selectedCurrency}
               onCurrencyChange={setSelectedCurrency}
@@ -233,7 +239,8 @@ export default function Games() {
               <Link to="/register" className="font-bold hover:underline">
                 Create your free account
               </Link>{" "}
-              to start playing with 10,000 Gold Coins + 10 Sweeps Coins welcome bonus!
+              to start playing with 10,000 Gold Coins + 10 Sweeps Coins welcome
+              bonus!
             </AlertDescription>
           </Alert>
         )}
@@ -246,10 +253,10 @@ export default function Games() {
               Featured Games
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* In-House Slots */}
-            <Card 
+            <Card
               className="group cursor-pointer border-gold-500/20 hover:border-gold-500/50 transition-all duration-300"
               onClick={playInHouseSlots}
             >
@@ -257,17 +264,26 @@ export default function Games() {
                 <div className="aspect-video bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-lg mb-3 flex items-center justify-center">
                   <div className="text-center">
                     <Zap className="w-12 h-12 text-gold-500 mx-auto mb-2" />
-                    <div className="text-lg font-bold text-gold-400">CoinKrazy</div>
-                    <div className="text-sm text-muted-foreground">Original Slots</div>
+                    <div className="text-lg font-bold text-gold-400">
+                      CoinKrazy
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Original Slots
+                    </div>
                   </div>
                 </div>
                 <h3 className="font-bold mb-1">CoinKrazy Slots</h3>
-                <p className="text-xs text-muted-foreground mb-2">In-House • RTP 96.5%</p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  In-House • RTP 96.5%
+                </p>
                 <div className="flex items-center justify-between">
                   <Badge className="bg-gold-500/20 text-gold-400 border-gold-500/30">
                     Featured
                   </Badge>
-                  <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
+                  <Button
+                    size="sm"
+                    className="bg-gold-500 hover:bg-gold-600 text-black"
+                  >
                     Play
                   </Button>
                 </div>
@@ -275,7 +291,7 @@ export default function Games() {
             </Card>
 
             {/* Mini Games */}
-            <Card 
+            <Card
               className="group cursor-pointer border-purple-500/20 hover:border-purple-500/50 transition-all duration-300"
               onClick={playMiniGames}
             >
@@ -283,17 +299,24 @@ export default function Games() {
                 <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg mb-3 flex items-center justify-center">
                   <div className="text-center">
                     <Dice1 className="w-12 h-12 text-purple-500 mx-auto mb-2" />
-                    <div className="text-lg font-bold text-purple-400">Mini</div>
+                    <div className="text-lg font-bold text-purple-400">
+                      Mini
+                    </div>
                     <div className="text-sm text-muted-foreground">Games</div>
                   </div>
                 </div>
                 <h3 className="font-bold mb-1">Mini Games</h3>
-                <p className="text-xs text-muted-foreground mb-2">Collection • Various RTPs</p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Collection • Various RTPs
+                </p>
                 <div className="flex items-center justify-between">
                   <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                     Hot
                   </Badge>
-                  <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white">
+                  <Button
+                    size="sm"
+                    className="bg-purple-500 hover:bg-purple-600 text-white"
+                  >
                     Play
                   </Button>
                 </div>
@@ -301,16 +324,16 @@ export default function Games() {
             </Card>
 
             {/* Featured External Games */}
-            {featuredGames.slice(0, 2).map(game => (
-              <Card 
+            {featuredGames.slice(0, 2).map((game) => (
+              <Card
                 key={game.id}
                 className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
                 onClick={() => playGame(game.game_id)}
               >
                 <CardContent className="p-4">
                   <div className="aspect-video bg-gradient-to-br from-casino-blue/20 to-casino-blue/30 rounded-lg mb-3 overflow-hidden">
-                    <img 
-                      src={game.image_url} 
+                    <img
+                      src={game.image_url}
                       alt={game.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -320,12 +343,13 @@ export default function Games() {
                     {game.provider} • RTP {game.rtp}%
                   </p>
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="border-green-500 text-green-400">
+                    <Badge
+                      variant="outline"
+                      className="border-green-500 text-green-400"
+                    >
                       {formatJackpot(game.current_jackpot_gc)}
                     </Badge>
-                    <Button size="sm">
-                      Play
-                    </Button>
+                    <Button size="sm">Play</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -345,26 +369,28 @@ export default function Games() {
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="px-3 py-2 bg-background border border-border rounded-md"
               >
-                {categories.map(cat => (
+                {categories.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat === "all" ? "All Categories" : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    {cat === "all"
+                      ? "All Categories"
+                      : cat.charAt(0).toUpperCase() + cat.slice(1)}
                   </option>
                 ))}
               </select>
-              
+
               <select
                 value={selectedProvider}
                 onChange={(e) => setSelectedProvider(e.target.value)}
                 className="px-3 py-2 bg-background border border-border rounded-md"
               >
-                {providers.map(provider => (
+                {providers.map((provider) => (
                   <option key={provider} value={provider}>
                     {provider === "all" ? "All Providers" : provider}
                   </option>
@@ -393,16 +419,16 @@ export default function Games() {
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {filteredGames.map(game => (
-                  <Card 
+                {filteredGames.map((game) => (
+                  <Card
                     key={game.id}
                     className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
                     onClick={() => playGame(game.game_id)}
                   >
                     <CardContent className="p-3">
                       <div className="aspect-video bg-gradient-to-br from-casino-blue/20 to-casino-blue/30 rounded-lg mb-2 overflow-hidden relative">
-                        <img 
-                          src={game.image_url} 
+                        <img
+                          src={game.image_url}
                           alt={game.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -412,20 +438,25 @@ export default function Games() {
                           </Badge>
                         )}
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
+                          <Button
+                            size="sm"
+                            className="bg-gold-500 hover:bg-gold-600 text-black"
+                          >
                             <Play className="w-4 h-4 mr-1" />
                             Play
                           </Button>
                         </div>
                       </div>
-                      
-                      <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
-                      <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
-                      
+
+                      <h3 className="font-bold text-sm mb-1 truncate">
+                        {game.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {game.provider}
+                      </p>
+
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-green-400">
-                          RTP {game.rtp}%
-                        </span>
+                        <span className="text-green-400">RTP {game.rtp}%</span>
                         {game.current_jackpot_gc > 0 && (
                           <span className="text-gold-400 font-mono">
                             {formatJackpot(game.current_jackpot_gc)}
@@ -442,180 +473,211 @@ export default function Games() {
           {/* Other tab contents would filter games by category */}
           <TabsContent value="slots">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredGames.filter(g => g.category === 'slots').map(game => (
-                <Card 
-                  key={game.id}
-                  className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
-                  onClick={() => playGame(game.game_id)}
-                >
-                  <CardContent className="p-3">
-                    <div className="aspect-video bg-gradient-to-br from-casino-blue/20 to-casino-blue/30 rounded-lg mb-2 overflow-hidden relative">
-                      <img 
-                        src={game.image_url} 
-                        alt={game.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
-                          <Play className="w-4 h-4 mr-1" />
-                          Play
-                        </Button>
+              {filteredGames
+                .filter((g) => g.category === "slots")
+                .map((game) => (
+                  <Card
+                    key={game.id}
+                    className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
+                    onClick={() => playGame(game.game_id)}
+                  >
+                    <CardContent className="p-3">
+                      <div className="aspect-video bg-gradient-to-br from-casino-blue/20 to-casino-blue/30 rounded-lg mb-2 overflow-hidden relative">
+                        <img
+                          src={game.image_url}
+                          alt={game.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <Button
+                            size="sm"
+                            className="bg-gold-500 hover:bg-gold-600 text-black"
+                          >
+                            <Play className="w-4 h-4 mr-1" />
+                            Play
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
-                    
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-green-400">
-                        RTP {game.rtp}%
-                      </span>
-                      {game.current_jackpot_gc > 0 && (
-                        <span className="text-gold-400 font-mono">
-                          {formatJackpot(game.current_jackpot_gc)}
-                        </span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                      <h3 className="font-bold text-sm mb-1 truncate">
+                        {game.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {game.provider}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-green-400">RTP {game.rtp}%</span>
+                        {game.current_jackpot_gc > 0 && (
+                          <span className="text-gold-400 font-mono">
+                            {formatJackpot(game.current_jackpot_gc)}
+                          </span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
           <TabsContent value="table">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredGames.filter(g => g.category === 'table').map(game => (
-                <Card
-                  key={game.id}
-                  className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
-                  onClick={() => playGame(game.game_id)}
-                >
-                  <CardContent className="p-3">
-                    <div className="aspect-video bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg mb-2 overflow-hidden relative">
-                      <img
-                        src={game.image_url}
-                        alt={game.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white">
-                          <Spade className="w-4 h-4 mr-1" />
-                          Play
-                        </Button>
+              {filteredGames
+                .filter((g) => g.category === "table")
+                .map((game) => (
+                  <Card
+                    key={game.id}
+                    className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
+                    onClick={() => playGame(game.game_id)}
+                  >
+                    <CardContent className="p-3">
+                      <div className="aspect-video bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg mb-2 overflow-hidden relative">
+                        <img
+                          src={game.image_url}
+                          alt={game.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <Button
+                            size="sm"
+                            className="bg-green-500 hover:bg-green-600 text-white"
+                          >
+                            <Spade className="w-4 h-4 mr-1" />
+                            Play
+                          </Button>
+                        </div>
                       </div>
-                    </div>
 
-                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
+                      <h3 className="font-bold text-sm mb-1 truncate">
+                        {game.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {game.provider}
+                      </p>
 
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-green-400">
-                        RTP {game.rtp}%
-                      </span>
-                      <Badge variant="outline" className="border-green-500 text-green-400 text-xs">
-                        Table
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-green-400">RTP {game.rtp}%</span>
+                        <Badge
+                          variant="outline"
+                          className="border-green-500 text-green-400 text-xs"
+                        >
+                          Table
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
           <TabsContent value="live">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredGames.filter(g => g.category === 'live').map(game => (
-                <Card
-                  key={game.id}
-                  className="group cursor-pointer border-border hover:border-red-500/50 transition-all duration-300"
-                  onClick={() => playGame(game.game_id)}
-                >
-                  <CardContent className="p-3">
-                    <div className="aspect-video bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-lg mb-2 overflow-hidden relative">
-                      <img
-                        src={game.image_url}
-                        alt={game.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-2 right-2">
-                        <Badge className="bg-red-500/90 text-white animate-pulse">
-                          LIVE
-                        </Badge>
+              {filteredGames
+                .filter((g) => g.category === "live")
+                .map((game) => (
+                  <Card
+                    key={game.id}
+                    className="group cursor-pointer border-border hover:border-red-500/50 transition-all duration-300"
+                    onClick={() => playGame(game.game_id)}
+                  >
+                    <CardContent className="p-3">
+                      <div className="aspect-video bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-lg mb-2 overflow-hidden relative">
+                        <img
+                          src={game.image_url}
+                          alt={game.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-red-500/90 text-white animate-pulse">
+                            LIVE
+                          </Badge>
+                        </div>
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <Button
+                            size="sm"
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                          >
+                            <Users className="w-4 h-4 mr-1" />
+                            Join
+                          </Button>
+                        </div>
                       </div>
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white">
-                          <Users className="w-4 h-4 mr-1" />
-                          Join
-                        </Button>
+
+                      <h3 className="font-bold text-sm mb-1 truncate">
+                        {game.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {game.provider}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-red-400">Live Dealer</span>
+                        <span className="text-green-400">
+                          {Math.floor(Math.random() * 50) + 1} players
+                        </span>
                       </div>
-                    </div>
-
-                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
-
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-red-400">
-                        Live Dealer
-                      </span>
-                      <span className="text-green-400">
-                        {Math.floor(Math.random() * 50) + 1} players
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
           <TabsContent value="jackpot">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredGames.filter(g => g.current_jackpot_gc > 100000).map(game => (
-                <Card
-                  key={game.id}
-                  className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
-                  onClick={() => playGame(game.game_id)}
-                >
-                  <CardContent className="p-3">
-                    <div className="aspect-video bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-lg mb-2 overflow-hidden relative">
-                      <img
-                        src={game.image_url}
-                        alt={game.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-2 left-2">
-                        <Badge className="bg-gold-500/90 text-black animate-pulse">
-                          <Trophy className="w-3 h-3 mr-1" />
-                          JACKPOT
-                        </Badge>
+              {filteredGames
+                .filter((g) => g.current_jackpot_gc > 100000)
+                .map((game) => (
+                  <Card
+                    key={game.id}
+                    className="group cursor-pointer border-border hover:border-gold-500/50 transition-all duration-300"
+                    onClick={() => playGame(game.game_id)}
+                  >
+                    <CardContent className="p-3">
+                      <div className="aspect-video bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-lg mb-2 overflow-hidden relative">
+                        <img
+                          src={game.image_url}
+                          alt={game.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute top-2 left-2">
+                          <Badge className="bg-gold-500/90 text-black animate-pulse">
+                            <Trophy className="w-3 h-3 mr-1" />
+                            JACKPOT
+                          </Badge>
+                        </div>
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <Button
+                            size="sm"
+                            className="bg-gold-500 hover:bg-gold-600 text-black"
+                          >
+                            <Crown className="w-4 h-4 mr-1" />
+                            Win Big
+                          </Button>
+                        </div>
                       </div>
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
-                          <Crown className="w-4 h-4 mr-1" />
-                          Win Big
-                        </Button>
+
+                      <h3 className="font-bold text-sm mb-1 truncate">
+                        {game.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {game.provider}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-green-400">RTP {game.rtp}%</span>
+                        <span className="text-gold-400 font-mono font-bold">
+                          {formatJackpot(game.current_jackpot_gc)}
+                        </span>
                       </div>
-                    </div>
-
-                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
-
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-green-400">
-                        RTP {game.rtp}%
-                      </span>
-                      <span className="text-gold-400 font-mono font-bold">
-                        {formatJackpot(game.current_jackpot_gc)}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
           <TabsContent value="new">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredGames.slice(0, 12).map(game => (
+              {filteredGames.slice(0, 12).map((game) => (
                 <Card
                   key={game.id}
                   className="group cursor-pointer border-border hover:border-blue-500/50 transition-all duration-300"
@@ -629,28 +691,29 @@ export default function Games() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute top-2 right-2">
-                        <Badge className="bg-blue-500/90 text-white">
-                          NEW
-                        </Badge>
+                        <Badge className="bg-blue-500/90 text-white">NEW</Badge>
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+                        <Button
+                          size="sm"
+                          className="bg-blue-500 hover:bg-blue-600 text-white"
+                        >
                           <Star className="w-4 h-4 mr-1" />
                           Try Now
                         </Button>
                       </div>
                     </div>
 
-                    <h3 className="font-bold text-sm mb-1 truncate">{game.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-2">{game.provider}</p>
+                    <h3 className="font-bold text-sm mb-1 truncate">
+                      {game.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      {game.provider}
+                    </p>
 
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-green-400">
-                        RTP {game.rtp}%
-                      </span>
-                      <span className="text-blue-400">
-                        New Release
-                      </span>
+                      <span className="text-green-400">RTP {game.rtp}%</span>
+                      <span className="text-blue-400">New Release</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -665,18 +728,22 @@ export default function Games() {
             <CardContent className="p-4 text-center">
               <Users className="w-8 h-8 text-blue-500 mx-auto mb-2" />
               <div className="text-2xl font-bold">1,247</div>
-              <div className="text-sm text-muted-foreground">Players Online</div>
+              <div className="text-sm text-muted-foreground">
+                Players Online
+              </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4 text-center">
               <Trophy className="w-8 h-8 text-gold-500 mx-auto mb-2" />
               <div className="text-2xl font-bold">$2.1M</div>
-              <div className="text-sm text-muted-foreground">Total Jackpots</div>
+              <div className="text-sm text-muted-foreground">
+                Total Jackpots
+              </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4 text-center">
               <Star className="w-8 h-8 text-purple-500 mx-auto mb-2" />
@@ -684,7 +751,7 @@ export default function Games() {
               <div className="text-sm text-muted-foreground">Average RTP</div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4 text-center">
               <Clock className="w-8 h-8 text-green-500 mx-auto mb-2" />

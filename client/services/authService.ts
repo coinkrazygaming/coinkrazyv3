@@ -117,11 +117,11 @@ class AuthService {
       });
 
       const result = await response.json();
-      
+
       if (result.success && result.user) {
         this.saveSession(result.user, result.token);
       }
-      
+
       return result;
     } catch (error) {
       console.error("Login error:", error);
@@ -186,7 +186,8 @@ class AuthService {
       // Simple placeholder implementation
       return {
         success: true,
-        message: "If an account with that email exists, a password reset link has been sent.",
+        message:
+          "If an account with that email exists, a password reset link has been sent.",
       };
     } catch (error) {
       console.error("Password reset error:", error);
@@ -197,12 +198,16 @@ class AuthService {
     }
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<AuthResponse> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<AuthResponse> {
     try {
       // Simple placeholder implementation
       return {
         success: true,
-        message: "Password has been reset successfully. You can now log in with your new password.",
+        message:
+          "Password has been reset successfully. You can now log in with your new password.",
       };
     } catch (error) {
       console.error("Password reset error:", error);

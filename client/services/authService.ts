@@ -172,70 +172,23 @@ class AuthService {
         return { success: false, message: "Email and password are required" };
       }
 
-      // Get user by email
-      const user = await databaseService.getUserByEmail(email.toLowerCase());
-      if (!user) {
-        return { success: false, message: "Invalid email or password" };
+      // Call the login API
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.user) {
+        // Save session
+        this.saveSession(result.user, result.token);
       }
 
-      // Check if account is active
-      if (user.status === "banned") {
-        return {
-          success: false,
-          message: "Account has been suspended. Contact support.",
-        };
-      }
-
-      // Verify password
-      const passwordValid = await bcrypt.compare(password, user.password_hash);
-      if (!passwordValid) {
-        return { success: false, message: "Invalid email or password" };
-      }
-
-      // Check email verification
-      if (!user.is_email_verified) {
-        return {
-          success: false,
-          message:
-            "Please verify your email address before logging in. Check your inbox for the verification link.",
-          requiresEmailVerification: true,
-        };
-      }
-
-      // Update last login
-      await databaseService.query(
-        "UPDATE users SET last_login = CURRENT_TIMESTAMP, ip_address = $2 WHERE id = $1",
-        [user.id, "127.0.0.1"], // In production, get real IP
-      );
-
-      // Generate session token
-      const token = this.generateToken();
-
-      // Clean user object (remove sensitive data)
-      const cleanUser: User = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        role: user.role,
-        status: user.status,
-        kyc_status: user.kyc_status,
-        is_email_verified: user.is_email_verified,
-        vip_expires_at: user.vip_expires_at,
-        created_at: user.created_at,
-        last_login: new Date(),
-      };
-
-      // Save session
-      this.saveSession(cleanUser, token);
-
-      return {
-        success: true,
-        user: cleanUser,
-        token,
-        message: "Login successful!",
-      };
+      return result;
     } catch (error) {
       console.error("Login error:", error);
       return { success: false, message: "Login failed. Please try again." };

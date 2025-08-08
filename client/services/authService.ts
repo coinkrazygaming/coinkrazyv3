@@ -160,7 +160,24 @@ class AuthService {
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
-      const user = await databaseService.verifyEmail(token);
+      const response = await fetch("/api/users/verify-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Email verification API error:", response.status, errorText);
+        return {
+          success: false,
+          message: "Invalid or expired verification token",
+        };
+      }
+
+      const user = await response.json();
       if (!user) {
         return {
           success: false,
@@ -168,20 +185,9 @@ class AuthService {
         };
       }
 
-      // Import bonusService dynamically to avoid circular dependency
-      const { bonusService } = await import("./bonusService");
-
-      // Award welcome bonus after email verification
-      const bonusResult = await bonusService.claimWelcomeBonus(user.id);
-
-      // Send welcome email with bonus info
-      await this.sendWelcomeEmail(user.email, user.username);
-
       return {
         success: true,
-        message: bonusResult.success
-          ? `Email verified successfully! ${bonusResult.message}`
-          : "Email verified successfully! Your welcome bonus is ready to claim.",
+        message: "Email verified successfully! Your welcome bonus is ready to claim.",
       };
     } catch (error) {
       console.error("Email verification error:", error);

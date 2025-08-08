@@ -90,49 +90,31 @@ class AdminService {
     this.checkAdminAccess();
 
     try {
-      const [
-        usersResult,
-        balancesResult,
-        gamesResult,
-        liveStats,
-        transactionsResult,
-        notificationsResult,
-      ] = await Promise.all([
-        databaseService.query(
-          "SELECT COUNT(*) as count, COUNT(CASE WHEN status = 'active' THEN 1 END) as active FROM users",
-        ),
-        databaseService.query(
-          "SELECT SUM(gold_coins) as total_gc, SUM(sweeps_coins) as total_sc FROM user_balances",
-        ),
-        databaseService.query(
-          "SELECT COUNT(*) as count FROM games WHERE is_active = TRUE",
-        ),
-        databaseService.getLiveStats(),
-        databaseService.query(
-          "SELECT COUNT(*) as count FROM transactions WHERE status = 'pending' AND transaction_type = 'withdrawal'",
-        ),
-        databaseService.query(
-          "SELECT COUNT(*) as count FROM admin_notifications WHERE read_status = FALSE AND notification_type = 'error'",
-        ),
+      const [usersResponse, gamesResponse, statsResponse, transactionsResponse, notificationsResponse] = await Promise.all([
+        fetch("/api/admin/users?limit=1"),
+        fetch("/api/games/active"),
+        fetch("/api/admin/stats"),
+        fetch("/api/admin/transactions?limit=1"),
+        fetch("/api/notifications/unread")
       ]);
 
-      const users = usersResult.rows[0];
-      const balances = balancesResult.rows[0];
-      const games = gamesResult.rows[0];
-      const pendingWithdrawals = transactionsResult.rows[0];
-      const fraudAlerts = notificationsResult.rows[0];
+      const users = await usersResponse.json();
+      const games = await gamesResponse.json();
+      const stats = await statsResponse.json();
+      const transactions = await transactionsResponse.json();
+      const notifications = await notificationsResponse.json();
 
       return {
-        totalUsers: parseInt(users.count) || 0,
-        activeNow: liveStats.total_players_online?.value || 0,
-        pendingKyc: liveStats.pending_kyc?.value || 0,
-        revenue24h: liveStats.total_revenue_today?.value || 0,
-        pendingWithdrawals: parseInt(pendingWithdrawals.count) || 0,
-        systemHealth: liveStats.system_health?.value || 99.9,
-        fraudAlerts: parseInt(fraudAlerts.count) || 0,
-        totalGC: parseInt(balances.total_gc) || 0,
-        totalSC: parseFloat(balances.total_sc) || 0,
-        activeGames: parseInt(games.count) || 0,
+        totalUsers: stats.total_users?.value || 0,
+        activeNow: stats.active_players?.value || 0,
+        pendingKyc: 0, // Will need to implement
+        revenue24h: 0, // Will need to calculate
+        pendingWithdrawals: 0, // Will need to implement
+        systemHealth: 99.9, // Placeholder
+        fraudAlerts: notifications.filter((n: any) => n.notification_type === 'error').length || 0,
+        totalGC: 0, // Will need to implement
+        totalSC: 0, // Will need to implement
+        activeGames: Array.isArray(games) ? games.length : 0,
       };
     } catch (error) {
       console.error("Failed to fetch dashboard stats:", error);

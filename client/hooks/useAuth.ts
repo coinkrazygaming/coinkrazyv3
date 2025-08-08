@@ -26,107 +26,41 @@ export const useAuth = (): UseAuthReturn => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-<<<<<<< HEAD
-    // Simulate loading user from localStorage or API
-    const loadUser = async () => {
-      setIsLoading(true);
-
-      // Check if user was previously logged in
-      const savedUser = localStorage.getItem("coinkrazy_user");
-      if (savedUser) {
-        try {
-          const userData = JSON.parse(savedUser);
-          // Verify admin status in real-time
-          const isAdmin = await analyticsService.checkAdminStatus(userData.id);
-          setUser({
-            ...userData,
-            isAdmin,
-            isLoggedIn: true,
-          });
-        } catch (error) {
-          console.error("Error loading saved user:", error);
-          localStorage.removeItem("coinkrazy_user");
-        }
-      } else {
-        // No saved user - user is not logged in
-        console.log("No saved user found, user is not logged in");
-        setUser(null);
-      }
-
-      setIsLoading(false);
-    };
-
-    loadUser();
+    initializeAuth();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    console.log("Login attempt:", { email, password: "***" });
-    setIsLoading(true);
-
+  const initializeAuth = async () => {
     try {
-      // In production, this would be an API call
-      // const response = await fetch('/api/auth/login', { ... });
-
-      // Mock login logic
-      if (email && password) {
-        const isAdmin = await analyticsService.checkAdminStatus(email);
-        console.log("Admin status check:", { email, isAdmin });
-
-        const newUser: User = {
-          id:
-            email === "coinkrazy00@gmail.com"
-              ? "user_admin_001"
-              : `user_${Date.now()}`,
-          username: email,
-          email,
-          isLoggedIn: true,
-          isAdmin,
-          goldCoins: 125000,
-          sweepsCoins: 45.67,
-          level: 25,
-          joinDate: new Date("2024-01-15"),
-          lastLogin: new Date(),
-        };
-
-        console.log("Setting user:", newUser);
-        setUser(newUser);
-        localStorage.setItem("coinkrazy_user", JSON.stringify(newUser));
-        setIsLoading(false);
-        return true;
+      const storedUser = localStorage.getItem("auth_user");
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
       }
-
-      console.log("Login failed: missing email or password");
-      setIsLoading(false);
-      return false;
     } catch (error) {
-      console.error("Login error:", error);
-      setIsLoading(false);
-      return false;
+      console.error("Error loading stored user:", error);
+      localStorage.removeItem("auth_user");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = () => {
-    console.log("Logout called");
-    setUser(null);
-    localStorage.removeItem("coinkrazy_user");
-=======
-    // Initialize auth state
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-    setLoading(false);
-  }, []);
-
-  const login = async (
-    email: string,
-    password: string,
-  ): Promise<AuthResponse> => {
+  const login = async (email: string, password: string): Promise<AuthResponse> => {
     setLoading(true);
     try {
       const response = await authService.login(email, password);
+      
       if (response.success && response.user) {
         setUser(response.user);
+        localStorage.setItem("auth_user", JSON.stringify(response.user));
       }
+      
       return response;
+    } catch (error) {
+      console.error("Login error:", error);
+      return {
+        success: false,
+        message: "An unexpected error occurred. Please try again.",
+      };
     } finally {
       setLoading(false);
     }
@@ -136,55 +70,88 @@ export const useAuth = (): UseAuthReturn => {
     setLoading(true);
     try {
       const response = await authService.register(data);
+      
+      if (response.success && response.user && !response.requiresEmailVerification) {
+        setUser(response.user);
+        localStorage.setItem("auth_user", JSON.stringify(response.user));
+      }
+      
       return response;
+    } catch (error) {
+      console.error("Registration error:", error);
+      return {
+        success: false,
+        message: "An unexpected error occurred. Please try again.",
+      };
     } finally {
       setLoading(false);
     }
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
   };
 
   const logout = async (): Promise<void> => {
-    setLoading(true);
     try {
       await authService.logout();
-      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
     } finally {
-      setLoading(false);
+      setUser(null);
+      localStorage.removeItem("auth_user");
     }
   };
 
   const verifyEmail = async (token: string): Promise<AuthResponse> => {
-    setLoading(true);
     try {
       const response = await authService.verifyEmail(token);
+      
+      if (response.success && response.user) {
+        setUser(response.user);
+        localStorage.setItem("auth_user", JSON.stringify(response.user));
+      }
+      
       return response;
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Email verification error:", error);
+      return {
+        success: false,
+        message: "Email verification failed. Please try again.",
+      };
     }
   };
 
   const requestPasswordReset = async (email: string): Promise<AuthResponse> => {
-    return authService.requestPasswordReset(email);
+    try {
+      return await authService.requestPasswordReset(email);
+    } catch (error) {
+      console.error("Password reset request error:", error);
+      return {
+        success: false,
+        message: "Failed to send password reset email. Please try again.",
+      };
+    }
   };
 
-  const resetPassword = async (
-    token: string,
-    newPassword: string,
-  ): Promise<AuthResponse> => {
-    return authService.resetPassword(token, newPassword);
+  const resetPassword = async (token: string, newPassword: string): Promise<AuthResponse> => {
+    try {
+      return await authService.resetPassword(token, newPassword);
+    } catch (error) {
+      console.error("Password reset error:", error);
+      return {
+        success: false,
+        message: "Password reset failed. Please try again.",
+      };
+    }
   };
 
   const refreshUser = () => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
+    initializeAuth();
   };
 
   return {
     user,
     loading,
-    isAuthenticated: authService.isAuthenticated(),
-    isAdmin: authService.isAdmin(),
-    isVIP: authService.isVIP(),
+    isAuthenticated: !!user,
+    isAdmin: user?.role === "admin",
+    isVIP: user?.vip || false,
     login,
     register,
     logout,

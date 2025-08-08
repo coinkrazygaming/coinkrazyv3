@@ -168,6 +168,7 @@ export default function Register() {
 
             <div className="space-y-4">
               <Button
+                onClick={() => navigate("/dashboard")}
                 size="lg"
                 className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
               >

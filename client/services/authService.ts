@@ -99,6 +99,16 @@ class AuthService {
         body: JSON.stringify(data),
       });
 
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Register API error:", response.status, errorText);
+        return {
+          success: false,
+          message: `Registration failed: ${response.status} ${response.statusText}`
+        };
+      }
+
       const result = await response.json();
       return result;
     } catch (error) {

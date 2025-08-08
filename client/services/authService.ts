@@ -277,14 +277,7 @@ class AuthService {
     token: string,
   ): Promise<void> {
     console.log(`Verification email sent to ${email} with token: ${token}`);
-
-    // Create admin notification
-    await databaseService.createAdminNotification(
-      "Email Verification Sent",
-      `Verification email sent to ${email}`,
-      "info",
-      1, // LuckyAI
-    );
+    // Email sending will be implemented later
   }
 
   private async sendWelcomeEmail(
@@ -292,14 +285,7 @@ class AuthService {
     username: string,
   ): Promise<void> {
     console.log(`Welcome email sent to ${email} for user: ${username}`);
-
-    // Create admin notification
-    await databaseService.createAdminNotification(
-      "Welcome Bonus Awarded",
-      `Welcome bonus awarded to ${username} (${email})`,
-      "success",
-      1, // LuckyAI
-    );
+    // Email sending will be implemented later
   }
 
   private async sendPasswordResetEmail(

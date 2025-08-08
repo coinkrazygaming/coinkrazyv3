@@ -38,6 +38,20 @@ export default function Login() {
   const verified = searchParams.get("verified");
   const verifyError = searchParams.get("verify_error");
 
+  // Auto-initialize admin user on component mount
+  useEffect(() => {
+    const initAdmin = async () => {
+      try {
+        // Try to initialize admin (will succeed if admin doesn't exist)
+        await createAdminUser();
+      } catch (error) {
+        // Silently fail - admin might already exist
+        console.log("Admin initialization check completed");
+      }
+    };
+    initAdmin();
+  }, []);
+
   const createAdminUser = async () => {
     setIsCreatingAdmin(true);
     setError("");

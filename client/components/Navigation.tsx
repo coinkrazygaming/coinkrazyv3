@@ -105,8 +105,6 @@ export default function Navigation() {
     { path: "/", label: "Home", icon: Crown },
     { path: "/games", label: "Games", icon: Coins },
     { path: "/store", label: "Store", icon: Plus },
-    { path: "/login", label: "Login", icon: Users, hideWhenLoggedIn: true },
-    { path: "/register", label: "Sign Up", icon: Gift, hideWhenLoggedIn: true },
     {
       path: "/dashboard",
       label: "Dashboard",

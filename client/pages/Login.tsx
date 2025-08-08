@@ -1,10 +1,5 @@
 import { useState } from "react";
-<<<<<<< HEAD
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-=======
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,26 +20,16 @@ import {
 } from "lucide-react";
 
 export default function Login() {
-<<<<<<< HEAD
-  const { login, isLoading } = useAuth();
-  const navigate = useNavigate();
-=======
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login, loading } = useAuth();
 
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-<<<<<<< HEAD
-  const [is2FARequired, setIs2FARequired] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState("");
-  const [loginError, setLoginError] = useState("");
-=======
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
@@ -88,39 +73,12 @@ export default function Login() {
       setIsCreatingAdmin(false);
     }
   };
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (error) setError(""); // Clear error when user starts typing
   };
 
-<<<<<<< HEAD
-  const handleLogin = async () => {
-    if (!formData.email || !formData.password) {
-      setLoginError("Please enter both email and password");
-      return;
-    }
-
-    setLoginError("");
-
-    try {
-      const success = await login(formData.email, formData.password);
-
-      if (success) {
-        // Navigate to appropriate dashboard
-        if (formData.email === "coinkrazy00@gmail.com") {
-          navigate("/admin");
-        } else {
-          navigate("/dashboard");
-        }
-      } else {
-        setLoginError("Invalid email or password");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoginError("Login failed. Please try again.");
-=======
   const handleLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
 
@@ -156,7 +114,6 @@ export default function Login() {
     } catch (error) {
       setError("An unexpected error occurred. Please try again.");
       console.error("Login error:", error);
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
     }
   };
 
@@ -190,15 +147,6 @@ export default function Login() {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
-<<<<<<< HEAD
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleLogin();
-                }}
-                className="space-y-6"
-              >
-=======
               {/* Success/Error Messages */}
               {verified && (
                 <Alert className="border-green-500/20 bg-green-500/10">
@@ -239,7 +187,6 @@ export default function Login() {
               )}
 
               <form onSubmit={handleLogin} className="space-y-6">
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Email Address
@@ -254,11 +201,6 @@ export default function Login() {
                         handleInputChange("email", e.target.value)
                       }
                       className="pl-10"
-<<<<<<< HEAD
-                    />
-                  </div>
-                </div>
-=======
                       disabled={loading}
                       autoComplete="email"
                     />
@@ -369,111 +311,18 @@ export default function Login() {
                   </div>
                 </div>
               </form>
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={formData.password}
-                      onChange={(e) =>
-                        handleInputChange("password", e.target.value)
-                      }
-                      className="pl-10 pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="rememberMe"
-                      checked={formData.rememberMe}
-                      onChange={(e) =>
-                        handleInputChange("rememberMe", e.target.checked)
-                      }
-                    />
-                    <label htmlFor="rememberMe" className="text-sm">
-                      Remember me
-                    </label>
-                  </div>
+              <div className="text-center">
+                <p className="text-muted-foreground">
+                  Don't have an account?{" "}
                   <Link
-                    to="/forgot-password"
-                    className="text-sm text-gold-400 hover:text-gold-300"
+                    to="/register"
+                    className="text-gold-400 hover:text-gold-300 font-medium"
                   >
-                    Forgot password?
+                    Sign up here
                   </Link>
-<<<<<<< HEAD
-                </div>
-
-                {loginError && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                    <div className="flex items-center gap-2 text-red-500">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span className="text-sm">{loginError}</span>
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  onClick={handleLogin}
-                  disabled={!formData.email || !formData.password || isLoading}
-                  className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-                  type="button"
-                >
-                  {isLoading ? "Logging in..." : "Login"}
-                </Button>
-
-                <div className="text-center">
-                  <p className="text-muted-foreground">
-                    Don't have an account?{" "}
-                    <Link
-                      to="/register"
-                      className="text-gold-400 hover:text-gold-300 font-medium"
-                    >
-                      Sign up here
-                    </Link>
-                  </p>
-                </div>
-
-                {/* Admin Login Demo */}
-                <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Shield className="w-4 h-4 text-casino-blue" />
-                    <span className="text-sm font-medium">Demo Accounts</span>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <strong>Admin:</strong> coinkrazy00@gmail.com /
-                      Tabletop123!
-                    </div>
-                    <div>
-                      <strong>Player:</strong> demo@player.com / password123
-                    </div>
-                  </div>
-                </div>
-              </form>
-=======
                 </p>
               </div>
->>>>>>> ced1cff90766550d756d2fe323dd56584effa147
             </CardContent>
           </Card>
 

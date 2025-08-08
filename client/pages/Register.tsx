@@ -31,7 +31,10 @@ import {
 const blockedStates = ["WA", "ID", "MT", "NV", "NY"];
 
 export default function Register() {
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [registrationError, setRegistrationError] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",

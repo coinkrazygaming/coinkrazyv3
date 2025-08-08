@@ -1,124 +1,132 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  CheckCircle, 
-  AlertTriangle, 
-  Database, 
-  Crown, 
-  Settings, 
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  CheckCircle,
+  AlertTriangle,
+  Database,
+  Crown,
+  Settings,
   Loader2,
   RefreshCw,
-  Play
-} from 'lucide-react';
+  Play,
+} from "lucide-react";
 
 interface SetupStep {
   name: string;
   description: string;
-  status: 'pending' | 'loading' | 'success' | 'error';
+  status: "pending" | "loading" | "success" | "error";
   error?: string;
 }
 
 export default function AdminSetup() {
   const [steps, setSteps] = useState<SetupStep[]>([
     {
-      name: 'Database Connection',
-      description: 'Test connection to Neon PostgreSQL database',
-      status: 'pending'
+      name: "Database Connection",
+      description: "Test connection to Neon PostgreSQL database",
+      status: "pending",
     },
     {
-      name: 'Database Schema',
-      description: 'Create tables and seed initial data',
-      status: 'pending'
+      name: "Database Schema",
+      description: "Create tables and seed initial data",
+      status: "pending",
     },
     {
-      name: 'Admin User',
-      description: 'Create admin account for coinkrazy00@gmail.com',
-      status: 'pending'
-    }
+      name: "Admin User",
+      description: "Create admin account for coinkrazy00@gmail.com",
+      status: "pending",
+    },
   ]);
 
   const [isRunning, setIsRunning] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
 
-  const updateStep = (index: number, status: SetupStep['status'], error?: string) => {
-    setSteps(prev => prev.map((step, i) => 
-      i === index ? { ...step, status, error } : step
-    ));
+  const updateStep = (
+    index: number,
+    status: SetupStep["status"],
+    error?: string,
+  ) => {
+    setSteps((prev) =>
+      prev.map((step, i) => (i === index ? { ...step, status, error } : step)),
+    );
   };
 
   const testDatabaseConnection = async (stepIndex: number) => {
-    updateStep(stepIndex, 'loading');
+    updateStep(stepIndex, "loading");
     try {
-      const response = await fetch('/api/ping');
+      const response = await fetch("/api/ping");
       if (response.ok) {
-        updateStep(stepIndex, 'success');
+        updateStep(stepIndex, "success");
         return true;
       } else {
-        updateStep(stepIndex, 'error', 'Server not responding');
+        updateStep(stepIndex, "error", "Server not responding");
         return false;
       }
     } catch (error) {
-      updateStep(stepIndex, 'error', `Connection failed: ${error.message}`);
+      updateStep(stepIndex, "error", `Connection failed: ${error.message}`);
       return false;
     }
   };
 
   const seedDatabase = async (stepIndex: number) => {
-    updateStep(stepIndex, 'loading');
+    updateStep(stepIndex, "loading");
     try {
-      const response = await fetch('/api/seed-database', {
-        method: 'POST',
+      const response = await fetch("/api/seed-database", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        updateStep(stepIndex, 'success');
+        updateStep(stepIndex, "success");
         return true;
       } else {
-        updateStep(stepIndex, 'error', result.error || 'Database seeding failed');
+        updateStep(
+          stepIndex,
+          "error",
+          result.error || "Database seeding failed",
+        );
         return false;
       }
     } catch (error) {
-      updateStep(stepIndex, 'error', `Seeding failed: ${error.message}`);
+      updateStep(stepIndex, "error", `Seeding failed: ${error.message}`);
       return false;
     }
   };
 
   const createAdminUser = async (stepIndex: number) => {
-    updateStep(stepIndex, 'loading');
+    updateStep(stepIndex, "loading");
     try {
-      const response = await fetch('/api/init-admin', {
-        method: 'POST',
+      const response = await fetch("/api/init-admin", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        updateStep(stepIndex, 'success');
+        updateStep(stepIndex, "success");
         return true;
       } else {
-        updateStep(stepIndex, 'error', result.error || 'Admin creation failed');
+        updateStep(stepIndex, "error", result.error || "Admin creation failed");
         return false;
       }
     } catch (error) {
-      updateStep(stepIndex, 'error', `Admin creation failed: ${error.message}`);
+      updateStep(stepIndex, "error", `Admin creation failed: ${error.message}`);
       return false;
     }
   };
 
   const runSetup = async () => {
     setIsRunning(true);
-    
+
     try {
       // Step 1: Test database connection
       setCurrentStep(0);
@@ -146,19 +154,21 @@ export default function AdminSetup() {
 
       setCurrentStep(-1);
     } catch (error) {
-      console.error('Setup failed:', error);
+      console.error("Setup failed:", error);
     } finally {
       setIsRunning(false);
     }
   };
 
   const resetSetup = () => {
-    setSteps(prev => prev.map(step => ({ ...step, status: 'pending', error: undefined })));
+    setSteps((prev) =>
+      prev.map((step) => ({ ...step, status: "pending", error: undefined })),
+    );
     setCurrentStep(-1);
   };
 
-  const allStepsComplete = steps.every(step => step.status === 'success');
-  const hasErrors = steps.some(step => step.status === 'error');
+  const allStepsComplete = steps.every((step) => step.status === "success");
+  const hasErrors = steps.some((step) => step.status === "error");
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -182,35 +192,41 @@ export default function AdminSetup() {
           </CardHeader>
           <CardContent className="space-y-4">
             {steps.map((step, index) => (
-              <div 
+              <div
                 key={index}
                 className={`p-4 rounded-lg border transition-all ${
-                  currentStep === index 
-                    ? 'border-gold-500 bg-gold-500/5' 
-                    : 'border-border bg-card'
+                  currentStep === index
+                    ? "border-gold-500 bg-gold-500/5"
+                    : "border-border bg-card"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    {step.status === 'success' && (
+                    {step.status === "success" && (
                       <CheckCircle className="w-5 h-5 text-green-500" />
                     )}
-                    {step.status === 'error' && (
+                    {step.status === "error" && (
                       <AlertTriangle className="w-5 h-5 text-red-500" />
                     )}
-                    {step.status === 'loading' && (
+                    {step.status === "loading" && (
                       <Loader2 className="w-5 h-5 animate-spin text-gold-500" />
                     )}
-                    {step.status === 'pending' && (
+                    {step.status === "pending" && (
                       <div className="w-5 h-5 rounded-full border-2 border-muted" />
                     )}
                     <span className="font-medium">{step.name}</span>
                   </div>
-                  <Badge variant={
-                    step.status === 'success' ? 'default' : 
-                    step.status === 'error' ? 'destructive' : 
-                    step.status === 'loading' ? 'secondary' : 'outline'
-                  }>
+                  <Badge
+                    variant={
+                      step.status === "success"
+                        ? "default"
+                        : step.status === "error"
+                          ? "destructive"
+                          : step.status === "loading"
+                            ? "secondary"
+                            : "outline"
+                    }
+                  >
                     {step.status}
                   </Badge>
                 </div>
@@ -241,7 +257,10 @@ export default function AdminSetup() {
                   <div>Email: coinkrazy00@gmail.com</div>
                   <div>Password: Woot6969!</div>
                 </div>
-                <p>You can now navigate to the <strong>Login</strong> page and access the admin panel.</p>
+                <p>
+                  You can now navigate to the <strong>Login</strong> page and
+                  access the admin panel.
+                </p>
               </div>
             </AlertDescription>
           </Alert>
@@ -282,7 +301,7 @@ export default function AdminSetup() {
         {allStepsComplete && (
           <div className="text-center mt-6">
             <Button
-              onClick={() => window.location.href = '/login'}
+              onClick={() => (window.location.href = "/login")}
               className="bg-gradient-to-r from-casino-blue to-casino-blue-dark hover:from-casino-blue-dark hover:to-casino-blue text-white font-bold"
             >
               <Crown className="w-4 h-4 mr-2" />

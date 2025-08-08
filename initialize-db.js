@@ -5,15 +5,18 @@ async function initializeDatabase() {
   try {
     // First, seed the database
     console.log("📋 Seeding database tables and data...");
-    const seedResponse = await fetch("http://localhost:8080/api/seed-database", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const seedResponse = await fetch(
+      "http://localhost:8080/api/seed-database",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     const seedResult = await seedResponse.json();
-    
+
     if (seedResult.success) {
       console.log("✅ Database seeded successfully!");
     } else {
@@ -31,7 +34,7 @@ async function initializeDatabase() {
     });
 
     const adminResult = await adminResponse.json();
-    
+
     if (adminResult.success) {
       console.log("✅ Admin user ready!");
       console.log("🔑 Login Credentials:");
@@ -42,11 +45,12 @@ async function initializeDatabase() {
       console.log("   1. Navigate to http://localhost:8080/login");
       console.log("   2. Click 'Create Admin User' (if needed)");
       console.log("   3. Login with the credentials above");
-      console.log("   4. Access the admin panel at http://localhost:8080/admin");
+      console.log(
+        "   4. Access the admin panel at http://localhost:8080/admin",
+      );
     } else {
       console.log("❌ Admin user creation failed:", adminResult.error);
     }
-
   } catch (error) {
     console.error("�� Database initialization failed:", error.message);
     console.log("");
@@ -72,14 +76,14 @@ async function checkServer() {
 
 async function main() {
   console.log("🔍 Checking if server is running...");
-  
+
   const serverRunning = await checkServer();
   if (!serverRunning) {
     console.log("❌ Server not running. Please start it first:");
     console.log("   npm run dev");
     return;
   }
-  
+
   console.log("✅ Server is running!");
   await initializeDatabase();
 }

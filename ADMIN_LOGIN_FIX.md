@@ -9,17 +9,21 @@ Your application is **properly connected to Neon DB** and the admin login system
 ### 1. **Database Setup** (Choose one method)
 
 #### Method A: Using the Admin Setup Page (Recommended)
+
 1. Navigate to: `http://localhost:8080/admin-setup`
 2. Click "Seed Full Database" to create all tables and data
 3. This will automatically create the admin user
 
 #### Method B: Using the Login Page
+
 1. Navigate to: `http://localhost:8080/login`
 2. Click "Quick Create Admin" button
 3. This creates the admin user only (requires existing database)
 
 ### 2. **Login to Admin Panel**
+
 Once setup is complete:
+
 - **Email**: `coinkrazy00@gmail.com`
 - **Password**: `Woot6969!`
 - **Admin URL**: `http://localhost:8080/admin`
@@ -27,6 +31,7 @@ Once setup is complete:
 ## Database Connection Details ✅
 
 Your Neon DB is properly configured:
+
 - **Connection**: PostgreSQL connection to Neon DB
 - **SSL**: Enabled and working
 - **Pool Size**: 20 connections
@@ -48,6 +53,7 @@ Frontend (React) → Server API → Neon PostgreSQL
 
 1. **Check server logs** for detailed error messages
 2. **Verify Neon DB connection**:
+
    ```bash
    # Test if server is running
    curl http://localhost:8080/api/ping
@@ -60,6 +66,7 @@ Frontend (React) → Server API → Neon PostgreSQL
 ### If Login Fails
 
 1. **Check user exists**:
+
    - Admin user should be created with role 'admin'
    - Email must be verified (is_email_verified = TRUE)
    - Status must be 'active'
@@ -72,23 +79,28 @@ Frontend (React) → Server API → Neon PostgreSQL
 ### Common Issues & Solutions
 
 #### Issue: "Database connection failed"
+
 - **Solution**: Neon DB is already connected correctly, check server logs
 
-#### Issue: "Admin user already exists" 
+#### Issue: "Admin user already exists"
+
 - **Solution**: This is normal, you can proceed to login
 
 #### Issue: "Invalid email or password"
+
 - **Solutions**:
   1. Use exact credentials: `coinkrazy00@gmail.com` / `Woot6969!`
   2. Run database setup again to reset admin user
   3. Check if email verification is required
 
 #### Issue: "Database tables don't exist"
+
 - **Solution**: Run the full database seeding via `/admin-setup`
 
 ## File Structure
 
 Key files for admin login:
+
 ```
 server/
 ├── services/database.ts          # Database connection & queries
@@ -124,6 +136,7 @@ client/
 ## Support
 
 If you continue to have issues:
+
 1. Check the browser console for JavaScript errors
 2. Check the server logs for backend errors
 3. Verify the Neon DB dashboard shows active connections

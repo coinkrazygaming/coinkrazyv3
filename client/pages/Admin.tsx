@@ -192,6 +192,13 @@ export default function Admin() {
     fraudAlerts: 3,
   });
 
+  // Check admin access
+  useEffect(() => {
+    if (!isLoading && (!user?.isLoggedIn || !user?.isAdmin)) {
+      navigate("/");
+    }
+  }, [isLoading, user, navigate]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setLiveStats((prev) => ({
@@ -206,6 +213,23 @@ export default function Admin() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not admin (will redirect)
+  if (!user?.isLoggedIn || !user?.isAdmin) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">

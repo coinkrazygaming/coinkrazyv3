@@ -1,4 +1,4 @@
-import { databaseService } from "./database";
+// Admin service using API calls
 import { authService } from "./authService";
 
 export interface AdminUser {

@@ -32,47 +32,11 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 
   // Check for verification success message
   const verified = searchParams.get("verified");
   const verifyError = searchParams.get("verify_error");
 
-  const createAdminUser = async () => {
-    setIsCreatingAdmin(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      const response = await fetch("/api/init-admin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSuccess(
-          "✅ Admin user created! You can now login with coinkrazy00@gmail.com / Woot6969!",
-        );
-        // Auto-fill credentials
-        setFormData({
-          email: "coinkrazy00@gmail.com",
-          password: "Woot6969!",
-          rememberMe: false,
-        });
-      } else {
-        setError(result.error || "Failed to create admin user");
-      }
-    } catch (error) {
-      setError("Failed to create admin user");
-      console.error("Admin creation error:", error);
-    } finally {
-      setIsCreatingAdmin(false);
-    }
-  };
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -282,23 +246,34 @@ export default function Login() {
                   )}
                 </Button>
 
-                {/* Temporary Admin Creation Helper */}
-                <Button
-                  type="button"
-                  onClick={createAdminUser}
-                  disabled={loading || isCreatingAdmin}
-                  variant="outline"
-                  className="w-full border-gold-500/50 text-gold-400 hover:bg-gold-500/10"
-                >
-                  {isCreatingAdmin ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating Admin...
-                    </>
-                  ) : (
-                    "Create Admin User"
-                  )}
-                </Button>
+                {/* Admin Setup Helper */}
+                <div className="space-y-2">
+                  <Button
+                    type="button"
+                    onClick={createAdminUser}
+                    disabled={loading || isCreatingAdmin}
+                    variant="outline"
+                    className="w-full border-gold-500/50 text-gold-400 hover:bg-gold-500/10"
+                  >
+                    {isCreatingAdmin ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Admin...
+                      </>
+                    ) : (
+                      "Quick Create Admin"
+                    )}
+                  </Button>
+
+                  <div className="text-center">
+                    <Link
+                      to="/admin-setup"
+                      className="text-xs text-muted-foreground hover:text-gold-400 transition-colors"
+                    >
+                      Need database setup? Use Full Admin Setup →
+                    </Link>
+                  </div>
+                </div>
               </form>
 
               <div className="text-center">

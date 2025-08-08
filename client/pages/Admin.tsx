@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import {
   adminService,
@@ -22,6 +22,7 @@ import CasinoBanking from "@/components/CasinoBanking";
 import PackageEditor from "@/components/PackageEditor";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
+import GameManagement from "@/components/GameManagement";
 import AdminToolbar from "@/components/AdminToolbar";
 import {
   Shield,
@@ -66,13 +67,16 @@ import {
 } from "lucide-react";
 
 export default function Admin() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect if not admin
-  if (!isAdmin) {
-    return <Navigate to="/login" replace />;
-  }
+  // Check admin access
+  useEffect(() => {
+    if (!isLoading && (!user?.isLoggedIn || !user?.isAdmin)) {
+      navigate("/");
+    }
+  }, [isLoading, user, navigate]);
 
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
@@ -216,6 +220,28 @@ export default function Admin() {
     }
   };
 
+  const handleLogout = () => {
+    // Implementation for logout
+    navigate("/");
+  };
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not admin (will redirect)
+  if (!user?.isLoggedIn || !user?.isAdmin) {
+    return null;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -269,7 +295,7 @@ export default function Admin() {
               </Button>
               <Button
                 variant="outline"
-                onClick={logout}
+                onClick={handleLogout}
                 className="bg-red-500/10 border-red-500 text-red-400"
               >
                 <XCircle className="w-4 h-4 mr-2" />
@@ -384,7 +410,7 @@ export default function Admin() {
 
         {/* Admin Tools Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-12">
             <TabsTrigger value="dashboard">
               <BarChart3 className="w-4 h-4 mr-2" />
               Dashboard
@@ -396,6 +422,10 @@ export default function Admin() {
             <TabsTrigger value="games">
               <GamepadIcon className="w-4 h-4 mr-2" />
               Games
+            </TabsTrigger>
+            <TabsTrigger value="game-management">
+              <Settings className="w-4 h-4 mr-2" />
+              Game Mgmt
             </TabsTrigger>
             <TabsTrigger value="transactions">
               <CreditCard className="w-4 h-4 mr-2" />
@@ -763,6 +793,11 @@ export default function Admin() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Game Management - SlotsAI Integration */}
+          <TabsContent value="game-management" className="mt-6">
+            <GameManagement />
           </TabsContent>
 
           {/* Transactions */}

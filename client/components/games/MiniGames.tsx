@@ -175,6 +175,20 @@ export default function MiniGames() {
 
   const miniGames: MiniGame[] = [
     {
+      id: "mary-cucumber",
+      name: "Mary Had a lil cucumber",
+      description: "60-second cucumber collection challenge!",
+      icon: <span className="text-lg">🥒</span>,
+      category: "skill",
+      difficulty: "medium",
+      maxReward: 10.0,
+      playCount: 2456,
+      averageReward: 3.5,
+      winRate: 75,
+      isActive: true,
+      cooldown: 86400, // 24 hours
+    },
+    {
       id: "wheel-fortune",
       name: "Wheel of Fortune",
       description: "Spin the wheel to win instant SC rewards!",

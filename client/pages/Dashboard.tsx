@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +41,34 @@ import {
 import { Link } from "react-router-dom";
 
 export default function Dashboard() {
-  const [user] = useState({
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user?.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [isLoading, user, navigate]);
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not logged in (will redirect)
+  if (!user?.isLoggedIn) {
+    return null;
+  }
+
+  const [mockUser] = useState({
     username: "player123",
     email: "player123@email.com",
     joinDate: "2024-01-15",

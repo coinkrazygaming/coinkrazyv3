@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // Client-side auth service using API calls
+=======
+// Remove direct database access - use API endpoints only
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
 
 export interface User {
   id: number;
@@ -13,6 +17,8 @@ export interface User {
   vip_expires_at?: Date;
   created_at: Date;
   last_login?: Date;
+  isLoggedIn?: boolean;
+  isAdmin?: boolean;
 }
 
 export interface AuthResponse {
@@ -87,6 +93,10 @@ class AuthService {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
+<<<<<<< HEAD
+=======
+      // Call the register API
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -95,6 +105,19 @@ class AuthService {
         body: JSON.stringify(data),
       });
 
+<<<<<<< HEAD
+=======
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Register API error:", response.status, errorText);
+        return {
+          success: false,
+          message: `Registration failed: ${response.status} ${response.statusText}`,
+        };
+      }
+
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
       const result = await response.json();
       return result;
     } catch (error) {
@@ -122,6 +145,43 @@ class AuthService {
         this.saveSession(result.user, result.token);
       }
 
+<<<<<<< HEAD
+=======
+      console.log("Attempting login for:", email);
+
+      // Call the login API
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      console.log("Login response status:", response.status);
+
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Login API error:", response.status, errorText);
+        return {
+          success: false,
+          message: `Login failed: ${response.status} ${response.statusText}`,
+        };
+      }
+
+      const result = await response.json();
+      console.log("Login result:", {
+        success: result.success,
+        hasUser: !!result.user,
+      });
+
+      if (result.success && result.user) {
+        // Save session
+        this.saveSession(result.user, result.token);
+      }
+
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
       return result;
     } catch (error) {
       console.error("Login error:", error);
@@ -131,16 +191,50 @@ class AuthService {
 
   async verifyEmail(token: string): Promise<AuthResponse> {
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/auth/verify-email", {
+=======
+      const response = await fetch("/api/users/verify-email", {
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ token }),
       });
+<<<<<<< HEAD
 
       const result = await response.json();
       return result;
+=======
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          "Email verification API error:",
+          response.status,
+          errorText,
+        );
+        return {
+          success: false,
+          message: "Invalid or expired verification token",
+        };
+      }
+
+      const user = await response.json();
+      if (!user) {
+        return {
+          success: false,
+          message: "Invalid or expired verification token",
+        };
+      }
+
+      return {
+        success: true,
+        message:
+          "Email verified successfully! Your welcome bonus is ready to claim.",
+      };
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
     } catch (error) {
       console.error("Email verification error:", error);
       return {
@@ -183,10 +277,18 @@ class AuthService {
 
   async requestPasswordReset(email: string): Promise<AuthResponse> {
     try {
+<<<<<<< HEAD
       // Simple placeholder implementation
       return {
         success: true,
         message: "If an account with that email exists, a password reset link has been sent.",
+=======
+      // For now, just return a success message (password reset API not implemented yet)
+      return {
+        success: true,
+        message:
+          "If an account with that email exists, a password reset link has been sent.",
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
       };
     } catch (error) {
       console.error("Password reset error:", error);
@@ -199,10 +301,25 @@ class AuthService {
 
   async resetPassword(token: string, newPassword: string): Promise<AuthResponse> {
     try {
+<<<<<<< HEAD
       // Simple placeholder implementation
       return {
         success: true,
         message: "Password has been reset successfully. You can now log in with your new password.",
+=======
+      if (newPassword.length < 6) {
+        return {
+          success: false,
+          message: "Password must be at least 6 characters long",
+        };
+      }
+
+      // For now, just return a message (password reset API not implemented yet)
+      return {
+        success: false,
+        message:
+          "Password reset functionality is not yet available. Please contact support.",
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
       };
     } catch (error) {
       console.error("Password reset error:", error);
@@ -212,6 +329,99 @@ class AuthService {
       };
     }
   }
+<<<<<<< HEAD
+=======
+
+  // Email methods (simulate for now - will be implemented with SMTP later)
+  private async sendVerificationEmail(
+    email: string,
+    token: string,
+  ): Promise<void> {
+    console.log(`Verification email sent to ${email} with token: ${token}`);
+    // Email sending will be implemented later
+  }
+
+  private async sendWelcomeEmail(
+    email: string,
+    username: string,
+  ): Promise<void> {
+    console.log(`Welcome email sent to ${email} for user: ${username}`);
+    // Email sending will be implemented later
+  }
+
+  private async sendPasswordResetEmail(
+    email: string,
+    token: string,
+  ): Promise<void> {
+    console.log(`Password reset email sent to ${email} with token: ${token}`);
+  }
+
+  // Admin initialization
+  async initializeAdmin(): Promise<AuthResponse> {
+    try {
+      const response = await fetch("/api/init-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Admin init API error:", response.status, errorText);
+        return {
+          success: false,
+          message: `Failed to initialize admin: ${response.status} ${response.statusText}`,
+        };
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Admin initialization error:", error);
+      return {
+        success: false,
+        message: "Failed to initialize admin user",
+      };
+    }
+  }
+
+  // Admin methods
+  async updateUserStatus(userId: number, status: string): Promise<boolean> {
+    try {
+      if (!this.isAdmin()) {
+        throw new Error("Unauthorized: Admin access required");
+      }
+
+      // This will be implemented with proper API endpoints later
+      console.log(`Update user ${userId} status to ${status}`);
+      return true;
+    } catch (error) {
+      console.error("Update user status error:", error);
+      return false;
+    }
+  }
+
+  async updateUserKYC(
+    userId: number,
+    kycStatus: string,
+    documents?: any,
+  ): Promise<boolean> {
+    try {
+      if (!this.isAdmin()) {
+        throw new Error("Unauthorized: Admin access required");
+      }
+
+      // This will be implemented with proper API endpoints later
+      console.log(`Update user ${userId} KYC status to ${kycStatus}`);
+      return true;
+    } catch (error) {
+      console.error("Update user KYC error:", error);
+      return false;
+    }
+  }
+>>>>>>> 7e4a4d28608ec4d55c1ef38337f182f25ef2d53b
 }
 
 export const authService = AuthService.getInstance();

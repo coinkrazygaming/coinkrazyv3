@@ -33,17 +33,30 @@ export default function Login() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleLogin = () => {
-    // Simulate login process
-    // 2FA disabled for admin accounts as requested
-    console.log("Login successful");
-    // Navigate to appropriate dashboard
-    if (formData.email === "coinkrazy00@gmail.com") {
-      // Admin user - redirect to admin panel
-      window.location.href = "/admin";
-    } else {
-      // Regular user - redirect to dashboard
-      window.location.href = "/dashboard";
+  const handleLogin = async () => {
+    if (!formData.email || !formData.password) {
+      setLoginError("Please enter both email and password");
+      return;
+    }
+
+    setLoginError("");
+
+    try {
+      const success = await login(formData.email, formData.password);
+
+      if (success) {
+        // Navigate to appropriate dashboard
+        if (formData.email === "coinkrazy00@gmail.com") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        setLoginError("Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setLoginError("Login failed. Please try again.");
     }
   };
 

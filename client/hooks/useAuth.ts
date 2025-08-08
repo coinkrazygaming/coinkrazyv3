@@ -62,26 +62,9 @@ const useMockAuth = () => {
           localStorage.removeItem("coinkrazy_user");
         }
       } else {
-        // Default mock user for demo (remove in production)
-        const mockUser: User = {
-          id: "user_admin_001",
-          username: "coinkrazy00@gmail.com",
-          email: "coinkrazy00@gmail.com",
-          isLoggedIn: true,
-          isAdmin: true, // Set based on real admin check
-          goldCoins: 125000,
-          sweepsCoins: 45.67,
-          level: 25,
-          joinDate: new Date("2024-01-15"),
-          lastLogin: new Date(),
-        };
-
-        // Verify admin status
-        const isAdmin = await analyticsService.checkAdminStatus(mockUser.id);
-        mockUser.isAdmin = isAdmin;
-
-        setUser(mockUser);
-        localStorage.setItem("coinkrazy_user", JSON.stringify(mockUser));
+        // No saved user - user is not logged in
+        console.log("No saved user found, user is not logged in");
+        setUser(null);
       }
 
       setIsLoading(false);

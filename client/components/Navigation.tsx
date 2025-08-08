@@ -181,10 +181,35 @@ export default function Navigation() {
               <span>319-473-0416</span>
             </div>
 
-            {/* Play Now Button */}
-            <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
-              Play Now
-            </Button>
+            {/* Auth Buttons */}
+            {user?.isLoggedIn ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user.username}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                  className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
+                    Register
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

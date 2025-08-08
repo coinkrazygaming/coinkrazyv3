@@ -214,12 +214,21 @@ export default function Login() {
                 </Link>
               </div>
 
+              {loginError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-red-500">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span className="text-sm">{loginError}</span>
+                  </div>
+                </div>
+              )}
+
               <Button
                 onClick={handleLogin}
-                disabled={!formData.email || !formData.password}
+                disabled={!formData.email || !formData.password || isLoading}
                 className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
               >
-                Login
+                {isLoading ? "Logging in..." : "Login"}
               </Button>
 
               <div className="text-center">

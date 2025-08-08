@@ -14,6 +14,8 @@ export interface User {
   vip_expires_at?: Date;
   created_at: Date;
   last_login?: Date;
+  isLoggedIn?: boolean;
+  isAdmin?: boolean;
 }
 
 export interface AuthResponse {

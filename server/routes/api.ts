@@ -12,7 +12,7 @@ router.post("/auth/login", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required"
+        message: "Email and password are required",
       });
     }
 
@@ -21,7 +21,7 @@ router.post("/auth/login", async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
+        message: "Invalid email or password",
       });
     }
 
@@ -38,7 +38,7 @@ router.post("/auth/login", async (req, res) => {
     if (!passwordValid) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
+        message: "Invalid email or password",
       });
     }
 
@@ -46,7 +46,8 @@ router.post("/auth/login", async (req, res) => {
     if (!user.is_email_verified) {
       return res.status(403).json({
         success: false,
-        message: "Please verify your email address before logging in. Check your inbox for the verification link.",
+        message:
+          "Please verify your email address before logging in. Check your inbox for the verification link.",
         requiresEmailVerification: true,
       });
     }
@@ -58,7 +59,8 @@ router.post("/auth/login", async (req, res) => {
     );
 
     // Generate session token
-    const token = Math.random().toString(36).substring(2, 15) +
+    const token =
+      Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15) +
       Date.now().toString(36);
 
@@ -77,7 +79,7 @@ router.post("/auth/login", async (req, res) => {
       created_at: user.created_at,
       last_login: new Date(),
       isLoggedIn: true,
-      isAdmin: user.role === "admin"
+      isAdmin: user.role === "admin",
     };
 
     res.json({
@@ -90,14 +92,15 @@ router.post("/auth/login", async (req, res) => {
     console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: "Login failed. Please try again."
+      message: "Login failed. Please try again.",
     });
   }
 });
 
 router.post("/auth/register", async (req, res) => {
   try {
-    const { email, username, password, firstName, lastName, dateOfBirth } = req.body;
+    const { email, username, password, firstName, lastName, dateOfBirth } =
+      req.body;
 
     // Validate input
     if (!email || !username || !password) {
@@ -141,7 +144,7 @@ router.post("/auth/register", async (req, res) => {
     if (existingUsername) {
       return res.status(409).json({
         success: false,
-        message: "Username is already taken"
+        message: "Username is already taken",
       });
     }
 
@@ -159,7 +162,8 @@ router.post("/auth/register", async (req, res) => {
 
     res.json({
       success: true,
-      message: "Registration successful! Please check your email to verify your account and claim your welcome bonus.",
+      message:
+        "Registration successful! Please check your email to verify your account and claim your welcome bonus.",
       requiresEmailVerification: true,
     });
   } catch (error) {

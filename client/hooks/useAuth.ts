@@ -44,16 +44,19 @@ export const useAuth = (): UseAuthReturn => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<AuthResponse> => {
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<AuthResponse> => {
     setLoading(true);
     try {
       const response = await authService.login(email, password);
-      
+
       if (response.success && response.user) {
         setUser(response.user);
         localStorage.setItem("auth_user", JSON.stringify(response.user));
       }
-      
+
       return response;
     } catch (error) {
       console.error("Login error:", error);
@@ -70,12 +73,16 @@ export const useAuth = (): UseAuthReturn => {
     setLoading(true);
     try {
       const response = await authService.register(data);
-      
-      if (response.success && response.user && !response.requiresEmailVerification) {
+
+      if (
+        response.success &&
+        response.user &&
+        !response.requiresEmailVerification
+      ) {
         setUser(response.user);
         localStorage.setItem("auth_user", JSON.stringify(response.user));
       }
-      
+
       return response;
     } catch (error) {
       console.error("Registration error:", error);
@@ -102,12 +109,12 @@ export const useAuth = (): UseAuthReturn => {
   const verifyEmail = async (token: string): Promise<AuthResponse> => {
     try {
       const response = await authService.verifyEmail(token);
-      
+
       if (response.success && response.user) {
         setUser(response.user);
         localStorage.setItem("auth_user", JSON.stringify(response.user));
       }
-      
+
       return response;
     } catch (error) {
       console.error("Email verification error:", error);
@@ -130,7 +137,10 @@ export const useAuth = (): UseAuthReturn => {
     }
   };
 
-  const resetPassword = async (token: string, newPassword: string): Promise<AuthResponse> => {
+  const resetPassword = async (
+    token: string,
+    newPassword: string,
+  ): Promise<AuthResponse> => {
     try {
       return await authService.resetPassword(token, newPassword);
     } catch (error) {

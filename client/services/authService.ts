@@ -105,7 +105,7 @@ class AuthService {
         console.error("Register API error:", response.status, errorText);
         return {
           success: false,
-          message: `Registration failed: ${response.status} ${response.statusText}`
+          message: `Registration failed: ${response.status} ${response.statusText}`,
         };
       }
 
@@ -141,7 +141,7 @@ class AuthService {
         console.error("Login API error:", response.status, errorText);
         return {
           success: false,
-          message: `Login failed: ${response.status} ${response.statusText}`
+          message: `Login failed: ${response.status} ${response.statusText}`,
         };
       }
 
@@ -356,7 +356,7 @@ class AuthService {
         console.error("Admin init API error:", response.status, errorText);
         return {
           success: false,
-          message: `Failed to initialize admin: ${response.status} ${response.statusText}`
+          message: `Failed to initialize admin: ${response.status} ${response.statusText}`,
         };
       }
 

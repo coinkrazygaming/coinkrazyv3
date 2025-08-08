@@ -296,7 +296,9 @@ export default function Register() {
               <h2 className="text-2xl font-bold mb-4">Welcome Bonus Package</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gold-500 mb-1">10</div>
+                  <div className="text-2xl font-bold text-gold-500 mb-1">
+                    10
+                  </div>
                   <div className="text-sm text-muted-foreground">
                     Free Gold Coins
                   </div>
@@ -439,11 +441,12 @@ export default function Register() {
                         )}
                       </button>
                     </div>
-                    {formData.password && !validatePassword(formData.password) && (
-                      <p className="text-red-500 text-sm mt-1">
-                        Password must be at least 8 characters long
-                      </p>
-                    )}
+                    {formData.password &&
+                      !validatePassword(formData.password) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Password must be at least 8 characters long
+                        </p>
+                      )}
                   </div>
 
                   <div>
@@ -629,7 +632,9 @@ export default function Register() {
                   <div className="bg-muted/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Shield className="w-5 h-5 text-casino-blue" />
-                      <span className="font-medium">State Compliance Check</span>
+                      <span className="font-medium">
+                        State Compliance Check
+                      </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       We verify your location to ensure compliance with local
@@ -709,7 +714,9 @@ export default function Register() {
                   <div className="bg-gold/5 border border-gold-500/20 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <FileText className="w-5 h-5 text-gold-500" />
-                      <span className="font-medium">Sweepstakes Legal Notice</span>
+                      <span className="font-medium">
+                        Sweepstakes Legal Notice
+                      </span>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p>• No purchase necessary to play or win</p>
@@ -754,7 +761,10 @@ export default function Register() {
           {/* Legal Footer */}
           <div className="mt-8 text-center">
             <div className="flex flex-wrap justify-center gap-4 mb-4">
-              <Badge variant="outline" className="border-gold-500 text-gold-400">
+              <Badge
+                variant="outline"
+                className="border-gold-500 text-gold-400"
+              >
                 <Shield className="w-3 h-3 mr-1" />
                 18+ Only
               </Badge>
@@ -772,8 +782,8 @@ export default function Register() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-              CoinKrazy operates as a legal sweepstakes casino. Play responsibly.
-              If you have a gambling problem, call 1-800-GAMBLER.
+              CoinKrazy operates as a legal sweepstakes casino. Play
+              responsibly. If you have a gambling problem, call 1-800-GAMBLER.
             </p>
           </div>
         </div>

@@ -318,6 +318,27 @@ class AuthService {
     console.log(`Password reset email sent to ${email} with token: ${token}`);
   }
 
+  // Admin initialization
+  async initializeAdmin(): Promise<AuthResponse> {
+    try {
+      const response = await fetch("/api/init-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Admin initialization error:", error);
+      return {
+        success: false,
+        message: "Failed to initialize admin user",
+      };
+    }
+  }
+
   // Admin methods
   async updateUserStatus(userId: number, status: string): Promise<boolean> {
     try {

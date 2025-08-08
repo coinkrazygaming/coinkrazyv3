@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 
 export default function Login() {
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,6 +27,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [is2FARequired, setIs2FARequired] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

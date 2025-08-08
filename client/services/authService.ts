@@ -231,30 +231,10 @@ class AuthService {
 
   async requestPasswordReset(email: string): Promise<AuthResponse> {
     try {
-      const user = await databaseService.getUserByEmail(email.toLowerCase());
-      if (!user) {
-        // Don't reveal if email exists or not for security
-        return {
-          success: true,
-          message:
-            "If an account with that email exists, a password reset link has been sent.",
-        };
-      }
-
-      const resetToken = this.generateToken();
-      const resetExpires = new Date(Date.now() + 3600000); // 1 hour
-
-      await databaseService.query(
-        "UPDATE users SET password_reset_token = $1, password_reset_expires = $2 WHERE id = $3",
-        [resetToken, resetExpires, user.id],
-      );
-
-      // Send password reset email (simulate for now)
-      await this.sendPasswordResetEmail(user.email, resetToken);
-
+      // For now, just return a success message (password reset API not implemented yet)
       return {
         success: true,
-        message: "Password reset link has been sent to your email.",
+        message: "If an account with that email exists, a password reset link has been sent.",
       };
     } catch (error) {
       console.error("Password reset error:", error);

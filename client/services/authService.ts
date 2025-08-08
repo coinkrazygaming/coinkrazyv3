@@ -257,26 +257,10 @@ class AuthService {
         };
       }
 
-      const user = await databaseService.query(
-        "SELECT * FROM users WHERE password_reset_token = $1 AND password_reset_expires > CURRENT_TIMESTAMP",
-        [token],
-      );
-
-      if (!user.rows.length) {
-        return { success: false, message: "Invalid or expired reset token" };
-      }
-
-      const passwordHash = await bcrypt.hash(newPassword, 12);
-
-      await databaseService.query(
-        "UPDATE users SET password_hash = $1, password_reset_token = NULL, password_reset_expires = NULL WHERE id = $2",
-        [passwordHash, user.rows[0].id],
-      );
-
+      // For now, just return a message (password reset API not implemented yet)
       return {
-        success: true,
-        message:
-          "Password has been reset successfully. You can now log in with your new password.",
+        success: false,
+        message: "Password reset functionality is not yet available. Please contact support.",
       };
     } catch (error) {
       console.error("Password reset error:", error);

@@ -38,7 +38,7 @@ export default function Staff() {
     } else if (user && isStaff) {
       setStaffLoading(false);
     }
-  }, [isLoading, user, isStaff, navigate]);
+  }, [isLoading, user, isStaff]);
 
   // Mock staff data
   const [staffStats] = useState({

@@ -44,6 +44,12 @@ export default function Navigation() {
   // Real user authentication state
   const { user, logout, isLoading: authLoading } = useAuth();
 
+  // Handle logout with redirect
+  const handleLogout = async () => {
+    await logout();
+    navigate("/"); // Redirect to home page after logout
+  };
+
   // Debug logging
   useEffect(() => {
     console.log("Navigation: Auth state changed", {

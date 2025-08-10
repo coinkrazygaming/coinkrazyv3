@@ -9,13 +9,14 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-export default function ProtectedRoute({ 
-  children, 
+export default function ProtectedRoute({
+  children,
   requiredRole,
-  redirectTo = "/login" 
+  redirectTo
 }: ProtectedRouteProps) {
   const { user, isLoading, isAdmin, isStaff } = useAuth();
   const navigate = useNavigate();
+  const finalRedirectTo = redirectTo || "/login";
 
   useEffect(() => {
     if (!isLoading) {

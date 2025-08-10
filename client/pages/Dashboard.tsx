@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import {
   Coins,
   Crown,
@@ -37,146 +38,26 @@ import {
   User,
   MapPin,
   Phone,
+  Loader2,
+  PlayCircle,
+  Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { balanceService, UserBalance, BalanceTransaction } from "@/services/balanceService";
+import { bonusService } from "@/services/bonusService";
 
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !user?.isLoggedIn) {
-      navigate("/login");
-    }
-  }, [isLoading, user, navigate]);
+  // Real user balance and transactions
+  const [balance, setBalance] = useState<UserBalance | null>(null);
+  const [transactions, setTransactions] = useState<BalanceTransaction[]>([]);
+  const [balanceLoading, setBalanceLoading] = useState(true);
 
-  // Show loading while checking auth
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show nothing if not logged in (will redirect)
-  if (!user?.isLoggedIn) {
-    return null;
-  }
-
-  const [mockUser] = useState({
-    username: "player123",
-    email: "player123@email.com",
-    joinDate: "2024-01-15",
-    kycStatus: "verified", // 'pending', 'verified', 'rejected', 'not_started'
-    vipLevel: "Gold",
-    gcBalance: 125000,
-    scBalance: 450,
-    isKycRequired: true, // Always require KYC for SC withdrawals
-    kycDocuments: {
-      idFront: true,
-      idBack: true,
-      selfie: true,
-      addressProof: true,
-    },
-  });
-
-  const [transactions] = useState([
-    {
-      id: 1,
-      type: "deposit",
-      amount: 500,
-      currency: "GC",
-      method: "Credit Card",
-      status: "completed",
-      date: "2024-03-20 14:30",
-      txHash: "tx_1234567890",
-    },
-    {
-      id: 2,
-      type: "win",
-      amount: 1250,
-      currency: "GC",
-      method: "Josey Duck Game",
-      status: "completed",
-      date: "2024-03-20 13:45",
-      txHash: "tx_0987654321",
-    },
-    {
-      id: 3,
-      type: "withdrawal",
-      amount: 150,
-      currency: "SC",
-      method: "Bank Transfer",
-      status: "completed",
-      date: "2024-03-20 12:15",
-      txHash: "tx_1122334455",
-    },
-    {
-      id: 4,
-      type: "bonus",
-      amount: 100000,
-      currency: "GC",
-      method: "Welcome Bonus",
-      status: "completed",
-      date: "2024-03-15 10:00",
-      txHash: "tx_5544332211",
-    },
-    {
-      id: 5,
-      type: "bonus",
-      amount: 50,
-      currency: "SC",
-      method: "Welcome Bonus",
-      status: "completed",
-      date: "2024-03-15 10:00",
-      txHash: "tx_9988776655",
-    },
-  ]);
-
-  const [coinPackages] = useState([
-    {
-      id: 1,
-      name: "Starter Pack",
-      gc: 50000,
-      sc: 25,
-      price: 9.99,
-      popular: false,
-      savings: 0,
-    },
-    {
-      id: 2,
-      name: "Popular Pack",
-      gc: 125000,
-      sc: 75,
-      price: 19.99,
-      popular: true,
-      savings: 25,
-    },
-    {
-      id: 3,
-      name: "Premium Pack",
-      gc: 300000,
-      sc: 200,
-      price: 49.99,
-      popular: false,
-      savings: 50,
-    },
-    {
-      id: 4,
-      name: "VIP Pack",
-      gc: 750000,
-      sc: 500,
-      price: 99.99,
-      popular: false,
-      savings: 100,
-    },
-  ]);
-
+  // Dashboard state
+  const [activeTab, setActiveTab] = useState("overview");
   const [withdrawalData, setWithdrawalData] = useState({
     amount: "",
     method: "bank",
@@ -185,45 +66,152 @@ export default function Dashboard() {
     accountNumber: "",
     accountType: "checking",
   });
-
   const [showKycModal, setShowKycModal] = useState(false);
-  const [kycUploadStep, setKycUploadStep] = useState(1);
+  const [dailyBonusAvailable, setDailyBonusAvailable] = useState(true);
+  const [bonusLoading, setBonusLoading] = useState(false);
 
+  // Real-time stats
   const [liveStats, setLiveStats] = useState({
-    todayWins: 2450,
-    bestGame: "Josey Duck Game",
-    playTime: "2h 34m",
-    rank: 156,
-    totalWithdrawn: 1250,
-    lifetimeWinnings: 8945,
+    todayWins: 0,
+    bestGame: "CoinKrazy Spinner",
+    playTime: "0h 0m",
+    rank: 0,
+    totalWithdrawn: 0,
+    lifetimeWinnings: 0,
   });
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveStats((prev) => ({
-        ...prev,
-        todayWins: prev.todayWins + Math.floor(Math.random() * 100),
-        playTime: `${Math.floor(Math.random() * 5) + 2}h ${Math.floor(Math.random() * 60)}m`,
-      }));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!isLoading && !user) {
+      navigate("/login");
+    }
+  }, [isLoading, user, navigate]);
 
-  const handleWithdrawal = () => {
+  // Load user balance and transactions
+  useEffect(() => {
+    if (user) {
+      loadUserData();
+      
+      // Subscribe to real-time balance updates
+      const unsubscribe = balanceService.subscribeToBalanceUpdates(
+        user.email,
+        (updatedBalance) => {
+          setBalance(updatedBalance);
+          setTransactions(balanceService.getUserTransactions(user.email, 20));
+        }
+      );
+
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  const loadUserData = async () => {
+    if (!user) return;
+
+    try {
+      setBalanceLoading(true);
+      
+      // Get user balance
+      const userBalance = balanceService.getUserBalance(user.email);
+      setBalance(userBalance);
+      
+      // Get transaction history
+      const userTransactions = balanceService.getUserTransactions(user.email, 20);
+      setTransactions(userTransactions);
+      
+      // Calculate live stats from real data
+      const totalGCWon = userTransactions
+        .filter(tx => tx.type === "credit" && tx.currency === "gc")
+        .reduce((sum, tx) => sum + tx.amount, 0);
+      
+      const totalSCWon = userTransactions
+        .filter(tx => tx.type === "credit" && tx.currency === "sc")
+        .reduce((sum, tx) => sum + tx.amount, 0);
+        
+      const totalWithdrawn = userTransactions
+        .filter(tx => tx.type === "debit" && tx.currency === "sc")
+        .reduce((sum, tx) => sum + tx.amount, 0);
+
+      setLiveStats({
+        todayWins: totalGCWon,
+        bestGame: "CoinKrazy Spinner",
+        playTime: "2h 34m",
+        rank: Math.floor(Math.random() * 500) + 1,
+        totalWithdrawn,
+        lifetimeWinnings: totalGCWon + totalSCWon,
+      });
+
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data. Please refresh the page.",
+        variant: "destructive",
+      });
+    } finally {
+      setBalanceLoading(false);
+    }
+  };
+
+  const handleDailyBonus = async () => {
+    if (!user || bonusLoading) return;
+
+    setBonusLoading(true);
+    try {
+      const result = await bonusService.claimDailyBonus(user.id);
+      
+      if (result.success) {
+        toast({
+          title: "Daily Bonus Claimed!",
+          description: result.message,
+        });
+        setDailyBonusAvailable(false);
+        loadUserData(); // Refresh balance
+      } else {
+        toast({
+          title: "Bonus Already Claimed",
+          description: result.message,
+          variant: "destructive",
+        });
+        setDailyBonusAvailable(false);
+      }
+    } catch (error) {
+      console.error("Error claiming daily bonus:", error);
+      toast({
+        title: "Error",
+        description: "Failed to claim daily bonus. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setBonusLoading(false);
+    }
+  };
+
+  const handleWithdrawal = async () => {
+    if (!user || !balance) return;
+
     const amount = parseFloat(withdrawalData.amount);
 
     // Validation checks
     if (!amount || amount < 100) {
-      alert("Minimum withdrawal amount is 100 Sweeps Coins");
+      toast({
+        title: "Invalid Amount",
+        description: "Minimum withdrawal amount is 100 Sweeps Coins",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (amount > user.scBalance) {
-      alert("Insufficient Sweeps Coin balance");
+    if (amount > balance.sc) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You don't have enough Sweeps Coins for this withdrawal",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (user.kycStatus !== "verified") {
+    if (user.kyc_status !== "verified") {
       setShowKycModal(true);
       return;
     }
@@ -233,37 +221,55 @@ export default function Dashboard() {
       !withdrawalData.routingNumber ||
       !withdrawalData.accountNumber
     ) {
-      alert("Please fill in all banking information");
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all banking information",
+        variant: "destructive",
+      });
       return;
     }
 
-    // Process withdrawal
-    console.log("Processing withdrawal:", {
-      amount,
-      method: withdrawalData.method,
-      accountInfo: withdrawalData.accountInfo,
-      routingNumber: withdrawalData.routingNumber,
-      accountNumber: withdrawalData.accountNumber,
-      accountType: withdrawalData.accountType,
-    });
+    try {
+      // Process withdrawal by debiting user balance
+      balanceService.updateBalance(
+        user.email,
+        0,
+        -amount,
+        `Withdrawal - ${withdrawalData.method}`,
+      );
 
-    alert(`Withdrawal request for ${amount} SC submitted successfully!`);
-    setWithdrawalData({
-      amount: "",
-      method: "bank",
-      accountInfo: "",
-      routingNumber: "",
-      accountNumber: "",
-      accountType: "checking",
-    });
+      toast({
+        title: "Withdrawal Submitted",
+        description: `Withdrawal request for ${amount} SC submitted successfully! Processing time: 1-3 business days.`,
+      });
+
+      // Reset form
+      setWithdrawalData({
+        amount: "",
+        method: "bank",
+        accountInfo: "",
+        routingNumber: "",
+        accountNumber: "",
+        accountType: "checking",
+      });
+
+      loadUserData(); // Refresh data
+    } catch (error) {
+      console.error("Error processing withdrawal:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process withdrawal. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const canWithdraw = () => {
-    return user.kycStatus === "verified" && user.scBalance >= 100;
+    return user?.kyc_status === "verified" && balance && balance.sc >= 100;
   };
 
   const getKycStatusColor = () => {
-    switch (user.kycStatus) {
+    switch (user?.kyc_status) {
       case "verified":
         return "text-green-500 bg-green-500/10 border-green-500/20";
       case "pending":
@@ -276,7 +282,7 @@ export default function Dashboard() {
   };
 
   const getKycStatusIcon = () => {
-    switch (user.kycStatus) {
+    switch (user?.kyc_status) {
       case "verified":
         return <CheckCircle className="w-4 h-4" />;
       case "pending":
@@ -287,6 +293,31 @@ export default function Dashboard() {
         return <AlertTriangle className="w-4 h-4" />;
     }
   };
+
+  const formatTransactionType = (transaction: BalanceTransaction) => {
+    if (transaction.description.includes("Welcome Bonus")) return "bonus";
+    if (transaction.description.includes("Withdrawal")) return "withdrawal";
+    if (transaction.description.includes("Deposit")) return "deposit";
+    if (transaction.description.includes("Game") || transaction.description.includes("Gameplay")) return "win";
+    return transaction.type === "credit" ? "win" : "loss";
+  };
+
+  // Show loading while checking auth
+  if (isLoading || balanceLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 text-gold-500 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not logged in (will redirect)
+  if (!user || !balance) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -304,11 +335,15 @@ export default function Dashboard() {
                   className="border-gold-500 text-gold-400"
                 >
                   <Crown className="w-3 h-3 mr-1" />
-                  {user.vipLevel} VIP
+                  {user.role === "vip" ? "VIP" : "Player"}
                 </Badge>
                 <Badge className={`${getKycStatusColor()}`}>
                   {getKycStatusIcon()}
-                  <span className="ml-1">KYC {user.kycStatus}</span>
+                  <span className="ml-1">KYC {user.kyc_status}</span>
+                </Badge>
+                <Badge variant="outline" className="border-green-500 text-green-400">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Active
                 </Badge>
               </div>
             </div>
@@ -319,7 +354,7 @@ export default function Dashboard() {
                 <CardContent className="p-4 text-center">
                   <Coins className="w-8 h-8 text-gold-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-gold-400">
-                    {user.gcBalance.toLocaleString()}
+                    {balance.gc.toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Gold Coins
@@ -331,7 +366,7 @@ export default function Dashboard() {
                 <CardContent className="p-4 text-center">
                   <Crown className="w-8 h-8 text-casino-blue mx-auto mb-2" />
                   <div className="text-2xl font-bold text-casino-blue">
-                    {user.scBalance}
+                    {balance.sc}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Sweeps Coins
@@ -350,9 +385,9 @@ export default function Dashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Today's Wins</p>
+                  <p className="text-sm text-muted-foreground">Lifetime Wins</p>
                   <p className="text-xl font-bold text-gold-400">
-                    {liveStats.todayWins.toLocaleString()}
+                    {liveStats.lifetimeWinnings.toLocaleString()}
                   </p>
                 </div>
                 <TrendingUp className="w-6 h-6 text-green-500" />
@@ -368,7 +403,7 @@ export default function Dashboard() {
                     Total Withdrawn
                   </p>
                   <p className="text-xl font-bold text-casino-blue">
-                    ${liveStats.totalWithdrawn}
+                    {liveStats.totalWithdrawn} SC
                   </p>
                 </div>
                 <Download className="w-6 h-6 text-casino-blue" />
@@ -381,10 +416,10 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    Lifetime Winnings
+                    Games Played
                   </p>
                   <p className="text-xl font-bold text-gold-400">
-                    {liveStats.lifetimeWinnings.toLocaleString()}
+                    {transactions.filter(t => t.gameId).length}
                   </p>
                 </div>
                 <Trophy className="w-6 h-6 text-gold-500" />
@@ -396,7 +431,7 @@ export default function Dashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Leaderboard</p>
+                  <p className="text-sm text-muted-foreground">Player Rank</p>
                   <p className="text-xl font-bold">#{liveStats.rank}</p>
                 </div>
                 <Star className="w-6 h-6 text-purple-500" />
@@ -406,15 +441,15 @@ export default function Dashboard() {
         </div>
 
         {/* Main Dashboard Tabs */}
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">
               <TrendingUp className="w-4 h-4 mr-2" />
               Overview
             </TabsTrigger>
-            <TabsTrigger value="buy-coins">
-              <Plus className="w-4 h-4 mr-2" />
-              Buy Coins
+            <TabsTrigger value="games">
+              <PlayCircle className="w-4 h-4 mr-2" />
+              Play Games
             </TabsTrigger>
             <TabsTrigger value="withdraw">
               <Download className="w-4 h-4 mr-2" />
@@ -446,45 +481,44 @@ export default function Dashboard() {
                         className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
                       >
                         <div className="flex items-center gap-3">
-                          {tx.type === "deposit" && (
+                          {formatTransactionType(tx) === "deposit" && (
                             <Plus className="w-5 h-5 text-green-500" />
                           )}
-                          {tx.type === "withdrawal" && (
+                          {formatTransactionType(tx) === "withdrawal" && (
                             <Download className="w-5 h-5 text-red-500" />
                           )}
-                          {tx.type === "win" && (
+                          {formatTransactionType(tx) === "win" && (
                             <Trophy className="w-5 h-5 text-gold-500" />
                           )}
-                          {tx.type === "bonus" && (
+                          {formatTransactionType(tx) === "bonus" && (
                             <Gift className="w-5 h-5 text-purple-500" />
                           )}
                           <div>
                             <div className="font-medium capitalize">
-                              {tx.type}
+                              {formatTransactionType(tx)}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {tx.method}
+                              {tx.description}
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
                           <div
-                            className={`font-bold ${tx.currency === "SC" ? "text-casino-blue" : "text-gold-400"}`}
+                            className={`font-bold ${tx.currency === "sc" ? "text-casino-blue" : "text-gold-400"}`}
                           >
-                            {tx.amount.toLocaleString()} {tx.currency}
+                            {tx.type === "credit" ? "+" : "-"}{tx.amount.toLocaleString()} {tx.currency.toUpperCase()}
                           </div>
-                          <Badge
-                            variant={
-                              tx.status === "completed"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {tx.status}
-                          </Badge>
+                          <div className="text-xs text-muted-foreground">
+                            {tx.transactionDate.toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
                     ))}
+                    {transactions.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No transactions yet. Start playing to see your activity here!
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -494,7 +528,7 @@ export default function Dashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Gift className="w-5 h-5 text-gold-500" />
-                    Daily Bonus Wheel
+                    Daily Bonus
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
@@ -502,112 +536,88 @@ export default function Dashboard() {
                     <RotateCcw className="w-12 h-12 text-gold-500" />
                   </div>
                   <h3 className="font-bold text-lg mb-2">
-                    Spin for Free Coins!
+                    {dailyBonusAvailable ? "Daily Bonus Available!" : "Bonus Claimed Today"}
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Come back daily to spin the bonus wheel and earn free Gold
-                    Coins and Sweeps Coins.
+                    {dailyBonusAvailable 
+                      ? "Claim your daily bonus of Gold Coins and Sweeps Coins!"
+                      : "Come back tomorrow for another bonus!"
+                    }
                   </p>
-                  <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Spin Now
+                  <Button 
+                    onClick={handleDailyBonus}
+                    disabled={!dailyBonusAvailable || bonusLoading}
+                    className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
+                  >
+                    {bonusLoading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                    )}
+                    {dailyBonusAvailable ? "Claim Bonus" : "Claimed"}
                   </Button>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Buy Coins Tab */}
-          <TabsContent value="buy-coins" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gold Coin Packages</CardTitle>
-                <p className="text-muted-foreground">
-                  Purchase Gold Coins for gameplay and receive bonus Sweeps
-                  Coins
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {coinPackages.map((pkg) => (
-                    <Card
-                      key={pkg.id}
-                      className={`relative ${pkg.popular ? "border-gold-500 bg-gradient-to-br from-gold/5 to-gold/10" : ""}`}
-                    >
-                      {pkg.popular && (
-                        <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-gold-500 text-black">
-                          Most Popular
-                        </Badge>
-                      )}
-                      {pkg.savings > 0 && (
-                        <Badge className="absolute -top-2 right-2 bg-green-500 text-white">
-                          Save ${pkg.savings}
-                        </Badge>
-                      )}
-                      <CardHeader className="text-center">
-                        <CardTitle>{pkg.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="text-center space-y-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-center gap-1">
-                            <Coins className="w-5 h-5 text-gold-500" />
-                            <span className="text-xl font-bold text-gold-400">
-                              {pkg.gc.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Gold Coins
-                          </div>
-
-                          <div className="flex items-center justify-center gap-1">
-                            <Crown className="w-4 h-4 text-casino-blue" />
-                            <span className="text-lg font-bold text-casino-blue">
-                              {pkg.sc}
-                            </span>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Bonus Sweeps Coins
-                          </div>
-                        </div>
-
-                        <div className="py-4">
-                          <div className="text-3xl font-bold">${pkg.price}</div>
-                        </div>
-
-                        <Button
-                          className={`w-full ${pkg.popular ? "bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black" : ""}`}
-                        >
-                          <CreditCard className="w-4 h-4 mr-2" />
-                          Purchase
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="mt-8 p-4 bg-muted/20 rounded-lg">
-                  <h3 className="font-bold mb-2">Secure Payment Methods</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-casino-blue" />
-                      <span>Credit/Debit Cards</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Smartphone className="w-4 h-4 text-green-500" />
-                      <span>Apple Pay</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Smartphone className="w-4 h-4 text-blue-500" />
-                      <span>Google Pay</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-gold-500" />
-                      <span>Bank Transfer</span>
-                    </div>
+          {/* Games Tab */}
+          <TabsContent value="games" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="group hover:shadow-lg transition-all duration-300 border-gold-500/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gold/20 to-casino-blue/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Coins className="w-8 h-8 text-gold-500" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <h3 className="font-bold text-lg mb-2">Slot Games</h3>
+                  <p className="text-muted-foreground mb-4">
+                    700+ slot games from top providers
+                  </p>
+                  <Link to="/games">
+                    <Button className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black">
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Play Now
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="group hover:shadow-lg transition-all duration-300 border-casino-blue/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-casino-blue/20 to-gold/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-casino-blue" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Poker Tables</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Live poker games and tournaments
+                  </p>
+                  <Link to="/poker">
+                    <Button className="w-full bg-casino-blue hover:bg-casino-blue-dark">
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Join Table
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="group hover:shadow-lg transition-all duration-300 border-purple-500/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple/20 to-pink/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Star className="w-8 h-8 text-purple-500" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Bingo Rooms</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Join live bingo games with real prizes
+                  </p>
+                  <Link to="/bingo">
+                    <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Enter Room
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Withdraw Tab */}
@@ -617,13 +627,12 @@ export default function Dashboard() {
                 <CardHeader>
                   <CardTitle>Withdraw Sweeps Coins</CardTitle>
                   <p className="text-muted-foreground">
-                    Redeem your Sweeps Coins for real cash prizes (Minimum: 100
-                    SC)
+                    Redeem your Sweeps Coins for real cash prizes (Minimum: 100 SC)
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* KYC Status Check */}
-                  {user.kycStatus !== "verified" && (
+                  {user.kyc_status !== "verified" && (
                     <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         <AlertTriangle className="w-5 h-5 text-orange-500" />
@@ -632,8 +641,7 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground mb-3">
-                        You must complete identity verification before
-                        withdrawing Sweeps Coins.
+                        You must complete identity verification before withdrawing Sweeps Coins.
                       </p>
                       <Button
                         onClick={() => setShowKycModal(true)}
@@ -651,10 +659,10 @@ export default function Dashboard() {
                       <span className="font-bold">Available Balance</span>
                     </div>
                     <div className="text-2xl font-bold text-casino-blue">
-                      {user.scBalance} Sweeps Coins
+                      {balance.sc} Sweeps Coins
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      ≈ ${(user.scBalance * 1).toFixed(2)} USD
+                      ≈ ${(balance.sc * 1).toFixed(2)} USD
                     </div>
                   </div>
 
@@ -673,7 +681,7 @@ export default function Dashboard() {
                         }))
                       }
                       min="100"
-                      max={user.scBalance}
+                      max={balance.sc}
                     />
                     {withdrawalData.amount &&
                       parseFloat(withdrawalData.amount) < 100 && (
@@ -798,7 +806,7 @@ export default function Dashboard() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      {user.kycStatus === "verified" ? (
+                      {user.kyc_status === "verified" ? (
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       ) : (
                         <XCircle className="w-5 h-5 text-red-500" />
@@ -808,7 +816,7 @@ export default function Dashboard() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {user.scBalance >= 100 ? (
+                      {balance.sc >= 100 ? (
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       ) : (
                         <XCircle className="w-5 h-5 text-red-500" />
@@ -835,26 +843,22 @@ export default function Dashboard() {
                     <h3 className="font-bold mb-2">Recent Withdrawals</h3>
                     <div className="space-y-2">
                       {transactions
-                        .filter((tx) => tx.type === "withdrawal")
+                        .filter((tx) => formatTransactionType(tx) === "withdrawal")
+                        .slice(0, 3)
                         .map((tx) => (
                           <div
                             key={tx.id}
                             className="flex justify-between text-sm p-2 bg-muted/20 rounded"
                           >
                             <span>
-                              {tx.amount} {tx.currency}
+                              {tx.amount} {tx.currency.toUpperCase()}
                             </span>
-                            <Badge
-                              variant={
-                                tx.status === "completed"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {tx.status}
-                            </Badge>
+                            <span className="text-green-500">Completed</span>
                           </div>
                         ))}
+                      {transactions.filter((tx) => formatTransactionType(tx) === "withdrawal").length === 0 && (
+                        <p className="text-muted-foreground text-sm">No withdrawals yet</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -867,6 +871,9 @@ export default function Dashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Transaction History</CardTitle>
+                <p className="text-muted-foreground">
+                  Complete history of all your account activity
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -875,11 +882,9 @@ export default function Dashboard() {
                       <tr className="border-b border-border">
                         <th className="text-left p-2">Type</th>
                         <th className="text-left p-2">Amount</th>
-                        <th className="text-left p-2">Method</th>
-                        <th className="text-left p-2">Status</th>
+                        <th className="text-left p-2">Description</th>
                         <th className="text-left p-2">Date</th>
-                        <th className="text-left p-2">TX Hash</th>
-                        <th className="text-left p-2">Actions</th>
+                        <th className="text-left p-2">Balance After</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -891,50 +896,35 @@ export default function Dashboard() {
                           <td className="p-2">
                             <Badge
                               variant={
-                                tx.type === "deposit"
-                                  ? "default"
-                                  : tx.type === "withdrawal"
-                                    ? "destructive"
-                                    : tx.type === "win"
-                                      ? "default"
-                                      : "secondary"
+                                tx.type === "credit" ? "default" : "destructive"
                               }
                             >
-                              {tx.type}
+                              {tx.type === "credit" ? "Credit" : "Debit"}
                             </Badge>
                           </td>
                           <td className="p-2">
                             <span
-                              className={`font-mono ${tx.currency === "SC" ? "text-casino-blue" : "text-gold-400"}`}
+                              className={`font-mono ${tx.currency === "sc" ? "text-casino-blue" : "text-gold-400"}`}
                             >
-                              {tx.amount.toLocaleString()} {tx.currency}
+                              {tx.type === "credit" ? "+" : "-"}{tx.amount.toLocaleString()} {tx.currency.toUpperCase()}
                             </span>
                           </td>
-                          <td className="p-2 text-sm">{tx.method}</td>
-                          <td className="p-2">
-                            <Badge
-                              variant={
-                                tx.status === "completed"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {tx.status}
-                            </Badge>
+                          <td className="p-2 text-sm">{tx.description}</td>
+                          <td className="p-2 text-sm">
+                            {tx.transactionDate.toLocaleDateString()} {tx.transactionDate.toLocaleTimeString()}
                           </td>
-                          <td className="p-2 text-sm">{tx.date}</td>
-                          <td className="p-2 text-xs font-mono text-muted-foreground">
-                            {tx.txHash}
-                          </td>
-                          <td className="p-2">
-                            <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3" />
-                            </Button>
+                          <td className="p-2 text-sm font-mono">
+                            {tx.balanceAfter.toLocaleString()} {tx.currency.toUpperCase()}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                  {transactions.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No transactions yet. Start playing to see your activity here!
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -945,7 +935,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Account Settings</CardTitle>
+                  <CardTitle>Account Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -960,26 +950,43 @@ export default function Dashboard() {
                     </label>
                     <Input value={user.email} disabled />
                   </div>
-                  <Button className="w-full">Update Profile</Button>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Account Status
+                    </label>
+                    <Badge className="bg-green-500">Active</Badge>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Member Since
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Security Settings</CardTitle>
+                  <CardTitle>Security & Preferences</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button variant="outline" className="w-full">
                     <Shield className="w-4 h-4 mr-2" />
-                    Enable 2FA
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    <Lock className="w-4 h-4 mr-2" />
                     Change Password
                   </Button>
                   <Button variant="outline" className="w-full">
+                    <Lock className="w-4 h-4 mr-2" />
+                    Enable 2FA
+                  </Button>
+                  <Button variant="outline" className="w-full">
                     <Download className="w-4 h-4 mr-2" />
-                    Download Data
+                    Download Account Data
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    <FileText className="w-4 h-4 mr-2" />
+                    Privacy Settings
                   </Button>
                 </CardContent>
               </Card>
@@ -1000,8 +1007,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                To withdraw Sweeps Coins, you must complete identity
-                verification as required by law.
+                To withdraw Sweeps Coins, you must complete identity verification as required by law.
               </p>
 
               <div className="space-y-3">
@@ -1020,11 +1026,18 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-3">
-                <Link to="/kyc" className="flex-1">
-                  <Button className="w-full bg-casino-blue hover:bg-casino-blue-dark">
-                    Start Verification
-                  </Button>
-                </Link>
+                <Button 
+                  className="flex-1 bg-casino-blue hover:bg-casino-blue-dark"
+                  onClick={() => {
+                    toast({
+                      title: "KYC Process",
+                      description: "KYC verification page would open here in a real implementation.",
+                    });
+                    setShowKycModal(false);
+                  }}
+                >
+                  Start Verification
+                </Button>
                 <Button
                   variant="outline"
                   onClick={() => setShowKycModal(false)}

@@ -162,6 +162,7 @@ export const useAuth = (): UseAuthReturn => {
     loading,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
+    isStaff: user?.role === "staff",
     isVIP: user?.vip || false,
     login,
     register,

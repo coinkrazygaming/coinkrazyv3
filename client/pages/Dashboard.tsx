@@ -85,7 +85,7 @@ export default function Dashboard() {
     if (!isLoading && !user) {
       navigate("/login");
     }
-  }, [isLoading, user, navigate]);
+  }, [isLoading, user]);
 
   // Load user balance and transactions
   useEffect(() => {

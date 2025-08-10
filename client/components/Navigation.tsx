@@ -29,6 +29,7 @@ import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
   const [walletBalance, setWalletBalance] = useState<UserWalletBalance | null>(

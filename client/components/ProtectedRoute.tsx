@@ -18,10 +18,9 @@ export default function ProtectedRoute({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !hasRedirected.current) {
+    if (!isLoading) {
       // If not authenticated, redirect to login
       if (!user) {
-        hasRedirected.current = true;
         navigate(redirectTo);
         return;
       }
@@ -44,7 +43,6 @@ export default function ProtectedRoute({
 
         if (!hasAccess) {
           // Redirect to appropriate dashboard based on user role
-          hasRedirected.current = true;
           if (isAdmin) {
             navigate("/admin");
           } else if (isStaff) {

@@ -211,7 +211,7 @@ export default function Navigation() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="border-red-500/50 text-red-400 hover:bg-red-500/10"
                 >
                   Logout

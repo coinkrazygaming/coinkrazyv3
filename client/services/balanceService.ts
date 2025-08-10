@@ -43,6 +43,8 @@ class BalanceService {
       { userId: "user-2", gc: 89000, sc: 125 },
       { userId: "user-3", gc: 450000, sc: 1250 },
       { userId: "coinkrazy00@gmail.com", gc: 1000000, sc: 5000 }, // Admin account
+      { userId: "test@example.com", gc: 75000, sc: 250 }, // Test user account
+      { userId: "staff@example.com", gc: 50000, sc: 100 }, // Staff account
     ];
 
     defaultUsers.forEach((user) => {

@@ -9,49 +9,33 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-export default function ProtectedRoute({
-  children,
+export default function ProtectedRoute({ 
+  children, 
   requiredRole,
   redirectTo = "/login"
 }: ProtectedRouteProps) {
   const { user, isLoading, isAdmin, isStaff } = useAuth();
   const navigate = useNavigate();
 
+  // Handle redirects only once when auth state changes
   useEffect(() => {
-    if (!isLoading) {
-      // If not authenticated, redirect to login
-      if (!user) {
-        navigate(redirectTo);
-        return;
-      }
+    if (isLoading) return; // Don't do anything while loading
 
-      // Check role-based access
-      if (requiredRole) {
-        let hasAccess = false;
+    if (!user) {
+      navigate(redirectTo, { replace: true });
+      return;
+    }
 
-        switch (requiredRole) {
-          case "admin":
-            hasAccess = isAdmin;
-            break;
-          case "staff":
-            hasAccess = isStaff;
-            break;
-          case "user":
-            hasAccess = true; // All authenticated users can access user routes
-            break;
-        }
+    if (requiredRole) {
+      const hasAccess = 
+        requiredRole === "admin" ? isAdmin :
+        requiredRole === "staff" ? isStaff :
+        true; // "user" role - all authenticated users have access
 
-        if (!hasAccess) {
-          // Redirect to appropriate dashboard based on user role
-          if (isAdmin) {
-            navigate("/admin");
-          } else if (isStaff) {
-            navigate("/staff");
-          } else {
-            navigate("/dashboard");
-          }
-          return;
-        }
+      if (!hasAccess) {
+        // Redirect based on actual user role
+        const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
+        navigate(targetRoute, { replace: true });
       }
     }
   }, [user, isLoading, isAdmin, isStaff, requiredRole]);
@@ -68,31 +52,23 @@ export default function ProtectedRoute({
     );
   }
 
-  // If not authenticated, don't render children (will redirect)
+  // If not authenticated, don't render anything (redirect will happen)
   if (!user) {
     return null;
   }
 
-  // If role is required and user doesn't have access, don't render children (will redirect)
+  // If role is required, check access
   if (requiredRole) {
-    let hasAccess = false;
-    
-    switch (requiredRole) {
-      case "admin":
-        hasAccess = isAdmin;
-        break;
-      case "staff":
-        hasAccess = isStaff;
-        break;
-      case "user":
-        hasAccess = true;
-        break;
-    }
+    const hasAccess = 
+      requiredRole === "admin" ? isAdmin :
+      requiredRole === "staff" ? isStaff :
+      true; // "user" role
 
     if (!hasAccess) {
-      return null;
+      return null; // Don't render anything (redirect will happen)
     }
   }
 
+  // Render children if all checks pass
   return <>{children}</>;
 }

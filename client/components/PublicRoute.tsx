@@ -7,10 +7,10 @@ interface PublicRouteProps {
 }
 
 export default function PublicRoute({ children }: PublicRouteProps) {
-  const { user, isLoading, isAdmin, isStaff } = useAuth();
+  const { user, loading } = useAuth();
 
   // Show loading while checking authentication
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -21,10 +21,9 @@ export default function PublicRoute({ children }: PublicRouteProps) {
     );
   }
 
-  // If user is authenticated, redirect to appropriate dashboard
+  // If user is authenticated, redirect to dashboard
   if (user) {
-    const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
-    return <Navigate to={targetRoute} replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Render children if user is not authenticated

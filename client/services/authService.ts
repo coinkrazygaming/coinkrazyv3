@@ -170,6 +170,10 @@ class AuthService {
     return this.currentUser?.role === "admin";
   }
 
+  isStaff(): boolean {
+    return this.currentUser?.role === "staff";
+  }
+
   isVIP(): boolean {
     const user = this.currentUser;
     if (!user || user.role !== "vip") return false;

@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
@@ -15,30 +14,6 @@ export default function ProtectedRoute({
   redirectTo = "/login"
 }: ProtectedRouteProps) {
   const { user, isLoading, isAdmin, isStaff } = useAuth();
-  const navigate = useNavigate();
-
-  // Handle redirects only once when auth state changes
-  useEffect(() => {
-    if (isLoading) return; // Don't do anything while loading
-
-    if (!user) {
-      navigate(redirectTo, { replace: true });
-      return;
-    }
-
-    if (requiredRole) {
-      const hasAccess = 
-        requiredRole === "admin" ? isAdmin :
-        requiredRole === "staff" ? isStaff :
-        true; // "user" role - all authenticated users have access
-
-      if (!hasAccess) {
-        // Redirect based on actual user role
-        const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
-        navigate(targetRoute, { replace: true });
-      }
-    }
-  }, [user, isLoading, isAdmin, isStaff, requiredRole]);
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -52,9 +27,9 @@ export default function ProtectedRoute({
     );
   }
 
-  // If not authenticated, don't render anything (redirect will happen)
+  // If not authenticated, redirect to login
   if (!user) {
-    return null;
+    return <Navigate to={redirectTo} replace />;
   }
 
   // If role is required, check access
@@ -62,10 +37,12 @@ export default function ProtectedRoute({
     const hasAccess = 
       requiredRole === "admin" ? isAdmin :
       requiredRole === "staff" ? isStaff :
-      true; // "user" role
+      true; // "user" role - all authenticated users have access
 
     if (!hasAccess) {
-      return null; // Don't render anything (redirect will happen)
+      // Redirect to appropriate dashboard based on user's actual role
+      const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
+      return <Navigate to={targetRoute} replace />;
     }
   }
 

@@ -82,6 +82,34 @@ export default function Login() {
     }
   };
 
+  const createAdminUser = async () => {
+    setIsCreatingAdmin(true);
+    try {
+      const response = await fetch("/api/init-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess("Admin user created successfully! You can now log in with coinkrazy00@gmail.com");
+        setError("");
+      } else {
+        setError(result.error || "Admin creation failed");
+        setSuccess("");
+      }
+    } catch (error) {
+      setError("Failed to create admin user. Please try again.");
+      setSuccess("");
+      console.error("Admin creation error:", error);
+    } finally {
+      setIsCreatingAdmin(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}

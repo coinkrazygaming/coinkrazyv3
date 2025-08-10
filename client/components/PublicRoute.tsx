@@ -22,7 +22,7 @@ export default function PublicRoute({ children }: PublicRouteProps) {
         navigate("/dashboard");
       }
     }
-  }, [user, isLoading, isAdmin, isStaff, navigate]);
+  }, [user, isLoading, isAdmin, isStaff]);
 
   // Show loading while checking authentication
   if (isLoading) {

@@ -13,10 +13,10 @@ export default function ProtectedRoute({
   requiredRole,
   redirectTo = "/login"
 }: ProtectedRouteProps) {
-  const { user, isLoading, isAdmin, isStaff } = useAuth();
+  const { user, loading } = useAuth();
 
   // Show loading while checking authentication
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -34,16 +34,17 @@ export default function ProtectedRoute({
 
   // If role is required, check access
   if (requiredRole) {
-    const hasAccess = 
-      requiredRole === "admin" ? isAdmin :
-      requiredRole === "staff" ? isStaff :
-      true; // "user" role - all authenticated users have access
-
-    if (!hasAccess) {
-      // Redirect to appropriate dashboard based on user's actual role
-      const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
-      return <Navigate to={targetRoute} replace />;
+    const userRole = user.role;
+    
+    if (requiredRole === "admin" && userRole !== "admin") {
+      return <Navigate to="/dashboard" replace />;
     }
+    
+    if (requiredRole === "staff" && userRole !== "staff") {
+      return <Navigate to="/dashboard" replace />;
+    }
+    
+    // "user" role allows all authenticated users
   }
 
   // Render children if all checks pass

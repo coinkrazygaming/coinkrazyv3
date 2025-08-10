@@ -62,8 +62,10 @@ export default function Login() {
         // Redirect based on user role
         if (response.user.role === "admin") {
           navigate("/admin");
+        } else if (response.user.role === "staff") {
+          navigate("/staff");
         } else {
-          navigate("/games");
+          navigate("/dashboard");
         }
       } else {
         setError(response.message || "Login failed");

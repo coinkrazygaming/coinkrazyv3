@@ -603,14 +603,20 @@ class BonusService {
         mockBonuses.push({
           id: i + 1,
           user_id: Math.floor(Math.random() * 1000) + 1,
-          bonus_type: ["welcome", "daily", "loyalty", "referral", "vip"][Math.floor(Math.random() * 5)] as any,
+          bonus_type: ["welcome", "daily", "loyalty", "referral", "vip"][
+            Math.floor(Math.random() * 5)
+          ] as any,
           gold_coins: gcAmount,
           sweeps_coins: scAmount,
           gc_amount: gcAmount, // Component expects this property
           sc_amount: scAmount, // Component expects this property
           description: `Mock bonus ${i + 1}`,
-          status: ["available", "claimed", "expired", "pending"][Math.floor(Math.random() * 4)] as any,
-          created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+          status: ["available", "claimed", "expired", "pending"][
+            Math.floor(Math.random() * 4)
+          ] as any,
+          created_at: new Date(
+            Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
         });
       }
 
@@ -629,7 +635,7 @@ class BonusService {
         totalDistributed: 1500000,
         totalClaimed: 1200000,
         activeUsers: 850,
-        conversionRate: 78.5
+        conversionRate: 78.5,
       };
     } catch (error) {
       console.error("Error fetching bonus statistics:", error);
@@ -637,7 +643,7 @@ class BonusService {
         totalDistributed: 0,
         totalClaimed: 0,
         activeUsers: 0,
-        conversionRate: 0
+        conversionRate: 0,
       };
     }
   }

@@ -27,7 +27,6 @@ import {
   PlatformStats,
 } from "../services/gamesTrackingService";
 import Logo from "@/components/ui/Logo";
-import AdminInitButton from "@/components/AdminInitButton";
 
 export default function Index() {
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);

@@ -16,7 +16,6 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, isLoading, isAdmin, isStaff } = useAuth();
   const navigate = useNavigate();
-  const hasRedirected = useRef(false);
 
   useEffect(() => {
     if (!isLoading && !hasRedirected.current) {

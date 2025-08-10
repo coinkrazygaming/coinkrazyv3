@@ -38,7 +38,6 @@ export default function Login() {
   const verified = searchParams.get("verified");
   const verifyError = searchParams.get("verify_error");
 
-
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (error) setError(""); // Clear error when user starts typing
@@ -95,7 +94,9 @@ export default function Login() {
       const result = await response.json();
 
       if (result.success) {
-        setSuccess("Admin user created successfully! You can now log in with coinkrazy00@gmail.com");
+        setSuccess(
+          "Admin user created successfully! You can now log in with coinkrazy00@gmail.com",
+        );
         setError("");
       } else {
         setError(result.error || "Admin creation failed");

@@ -32,6 +32,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 
   // Check for verification success message
   const verified = searchParams.get("verified");

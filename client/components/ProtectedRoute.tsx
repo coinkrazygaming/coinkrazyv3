@@ -21,7 +21,7 @@ export default function ProtectedRoute({
     if (!isLoading) {
       // If not authenticated, redirect to login
       if (!user) {
-        navigate(finalRedirectTo);
+        navigate(redirectTo);
         return;
       }
 

@@ -106,7 +106,10 @@ export default function Staff() {
                 Staff Panel
               </h1>
               <div className="flex items-center gap-4">
-                <Badge variant="outline" className="border-casino-blue text-casino-blue">
+                <Badge
+                  variant="outline"
+                  className="border-casino-blue text-casino-blue"
+                >
                   <Shield className="w-3 h-3 mr-1" />
                   Staff Member
                 </Badge>
@@ -132,7 +135,9 @@ export default function Staff() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pending Tickets</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pending Tickets
+                  </p>
                   <p className="text-2xl font-bold text-orange-400">
                     {staffStats.pendingTickets}
                   </p>
@@ -146,7 +151,9 @@ export default function Staff() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Resolved Today</p>
+                  <p className="text-sm text-muted-foreground">
+                    Resolved Today
+                  </p>
                   <p className="text-2xl font-bold text-green-400">
                     {staffStats.resolvedToday}
                   </p>
@@ -212,8 +219,8 @@ export default function Staff() {
                               ticket.priority === "high"
                                 ? "bg-red-500"
                                 : ticket.priority === "medium"
-                                ? "bg-orange-500"
-                                : "bg-green-500"
+                                  ? "bg-orange-500"
+                                  : "bg-green-500"
                             }`}
                           />
                           <div>
@@ -229,8 +236,8 @@ export default function Staff() {
                               ticket.status === "resolved"
                                 ? "default"
                                 : ticket.status === "in_progress"
-                                ? "secondary"
-                                : "destructive"
+                                  ? "secondary"
+                                  : "destructive"
                             }
                           >
                             {ticket.status.replace("_", " ")}
@@ -256,7 +263,9 @@ export default function Staff() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Avg Response Time</span>
-                    <span className="font-bold">{staffStats.avgResponseTime}</span>
+                    <span className="font-bold">
+                      {staffStats.avgResponseTime}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Customer Satisfaction</span>
@@ -266,7 +275,9 @@ export default function Staff() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Tickets Today</span>
-                    <span className="font-bold">{staffStats.resolvedToday}</span>
+                    <span className="font-bold">
+                      {staffStats.resolvedToday}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -312,8 +323,8 @@ export default function Staff() {
                                 ticket.priority === "high"
                                   ? "destructive"
                                   : ticket.priority === "medium"
-                                  ? "secondary"
-                                  : "default"
+                                    ? "secondary"
+                                    : "default"
                               }
                             >
                               {ticket.priority}
@@ -360,20 +371,22 @@ export default function Staff() {
                   <Card>
                     <CardContent className="p-6 text-center">
                       <UserCheck className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                      <h3 className="font-bold text-lg mb-2">KYC Verification</h3>
+                      <h3 className="font-bold text-lg mb-2">
+                        KYC Verification
+                      </h3>
                       <p className="text-muted-foreground mb-4">
                         Review and approve user identity verification
                       </p>
-                      <Button className="w-full">
-                        Review Pending
-                      </Button>
+                      <Button className="w-full">Review Pending</Button>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardContent className="p-6 text-center">
                       <Ban className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                      <h3 className="font-bold text-lg mb-2">Account Actions</h3>
+                      <h3 className="font-bold text-lg mb-2">
+                        Account Actions
+                      </h3>
                       <p className="text-muted-foreground mb-4">
                         Suspend, ban, or restrict user accounts
                       </p>
@@ -386,7 +399,9 @@ export default function Staff() {
                   <Card>
                     <CardContent className="p-6 text-center">
                       <Mail className="w-12 h-12 text-casino-blue mx-auto mb-4" />
-                      <h3 className="font-bold text-lg mb-2">User Communications</h3>
+                      <h3 className="font-bold text-lg mb-2">
+                        User Communications
+                      </h3>
                       <p className="text-muted-foreground mb-4">
                         Send notifications and announcements
                       </p>
@@ -448,7 +463,9 @@ export default function Staff() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm">Customer Rating</span>
-                        <span className="font-medium text-gold-400">4.8/5.0</span>
+                        <span className="font-medium text-gold-400">
+                          4.8/5.0
+                        </span>
                       </div>
                     </div>
                   </div>

@@ -43,7 +43,11 @@ import {
   Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { balanceService, UserBalance, BalanceTransaction } from "@/services/balanceService";
+import {
+  balanceService,
+  UserBalance,
+  BalanceTransaction,
+} from "@/services/balanceService";
 import { bonusService } from "@/services/bonusService";
 
 export default function Dashboard() {
@@ -91,14 +95,14 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       loadUserData();
-      
+
       // Subscribe to real-time balance updates
       const unsubscribe = balanceService.subscribeToBalanceUpdates(
         user.email,
         (updatedBalance) => {
           setBalance(updatedBalance);
           setTransactions(balanceService.getUserTransactions(user.email, 20));
-        }
+        },
       );
 
       return () => unsubscribe();
@@ -110,26 +114,29 @@ export default function Dashboard() {
 
     try {
       setBalanceLoading(true);
-      
+
       // Get user balance
       const userBalance = balanceService.getUserBalance(user.email);
       setBalance(userBalance);
-      
+
       // Get transaction history
-      const userTransactions = balanceService.getUserTransactions(user.email, 20);
+      const userTransactions = balanceService.getUserTransactions(
+        user.email,
+        20,
+      );
       setTransactions(userTransactions);
-      
+
       // Calculate live stats from real data
       const totalGCWon = userTransactions
-        .filter(tx => tx.type === "credit" && tx.currency === "gc")
+        .filter((tx) => tx.type === "credit" && tx.currency === "gc")
         .reduce((sum, tx) => sum + tx.amount, 0);
-      
+
       const totalSCWon = userTransactions
-        .filter(tx => tx.type === "credit" && tx.currency === "sc")
+        .filter((tx) => tx.type === "credit" && tx.currency === "sc")
         .reduce((sum, tx) => sum + tx.amount, 0);
-        
+
       const totalWithdrawn = userTransactions
-        .filter(tx => tx.type === "debit" && tx.currency === "sc")
+        .filter((tx) => tx.type === "debit" && tx.currency === "sc")
         .reduce((sum, tx) => sum + tx.amount, 0);
 
       setLiveStats({
@@ -140,7 +147,6 @@ export default function Dashboard() {
         totalWithdrawn,
         lifetimeWinnings: totalGCWon + totalSCWon,
       });
-
     } catch (error) {
       console.error("Error loading user data:", error);
       toast({
@@ -159,7 +165,7 @@ export default function Dashboard() {
     setBonusLoading(true);
     try {
       const result = await bonusService.claimDailyBonus(user.id);
-      
+
       if (result.success) {
         toast({
           title: "Daily Bonus Claimed!",
@@ -298,7 +304,11 @@ export default function Dashboard() {
     if (transaction.description.includes("Welcome Bonus")) return "bonus";
     if (transaction.description.includes("Withdrawal")) return "withdrawal";
     if (transaction.description.includes("Deposit")) return "deposit";
-    if (transaction.description.includes("Game") || transaction.description.includes("Gameplay")) return "win";
+    if (
+      transaction.description.includes("Game") ||
+      transaction.description.includes("Gameplay")
+    )
+      return "win";
     return transaction.type === "credit" ? "win" : "loss";
   };
 
@@ -341,7 +351,10 @@ export default function Dashboard() {
                   {getKycStatusIcon()}
                   <span className="ml-1">KYC {user.kyc_status}</span>
                 </Badge>
-                <Badge variant="outline" className="border-green-500 text-green-400">
+                <Badge
+                  variant="outline"
+                  className="border-green-500 text-green-400"
+                >
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Active
                 </Badge>
@@ -415,11 +428,9 @@ export default function Dashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Games Played
-                  </p>
+                  <p className="text-sm text-muted-foreground">Games Played</p>
                   <p className="text-xl font-bold text-gold-400">
-                    {transactions.filter(t => t.gameId).length}
+                    {transactions.filter((t) => t.gameId).length}
                   </p>
                 </div>
                 <Trophy className="w-6 h-6 text-gold-500" />
@@ -506,7 +517,9 @@ export default function Dashboard() {
                           <div
                             className={`font-bold ${tx.currency === "sc" ? "text-casino-blue" : "text-gold-400"}`}
                           >
-                            {tx.type === "credit" ? "+" : "-"}{tx.amount.toLocaleString()} {tx.currency.toUpperCase()}
+                            {tx.type === "credit" ? "+" : "-"}
+                            {tx.amount.toLocaleString()}{" "}
+                            {tx.currency.toUpperCase()}
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {tx.transactionDate.toLocaleDateString()}
@@ -516,7 +529,8 @@ export default function Dashboard() {
                     ))}
                     {transactions.length === 0 && (
                       <div className="text-center py-8 text-muted-foreground">
-                        No transactions yet. Start playing to see your activity here!
+                        No transactions yet. Start playing to see your activity
+                        here!
                       </div>
                     )}
                   </div>
@@ -536,15 +550,16 @@ export default function Dashboard() {
                     <RotateCcw className="w-12 h-12 text-gold-500" />
                   </div>
                   <h3 className="font-bold text-lg mb-2">
-                    {dailyBonusAvailable ? "Daily Bonus Available!" : "Bonus Claimed Today"}
+                    {dailyBonusAvailable
+                      ? "Daily Bonus Available!"
+                      : "Bonus Claimed Today"}
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    {dailyBonusAvailable 
+                    {dailyBonusAvailable
                       ? "Claim your daily bonus of Gold Coins and Sweeps Coins!"
-                      : "Come back tomorrow for another bonus!"
-                    }
+                      : "Come back tomorrow for another bonus!"}
                   </p>
-                  <Button 
+                  <Button
                     onClick={handleDailyBonus}
                     disabled={!dailyBonusAvailable || bonusLoading}
                     className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
@@ -627,7 +642,8 @@ export default function Dashboard() {
                 <CardHeader>
                   <CardTitle>Withdraw Sweeps Coins</CardTitle>
                   <p className="text-muted-foreground">
-                    Redeem your Sweeps Coins for real cash prizes (Minimum: 100 SC)
+                    Redeem your Sweeps Coins for real cash prizes (Minimum: 100
+                    SC)
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -641,7 +657,8 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground mb-3">
-                        You must complete identity verification before withdrawing Sweeps Coins.
+                        You must complete identity verification before
+                        withdrawing Sweeps Coins.
                       </p>
                       <Button
                         onClick={() => setShowKycModal(true)}
@@ -843,7 +860,9 @@ export default function Dashboard() {
                     <h3 className="font-bold mb-2">Recent Withdrawals</h3>
                     <div className="space-y-2">
                       {transactions
-                        .filter((tx) => formatTransactionType(tx) === "withdrawal")
+                        .filter(
+                          (tx) => formatTransactionType(tx) === "withdrawal",
+                        )
                         .slice(0, 3)
                         .map((tx) => (
                           <div
@@ -856,8 +875,12 @@ export default function Dashboard() {
                             <span className="text-green-500">Completed</span>
                           </div>
                         ))}
-                      {transactions.filter((tx) => formatTransactionType(tx) === "withdrawal").length === 0 && (
-                        <p className="text-muted-foreground text-sm">No withdrawals yet</p>
+                      {transactions.filter(
+                        (tx) => formatTransactionType(tx) === "withdrawal",
+                      ).length === 0 && (
+                        <p className="text-muted-foreground text-sm">
+                          No withdrawals yet
+                        </p>
                       )}
                     </div>
                   </div>
@@ -906,15 +929,19 @@ export default function Dashboard() {
                             <span
                               className={`font-mono ${tx.currency === "sc" ? "text-casino-blue" : "text-gold-400"}`}
                             >
-                              {tx.type === "credit" ? "+" : "-"}{tx.amount.toLocaleString()} {tx.currency.toUpperCase()}
+                              {tx.type === "credit" ? "+" : "-"}
+                              {tx.amount.toLocaleString()}{" "}
+                              {tx.currency.toUpperCase()}
                             </span>
                           </td>
                           <td className="p-2 text-sm">{tx.description}</td>
                           <td className="p-2 text-sm">
-                            {tx.transactionDate.toLocaleDateString()} {tx.transactionDate.toLocaleTimeString()}
+                            {tx.transactionDate.toLocaleDateString()}{" "}
+                            {tx.transactionDate.toLocaleTimeString()}
                           </td>
                           <td className="p-2 text-sm font-mono">
-                            {tx.balanceAfter.toLocaleString()} {tx.currency.toUpperCase()}
+                            {tx.balanceAfter.toLocaleString()}{" "}
+                            {tx.currency.toUpperCase()}
                           </td>
                         </tr>
                       ))}
@@ -922,7 +949,8 @@ export default function Dashboard() {
                   </table>
                   {transactions.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
-                      No transactions yet. Start playing to see your activity here!
+                      No transactions yet. Start playing to see your activity
+                      here!
                     </div>
                   )}
                 </div>
@@ -961,7 +989,9 @@ export default function Dashboard() {
                       Member Since
                     </label>
                     <p className="text-sm text-muted-foreground">
-                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}
+                      {user.created_at
+                        ? new Date(user.created_at).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   </div>
                 </CardContent>
@@ -1007,7 +1037,8 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                To withdraw Sweeps Coins, you must complete identity verification as required by law.
+                To withdraw Sweeps Coins, you must complete identity
+                verification as required by law.
               </p>
 
               <div className="space-y-3">
@@ -1026,12 +1057,13 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-3">
-                <Button 
+                <Button
                   className="flex-1 bg-casino-blue hover:bg-casino-blue-dark"
                   onClick={() => {
                     toast({
                       title: "KYC Process",
-                      description: "KYC verification page would open here in a real implementation.",
+                      description:
+                        "KYC verification page would open here in a real implementation.",
                     });
                     setShowKycModal(false);
                   }}

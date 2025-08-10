@@ -393,7 +393,6 @@ export default function Index() {
                 No purchase necessary • 18+ only • Play responsibly
               </p>
             </div>
-
           </CardContent>
         </Card>
       </div>

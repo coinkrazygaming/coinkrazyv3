@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
@@ -9,18 +8,6 @@ interface PublicRouteProps {
 
 export default function PublicRoute({ children }: PublicRouteProps) {
   const { user, isLoading, isAdmin, isStaff } = useAuth();
-  const navigate = useNavigate();
-
-  // Handle redirects only once when auth state changes
-  useEffect(() => {
-    if (isLoading) return; // Don't do anything while loading
-
-    if (user) {
-      // If user is already authenticated, redirect to appropriate dashboard
-      const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
-      navigate(targetRoute, { replace: true });
-    }
-  }, [user, isLoading, isAdmin, isStaff]);
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -34,9 +21,10 @@ export default function PublicRoute({ children }: PublicRouteProps) {
     );
   }
 
-  // If authenticated, don't render children (redirect will happen)
+  // If user is authenticated, redirect to appropriate dashboard
   if (user) {
-    return null;
+    const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
+    return <Navigate to={targetRoute} replace />;
   }
 
   // Render children if user is not authenticated

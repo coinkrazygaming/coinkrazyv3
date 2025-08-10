@@ -157,13 +157,19 @@ export const useAuth = (): UseAuthReturn => {
     initializeAuth();
   };
 
+  // Memoize computed values to prevent unnecessary re-renders
+  const isAuthenticated = useMemo(() => !!user, [user]);
+  const isAdmin = useMemo(() => user?.role === "admin", [user?.role]);
+  const isStaff = useMemo(() => user?.role === "staff", [user?.role]);
+  const isVIP = useMemo(() => user?.vip || false, [user?.vip]);
+
   return {
     user,
     loading,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === "admin",
-    isStaff: user?.role === "staff",
-    isVIP: user?.vip || false,
+    isAuthenticated,
+    isAdmin,
+    isStaff,
+    isVIP,
     login,
     register,
     logout,

@@ -32,7 +32,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 
   // Check for verification success message
   const verified = searchParams.get("verified");
@@ -81,35 +80,6 @@ export default function Login() {
     }
   };
 
-  const createAdminUser = async () => {
-    setIsCreatingAdmin(true);
-    try {
-      const response = await fetch("/api/init-admin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSuccess(
-          "Admin user created successfully! You can now log in with coinkrazy00@gmail.com",
-        );
-        setError("");
-      } else {
-        setError(result.error || "Admin creation failed");
-        setSuccess("");
-      }
-    } catch (error) {
-      setError("Failed to create admin user. Please try again.");
-      setSuccess("");
-      console.error("Admin creation error:", error);
-    } finally {
-      setIsCreatingAdmin(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -261,8 +231,7 @@ export default function Login() {
                   disabled={
                     !formData.email ||
                     !formData.password ||
-                    loading ||
-                    isCreatingAdmin
+                    loading
                   }
                   className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
                 >
@@ -275,35 +244,6 @@ export default function Login() {
                     "Login"
                   )}
                 </Button>
-
-                {/* Admin Setup Helper */}
-                <div className="space-y-2">
-                  <Button
-                    type="button"
-                    onClick={createAdminUser}
-                    disabled={loading || isCreatingAdmin}
-                    variant="outline"
-                    className="w-full border-gold-500/50 text-gold-400 hover:bg-gold-500/10"
-                  >
-                    {isCreatingAdmin ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating Admin...
-                      </>
-                    ) : (
-                      "Quick Create Admin"
-                    )}
-                  </Button>
-
-                  <div className="text-center">
-                    <Link
-                      to="/admin-setup"
-                      className="text-xs text-muted-foreground hover:text-gold-400 transition-colors"
-                    >
-                      Need database setup? Use Full Admin Setup →
-                    </Link>
-                  </div>
-                </div>
               </form>
 
               <div className="text-center">

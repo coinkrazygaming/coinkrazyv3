@@ -72,7 +72,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/games" element={<Games />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/dashboard" element={<ProtectedRoute requiredRole="user"><Dashboard /></ProtectedRoute>} />

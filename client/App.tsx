@@ -47,6 +47,8 @@ import SweepstakesRules from "./pages/SweepstakesRules";
 import Support from "./pages/Support";
 import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 const queryClient = new QueryClient();
 

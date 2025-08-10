@@ -291,7 +291,7 @@ export default function Navigation() {
                       Welcome, {user.username}
                     </div>
                     <Button
-                      onClick={logout}
+                      onClick={handleLogout}
                       className="w-full border-red-500/50 text-red-400 hover:bg-red-500/10"
                       variant="outline"
                     >

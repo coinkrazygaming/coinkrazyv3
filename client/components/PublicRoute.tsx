@@ -11,16 +11,14 @@ export default function PublicRoute({ children }: PublicRouteProps) {
   const { user, isLoading, isAdmin, isStaff } = useAuth();
   const navigate = useNavigate();
 
+  // Handle redirects only once when auth state changes
   useEffect(() => {
-    if (!isLoading && user) {
+    if (isLoading) return; // Don't do anything while loading
+
+    if (user) {
       // If user is already authenticated, redirect to appropriate dashboard
-      if (isAdmin) {
-        navigate("/admin");
-      } else if (isStaff) {
-        navigate("/staff");
-      } else {
-        navigate("/dashboard");
-      }
+      const targetRoute = isAdmin ? "/admin" : isStaff ? "/staff" : "/dashboard";
+      navigate(targetRoute, { replace: true });
     }
   }, [user, isLoading, isAdmin, isStaff]);
 
@@ -36,10 +34,11 @@ export default function PublicRoute({ children }: PublicRouteProps) {
     );
   }
 
-  // If authenticated, don't render children (will redirect)
+  // If authenticated, don't render children (redirect will happen)
   if (user) {
     return null;
   }
 
+  // Render children if user is not authenticated
   return <>{children}</>;
 }

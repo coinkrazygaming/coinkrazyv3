@@ -83,8 +83,8 @@ const App = () => (
             <Route path="/poker" element={<Poker />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/compliance" element={<Compliance />} />
-            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>} />
-            <Route path="/staff" element={<ProtectedRoute requiredRole="staff"><Staff /></ProtectedRoute>} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/staff" element={<Staff />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
             <Route path="/how-to-play" element={<HowToPlay />} />
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />

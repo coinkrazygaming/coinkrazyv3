@@ -55,7 +55,7 @@ export default function ProtectedRoute({
         }
       }
     }
-  }, [user, isLoading, isAdmin, isStaff, requiredRole, redirectTo]);
+  }, [user, isLoading, isAdmin, isStaff, requiredRole, finalRedirectTo]);
 
   // Show loading while checking authentication
   if (isLoading) {

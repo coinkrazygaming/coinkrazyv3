@@ -6,7 +6,7 @@ export interface User {
   username: string;
   first_name?: string;
   last_name?: string;
-  role: "user" | "admin" | "vip";
+  role: "user" | "admin" | "staff" | "vip";
   status: "active" | "suspended" | "banned" | "pending_verification";
   kyc_status: "not_submitted" | "pending" | "verified" | "rejected";
   is_email_verified: boolean;

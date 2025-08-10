@@ -591,21 +591,25 @@ class BonusService {
   }
 
   // Admin methods for BonusManagement component
-  async getAllBonuses(limit: number = 100): Promise<Bonus[]> {
+  async getAllBonuses(limit: number = 100): Promise<any[]> {
     try {
       // In a real implementation, this would fetch all bonuses from the database
-      // For now, return mock data
-      const mockBonuses: Bonus[] = [];
+      // For now, return mock data with the properties expected by BonusManagement
+      const mockBonuses: any[] = [];
 
       for (let i = 0; i < Math.min(limit, 20); i++) {
+        const gcAmount = Math.floor(Math.random() * 50000) + 5000;
+        const scAmount = Math.floor(Math.random() * 50) + 5;
         mockBonuses.push({
           id: i + 1,
           user_id: Math.floor(Math.random() * 1000) + 1,
           bonus_type: ["welcome", "daily", "loyalty", "referral", "vip"][Math.floor(Math.random() * 5)] as any,
-          gold_coins: Math.floor(Math.random() * 50000) + 5000,
-          sweeps_coins: Math.floor(Math.random() * 50) + 5,
+          gold_coins: gcAmount,
+          sweeps_coins: scAmount,
+          gc_amount: gcAmount, // Component expects this property
+          sc_amount: scAmount, // Component expects this property
           description: `Mock bonus ${i + 1}`,
-          status: ["available", "claimed", "expired"][Math.floor(Math.random() * 3)] as any,
+          status: ["available", "claimed", "expired", "pending"][Math.floor(Math.random() * 4)] as any,
           created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
         });
       }

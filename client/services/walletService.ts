@@ -60,7 +60,7 @@ class WalletService {
   private listeners: Map<string, Set<(balance: WalletBalance) => void>> =
     new Map();
   private currencyListeners: Set<(currency: string) => void> = new Set();
-  private selectedCurrency: string = "USD";
+  private selectedCurrency: string = "GC";
 
   static getInstance(): WalletService {
     if (!WalletService.instance) {
@@ -77,20 +77,11 @@ class WalletService {
 
   private supportedCurrencies: CurrencyData[] = [
     {
-      code: "USD",
-      name: "US Dollar",
-      symbol: "$",
-      decimals: 2,
-      exchangeRate: 1.0,
-      icon: "💵",
-      color: "#22c55e",
-    },
-    {
       code: "GC",
       name: "Gold Coins",
       symbol: "GC",
       decimals: 0,
-      exchangeRate: 0.0001, // 10,000 GC = $1
+      exchangeRate: 0.0001, // 10,000 GC = $1 (for display purposes only - no real cash value)
       icon: "🪙",
       color: "#f59e0b",
     },
@@ -99,36 +90,9 @@ class WalletService {
       name: "Sweeps Coins",
       symbol: "SC",
       decimals: 2,
-      exchangeRate: 1.0, // 1 SC = $1
+      exchangeRate: 1.0, // 1 SC = $1 (for display purposes - can be redeemed)
       icon: "👑",
       color: "#3b82f6",
-    },
-    {
-      code: "BTC",
-      name: "Bitcoin",
-      symbol: "₿",
-      decimals: 8,
-      exchangeRate: 45000.0,
-      icon: "₿",
-      color: "#f7931a",
-    },
-    {
-      code: "ETH",
-      name: "Ethereum",
-      symbol: "Ξ",
-      decimals: 6,
-      exchangeRate: 2800.0,
-      icon: "⟠",
-      color: "#627eea",
-    },
-    {
-      code: "USDT",
-      name: "Tether USD",
-      symbol: "₮",
-      decimals: 2,
-      exchangeRate: 1.0,
-      icon: "₮",
-      color: "#26a17b",
     },
   ];
 
@@ -138,34 +102,22 @@ class WalletService {
       {
         userId: "coinkrazy00@gmail.com",
         balances: {
-          USD: 10000,
-          GC: 1000000,
-          SC: 5000,
-          BTC: 0.5,
-          ETH: 5,
-          USDT: 2500,
+          GC: 1000000, // Gold Coins - can be purchased, no real cash value
+          SC: 5000, // Sweeps Coins - cannot be purchased, only won/rewarded
         },
       },
       {
         userId: "test@example.com",
         balances: {
-          USD: 2500,
           GC: 75000,
           SC: 250,
-          BTC: 0.1,
-          ETH: 1.5,
-          USDT: 1000,
         },
       },
       {
         userId: "staff@example.com",
         balances: {
-          USD: 1000,
           GC: 50000,
           SC: 100,
-          BTC: 0.05,
-          ETH: 0.8,
-          USDT: 500,
         },
       },
     ];
@@ -232,7 +184,7 @@ class WalletService {
     if (randomUser) {
       const wallet = this.balances.get(randomUser);
       if (wallet) {
-        // Small random changes to simulate gameplay/trading
+        // Small random changes to simulate gameplay activity
         const currencies = ["GC", "SC"];
         const randomCurrency =
           currencies[Math.floor(Math.random() * currencies.length)];
@@ -251,16 +203,11 @@ class WalletService {
   }
 
   private updateExchangeRates() {
-    // Simulate crypto price movements
-    this.supportedCurrencies.forEach((currency) => {
-      if (currency.code === "BTC" || currency.code === "ETH") {
-        const volatility = 0.01; // 1% max change
-        const change = (Math.random() - 0.5) * 2 * volatility;
-        currency.exchangeRate *= 1 + change;
-      }
-    });
+    // CoinKrazy currencies have fixed exchange rates
+    // GC: No real cash value (for entertainment only)
+    // SC: Can be redeemed for prizes (1 SC = $1 value)
 
-    // Update all portfolio values
+    // Update all portfolio values (for display purposes)
     this.updatePortfolioValues();
   }
 
@@ -283,20 +230,14 @@ class WalletService {
       balance = {
         userId,
         currencies: {
-          USD: {
-            balance: 100,
-            locked: 0,
-            available: 100,
-            lastUpdated: new Date(),
-          },
           GC: {
-            balance: 50000,
+            balance: 50000, // Welcome bonus Gold Coins
             locked: 0,
             available: 50000,
             lastUpdated: new Date(),
           },
           SC: {
-            balance: 25,
+            balance: 25, // Welcome bonus Sweeps Coins
             locked: 0,
             available: 25,
             lastUpdated: new Date(),
@@ -314,21 +255,14 @@ class WalletService {
         "bonus",
         "GC",
         50000,
-        "Welcome Bonus - Gold Coins",
+        "Welcome to CoinKrazy - Free Gold Coins",
       );
       this.addTransaction(
         userId,
         "bonus",
         "SC",
         25,
-        "Welcome Bonus - Sweeps Coins",
-      );
-      this.addTransaction(
-        userId,
-        "bonus",
-        "USD",
-        100,
-        "Welcome Bonus - Starting Credits",
+        "Welcome to CoinKrazy - Free Sweeps Coins",
       );
     }
     return balance;

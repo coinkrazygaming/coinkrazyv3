@@ -46,6 +46,7 @@ import HowToPlay from "./pages/HowToPlay";
 import SweepstakesRules from "./pages/SweepstakesRules";
 import Support from "./pages/Support";
 import AdminSetup from "./pages/AdminSetup";
+import Social from "./pages/Social";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -89,6 +90,7 @@ const App = () => (
             <Route path="/how-to-play" element={<HowToPlay />} />
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/social" element={<Social />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

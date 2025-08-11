@@ -135,7 +135,9 @@ class AuthService {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Find user in mock data (in production: API call)
-      const userData = this.mockUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      const userData = this.mockUsers.find(
+        (u) => u.email.toLowerCase() === email.toLowerCase(),
+      );
 
       if (!userData) {
         throw new Error("Invalid email or password");

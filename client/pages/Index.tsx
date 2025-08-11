@@ -397,7 +397,6 @@ export default function Index() {
           </CardContent>
         </Card>
       </div>
-
     </div>
   );
 }

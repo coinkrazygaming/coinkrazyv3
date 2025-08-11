@@ -1,6 +1,6 @@
-import { emailService } from './emailService';
-import { balanceService } from './balanceService';
-import { joseyAiOnboardingService } from './joseyAiOnboardingService';
+import { emailService } from "./emailService";
+import { balanceService } from "./balanceService";
+import { joseyAiOnboardingService } from "./joseyAiOnboardingService";
 
 export interface WelcomeEmailSequence {
   id: string;
@@ -19,7 +19,13 @@ export interface WelcomeEmailSequence {
 }
 
 export interface WelcomeEmailTrigger {
-  type: 'user_registered' | 'email_verified' | 'first_deposit' | 'kyc_completed' | 'time_delay' | 'user_inactive';
+  type:
+    | "user_registered"
+    | "email_verified"
+    | "first_deposit"
+    | "kyc_completed"
+    | "time_delay"
+    | "user_inactive";
   condition?: any;
   delayMinutes?: number;
 }
@@ -60,7 +66,7 @@ export interface UserWelcomeJourney {
   emailsOpened: number;
   emailsClicked: number;
   conversions: number;
-  status: 'active' | 'completed' | 'paused' | 'failed';
+  status: "active" | "completed" | "paused" | "failed";
   metadata: {
     userPreferences?: any;
     abTestGroup?: string;
@@ -86,12 +92,17 @@ class WelcomeEmailAutomationService {
   private static instance: WelcomeEmailAutomationService;
   private sequences: Map<string, WelcomeEmailSequence> = new Map();
   private userJourneys: Map<string, UserWelcomeJourney> = new Map();
-  private emailQueue: Array<{ userId: string; stepId: string; scheduledAt: Date }> = [];
+  private emailQueue: Array<{
+    userId: string;
+    stepId: string;
+    scheduledAt: Date;
+  }> = [];
   private listeners: Set<(event: string, data: any) => void> = new Set();
 
   static getInstance(): WelcomeEmailAutomationService {
     if (!WelcomeEmailAutomationService.instance) {
-      WelcomeEmailAutomationService.instance = new WelcomeEmailAutomationService();
+      WelcomeEmailAutomationService.instance =
+        new WelcomeEmailAutomationService();
     }
     return WelcomeEmailAutomationService.instance;
   }
@@ -105,133 +116,145 @@ class WelcomeEmailAutomationService {
   private initializeDefaultSequences() {
     const defaultSequences: WelcomeEmailSequence[] = [
       {
-        id: 'standard_welcome',
-        name: 'Standard Welcome Sequence',
-        description: 'Complete onboarding sequence for new users',
+        id: "standard_welcome",
+        name: "Standard Welcome Sequence",
+        description: "Complete onboarding sequence for new users",
         isActive: true,
-        triggers: [{ type: 'user_registered' }],
+        triggers: [{ type: "user_registered" }],
         emails: [
           {
-            id: 'welcome_immediate',
-            sequenceId: 'standard_welcome',
+            id: "welcome_immediate",
+            sequenceId: "standard_welcome",
             stepNumber: 1,
-            name: 'Immediate Welcome Email',
-            templateId: 'welcome_001',
-            trigger: { type: 'user_registered' },
+            name: "Immediate Welcome Email",
+            templateId: "welcome_001",
+            trigger: { type: "user_registered" },
             isActive: true,
             personalizations: {
               bonusAmount: 50000,
-              gameRecommendations: ['CoinKrazy Spinner', 'Lucky Scratch Gold', 'Bingo Hall'],
+              gameRecommendations: [
+                "CoinKrazy Spinner",
+                "Lucky Scratch Gold",
+                "Bingo Hall",
+              ],
               vipEligible: false,
-              customMessage: 'Welcome to the CoinKrazy family!'
-            }
+              customMessage: "Welcome to the CoinKrazy family!",
+            },
           },
           {
-            id: 'verification_reminder',
-            sequenceId: 'standard_welcome',
+            id: "verification_reminder",
+            sequenceId: "standard_welcome",
             stepNumber: 2,
-            name: 'Email Verification Reminder',
-            templateId: 'verification_reminder',
-            trigger: { type: 'time_delay', delayMinutes: 60 },
+            name: "Email Verification Reminder",
+            templateId: "verification_reminder",
+            trigger: { type: "time_delay", delayMinutes: 60 },
             isActive: true,
             personalizations: {},
-            conditions: { hasDeposited: false }
+            conditions: { hasDeposited: false },
           },
           {
-            id: 'getting_started',
-            sequenceId: 'standard_welcome',
+            id: "getting_started",
+            sequenceId: "standard_welcome",
             stepNumber: 3,
-            name: 'Getting Started Guide',
-            templateId: 'getting_started',
-            trigger: { type: 'email_verified' },
+            name: "Getting Started Guide",
+            templateId: "getting_started",
+            trigger: { type: "email_verified" },
             isActive: true,
             personalizations: {
-              gameRecommendations: ['CoinKrazy Spinner', 'Lucky Scratch Gold', 'Mary Had A Lil Cucumber']
-            }
-          },
-          {
-            id: 'first_week_check',
-            sequenceId: 'standard_welcome',
-            stepNumber: 4,
-            name: 'First Week Check-in',
-            templateId: 'first_week_checkin',
-            trigger: { type: 'time_delay', delayMinutes: 10080 }, // 7 days
-            isActive: true,
-            personalizations: {
-              bonusAmount: 25000
+              gameRecommendations: [
+                "CoinKrazy Spinner",
+                "Lucky Scratch Gold",
+                "Mary Had A Lil Cucumber",
+              ],
             },
-            conditions: { accountAge: 7 }
           },
           {
-            id: 'kyc_completion_bonus',
-            sequenceId: 'standard_welcome',
+            id: "first_week_check",
+            sequenceId: "standard_welcome",
+            stepNumber: 4,
+            name: "First Week Check-in",
+            templateId: "first_week_checkin",
+            trigger: { type: "time_delay", delayMinutes: 10080 }, // 7 days
+            isActive: true,
+            personalizations: {
+              bonusAmount: 25000,
+            },
+            conditions: { accountAge: 7 },
+          },
+          {
+            id: "kyc_completion_bonus",
+            sequenceId: "standard_welcome",
             stepNumber: 5,
-            name: 'KYC Completion Celebration',
-            templateId: 'kyc_completed',
-            trigger: { type: 'kyc_completed' },
+            name: "KYC Completion Celebration",
+            templateId: "kyc_completed",
+            trigger: { type: "kyc_completed" },
             isActive: true,
             personalizations: {
               bonusAmount: 100000,
-              vipEligible: true
-            }
-          }
+              vipEligible: true,
+            },
+          },
         ],
         metrics: {
           totalTriggered: 0,
           totalCompleted: 0,
           averageOpenRate: 0,
           averageClickRate: 0,
-          conversionRate: 0
-        }
+          conversionRate: 0,
+        },
       },
       {
-        id: 'vip_welcome',
-        name: 'VIP Welcome Sequence',
-        description: 'Enhanced welcome sequence for VIP users',
+        id: "vip_welcome",
+        name: "VIP Welcome Sequence",
+        description: "Enhanced welcome sequence for VIP users",
         isActive: true,
-        triggers: [{ type: 'user_registered' }],
+        triggers: [{ type: "user_registered" }],
         emails: [
           {
-            id: 'vip_welcome_immediate',
-            sequenceId: 'vip_welcome',
+            id: "vip_welcome_immediate",
+            sequenceId: "vip_welcome",
             stepNumber: 1,
-            name: 'VIP Welcome Email',
-            templateId: 'vip_welcome',
-            trigger: { type: 'user_registered' },
+            name: "VIP Welcome Email",
+            templateId: "vip_welcome",
+            trigger: { type: "user_registered" },
             isActive: true,
             personalizations: {
               bonusAmount: 250000,
-              gameRecommendations: ['VIP Exclusive Slots', 'High Roller Poker', 'Diamond Bingo'],
+              gameRecommendations: [
+                "VIP Exclusive Slots",
+                "High Roller Poker",
+                "Diamond Bingo",
+              ],
               vipEligible: true,
-              customMessage: 'Welcome to our exclusive VIP experience!'
+              customMessage: "Welcome to our exclusive VIP experience!",
             },
-            conditions: { userRole: ['vip'] }
+            conditions: { userRole: ["vip"] },
           },
           {
-            id: 'vip_benefits_guide',
-            sequenceId: 'vip_welcome',
+            id: "vip_benefits_guide",
+            sequenceId: "vip_welcome",
             stepNumber: 2,
-            name: 'VIP Benefits Guide',
-            templateId: 'vip_benefits',
-            trigger: { type: 'time_delay', delayMinutes: 30 },
+            name: "VIP Benefits Guide",
+            templateId: "vip_benefits",
+            trigger: { type: "time_delay", delayMinutes: 30 },
             isActive: true,
             personalizations: {
-              vipEligible: true
+              vipEligible: true,
             },
-            conditions: { userRole: ['vip'] }
-          }
+            conditions: { userRole: ["vip"] },
+          },
         ],
         metrics: {
           totalTriggered: 0,
           totalCompleted: 0,
           averageOpenRate: 0,
           averageClickRate: 0,
-          conversionRate: 0
-        }
-      }
+          conversionRate: 0,
+        },
+      },
     ];
 
-    defaultSequences.forEach(sequence => {
+    defaultSequences.forEach((sequence) => {
       this.sequences.set(sequence.id, sequence);
     });
 
@@ -242,10 +265,10 @@ class WelcomeEmailAutomationService {
     // Create additional email templates for the welcome sequence
     const additionalTemplates = [
       {
-        id: 'verification_reminder',
-        name: 'Email Verification Reminder',
-        subject: '⏰ Don\'t forget to verify your CoinKrazy account!',
-        category: 'verification' as const,
+        id: "verification_reminder",
+        name: "Email Verification Reminder",
+        subject: "⏰ Don't forget to verify your CoinKrazy account!",
+        category: "verification" as const,
         htmlContent: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 30px; text-align: center;">
@@ -278,13 +301,13 @@ class WelcomeEmailAutomationService {
           </div>
         `,
         textContent: `Hi {{username}}, don't forget to verify your CoinKrazy account! Your 50,000 GC + 25 SC bonus is waiting. Verify now: {{verification_url}}`,
-        variables: ['username', 'verification_url']
+        variables: ["username", "verification_url"],
       },
       {
-        id: 'getting_started',
-        name: 'Getting Started Guide',
-        subject: '�� Your CoinKrazy adventure begins now! Here\'s your roadmap',
-        category: 'welcome' as const,
+        id: "getting_started",
+        name: "Getting Started Guide",
+        subject: "�� Your CoinKrazy adventure begins now! Here's your roadmap",
+        category: "welcome" as const,
         htmlContent: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 30px; text-align: center;">
@@ -322,13 +345,13 @@ class WelcomeEmailAutomationService {
           </div>
         `,
         textContent: `Hi {{username}}! Ready to play? Try our signature games: CoinKrazy Spinner, Lucky Scratch Gold. Join Bingo Hall for hourly prizes. Complete KYC for instant withdrawals. Start now: {{login_url}}`,
-        variables: ['username', 'login_url']
+        variables: ["username", "login_url"],
       },
       {
-        id: 'first_week_checkin',
-        name: 'First Week Check-in',
-        subject: '🎉 One week strong! Here\'s a bonus for your loyalty',
-        category: 'marketing' as const,
+        id: "first_week_checkin",
+        name: "First Week Check-in",
+        subject: "🎉 One week strong! Here's a bonus for your loyalty",
+        category: "marketing" as const,
         htmlContent: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 30px; text-align: center;">
@@ -368,13 +391,20 @@ class WelcomeEmailAutomationService {
           </div>
         `,
         textContent: `Hi {{username}}! One week with CoinKrazy! Here's your loyalty bonus: 25,000 Gold Coins. Games played: {{games_played}}, Biggest win: {{biggest_win}}. Claim now: {{claim_bonus_url}}`,
-        variables: ['username', 'games_played', 'time_played', 'biggest_win', 'favorite_game', 'claim_bonus_url']
+        variables: [
+          "username",
+          "games_played",
+          "time_played",
+          "biggest_win",
+          "favorite_game",
+          "claim_bonus_url",
+        ],
       },
       {
-        id: 'kyc_completed',
-        name: 'KYC Completion Celebration',
-        subject: '🎊 Congratulations! Full access unlocked + Mega Bonus!',
-        category: 'transactional' as const,
+        id: "kyc_completed",
+        name: "KYC Completion Celebration",
+        subject: "🎊 Congratulations! Full access unlocked + Mega Bonus!",
+        category: "transactional" as const,
         htmlContent: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); padding: 30px; text-align: center;">
@@ -415,13 +445,16 @@ class WelcomeEmailAutomationService {
           </div>
         `,
         textContent: `Congratulations {{username}}! KYC verification complete. You now have instant withdrawals, VIP support, and premium games. Mega bonus: 100,000 GC + VIP benefits! Access now: {{dashboard_url}}`,
-        variables: ['username', 'dashboard_url']
-      }
+        variables: ["username", "dashboard_url"],
+      },
     ];
 
     // Register these templates with the email service
     // Note: In a real implementation, these would be stored in the email service
-    console.log('Additional email templates created:', additionalTemplates.length);
+    console.log(
+      "Additional email templates created:",
+      additionalTemplates.length,
+    );
   }
 
   private startEmailProcessor() {
@@ -433,14 +466,19 @@ class WelcomeEmailAutomationService {
 
   private startJourneyMonitoring() {
     // Monitor user journeys and trigger next steps
-    setInterval(() => {
-      this.monitorUserJourneys();
-    }, 5 * 60 * 1000); // Every 5 minutes
+    setInterval(
+      () => {
+        this.monitorUserJourneys();
+      },
+      5 * 60 * 1000,
+    ); // Every 5 minutes
   }
 
   private processEmailQueue() {
     const now = new Date();
-    const readyEmails = this.emailQueue.filter(item => item.scheduledAt <= now);
+    const readyEmails = this.emailQueue.filter(
+      (item) => item.scheduledAt <= now,
+    );
 
     readyEmails.forEach(async (emailItem) => {
       const journey = this.userJourneys.get(emailItem.userId);
@@ -449,15 +487,19 @@ class WelcomeEmailAutomationService {
       const sequence = this.sequences.get(journey.sequenceId);
       if (!sequence) return;
 
-      const step = sequence.emails.find(email => email.id === emailItem.stepId);
+      const step = sequence.emails.find(
+        (email) => email.id === emailItem.stepId,
+      );
       if (!step) return;
 
       const success = await this.sendWelcomeEmail(journey, step);
-      
+
       if (success) {
         // Remove from queue
-        this.emailQueue = this.emailQueue.filter(item => 
-          item.userId !== emailItem.userId || item.stepId !== emailItem.stepId
+        this.emailQueue = this.emailQueue.filter(
+          (item) =>
+            item.userId !== emailItem.userId ||
+            item.stepId !== emailItem.stepId,
         );
 
         // Update journey
@@ -468,30 +510,31 @@ class WelcomeEmailAutomationService {
         // Schedule next email if conditions are met
         this.scheduleNextEmail(journey);
 
-        this.notifyListeners('email_sent', { journey, step });
+        this.notifyListeners("email_sent", { journey, step });
       }
     });
   }
 
   private monitorUserJourneys() {
-    this.userJourneys.forEach(journey => {
-      if (journey.status !== 'active') return;
+    this.userJourneys.forEach((journey) => {
+      if (journey.status !== "active") return;
 
       const sequence = this.sequences.get(journey.sequenceId);
       if (!sequence) return;
 
       // Check for time-based triggers
-      const nextSteps = sequence.emails.filter(email => 
-        email.stepNumber > journey.currentStep &&
-        email.trigger.type === 'time_delay' &&
-        this.checkStepConditions(journey, email)
+      const nextSteps = sequence.emails.filter(
+        (email) =>
+          email.stepNumber > journey.currentStep &&
+          email.trigger.type === "time_delay" &&
+          this.checkStepConditions(journey, email),
       );
 
-      nextSteps.forEach(step => {
+      nextSteps.forEach((step) => {
         if (step.trigger.delayMinutes) {
           const triggerTime = new Date(
-            (journey.lastEmailSent || journey.startedAt).getTime() + 
-            step.trigger.delayMinutes * 60 * 1000
+            (journey.lastEmailSent || journey.startedAt).getTime() +
+              step.trigger.delayMinutes * 60 * 1000,
           );
 
           if (new Date() >= triggerTime) {
@@ -502,8 +545,8 @@ class WelcomeEmailAutomationService {
 
       // Check for inactivity
       const daysSinceLastActivity = Math.floor(
-        (Date.now() - (journey.lastEmailSent || journey.startedAt).getTime()) / 
-        (1000 * 60 * 60 * 24)
+        (Date.now() - (journey.lastEmailSent || journey.startedAt).getTime()) /
+          (1000 * 60 * 60 * 24),
       );
 
       if (daysSinceLastActivity > 7 && journey.emailsSent > 0) {
@@ -513,15 +556,18 @@ class WelcomeEmailAutomationService {
     });
   }
 
-  private async sendWelcomeEmail(journey: UserWelcomeJourney, step: WelcomeEmailStep): Promise<boolean> {
+  private async sendWelcomeEmail(
+    journey: UserWelcomeJourney,
+    step: WelcomeEmailStep,
+  ): Promise<boolean> {
     try {
       const personalization = await this.generatePersonalization(journey, step);
-      
+
       // Use the email service to send the email
       const success = await emailService.sendWelcomeEmail(
         journey.userId,
         journey.email,
-        journey.username
+        journey.username,
       );
 
       if (success) {
@@ -534,86 +580,111 @@ class WelcomeEmailAutomationService {
 
       return success;
     } catch (error) {
-      console.error('Error sending welcome email:', error);
+      console.error("Error sending welcome email:", error);
       return false;
     }
   }
 
-  private async generatePersonalization(journey: UserWelcomeJourney, step: WelcomeEmailStep): Promise<EmailPersonalization> {
+  private async generatePersonalization(
+    journey: UserWelcomeJourney,
+    step: WelcomeEmailStep,
+  ): Promise<EmailPersonalization> {
     // Get user's current balance and activity
     const userBalance = balanceService.getUserBalance(journey.email);
-    
+
     return {
       userId: journey.userId,
-      bonusAmount: step.personalizations.bonusAmount?.toLocaleString() || '50,000',
-      gameRecommendations: step.personalizations.gameRecommendations || ['CoinKrazy Spinner', 'Lucky Scratch Gold'],
+      bonusAmount:
+        step.personalizations.bonusAmount?.toLocaleString() || "50,000",
+      gameRecommendations: step.personalizations.gameRecommendations || [
+        "CoinKrazy Spinner",
+        "Lucky Scratch Gold",
+      ],
       userName: journey.username,
       accountBalance: `${userBalance.goldCoins.toLocaleString()} GC, ${userBalance.sweepsCoins.toFixed(2)} SC`,
       vipStatus: step.personalizations.vipEligible || false,
       nextSteps: this.generateNextSteps(journey, step),
-      supportContact: 'support@coinkrazy.com',
+      supportContact: "support@coinkrazy.com",
       unsubscribeUrl: `https://coinkrazy.com/unsubscribe?user=${journey.userId}`,
-      loginUrl: 'https://coinkrazy.com/dashboard',
-      specialOffers: this.generateSpecialOffers(journey, step)
+      loginUrl: "https://coinkrazy.com/dashboard",
+      specialOffers: this.generateSpecialOffers(journey, step),
     };
   }
 
-  private generateNextSteps(journey: UserWelcomeJourney, step: WelcomeEmailStep): string[] {
+  private generateNextSteps(
+    journey: UserWelcomeJourney,
+    step: WelcomeEmailStep,
+  ): string[] {
     const steps = [
-      'Explore our 700+ premium slot games',
-      'Join live poker tables with real players',
-      'Play bingo for hourly prize draws'
+      "Explore our 700+ premium slot games",
+      "Join live poker tables with real players",
+      "Play bingo for hourly prize draws",
     ];
 
     // Add personalized steps based on user progress
-    const onboardingAccount = joseyAiOnboardingService.getUserAccount(journey.userId);
+    const onboardingAccount = joseyAiOnboardingService.getUserAccount(
+      journey.userId,
+    );
     if (onboardingAccount) {
       if (!onboardingAccount.flags.educationCompleted) {
-        steps.unshift('Complete your platform education for bonus rewards');
+        steps.unshift("Complete your platform education for bonus rewards");
       }
-      if (onboardingAccount.kycStatus === 'not_started') {
-        steps.push('Complete KYC verification to unlock instant withdrawals');
+      if (onboardingAccount.kycStatus === "not_started") {
+        steps.push("Complete KYC verification to unlock instant withdrawals");
       }
     }
 
     return steps;
   }
 
-  private generateSpecialOffers(journey: UserWelcomeJourney, step: WelcomeEmailStep): string[] {
+  private generateSpecialOffers(
+    journey: UserWelcomeJourney,
+    step: WelcomeEmailStep,
+  ): string[] {
     const offers = [];
-    
+
     if (step.personalizations.bonusAmount) {
-      offers.push(`${step.personalizations.bonusAmount.toLocaleString()} Gold Coins Welcome Bonus`);
+      offers.push(
+        `${step.personalizations.bonusAmount.toLocaleString()} Gold Coins Welcome Bonus`,
+      );
     }
 
     if (step.personalizations.vipEligible) {
-      offers.push('VIP Access with Enhanced Benefits');
-      offers.push('Priority Customer Support');
+      offers.push("VIP Access with Enhanced Benefits");
+      offers.push("Priority Customer Support");
     }
 
-    offers.push('Daily Login Bonuses');
-    offers.push('Refer Friends for Massive Rewards');
+    offers.push("Daily Login Bonuses");
+    offers.push("Refer Friends for Massive Rewards");
 
     return offers;
   }
 
-  private checkStepConditions(journey: UserWelcomeJourney, step: WelcomeEmailStep): boolean {
+  private checkStepConditions(
+    journey: UserWelcomeJourney,
+    step: WelcomeEmailStep,
+  ): boolean {
     if (!step.conditions) return true;
 
     const conditions = step.conditions;
-    
+
     // Check account age
     if (conditions.accountAge) {
       const accountAgedays = Math.floor(
-        (Date.now() - journey.startedAt.getTime()) / (1000 * 60 * 60 * 24)
+        (Date.now() - journey.startedAt.getTime()) / (1000 * 60 * 60 * 24),
       );
       if (accountAgedays < conditions.accountAge) return false;
     }
 
     // Check KYC status
     if (conditions.kycStatus) {
-      const onboardingAccount = joseyAiOnboardingService.getUserAccount(journey.userId);
-      if (onboardingAccount && !conditions.kycStatus.includes(onboardingAccount.kycStatus)) {
+      const onboardingAccount = joseyAiOnboardingService.getUserAccount(
+        journey.userId,
+      );
+      if (
+        onboardingAccount &&
+        !conditions.kycStatus.includes(onboardingAccount.kycStatus)
+      ) {
         return false;
       }
     }
@@ -630,13 +701,13 @@ class WelcomeEmailAutomationService {
 
   private scheduleEmail(userId: string, stepId: string, scheduledAt: Date) {
     // Avoid duplicate scheduling
-    const exists = this.emailQueue.some(item => 
-      item.userId === userId && item.stepId === stepId
+    const exists = this.emailQueue.some(
+      (item) => item.userId === userId && item.stepId === stepId,
     );
 
     if (!exists) {
       this.emailQueue.push({ userId, stepId, scheduledAt });
-      this.notifyListeners('email_scheduled', { userId, stepId, scheduledAt });
+      this.notifyListeners("email_scheduled", { userId, stepId, scheduledAt });
     }
   }
 
@@ -644,18 +715,20 @@ class WelcomeEmailAutomationService {
     const sequence = this.sequences.get(journey.sequenceId);
     if (!sequence) return;
 
-    const nextSteps = sequence.emails.filter(email => 
-      email.stepNumber > journey.currentStep &&
-      email.isActive &&
-      this.checkStepConditions(journey, email)
+    const nextSteps = sequence.emails.filter(
+      (email) =>
+        email.stepNumber > journey.currentStep &&
+        email.isActive &&
+        this.checkStepConditions(journey, email),
     );
 
-    const immediateSteps = nextSteps.filter(step => 
-      step.trigger.type !== 'time_delay' || !step.trigger.delayMinutes
+    const immediateSteps = nextSteps.filter(
+      (step) =>
+        step.trigger.type !== "time_delay" || !step.trigger.delayMinutes,
     );
 
     // Schedule immediate steps
-    immediateSteps.forEach(step => {
+    immediateSteps.forEach((step) => {
       this.scheduleEmail(journey.userId, step.id, new Date());
     });
   }
@@ -663,18 +736,18 @@ class WelcomeEmailAutomationService {
   private triggerReEngagementEmail(journey: UserWelcomeJourney) {
     // Create a special re-engagement email
     const reEngagementStep: WelcomeEmailStep = {
-      id: 'reengagement_' + Date.now(),
+      id: "reengagement_" + Date.now(),
       sequenceId: journey.sequenceId,
       stepNumber: 999, // High number to indicate special step
-      name: 'Re-engagement Email',
-      templateId: 'reengagement_001',
-      trigger: { type: 'user_inactive' },
+      name: "Re-engagement Email",
+      templateId: "reengagement_001",
+      trigger: { type: "user_inactive" },
       isActive: true,
       personalizations: {
         bonusAmount: 75000,
-        gameRecommendations: ['Featured Game of the Week'],
-        customMessage: "We miss you! Come back for an exclusive bonus."
-      }
+        gameRecommendations: ["Featured Game of the Week"],
+        customMessage: "We miss you! Come back for an exclusive bonus.",
+      },
     };
 
     this.scheduleEmail(journey.userId, reEngagementStep.id, new Date());
@@ -682,9 +755,17 @@ class WelcomeEmailAutomationService {
 
   // Public API Methods
 
-  startWelcomeSequence(userId: string, email: string, username: string, sequenceId: string = 'standard_welcome'): boolean {
+  startWelcomeSequence(
+    userId: string,
+    email: string,
+    username: string,
+    sequenceId: string = "standard_welcome",
+  ): boolean {
     // Don't restart if already active
-    if (this.userJourneys.has(userId) && this.userJourneys.get(userId)?.status === 'active') {
+    if (
+      this.userJourneys.has(userId) &&
+      this.userJourneys.get(userId)?.status === "active"
+    ) {
       return false;
     }
 
@@ -702,51 +783,64 @@ class WelcomeEmailAutomationService {
       emailsOpened: 0,
       emailsClicked: 0,
       conversions: 0,
-      status: 'active',
-      metadata: {}
+      status: "active",
+      metadata: {},
     };
 
     this.userJourneys.set(userId, journey);
 
     // Trigger immediate emails
-    const immediateSteps = sequence.emails.filter(email => 
-      email.trigger.type === 'user_registered' && 
-      email.isActive &&
-      this.checkStepConditions(journey, email)
+    const immediateSteps = sequence.emails.filter(
+      (email) =>
+        email.trigger.type === "user_registered" &&
+        email.isActive &&
+        this.checkStepConditions(journey, email),
     );
 
-    immediateSteps.forEach(step => {
+    immediateSteps.forEach((step) => {
       this.scheduleEmail(userId, step.id, new Date());
     });
 
-    this.notifyListeners('journey_started', journey);
+    this.notifyListeners("journey_started", journey);
     return true;
   }
 
-  triggerEmailByEvent(userId: string, eventType: WelcomeEmailTrigger['type'], eventData?: any): boolean {
+  triggerEmailByEvent(
+    userId: string,
+    eventType: WelcomeEmailTrigger["type"],
+    eventData?: any,
+  ): boolean {
     const journey = this.userJourneys.get(userId);
-    if (!journey || journey.status !== 'active') return false;
+    if (!journey || journey.status !== "active") return false;
 
     const sequence = this.sequences.get(journey.sequenceId);
     if (!sequence) return false;
 
-    const triggeredSteps = sequence.emails.filter(email => 
-      email.trigger.type === eventType &&
-      email.stepNumber > journey.currentStep &&
-      email.isActive &&
-      this.checkStepConditions(journey, email)
+    const triggeredSteps = sequence.emails.filter(
+      (email) =>
+        email.trigger.type === eventType &&
+        email.stepNumber > journey.currentStep &&
+        email.isActive &&
+        this.checkStepConditions(journey, email),
     );
 
-    triggeredSteps.forEach(step => {
+    triggeredSteps.forEach((step) => {
       if (step.trigger.delayMinutes) {
-        const scheduledAt = new Date(Date.now() + step.trigger.delayMinutes * 60 * 1000);
+        const scheduledAt = new Date(
+          Date.now() + step.trigger.delayMinutes * 60 * 1000,
+        );
         this.scheduleEmail(userId, step.id, scheduledAt);
       } else {
         this.scheduleEmail(userId, step.id, new Date());
       }
     });
 
-    this.notifyListeners('event_triggered', { userId, eventType, eventData, triggeredSteps });
+    this.notifyListeners("event_triggered", {
+      userId,
+      eventType,
+      eventData,
+      triggeredSteps,
+    });
     return triggeredSteps.length > 0;
   }
 
@@ -754,8 +848,8 @@ class WelcomeEmailAutomationService {
     const journey = this.userJourneys.get(userId);
     if (!journey) return false;
 
-    journey.status = 'paused';
-    this.notifyListeners('journey_paused', journey);
+    journey.status = "paused";
+    this.notifyListeners("journey_paused", journey);
     return true;
   }
 
@@ -763,9 +857,9 @@ class WelcomeEmailAutomationService {
     const journey = this.userJourneys.get(userId);
     if (!journey) return false;
 
-    journey.status = 'active';
+    journey.status = "active";
     this.scheduleNextEmail(journey);
-    this.notifyListeners('journey_resumed', journey);
+    this.notifyListeners("journey_resumed", journey);
     return true;
   }
 
@@ -773,16 +867,18 @@ class WelcomeEmailAutomationService {
     const journey = this.userJourneys.get(userId);
     if (!journey) return false;
 
-    journey.status = 'completed';
+    journey.status = "completed";
     journey.completedAt = new Date();
 
     const sequence = this.sequences.get(journey.sequenceId);
     if (sequence) {
       sequence.metrics.totalCompleted++;
-      sequence.metrics.conversionRate = sequence.metrics.totalCompleted / Math.max(sequence.metrics.totalTriggered, 1);
+      sequence.metrics.conversionRate =
+        sequence.metrics.totalCompleted /
+        Math.max(sequence.metrics.totalTriggered, 1);
     }
 
-    this.notifyListeners('journey_completed', journey);
+    this.notifyListeners("journey_completed", journey);
     return true;
   }
 
@@ -798,44 +894,59 @@ class WelcomeEmailAutomationService {
     const sequence = this.sequences.get(sequenceId);
     if (!sequence) return null;
 
-    const journeys = Array.from(this.userJourneys.values()).filter(j => j.sequenceId === sequenceId);
-    
+    const journeys = Array.from(this.userJourneys.values()).filter(
+      (j) => j.sequenceId === sequenceId,
+    );
+
     return {
       ...sequence.metrics,
-      activeJourneys: journeys.filter(j => j.status === 'active').length,
+      activeJourneys: journeys.filter((j) => j.status === "active").length,
       totalJourneys: journeys.length,
       averageCompletionTime: this.calculateAverageCompletionTime(journeys),
-      stepAnalysis: this.analyzeStepPerformance(sequence, journeys)
+      stepAnalysis: this.analyzeStepPerformance(sequence, journeys),
     };
   }
 
-  private calculateAverageCompletionTime(journeys: UserWelcomeJourney[]): number {
-    const completedJourneys = journeys.filter(j => j.completedAt);
+  private calculateAverageCompletionTime(
+    journeys: UserWelcomeJourney[],
+  ): number {
+    const completedJourneys = journeys.filter((j) => j.completedAt);
     if (completedJourneys.length === 0) return 0;
 
     const totalTime = completedJourneys.reduce((sum, journey) => {
-      return sum + (journey.completedAt!.getTime() - journey.startedAt.getTime());
+      return (
+        sum + (journey.completedAt!.getTime() - journey.startedAt.getTime())
+      );
     }, 0);
 
     return totalTime / completedJourneys.length / (1000 * 60 * 60 * 24); // Convert to days
   }
 
-  private analyzeStepPerformance(sequence: WelcomeEmailSequence, journeys: UserWelcomeJourney[]) {
-    return sequence.emails.map(step => {
-      const stepJourneys = journeys.filter(j => j.currentStep >= step.stepNumber);
+  private analyzeStepPerformance(
+    sequence: WelcomeEmailSequence,
+    journeys: UserWelcomeJourney[],
+  ) {
+    return sequence.emails.map((step) => {
+      const stepJourneys = journeys.filter(
+        (j) => j.currentStep >= step.stepNumber,
+      );
       return {
         stepId: step.id,
         stepName: step.name,
         reached: stepJourneys.length,
-        completed: stepJourneys.filter(j => j.currentStep > step.stepNumber).length,
-        completionRate: stepJourneys.length > 0 ? 
-          stepJourneys.filter(j => j.currentStep > step.stepNumber).length / stepJourneys.length : 0
+        completed: stepJourneys.filter((j) => j.currentStep > step.stepNumber)
+          .length,
+        completionRate:
+          stepJourneys.length > 0
+            ? stepJourneys.filter((j) => j.currentStep > step.stepNumber)
+                .length / stepJourneys.length
+            : 0,
       };
     });
   }
 
   // Admin methods
-  createSequence(sequence: Omit<WelcomeEmailSequence, 'metrics'>): boolean {
+  createSequence(sequence: Omit<WelcomeEmailSequence, "metrics">): boolean {
     const fullSequence: WelcomeEmailSequence = {
       ...sequence,
       metrics: {
@@ -843,21 +954,24 @@ class WelcomeEmailAutomationService {
         totalCompleted: 0,
         averageOpenRate: 0,
         averageClickRate: 0,
-        conversionRate: 0
-      }
+        conversionRate: 0,
+      },
     };
 
     this.sequences.set(sequence.id, fullSequence);
-    this.notifyListeners('sequence_created', fullSequence);
+    this.notifyListeners("sequence_created", fullSequence);
     return true;
   }
 
-  updateSequence(sequenceId: string, updates: Partial<WelcomeEmailSequence>): boolean {
+  updateSequence(
+    sequenceId: string,
+    updates: Partial<WelcomeEmailSequence>,
+  ): boolean {
     const sequence = this.sequences.get(sequenceId);
     if (!sequence) return false;
 
     Object.assign(sequence, updates);
-    this.notifyListeners('sequence_updated', sequence);
+    this.notifyListeners("sequence_updated", sequence);
     return true;
   }
 
@@ -867,11 +981,11 @@ class WelcomeEmailAutomationService {
 
     // Pause all active journeys for this sequence
     Array.from(this.userJourneys.values())
-      .filter(j => j.sequenceId === sequenceId && j.status === 'active')
-      .forEach(j => j.status = 'paused');
+      .filter((j) => j.sequenceId === sequenceId && j.status === "active")
+      .forEach((j) => (j.status = "paused"));
 
     this.sequences.delete(sequenceId);
-    this.notifyListeners('sequence_deleted', { sequenceId });
+    this.notifyListeners("sequence_deleted", { sequenceId });
     return true;
   }
 
@@ -882,7 +996,7 @@ class WelcomeEmailAutomationService {
   }
 
   private notifyListeners(event: string, data: any): void {
-    this.listeners.forEach(callback => callback(event, data));
+    this.listeners.forEach((callback) => callback(event, data));
   }
 
   // Testing and debugging methods
@@ -890,7 +1004,7 @@ class WelcomeEmailAutomationService {
     const journey = this.userJourneys.get(userId);
     if (journey) {
       journey.emailsOpened++;
-      this.notifyListeners('email_opened', { userId, emailId });
+      this.notifyListeners("email_opened", { userId, emailId });
     }
   }
 
@@ -898,18 +1012,23 @@ class WelcomeEmailAutomationService {
     const journey = this.userJourneys.get(userId);
     if (journey) {
       journey.emailsClicked++;
-      this.notifyListeners('email_clicked', { userId, emailId });
+      this.notifyListeners("email_clicked", { userId, emailId });
     }
   }
 
-  getEmailQueue(): Array<{ userId: string; stepId: string; scheduledAt: Date }> {
+  getEmailQueue(): Array<{
+    userId: string;
+    stepId: string;
+    scheduledAt: Date;
+  }> {
     return [...this.emailQueue];
   }
 
   clearEmailQueue(): void {
     this.emailQueue = [];
-    this.notifyListeners('queue_cleared', {});
+    this.notifyListeners("queue_cleared", {});
   }
 }
 
-export const welcomeEmailAutomationService = WelcomeEmailAutomationService.getInstance();
+export const welcomeEmailAutomationService =
+  WelcomeEmailAutomationService.getInstance();

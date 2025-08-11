@@ -1,12 +1,17 @@
 // KYC (Know Your Customer) Service for CoinKrazy.com
 // Production-ready identity verification system
-import { realDataService } from './realDataService';
+import { realDataService } from "./realDataService";
 
 export interface KYCDocument {
   id: string;
   userId: string;
-  type: 'drivers_license' | 'passport' | 'state_id' | 'utility_bill' | 'bank_statement';
-  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  type:
+    | "drivers_license"
+    | "passport"
+    | "state_id"
+    | "utility_bill"
+    | "bank_statement";
+  status: "pending" | "approved" | "rejected" | "expired";
   documentUrl: string;
   uploadedAt: string;
   reviewedAt?: string;
@@ -18,8 +23,8 @@ export interface KYCDocument {
 export interface KYCVerification {
   id: string;
   userId: string;
-  level: 'basic' | 'enhanced' | 'premium';
-  status: 'unverified' | 'pending' | 'verified' | 'suspended';
+  level: "basic" | "enhanced" | "premium";
+  status: "unverified" | "pending" | "verified" | "suspended";
   documentsRequired: string[];
   documentsProvided: KYCDocument[];
   personalInfo: {
@@ -56,9 +61,9 @@ export interface WithdrawalRequest {
   id: string;
   userId: string;
   amount: number;
-  currency: 'SC' | 'USD';
-  method: 'bank_transfer' | 'paypal' | 'crypto' | 'check';
-  status: 'pending' | 'processing' | 'completed' | 'rejected' | 'cancelled';
+  currency: "SC" | "USD";
+  method: "bank_transfer" | "paypal" | "crypto" | "check";
+  status: "pending" | "processing" | "completed" | "rejected" | "cancelled";
   requestedAt: string;
   processedAt?: string;
   completedAt?: string;
@@ -72,7 +77,7 @@ export interface WithdrawalRequest {
 
 class KYCService {
   private static instance: KYCService;
-  private readonly API_BASE = '/api/kyc';
+  private readonly API_BASE = "/api/kyc";
 
   static getInstance(): KYCService {
     if (!KYCService.instance) {
@@ -87,16 +92,16 @@ class KYCService {
   async getKYCStatus(userId: string): Promise<KYCVerification> {
     try {
       const response = await fetch(`${this.API_BASE}/status/${userId}`, {
-        headers: { 'Authorization': `Bearer ${this.getAuthToken()}` }
+        headers: { Authorization: `Bearer ${this.getAuthToken()}` },
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to fetch KYC status');
+        throw new Error("Failed to fetch KYC status");
       }
-      
+
       return response.json();
     } catch (error) {
-      console.error('Error fetching KYC status:', error);
+      console.error("Error fetching KYC status:", error);
       // Return real KYC status from local data
       return this.getRealKYCStatus(userId);
     }
@@ -105,7 +110,10 @@ class KYCService {
   /**
    * Check if user can withdraw given amount
    */
-  async canWithdraw(userId: string, amount: number): Promise<{
+  async canWithdraw(
+    userId: string,
+    amount: number,
+  ): Promise<{
     canWithdraw: boolean;
     reason?: string;
     kycRequired: boolean;
@@ -113,24 +121,24 @@ class KYCService {
   }> {
     try {
       const kycStatus = await this.getKYCStatus(userId);
-      
+
       // Check minimum withdrawal amount (100 SC)
       if (amount < kycStatus.limits.minimumWithdrawal) {
         return {
           canWithdraw: false,
           reason: `Minimum withdrawal amount is ${kycStatus.limits.minimumWithdrawal} SC`,
           kycRequired: false,
-          minimumAmount: kycStatus.limits.minimumWithdrawal
+          minimumAmount: kycStatus.limits.minimumWithdrawal,
         };
       }
 
       // Check KYC verification requirement
-      if (kycStatus.status !== 'verified') {
+      if (kycStatus.status !== "verified") {
         return {
           canWithdraw: false,
-          reason: 'KYC verification required for withdrawals',
+          reason: "KYC verification required for withdrawals",
           kycRequired: true,
-          minimumAmount: kycStatus.limits.minimumWithdrawal
+          minimumAmount: kycStatus.limits.minimumWithdrawal,
         };
       }
 
@@ -141,22 +149,22 @@ class KYCService {
           canWithdraw: false,
           reason: `Daily withdrawal limit exceeded. Remaining: ${kycStatus.limits.dailyWithdrawal - dailyWithdrawn} SC`,
           kycRequired: false,
-          minimumAmount: kycStatus.limits.minimumWithdrawal
+          minimumAmount: kycStatus.limits.minimumWithdrawal,
         };
       }
 
       return {
         canWithdraw: true,
         kycRequired: false,
-        minimumAmount: kycStatus.limits.minimumWithdrawal
+        minimumAmount: kycStatus.limits.minimumWithdrawal,
       };
     } catch (error) {
-      console.error('Error checking withdrawal eligibility:', error);
+      console.error("Error checking withdrawal eligibility:", error);
       return {
         canWithdraw: false,
-        reason: 'Unable to verify withdrawal eligibility',
+        reason: "Unable to verify withdrawal eligibility",
         kycRequired: true,
-        minimumAmount: 100
+        minimumAmount: 100,
       };
     }
   }
@@ -164,24 +172,27 @@ class KYCService {
   /**
    * Start KYC verification process
    */
-  async startKYCVerification(userId: string, personalInfo: any): Promise<KYCVerification> {
+  async startKYCVerification(
+    userId: string,
+    personalInfo: any,
+  ): Promise<KYCVerification> {
     try {
       const response = await fetch(`${this.API_BASE}/start`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.getAuthToken()}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getAuthToken()}`,
         },
-        body: JSON.stringify({ userId, personalInfo })
+        body: JSON.stringify({ userId, personalInfo }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start KYC verification');
+        throw new Error("Failed to start KYC verification");
       }
 
       return response.json();
     } catch (error) {
-      console.error('Error starting KYC verification:', error);
+      console.error("Error starting KYC verification:", error);
       throw error;
     }
   }
@@ -190,31 +201,31 @@ class KYCService {
    * Upload KYC document
    */
   async uploadDocument(
-    userId: string, 
-    documentType: KYCDocument['type'], 
-    file: File
+    userId: string,
+    documentType: KYCDocument["type"],
+    file: File,
   ): Promise<KYCDocument> {
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('userId', userId);
-      formData.append('documentType', documentType);
+      formData.append("file", file);
+      formData.append("userId", userId);
+      formData.append("documentType", documentType);
 
       const response = await fetch(`${this.API_BASE}/upload-document`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
+          Authorization: `Bearer ${this.getAuthToken()}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload document');
+        throw new Error("Failed to upload document");
       }
 
       return response.json();
     } catch (error) {
-      console.error('Error uploading document:', error);
+      console.error("Error uploading document:", error);
       throw error;
     }
   }
@@ -225,7 +236,7 @@ class KYCService {
   async requestWithdrawal(
     userId: string,
     amount: number,
-    method: WithdrawalRequest['method']
+    method: WithdrawalRequest["method"],
   ): Promise<WithdrawalRequest> {
     try {
       // First check if withdrawal is allowed
@@ -235,21 +246,21 @@ class KYCService {
       }
 
       const response = await fetch(`${this.API_BASE}/request-withdrawal`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.getAuthToken()}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getAuthToken()}`,
         },
-        body: JSON.stringify({ userId, amount, method })
+        body: JSON.stringify({ userId, amount, method }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit withdrawal request');
+        throw new Error("Failed to submit withdrawal request");
       }
 
       return response.json();
     } catch (error) {
-      console.error('Error requesting withdrawal:', error);
+      console.error("Error requesting withdrawal:", error);
       throw error;
     }
   }
@@ -260,16 +271,16 @@ class KYCService {
   async getWithdrawalHistory(userId: string): Promise<WithdrawalRequest[]> {
     try {
       const response = await fetch(`${this.API_BASE}/withdrawals/${userId}`, {
-        headers: { 'Authorization': `Bearer ${this.getAuthToken()}` }
+        headers: { Authorization: `Bearer ${this.getAuthToken()}` },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch withdrawal history');
+        throw new Error("Failed to fetch withdrawal history");
       }
 
       return response.json();
     } catch (error) {
-      console.error('Error fetching withdrawal history:', error);
+      console.error("Error fetching withdrawal history:", error);
       return this.getRealWithdrawals(userId);
     }
   }
@@ -279,9 +290,12 @@ class KYCService {
    */
   private async getDailyWithdrawnAmount(userId: string): Promise<number> {
     try {
-      const response = await fetch(`${this.API_BASE}/daily-withdrawn/${userId}`, {
-        headers: { 'Authorization': `Bearer ${this.getAuthToken()}` }
-      });
+      const response = await fetch(
+        `${this.API_BASE}/daily-withdrawn/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${this.getAuthToken()}` },
+        },
+      );
 
       if (!response.ok) {
         return 0;
@@ -290,7 +304,7 @@ class KYCService {
       const data = await response.json();
       return data.amount || 0;
     } catch (error) {
-      console.error('Error fetching daily withdrawn amount:', error);
+      console.error("Error fetching daily withdrawn amount:", error);
       return 0;
     }
   }
@@ -298,20 +312,23 @@ class KYCService {
   /**
    * Verify email address
    */
-  async verifyEmail(userId: string, verificationCode: string): Promise<boolean> {
+  async verifyEmail(
+    userId: string,
+    verificationCode: string,
+  ): Promise<boolean> {
     try {
       const response = await fetch(`${this.API_BASE}/verify-email`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.getAuthToken()}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getAuthToken()}`,
         },
-        body: JSON.stringify({ userId, verificationCode })
+        body: JSON.stringify({ userId, verificationCode }),
       });
 
       return response.ok;
     } catch (error) {
-      console.error('Error verifying email:', error);
+      console.error("Error verifying email:", error);
       return false;
     }
   }
@@ -319,20 +336,23 @@ class KYCService {
   /**
    * Verify phone number
    */
-  async verifyPhone(userId: string, verificationCode: string): Promise<boolean> {
+  async verifyPhone(
+    userId: string,
+    verificationCode: string,
+  ): Promise<boolean> {
     try {
       const response = await fetch(`${this.API_BASE}/verify-phone`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.getAuthToken()}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getAuthToken()}`,
         },
-        body: JSON.stringify({ userId, verificationCode })
+        body: JSON.stringify({ userId, verificationCode }),
       });
 
       return response.ok;
     } catch (error) {
-      console.error('Error verifying phone:', error);
+      console.error("Error verifying phone:", error);
       return false;
     }
   }
@@ -341,7 +361,7 @@ class KYCService {
    * Get authentication token
    */
   private getAuthToken(): string {
-    return localStorage.getItem('auth_token') || '';
+    return localStorage.getItem("auth_token") || "";
   }
 
   /**
@@ -355,78 +375,85 @@ class KYCService {
       return {
         id: `kyc_${userId}`,
         userId,
-        level: 'basic',
-        status: 'unverified',
-        documentsRequired: ['drivers_license', 'utility_bill'],
+        level: "basic",
+        status: "unverified",
+        documentsRequired: ["drivers_license", "utility_bill"],
         documentsProvided: [],
         personalInfo: {
-          firstName: '',
-          lastName: '',
-          dateOfBirth: '',
+          firstName: "",
+          lastName: "",
+          dateOfBirth: "",
           address: {
-            street: '',
-            city: '',
-            state: '',
-            zipCode: '',
-            country: 'US'
-          }
+            street: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            country: "US",
+          },
         },
         verification: {
           emailVerified: false,
           phoneVerified: false,
           identityVerified: false,
-          addressVerified: false
+          addressVerified: false,
         },
         limits: {
           dailyWithdrawal: 5000,
           monthlyWithdrawal: 50000,
           maximumWithdrawal: 10000,
-          minimumWithdrawal: 100
+          minimumWithdrawal: 100,
         },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
     }
 
     // Map user data to KYC status
-    const kycStatus: 'unverified' | 'pending' | 'verified' | 'suspended' =
-      user.kycStatus === 'approved' ? 'verified' :
-      user.kycStatus === 'pending' ? 'pending' :
-      user.kycStatus === 'rejected' ? 'suspended' : 'unverified';
+    const kycStatus: "unverified" | "pending" | "verified" | "suspended" =
+      user.kycStatus === "approved"
+        ? "verified"
+        : user.kycStatus === "pending"
+          ? "pending"
+          : user.kycStatus === "rejected"
+            ? "suspended"
+            : "unverified";
 
     return {
       id: `kyc_${userId}`,
       userId,
-      level: user.role === 'vip' ? 'premium' : 'basic',
+      level: user.role === "vip" ? "premium" : "basic",
       status: kycStatus,
-      documentsRequired: user.kycStatus === 'not_started' ? ['drivers_license', 'utility_bill'] : [],
+      documentsRequired:
+        user.kycStatus === "not_started"
+          ? ["drivers_license", "utility_bill"]
+          : [],
       documentsProvided: [],
       personalInfo: {
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        dateOfBirth: '',
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        dateOfBirth: "",
         address: {
-          street: user.location?.city || '',
-          city: user.location?.city || '',
-          state: user.location?.state || '',
-          zipCode: '',
-          country: user.location?.country || 'US'
-        }
+          street: user.location?.city || "",
+          city: user.location?.city || "",
+          state: user.location?.state || "",
+          zipCode: "",
+          country: user.location?.country || "US",
+        },
       },
       verification: {
         emailVerified: user.emailVerified,
         phoneVerified: user.phoneVerified,
-        identityVerified: user.kycStatus === 'approved',
-        addressVerified: user.kycStatus === 'approved'
+        identityVerified: user.kycStatus === "approved",
+        addressVerified: user.kycStatus === "approved",
       },
       limits: {
-        dailyWithdrawal: user.role === 'vip' ? 25000 : 5000,
-        monthlyWithdrawal: user.role === 'vip' ? 250000 : 50000,
-        maximumWithdrawal: user.role === 'vip' ? 50000 : 10000,
-        minimumWithdrawal: 100
+        dailyWithdrawal: user.role === "vip" ? 25000 : 5000,
+        monthlyWithdrawal: user.role === "vip" ? 250000 : 50000,
+        maximumWithdrawal: user.role === "vip" ? 50000 : 10000,
+        minimumWithdrawal: 100,
       },
       createdAt: user.registrationDate.toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
   }
 
@@ -437,26 +464,37 @@ class KYCService {
     const transactions = realDataService.getUserTransactions(userId);
 
     return transactions
-      .filter(tx => tx.type === 'withdrawal')
-      .map(tx => ({
+      .filter((tx) => tx.type === "withdrawal")
+      .map((tx) => ({
         id: tx.id,
         userId: tx.userId,
         amount: tx.amount,
-        currency: tx.currency as 'SC' | 'USD',
-        method: 'bank_transfer' as const,
-        status: tx.status === 'completed' ? 'completed' :
-                tx.status === 'failed' ? 'rejected' : 'pending',
+        currency: tx.currency as "SC" | "USD",
+        method: "bank_transfer" as const,
+        status:
+          tx.status === "completed"
+            ? "completed"
+            : tx.status === "failed"
+              ? "rejected"
+              : "pending",
         requestedAt: tx.timestamp.toISOString(),
-        processedAt: tx.status !== 'pending' ? tx.timestamp.toISOString() : undefined,
-        completedAt: tx.status === 'completed' ? tx.timestamp.toISOString() : undefined,
+        processedAt:
+          tx.status !== "pending" ? tx.timestamp.toISOString() : undefined,
+        completedAt:
+          tx.status === "completed" ? tx.timestamp.toISOString() : undefined,
         transactionId: tx.id,
-        rejectionReason: tx.status === 'failed' ? 'Processing error' : undefined,
+        rejectionReason:
+          tx.status === "failed" ? "Processing error" : undefined,
         fees: tx.metadata.feeAmount || Math.floor(tx.amount * 0.02), // 2% fee
-        netAmount: tx.amount - (tx.metadata.feeAmount || Math.floor(tx.amount * 0.02)),
+        netAmount:
+          tx.amount - (tx.metadata.feeAmount || Math.floor(tx.amount * 0.02)),
         kycRequired: true,
-        kycVerificationId: `kyc_${userId}`
+        kycVerificationId: `kyc_${userId}`,
       }))
-      .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+      .sort(
+        (a, b) =>
+          new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime(),
+      );
   }
 }
 

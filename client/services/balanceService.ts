@@ -1,4 +1,4 @@
-import { realDataService } from './realDataService';
+import { realDataService } from "./realDataService";
 
 export interface UserBalance {
   userId: string;
@@ -52,9 +52,9 @@ class BalanceService {
     });
 
     // Ensure admin account exists
-    if (!this.balances.has('admin@coinkrazy.com')) {
-      this.balances.set('admin@coinkrazy.com', {
-        userId: 'admin@coinkrazy.com',
+    if (!this.balances.has("admin@coinkrazy.com")) {
+      this.balances.set("admin@coinkrazy.com", {
+        userId: "admin@coinkrazy.com",
         gc: 1000000,
         sc: 5000,
         lastUpdated: new Date(),
@@ -155,38 +155,38 @@ class BalanceService {
         balances: {
           goldCoins: newGC,
           sweepsCoins: newSC,
-          usd: user.balances.usd
-        }
+          usd: user.balances.usd,
+        },
       });
 
       // Create transaction record in real data service
       if (gcChange !== 0) {
         realDataService.createTransaction({
           userId: user.id,
-          type: gcChange > 0 ? 'bonus' : 'bet',
-          currency: 'GC',
+          type: gcChange > 0 ? "bonus" : "bet",
+          currency: "GC",
           amount: Math.abs(gcChange),
-          status: 'completed',
+          status: "completed",
           description,
           metadata: {
             gameId,
-            balanceAfter: newGC
-          }
+            balanceAfter: newGC,
+          },
         });
       }
 
       if (scChange !== 0) {
         realDataService.createTransaction({
           userId: user.id,
-          type: scChange > 0 ? 'win' : 'bet',
-          currency: 'SC',
+          type: scChange > 0 ? "win" : "bet",
+          currency: "SC",
           amount: Math.abs(scChange),
-          status: 'completed',
+          status: "completed",
           description,
           metadata: {
             gameId,
-            balanceAfter: newSC
-          }
+            balanceAfter: newSC,
+          },
         });
       }
     }

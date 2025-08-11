@@ -74,7 +74,7 @@ class SportsDataService {
     // In development, returns cached sports data to ensure functionality
     try {
       // Attempt to fetch from backend API
-      const response = await fetch('/api/sports/upcoming');
+      const response = await fetch("/api/sports/upcoming");
       if (response.ok) {
         return await response.json();
       }
@@ -96,7 +96,9 @@ class SportsDataService {
   ): Promise<GameWithLines[]> {
     // Return empty array to avoid fetch calls in browser
     // In production, this would be implemented in a backend service
-    console.log(`Skipping external API calls for ${sport} due to CORS restrictions`);
+    console.log(
+      `Skipping external API calls for ${sport} due to CORS restrictions`,
+    );
     return [];
   }
 
@@ -587,7 +589,7 @@ class SportsDataService {
   async getLiveScores(): Promise<any> {
     try {
       // Attempt to fetch live scores from backend API
-      const response = await fetch('/api/sports/live-scores');
+      const response = await fetch("/api/sports/live-scores");
       if (response.ok) {
         return await response.json();
       }
@@ -598,8 +600,8 @@ class SportsDataService {
     // Return cached live game data
     return {
       message: "Live scores service active",
-      games: this.getCachedGames().filter(game => game.status === 'live'),
-      lastUpdated: new Date().toISOString()
+      games: this.getCachedGames().filter((game) => game.status === "live"),
+      lastUpdated: new Date().toISOString(),
     };
   }
 }

@@ -130,8 +130,8 @@ class SlotsApiService {
   async getAllGames(): Promise<SlotGame[]> {
     try {
       const allGames: SlotGame[] = [];
-      
-      for (const provider of this.providers.filter(p => p.isActive)) {
+
+      for (const provider of this.providers.filter((p) => p.isActive)) {
         try {
           const games = await this.getProviderGames(provider);
           allGames.push(...games);
@@ -177,14 +177,14 @@ class SlotsApiService {
    * Create a new game session
    */
   async createGameSession(
-    gameId: string, 
-    userId: string, 
+    gameId: string,
+    userId: string,
     currency: "GC" | "SC",
-    initialBalance: number
+    initialBalance: number,
   ): Promise<GameSession> {
     try {
       const sessionId = `session_${Date.now()}_${userId}_${gameId}`;
-      
+
       const session: GameSession = {
         sessionId,
         gameId,
@@ -201,7 +201,7 @@ class SlotsApiService {
 
       // In production: await fetch('/api/slots/session', { method: 'POST', ... });
       console.log("Created game session:", session);
-      
+
       return session;
     } catch (error) {
       console.error("Error creating game session:", error);
@@ -215,15 +215,19 @@ class SlotsApiService {
   async performSpin(
     sessionId: string,
     betAmount: number,
-    betLines: number = 25
+    betLines: number = 25,
   ): Promise<SpinResult> {
     try {
       // In production: await fetch('/api/slots/spin', { method: 'POST', ... });
-      
+
       // Generate demo spin result
       const symbols = this.generateRandomSymbols();
-      const { winAmount, paylines } = this.calculateWin(symbols, betAmount, betLines);
-      
+      const { winAmount, paylines } = this.calculateWin(
+        symbols,
+        betAmount,
+        betLines,
+      );
+
       const spinResult: SpinResult = {
         spinId: `spin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         sessionId,
@@ -252,9 +256,9 @@ class SlotsApiService {
    * Get game launch URL for iframe embedding
    */
   async getGameLaunchUrl(
-    gameId: string, 
+    gameId: string,
     sessionId: string,
-    currency: "GC" | "SC" = "GC"
+    currency: "GC" | "SC" = "GC",
   ): Promise<string> {
     try {
       const game = await this.getGameById(gameId);
@@ -285,7 +289,7 @@ class SlotsApiService {
   async getGameById(gameId: string): Promise<SlotGame | null> {
     try {
       const allGames = await this.getAllGames();
-      return allGames.find(game => game.id === gameId) || null;
+      return allGames.find((game) => game.id === gameId) || null;
     } catch (error) {
       console.error("Error getting game by ID:", error);
       return null;
@@ -298,8 +302,8 @@ class SlotsApiService {
   async getGamesByCategory(category: string): Promise<SlotGame[]> {
     try {
       const allGames = await this.getAllGames();
-      return allGames.filter(game => 
-        game.category.includes(category.toLowerCase())
+      return allGames.filter((game) =>
+        game.category.includes(category.toLowerCase()),
       );
     } catch (error) {
       console.error("Error getting games by category:", error);
@@ -314,11 +318,14 @@ class SlotsApiService {
     try {
       const allGames = await this.getAllGames();
       const lowerQuery = query.toLowerCase();
-      
-      return allGames.filter(game => 
-        game.name.toLowerCase().includes(lowerQuery) ||
-        game.theme.toLowerCase().includes(lowerQuery) ||
-        game.features.some(feature => feature.toLowerCase().includes(lowerQuery))
+
+      return allGames.filter(
+        (game) =>
+          game.name.toLowerCase().includes(lowerQuery) ||
+          game.theme.toLowerCase().includes(lowerQuery) ||
+          game.features.some((feature) =>
+            feature.toLowerCase().includes(lowerQuery),
+          ),
       );
     } catch (error) {
       console.error("Error searching games:", error);
@@ -330,19 +337,30 @@ class SlotsApiService {
    * Generate random slot symbols for demo spins
    */
   private generateRandomSymbols(): string[][] {
-    const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "🔔", "💰", "🪙", "👑"];
+    const symbols = [
+      "🍒",
+      "🍋",
+      "🍊",
+      "🍇",
+      "⭐",
+      "💎",
+      "🔔",
+      "💰",
+      "🪙",
+      "👑",
+    ];
     const reels = 5;
     const rows = 3;
-    
+
     const result: string[][] = [];
-    
+
     for (let reel = 0; reel < reels; reel++) {
       result[reel] = [];
       for (let row = 0; row < rows; row++) {
         result[reel][row] = symbols[Math.floor(Math.random() * symbols.length)];
       }
     }
-    
+
     return result;
   }
 
@@ -352,16 +370,16 @@ class SlotsApiService {
   private calculateWin(
     symbols: string[][],
     betAmount: number,
-    betLines: number
+    betLines: number,
   ): { winAmount: number; paylines: any[] } {
     const paylines: any[] = [];
     let totalWin = 0;
 
     // Simple payline calculation (left to right)
     for (let line = 0; line < Math.min(betLines, 3); line++) {
-      const lineSymbols = symbols.map(reel => reel[line]);
+      const lineSymbols = symbols.map((reel) => reel[line]);
       const firstSymbol = lineSymbols[0];
-      
+
       let consecutiveCount = 1;
       for (let i = 1; i < lineSymbols.length; i++) {
         if (lineSymbols[i] === firstSymbol) {
@@ -372,16 +390,19 @@ class SlotsApiService {
       }
 
       if (consecutiveCount >= 3) {
-        const multiplier = this.getSymbolMultiplier(firstSymbol, consecutiveCount);
+        const multiplier = this.getSymbolMultiplier(
+          firstSymbol,
+          consecutiveCount,
+        );
         const lineWin = (betAmount / betLines) * multiplier;
-        
+
         paylines.push({
           line: line + 1,
           symbols: lineSymbols.slice(0, consecutiveCount),
           multiplier,
           winAmount: lineWin,
         });
-        
+
         totalWin += lineWin;
       }
     }
@@ -395,15 +416,15 @@ class SlotsApiService {
   private getSymbolMultiplier(symbol: string, count: number): number {
     const multipliers: { [key: string]: number[] } = {
       "👑": [0, 0, 50, 200, 1000], // Crown - highest paying
-      "💎": [0, 0, 25, 100, 500],  // Diamond
-      "💰": [0, 0, 20, 75, 300],   // Money bag
-      "🪙": [0, 0, 15, 50, 200],   // Coin
-      "⭐": [0, 0, 10, 40, 150],   // Star
-      "🔔": [0, 0, 8, 30, 100],    // Bell
-      "🍇": [0, 0, 5, 20, 75],     // Grapes
-      "🍊": [0, 0, 4, 15, 50],     // Orange
-      "🍋": [0, 0, 3, 10, 35],     // Lemon
-      "🍒": [0, 0, 2, 8, 25],      // Cherry - lowest paying
+      "💎": [0, 0, 25, 100, 500], // Diamond
+      "💰": [0, 0, 20, 75, 300], // Money bag
+      "🪙": [0, 0, 15, 50, 200], // Coin
+      "⭐": [0, 0, 10, 40, 150], // Star
+      "🔔": [0, 0, 8, 30, 100], // Bell
+      "🍇": [0, 0, 5, 20, 75], // Grapes
+      "🍊": [0, 0, 4, 15, 50], // Orange
+      "🍋": [0, 0, 3, 10, 35], // Lemon
+      "🍒": [0, 0, 2, 8, 25], // Cherry - lowest paying
     };
 
     return multipliers[symbol]?.[count] || 0;
@@ -416,7 +437,9 @@ class SlotsApiService {
     const features: any[] = [];
 
     // Check for scatter symbols (stars)
-    const scatterCount = symbols.flat().filter(symbol => symbol === "⭐").length;
+    const scatterCount = symbols
+      .flat()
+      .filter((symbol) => symbol === "⭐").length;
     if (scatterCount >= 3) {
       features.push({
         type: "free_spins",
@@ -426,7 +449,7 @@ class SlotsApiService {
     }
 
     // Check for wild symbols (crowns)
-    const wildCount = symbols.flat().filter(symbol => symbol === "👑").length;
+    const wildCount = symbols.flat().filter((symbol) => symbol === "👑").length;
     if (wildCount >= 1) {
       features.push({
         type: "wild",
@@ -519,13 +542,14 @@ class SlotsApiService {
           theme: "Candy",
           rtp: 96.48,
           volatility: "high",
-          minBet: 0.20,
+          minBet: 0.2,
           maxBet: 100,
           paylines: 0, // Cluster pays
           reels: 6,
           rows: 5,
           features: ["Cluster Pays", "Free Spins", "Multipliers", "Tumble"],
-          gameUrl: "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20fruitsw",
+          gameUrl:
+            "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20fruitsw",
           thumbnailUrl: "/images/slots/sweet-bonanza.jpg",
           isActive: true,
           category: ["popular", "cluster", "high-volatility"],
@@ -537,15 +561,16 @@ class SlotsApiService {
           providerId: "pragmatic-play",
           name: "Gates of Olympus",
           theme: "Greek Mythology",
-          rtp: 96.50,
+          rtp: 96.5,
           volatility: "high",
-          minBet: 0.20,
+          minBet: 0.2,
           maxBet: 100,
           paylines: 0, // Cluster pays
           reels: 6,
           rows: 5,
           features: ["Cluster Pays", "Free Spins", "Multipliers", "Divine"],
-          gameUrl: "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympus",
+          gameUrl:
+            "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympus",
           thumbnailUrl: "/images/slots/gates-of-olympus.jpg",
           isActive: true,
           category: ["popular", "mythology", "high-volatility"],
@@ -553,7 +578,7 @@ class SlotsApiService {
           popularity: 97,
         },
       ],
-      "netent": [
+      netent: [
         {
           id: "starburst",
           providerId: "netent",
@@ -561,7 +586,7 @@ class SlotsApiService {
           theme: "Space Gems",
           rtp: 96.09,
           volatility: "low",
-          minBet: 0.10,
+          minBet: 0.1,
           maxBet: 100,
           paylines: 10,
           reels: 5,

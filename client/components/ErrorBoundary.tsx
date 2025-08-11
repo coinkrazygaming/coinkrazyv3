@@ -1,8 +1,8 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
-import { productionService } from '@/services/productionService';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertTriangle, RefreshCw, Home, Bug } from "lucide-react";
+import { productionService } from "@/services/productionService";
 
 interface Props {
   children: ReactNode;
@@ -27,7 +27,7 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: null
+      errorId: null,
     };
   }
 
@@ -35,7 +35,7 @@ class ErrorBoundary extends Component<Props, State> {
     return {
       hasError: true,
       error,
-      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
   }
 
@@ -43,7 +43,7 @@ class ErrorBoundary extends Component<Props, State> {
     this.setState({
       error,
       errorInfo,
-      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     });
 
     // Log error to production service
@@ -53,7 +53,7 @@ class ErrorBoundary extends Component<Props, State> {
       retryCount: this.retryCount,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
-      url: window.location.href
+      url: window.location.href,
     });
 
     // Call custom error handler
@@ -62,10 +62,13 @@ class ErrorBoundary extends Component<Props, State> {
     }
 
     // Track error in analytics
-    productionService.trackUserAction('error_boundary_triggered', {
+    productionService.trackUserAction("error_boundary_triggered", {
       error: error.message,
       errorId: this.state.errorId,
-      componentStack: errorInfo.componentStack?.split('\n').slice(0, 5).join('\n') // First 5 lines
+      componentStack: errorInfo.componentStack
+        ?.split("\n")
+        .slice(0, 5)
+        .join("\n"), // First 5 lines
     });
   }
 
@@ -76,30 +79,30 @@ class ErrorBoundary extends Component<Props, State> {
         hasError: false,
         error: null,
         errorInfo: null,
-        errorId: null
+        errorId: null,
       });
 
-      productionService.trackUserAction('error_boundary_retry', {
+      productionService.trackUserAction("error_boundary_retry", {
         errorId: this.state.errorId,
-        retryCount: this.retryCount
+        retryCount: this.retryCount,
       });
     }
   };
 
   handleReload = () => {
-    productionService.trackUserAction('error_boundary_reload', {
+    productionService.trackUserAction("error_boundary_reload", {
       errorId: this.state.errorId,
-      retryCount: this.retryCount
+      retryCount: this.retryCount,
     });
     window.location.reload();
   };
 
   handleGoHome = () => {
-    productionService.trackUserAction('error_boundary_go_home', {
+    productionService.trackUserAction("error_boundary_go_home", {
       errorId: this.state.errorId,
-      retryCount: this.retryCount
+      retryCount: this.retryCount,
     });
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   reportError = () => {
@@ -112,19 +115,21 @@ class ErrorBoundary extends Component<Props, State> {
       userAgent: navigator.userAgent,
       url: window.location.href,
       timestamp: new Date().toISOString(),
-      retryCount: this.retryCount
+      retryCount: this.retryCount,
     };
 
     // In production, this would send to error reporting service
-    console.error('Error Report:', errorReport);
-    
-    productionService.trackUserAction('error_reported', {
+    console.error("Error Report:", errorReport);
+
+    productionService.trackUserAction("error_reported", {
       errorId,
-      reportSize: JSON.stringify(errorReport).length
+      reportSize: JSON.stringify(errorReport).length,
     });
 
     // Show user confirmation
-    alert('Error report sent successfully. Our team will investigate this issue.');
+    alert(
+      "Error report sent successfully. Our team will investigate this issue.",
+    );
   };
 
   render() {
@@ -135,7 +140,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       const { error, errorInfo, errorId } = this.state;
-      const isDevEnvironment = process.env.NODE_ENV === 'development';
+      const isDevEnvironment = process.env.NODE_ENV === "development";
       const canRetry = this.retryCount < this.maxRetries;
 
       return (
@@ -149,14 +154,17 @@ class ErrorBoundary extends Component<Props, State> {
                 Oops! Something went wrong
               </CardTitle>
               <p className="text-muted-foreground">
-                We encountered an unexpected error. Our team has been notified and is working on a fix.
+                We encountered an unexpected error. Our team has been notified
+                and is working on a fix.
               </p>
             </CardHeader>
-            
+
             <CardContent className="space-y-6">
               {/* Error ID for support */}
               <div className="text-center p-3 bg-muted/20 rounded-lg">
-                <p className="text-sm text-muted-foreground">Error ID for support:</p>
+                <p className="text-sm text-muted-foreground">
+                  Error ID for support:
+                </p>
                 <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
                   {errorId}
                 </code>
@@ -165,18 +173,30 @@ class ErrorBoundary extends Component<Props, State> {
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 {canRetry && (
-                  <Button onClick={this.handleRetry} className="flex items-center gap-2">
+                  <Button
+                    onClick={this.handleRetry}
+                    className="flex items-center gap-2"
+                  >
                     <RefreshCw className="w-4 h-4" />
-                    Try Again ({this.maxRetries - this.retryCount} attempts left)
+                    Try Again ({this.maxRetries - this.retryCount} attempts
+                    left)
                   </Button>
                 )}
-                
-                <Button onClick={this.handleReload} variant="outline" className="flex items-center gap-2">
+
+                <Button
+                  onClick={this.handleReload}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
                   <RefreshCw className="w-4 h-4" />
                   Reload Page
                 </Button>
-                
-                <Button onClick={this.handleGoHome} variant="outline" className="flex items-center gap-2">
+
+                <Button
+                  onClick={this.handleGoHome}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
                   <Home className="w-4 h-4" />
                   Go Home
                 </Button>
@@ -184,7 +204,12 @@ class ErrorBoundary extends Component<Props, State> {
 
               {/* Report error button */}
               <div className="text-center">
-                <Button onClick={this.reportError} variant="ghost" size="sm" className="flex items-center gap-2">
+                <Button
+                  onClick={this.reportError}
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
                   <Bug className="w-4 h-4" />
                   Report this error
                 </Button>
@@ -203,7 +228,7 @@ class ErrorBoundary extends Component<Props, State> {
                         {error.message}
                       </pre>
                     </div>
-                    
+
                     {error.stack && (
                       <div>
                         <h4 className="font-medium mb-1">Stack Trace:</h4>
@@ -212,7 +237,7 @@ class ErrorBoundary extends Component<Props, State> {
                         </pre>
                       </div>
                     )}
-                    
+
                     {errorInfo?.componentStack && (
                       <div>
                         <h4 className="font-medium mb-1">Component Stack:</h4>
@@ -231,11 +256,17 @@ class ErrorBoundary extends Component<Props, State> {
                   Need immediate assistance? Contact our support team:
                 </p>
                 <p className="text-sm">
-                  <a href="mailto:support@coinkrazy.com" className="text-blue-600 hover:underline">
+                  <a
+                    href="mailto:support@coinkrazy.com"
+                    className="text-blue-600 hover:underline"
+                  >
                     support@coinkrazy.com
                   </a>
-                  {' | '}
-                  <a href="tel:+13194730416" className="text-blue-600 hover:underline">
+                  {" | "}
+                  <a
+                    href="tel:+13194730416"
+                    className="text-blue-600 hover:underline"
+                  >
                     319-473-0416
                   </a>
                 </p>
@@ -253,7 +284,7 @@ class ErrorBoundary extends Component<Props, State> {
 // Higher-order component for easy wrapping
 export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
-  errorBoundaryProps?: Omit<Props, 'children'>
+  errorBoundaryProps?: Omit<Props, "children">,
 ) => {
   const WrappedComponent = (props: P) => (
     <ErrorBoundary {...errorBoundaryProps}>

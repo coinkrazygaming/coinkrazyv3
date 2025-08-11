@@ -19,7 +19,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { walletService, WalletBalance, CurrencyData } from "@/services/walletService";
+import {
+  walletService,
+  WalletBalance,
+  CurrencyData,
+} from "@/services/walletService";
 import {
   ChevronDown,
   TrendingUp,
@@ -39,21 +43,21 @@ interface EnhancedWalletBalanceProps {
   showExchange?: boolean;
 }
 
-export default function EnhancedWalletBalance({ 
-  showPortfolio = false, 
-  showExchange = false 
+export default function EnhancedWalletBalance({
+  showPortfolio = false,
+  showExchange = false,
 }: EnhancedWalletBalanceProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  
+
   const [wallet, setWallet] = useState<WalletBalance | null>(null);
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const [currencies, setCurrencies] = useState<CurrencyData[]>([]);
   const [showAllBalances, setShowAllBalances] = useState(false);
   const [exchangeDialog, setExchangeDialog] = useState(false);
-  const [exchangeFrom, setExchangeFrom] = useState('');
-  const [exchangeTo, setExchangeTo] = useState('');
-  const [exchangeAmount, setExchangeAmount] = useState('');
+  const [exchangeFrom, setExchangeFrom] = useState("");
+  const [exchangeTo, setExchangeTo] = useState("");
+  const [exchangeAmount, setExchangeAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hideBalances, setHideBalances] = useState(false);
 
@@ -62,21 +66,21 @@ export default function EnhancedWalletBalance({
       // Get initial data
       const userWallet = walletService.getUserBalance(user.email);
       setWallet(userWallet);
-      
+
       const supportedCurrencies = walletService.getSupportedCurrencies();
       setCurrencies(supportedCurrencies);
-      
+
       const defaultCurrency = walletService.getSelectedCurrency();
       setSelectedCurrency(defaultCurrency);
 
       // Subscribe to real-time updates
       const unsubscribeBalance = walletService.subscribeToBalanceUpdates(
         user.email,
-        (updatedWallet) => setWallet(updatedWallet)
+        (updatedWallet) => setWallet(updatedWallet),
       );
 
       const unsubscribeCurrency = walletService.subscribeToCurrencyChanges(
-        (currency) => setSelectedCurrency(currency)
+        (currency) => setSelectedCurrency(currency),
       );
 
       return () => {
@@ -92,25 +96,27 @@ export default function EnhancedWalletBalance({
   };
 
   const getDisplayBalance = () => {
-    if (!wallet || hideBalances) return hideBalances ? '***' : '0';
-    
-    const selectedCurrencyInfo = currencies.find(c => c.code === selectedCurrency);
-    if (!selectedCurrencyInfo) return '0';
+    if (!wallet || hideBalances) return hideBalances ? "***" : "0";
 
-    if (selectedCurrency === 'USD') {
-      return `$${wallet.totalUSDValue.toLocaleString(undefined, { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
+    const selectedCurrencyInfo = currencies.find(
+      (c) => c.code === selectedCurrency,
+    );
+    if (!selectedCurrencyInfo) return "0";
+
+    if (selectedCurrency === "USD") {
+      return `$${wallet.totalUSDValue.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       })}`;
     }
 
     const currencyBalance = wallet.currencies[selectedCurrency];
-    if (!currencyBalance) return '0';
+    if (!currencyBalance) return "0";
 
     const decimals = selectedCurrencyInfo.decimals;
     return `${currencyBalance.available.toLocaleString(undefined, {
       minimumFractionDigits: decimals > 2 ? 2 : decimals,
-      maximumFractionDigits: decimals
+      maximumFractionDigits: decimals,
     })} ${selectedCurrencyInfo.symbol}`;
   };
 
@@ -124,7 +130,7 @@ export default function EnhancedWalletBalance({
       toast({
         title: "Invalid Exchange",
         description: "Please fill in all exchange fields",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -135,7 +141,7 @@ export default function EnhancedWalletBalance({
         user.email,
         exchangeFrom,
         exchangeTo,
-        parseFloat(exchangeAmount)
+        parseFloat(exchangeAmount),
       );
 
       if (success) {
@@ -144,19 +150,19 @@ export default function EnhancedWalletBalance({
           description: `Exchanged ${exchangeAmount} ${exchangeFrom} to ${exchangeTo}`,
         });
         setExchangeDialog(false);
-        setExchangeAmount('');
+        setExchangeAmount("");
       } else {
         toast({
           title: "Exchange Failed",
           description: "Insufficient balance or invalid exchange",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Exchange Error",
         description: "Failed to process exchange",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -174,7 +180,9 @@ export default function EnhancedWalletBalance({
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <RefreshCw className="w-5 h-5 animate-spin text-gold-500" />
-            <span className="text-sm text-muted-foreground">Loading wallet...</span>
+            <span className="text-sm text-muted-foreground">
+              Loading wallet...
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -238,7 +246,10 @@ export default function EnhancedWalletBalance({
                           <label className="text-sm font-medium">From</label>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="outline" className="w-full justify-between">
+                              <Button
+                                variant="outline"
+                                className="w-full justify-between"
+                              >
                                 {exchangeFrom || "Select currency"}
                                 <ChevronDown className="w-4 h-4" />
                               </Button>
@@ -249,7 +260,8 @@ export default function EnhancedWalletBalance({
                                   key={currency.code}
                                   onClick={() => setExchangeFrom(currency.code)}
                                 >
-                                  {currency.icon} {currency.code} - {currency.name}
+                                  {currency.icon} {currency.code} -{" "}
+                                  {currency.name}
                                 </DropdownMenuItem>
                               ))}
                             </DropdownMenuContent>
@@ -259,7 +271,10 @@ export default function EnhancedWalletBalance({
                           <label className="text-sm font-medium">To</label>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="outline" className="w-full justify-between">
+                              <Button
+                                variant="outline"
+                                className="w-full justify-between"
+                              >
                                 {exchangeTo || "Select currency"}
                                 <ChevronDown className="w-4 h-4" />
                               </Button>
@@ -270,7 +285,8 @@ export default function EnhancedWalletBalance({
                                   key={currency.code}
                                   onClick={() => setExchangeTo(currency.code)}
                                 >
-                                  {currency.icon} {currency.code} - {currency.name}
+                                  {currency.icon} {currency.code} -{" "}
+                                  {currency.name}
                                 </DropdownMenuItem>
                               ))}
                             </DropdownMenuContent>
@@ -307,7 +323,10 @@ export default function EnhancedWalletBalance({
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="min-w-20">
                     <span className="mr-1">
-                      {currencies.find(c => c.code === selectedCurrency)?.icon}
+                      {
+                        currencies.find((c) => c.code === selectedCurrency)
+                          ?.icon
+                      }
                     </span>
                     {selectedCurrency}
                     <ChevronDown className="w-3 h-3 ml-1" />
@@ -316,14 +335,14 @@ export default function EnhancedWalletBalance({
                 <DropdownMenuContent align="end" className="w-64">
                   <DropdownMenuLabel>Select Display Currency</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem onClick={() => handleCurrencyChange('USD')}>
+
+                  <DropdownMenuItem onClick={() => handleCurrencyChange("USD")}>
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-2">
                         <span>💵</span>
                         <span>USD - Total Portfolio</span>
                       </div>
-                      {selectedCurrency === 'USD' && (
+                      {selectedCurrency === "USD" && (
                         <span className="text-green-500">✓</span>
                       )}
                     </div>
@@ -331,60 +350,67 @@ export default function EnhancedWalletBalance({
 
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Individual Currencies</DropdownMenuLabel>
-                  
-                  {currencies.filter(c => c.code !== 'USD').map((currency) => {
-                    const balance = wallet.currencies[currency.code];
-                    const change = getPriceChange(currency.code);
-                    const hasBalance = balance && balance.available > 0;
-                    
-                    return (
-                      <DropdownMenuItem
-                        key={currency.code}
-                        onClick={() => handleCurrencyChange(currency.code)}
-                        className={hasBalance ? "" : "opacity-50"}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-2">
-                            <span>{currency.icon}</span>
-                            <div>
-                              <div className="font-medium">
-                                {currency.code} - {currency.name}
-                              </div>
-                              {hasBalance && !hideBalances && (
-                                <div className="text-xs text-muted-foreground">
-                                  {balance.available.toLocaleString()} {currency.symbol}
+
+                  {currencies
+                    .filter((c) => c.code !== "USD")
+                    .map((currency) => {
+                      const balance = wallet.currencies[currency.code];
+                      const change = getPriceChange(currency.code);
+                      const hasBalance = balance && balance.available > 0;
+
+                      return (
+                        <DropdownMenuItem
+                          key={currency.code}
+                          onClick={() => handleCurrencyChange(currency.code)}
+                          className={hasBalance ? "" : "opacity-50"}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-2">
+                              <span>{currency.icon}</span>
+                              <div>
+                                <div className="font-medium">
+                                  {currency.code} - {currency.name}
                                 </div>
+                                {hasBalance && !hideBalances && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {balance.available.toLocaleString()}{" "}
+                                    {currency.symbol}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {change !== 0 && (
+                                <div
+                                  className={`flex items-center gap-1 ${change > 0 ? "text-green-500" : "text-red-500"}`}
+                                >
+                                  {change > 0 ? (
+                                    <TrendingUp className="w-3 h-3" />
+                                  ) : (
+                                    <TrendingDown className="w-3 h-3" />
+                                  )}
+                                  <span className="text-xs">
+                                    {Math.abs(change).toFixed(1)}%
+                                  </span>
+                                </div>
+                              )}
+                              {selectedCurrency === currency.code && (
+                                <span className="text-green-500">✓</span>
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            {change !== 0 && (
-                              <div className={`flex items-center gap-1 ${change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                {change > 0 ? (
-                                  <TrendingUp className="w-3 h-3" />
-                                ) : (
-                                  <TrendingDown className="w-3 h-3" />
-                                )}
-                                <span className="text-xs">
-                                  {Math.abs(change).toFixed(1)}%
-                                </span>
-                              </div>
-                            )}
-                            {selectedCurrency === currency.code && (
-                              <span className="text-green-500">✓</span>
-                            )}
-                          </div>
-                        </div>
-                      </DropdownMenuItem>
-                    );
-                  })}
+                        </DropdownMenuItem>
+                      );
+                    })}
 
                   {showPortfolio && (
                     <>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setShowAllBalances(!showAllBalances)}>
+                      <DropdownMenuItem
+                        onClick={() => setShowAllBalances(!showAllBalances)}
+                      >
                         <Activity className="w-4 h-4 mr-2" />
-                        {showAllBalances ? 'Hide' : 'Show'} Portfolio Breakdown
+                        {showAllBalances ? "Hide" : "Show"} Portfolio Breakdown
                       </DropdownMenuItem>
                     </>
                   )}
@@ -396,17 +422,26 @@ export default function EnhancedWalletBalance({
           {showAllBalances && showPortfolio && !hideBalances && (
             <div className="mt-4 pt-4 border-t border-border/50">
               <div className="space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">Portfolio Breakdown</div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Portfolio Breakdown
+                </div>
                 {getPortfolioBreakdown().map((item) => {
-                  const currencyInfo = currencies.find(c => c.code === item.currency);
+                  const currencyInfo = currencies.find(
+                    (c) => c.code === item.currency,
+                  );
                   return (
-                    <div key={item.currency} className="flex items-center justify-between">
+                    <div
+                      key={item.currency}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-2">
                         <span>{currencyInfo?.icon}</span>
                         <span className="text-sm">{item.currency}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">${item.value.toFixed(2)}</span>
+                        <span className="text-sm">
+                          ${item.value.toFixed(2)}
+                        </span>
                         <Badge variant="outline" className="text-xs">
                           {item.percentage.toFixed(1)}%
                         </Badge>

@@ -191,9 +191,7 @@ export default function Navigation() {
             </div>
 
             {/* Enhanced Wallet Balance (logged in users only) */}
-            {user && (
-              <EnhancedWalletBalance showExchange={true} />
-            )}
+            {user && <EnhancedWalletBalance showExchange={true} />}
 
             {/* Contact Phone */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

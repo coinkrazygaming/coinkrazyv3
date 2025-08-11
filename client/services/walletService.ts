@@ -25,14 +25,21 @@ export interface WalletBalance {
 export interface Transaction {
   id: string;
   userId: string;
-  type: 'deposit' | 'withdrawal' | 'transfer' | 'game_win' | 'game_loss' | 'bonus' | 'exchange';
+  type:
+    | "deposit"
+    | "withdrawal"
+    | "transfer"
+    | "game_win"
+    | "game_loss"
+    | "bonus"
+    | "exchange";
   currency: string;
   amount: number;
   balanceAfter: number;
   description: string;
   gameId?: string;
   timestamp: Date;
-  status: 'pending' | 'completed' | 'failed';
+  status: "pending" | "completed" | "failed";
   txHash?: string;
   metadata?: Record<string, any>;
 }
@@ -50,9 +57,10 @@ class WalletService {
   private balances: Map<string, WalletBalance> = new Map();
   private transactions: Map<string, Transaction[]> = new Map();
   private exchangeRates: Map<string, ExchangeRate[]> = new Map();
-  private listeners: Map<string, Set<(balance: WalletBalance) => void>> = new Map();
+  private listeners: Map<string, Set<(balance: WalletBalance) => void>> =
+    new Map();
   private currencyListeners: Set<(currency: string) => void> = new Set();
-  private selectedCurrency: string = 'USD';
+  private selectedCurrency: string = "USD";
 
   static getInstance(): WalletService {
     if (!WalletService.instance) {
@@ -69,84 +77,105 @@ class WalletService {
 
   private supportedCurrencies: CurrencyData[] = [
     {
-      code: 'USD',
-      name: 'US Dollar',
-      symbol: '$',
+      code: "USD",
+      name: "US Dollar",
+      symbol: "$",
       decimals: 2,
       exchangeRate: 1.0,
-      icon: '💵',
-      color: '#22c55e'
+      icon: "💵",
+      color: "#22c55e",
     },
     {
-      code: 'GC',
-      name: 'Gold Coins',
-      symbol: 'GC',
+      code: "GC",
+      name: "Gold Coins",
+      symbol: "GC",
       decimals: 0,
       exchangeRate: 0.0001, // 10,000 GC = $1
-      icon: '🪙',
-      color: '#f59e0b'
+      icon: "🪙",
+      color: "#f59e0b",
     },
     {
-      code: 'SC',
-      name: 'Sweeps Coins',
-      symbol: 'SC',
+      code: "SC",
+      name: "Sweeps Coins",
+      symbol: "SC",
       decimals: 2,
       exchangeRate: 1.0, // 1 SC = $1
-      icon: '👑',
-      color: '#3b82f6'
+      icon: "👑",
+      color: "#3b82f6",
     },
     {
-      code: 'BTC',
-      name: 'Bitcoin',
-      symbol: '₿',
+      code: "BTC",
+      name: "Bitcoin",
+      symbol: "₿",
       decimals: 8,
       exchangeRate: 45000.0,
-      icon: '₿',
-      color: '#f7931a'
+      icon: "₿",
+      color: "#f7931a",
     },
     {
-      code: 'ETH',
-      name: 'Ethereum',
-      symbol: 'Ξ',
+      code: "ETH",
+      name: "Ethereum",
+      symbol: "Ξ",
       decimals: 6,
       exchangeRate: 2800.0,
-      icon: '⟠',
-      color: '#627eea'
+      icon: "⟠",
+      color: "#627eea",
     },
     {
-      code: 'USDT',
-      name: 'Tether USD',
-      symbol: '₮',
+      code: "USDT",
+      name: "Tether USD",
+      symbol: "₮",
       decimals: 2,
       exchangeRate: 1.0,
-      icon: '₮',
-      color: '#26a17b'
-    }
+      icon: "₮",
+      color: "#26a17b",
+    },
   ];
 
   private initializeDefaultData() {
     // Initialize user balances
     const defaultUsers = [
-      { 
-        userId: 'coinkrazy00@gmail.com', 
-        balances: { USD: 10000, GC: 1000000, SC: 5000, BTC: 0.5, ETH: 5, USDT: 2500 }
+      {
+        userId: "coinkrazy00@gmail.com",
+        balances: {
+          USD: 10000,
+          GC: 1000000,
+          SC: 5000,
+          BTC: 0.5,
+          ETH: 5,
+          USDT: 2500,
+        },
       },
-      { 
-        userId: 'test@example.com', 
-        balances: { USD: 2500, GC: 75000, SC: 250, BTC: 0.1, ETH: 1.5, USDT: 1000 }
+      {
+        userId: "test@example.com",
+        balances: {
+          USD: 2500,
+          GC: 75000,
+          SC: 250,
+          BTC: 0.1,
+          ETH: 1.5,
+          USDT: 1000,
+        },
       },
-      { 
-        userId: 'staff@example.com', 
-        balances: { USD: 1000, GC: 50000, SC: 100, BTC: 0.05, ETH: 0.8, USDT: 500 }
-      }
+      {
+        userId: "staff@example.com",
+        balances: {
+          USD: 1000,
+          GC: 50000,
+          SC: 100,
+          BTC: 0.05,
+          ETH: 0.8,
+          USDT: 500,
+        },
+      },
     ];
 
-    defaultUsers.forEach(user => {
+    defaultUsers.forEach((user) => {
       const walletBalance: WalletBalance = {
         userId: user.userId,
         currencies: {},
         totalUSDValue: 0,
-        lastActivity: new Date()
+        lastActivity: new Date(),
       };
 
       Object.entries(user.balances).forEach(([currency, balance]) => {
@@ -154,7 +183,7 @@ class WalletService {
           balance,
           locked: 0,
           available: balance,
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         };
       });
 
@@ -166,7 +195,9 @@ class WalletService {
   private calculateUSDValue(wallet: WalletBalance): number {
     let total = 0;
     Object.entries(wallet.currencies).forEach(([currency, data]) => {
-      const currencyInfo = this.supportedCurrencies.find(c => c.code === currency);
+      const currencyInfo = this.supportedCurrencies.find(
+        (c) => c.code === currency,
+      );
       if (currencyInfo) {
         total += data.available * currencyInfo.exchangeRate;
       }
@@ -197,17 +228,23 @@ class WalletService {
     // Randomly update some user balances to simulate activity
     const userIds = Array.from(this.balances.keys());
     const randomUser = userIds[Math.floor(Math.random() * userIds.length)];
-    
+
     if (randomUser) {
       const wallet = this.balances.get(randomUser);
       if (wallet) {
         // Small random changes to simulate gameplay/trading
-        const currencies = ['GC', 'SC'];
-        const randomCurrency = currencies[Math.floor(Math.random() * currencies.length)];
-        
+        const currencies = ["GC", "SC"];
+        const randomCurrency =
+          currencies[Math.floor(Math.random() * currencies.length)];
+
         if (wallet.currencies[randomCurrency]) {
           const change = Math.floor(Math.random() * 1000) - 500; // -500 to +500
-          this.updateBalance(randomUser, randomCurrency, change, 'Market Activity');
+          this.updateBalance(
+            randomUser,
+            randomCurrency,
+            change,
+            "Market Activity",
+          );
         }
       }
     }
@@ -215,11 +252,11 @@ class WalletService {
 
   private updateExchangeRates() {
     // Simulate crypto price movements
-    this.supportedCurrencies.forEach(currency => {
-      if (currency.code === 'BTC' || currency.code === 'ETH') {
+    this.supportedCurrencies.forEach((currency) => {
+      if (currency.code === "BTC" || currency.code === "ETH") {
         const volatility = 0.01; // 1% max change
         const change = (Math.random() - 0.5) * 2 * volatility;
-        currency.exchangeRate *= (1 + change);
+        currency.exchangeRate *= 1 + change;
       }
     });
 
@@ -231,7 +268,7 @@ class WalletService {
     this.balances.forEach((wallet, userId) => {
       const oldTotal = wallet.totalUSDValue;
       wallet.totalUSDValue = this.calculateUSDValue(wallet);
-      
+
       if (Math.abs(oldTotal - wallet.totalUSDValue) > 0.01) {
         this.notifyBalanceChange(userId, wallet);
       }
@@ -246,33 +283,71 @@ class WalletService {
       balance = {
         userId,
         currencies: {
-          USD: { balance: 100, locked: 0, available: 100, lastUpdated: new Date() },
-          GC: { balance: 50000, locked: 0, available: 50000, lastUpdated: new Date() },
-          SC: { balance: 25, locked: 0, available: 25, lastUpdated: new Date() }
+          USD: {
+            balance: 100,
+            locked: 0,
+            available: 100,
+            lastUpdated: new Date(),
+          },
+          GC: {
+            balance: 50000,
+            locked: 0,
+            available: 50000,
+            lastUpdated: new Date(),
+          },
+          SC: {
+            balance: 25,
+            locked: 0,
+            available: 25,
+            lastUpdated: new Date(),
+          },
         },
         totalUSDValue: 0,
-        lastActivity: new Date()
+        lastActivity: new Date(),
       };
       balance.totalUSDValue = this.calculateUSDValue(balance);
       this.balances.set(userId, balance);
 
       // Add welcome transactions
-      this.addTransaction(userId, 'bonus', 'GC', 50000, 'Welcome Bonus - Gold Coins');
-      this.addTransaction(userId, 'bonus', 'SC', 25, 'Welcome Bonus - Sweeps Coins');
-      this.addTransaction(userId, 'bonus', 'USD', 100, 'Welcome Bonus - Starting Credits');
+      this.addTransaction(
+        userId,
+        "bonus",
+        "GC",
+        50000,
+        "Welcome Bonus - Gold Coins",
+      );
+      this.addTransaction(
+        userId,
+        "bonus",
+        "SC",
+        25,
+        "Welcome Bonus - Sweeps Coins",
+      );
+      this.addTransaction(
+        userId,
+        "bonus",
+        "USD",
+        100,
+        "Welcome Bonus - Starting Credits",
+      );
     }
     return balance;
   }
 
-  updateBalance(userId: string, currency: string, amount: number, description: string): WalletBalance {
+  updateBalance(
+    userId: string,
+    currency: string,
+    amount: number,
+    description: string,
+  ): WalletBalance {
     const wallet = this.getUserBalance(userId);
-    
+
     if (!wallet.currencies[currency]) {
       wallet.currencies[currency] = {
         balance: 0,
         locked: 0,
         available: 0,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
     }
 
@@ -289,42 +364,70 @@ class WalletService {
 
     // Add transaction record
     this.addTransaction(
-      userId, 
-      amount > 0 ? 'deposit' : 'withdrawal', 
-      currency, 
-      Math.abs(amount), 
-      description
+      userId,
+      amount > 0 ? "deposit" : "withdrawal",
+      currency,
+      Math.abs(amount),
+      description,
     );
 
     this.notifyBalanceChange(userId, wallet);
     return wallet;
   }
 
-  exchangeCurrency(userId: string, fromCurrency: string, toCurrency: string, amount: number): boolean {
+  exchangeCurrency(
+    userId: string,
+    fromCurrency: string,
+    toCurrency: string,
+    amount: number,
+  ): boolean {
     const wallet = this.getUserBalance(userId);
-    
-    if (!wallet.currencies[fromCurrency] || wallet.currencies[fromCurrency].available < amount) {
+
+    if (
+      !wallet.currencies[fromCurrency] ||
+      wallet.currencies[fromCurrency].available < amount
+    ) {
       return false;
     }
 
-    const fromRate = this.supportedCurrencies.find(c => c.code === fromCurrency)?.exchangeRate || 1;
-    const toRate = this.supportedCurrencies.find(c => c.code === toCurrency)?.exchangeRate || 1;
-    
+    const fromRate =
+      this.supportedCurrencies.find((c) => c.code === fromCurrency)
+        ?.exchangeRate || 1;
+    const toRate =
+      this.supportedCurrencies.find((c) => c.code === toCurrency)
+        ?.exchangeRate || 1;
+
     const usdValue = amount * fromRate;
     const exchangedAmount = usdValue / toRate;
     const fee = usdValue * 0.001; // 0.1% exchange fee
     const finalAmount = exchangedAmount * (1 - 0.001);
 
     // Deduct from source currency
-    this.updateBalance(userId, fromCurrency, -amount, `Exchange to ${toCurrency}`);
-    
+    this.updateBalance(
+      userId,
+      fromCurrency,
+      -amount,
+      `Exchange to ${toCurrency}`,
+    );
+
     // Add to target currency
-    this.updateBalance(userId, toCurrency, finalAmount, `Exchange from ${fromCurrency}`);
+    this.updateBalance(
+      userId,
+      toCurrency,
+      finalAmount,
+      `Exchange from ${fromCurrency}`,
+    );
 
     return true;
   }
 
-  private addTransaction(userId: string, type: Transaction['type'], currency: string, amount: number, description: string) {
+  private addTransaction(
+    userId: string,
+    type: Transaction["type"],
+    currency: string,
+    amount: number,
+    description: string,
+  ) {
     const wallet = this.getUserBalance(userId);
     const transaction: Transaction = {
       id: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -335,8 +438,8 @@ class WalletService {
       balanceAfter: wallet.currencies[currency]?.balance || 0,
       description,
       timestamp: new Date(),
-      status: 'completed',
-      txHash: `0x${Math.random().toString(16).substr(2, 64)}`
+      status: "completed",
+      txHash: `0x${Math.random().toString(16).substr(2, 64)}`,
     };
 
     if (!this.transactions.has(userId)) {
@@ -361,19 +464,22 @@ class WalletService {
   }
 
   getCurrencyInfo(code: string): CurrencyData | undefined {
-    return this.supportedCurrencies.find(c => c.code === code);
+    return this.supportedCurrencies.find((c) => c.code === code);
   }
 
   setSelectedCurrency(currency: string) {
     this.selectedCurrency = currency;
-    this.currencyListeners.forEach(callback => callback(currency));
+    this.currencyListeners.forEach((callback) => callback(currency));
   }
 
   getSelectedCurrency(): string {
     return this.selectedCurrency;
   }
 
-  subscribeToBalanceUpdates(userId: string, callback: (balance: WalletBalance) => void): () => void {
+  subscribeToBalanceUpdates(
+    userId: string,
+    callback: (balance: WalletBalance) => void,
+  ): () => void {
     if (!this.listeners.has(userId)) {
       this.listeners.set(userId, new Set());
     }
@@ -394,14 +500,20 @@ class WalletService {
   private notifyBalanceChange(userId: string, balance: WalletBalance) {
     const userListeners = this.listeners.get(userId);
     if (userListeners) {
-      userListeners.forEach(callback => callback(balance));
+      userListeners.forEach((callback) => callback(balance));
     }
   }
 
   // Portfolio analytics
-  getPortfolioBreakdown(userId: string): Array<{currency: string, value: number, percentage: number}> {
+  getPortfolioBreakdown(
+    userId: string,
+  ): Array<{ currency: string; value: number; percentage: number }> {
     const wallet = this.getUserBalance(userId);
-    const breakdown: Array<{currency: string, value: number, percentage: number}> = [];
+    const breakdown: Array<{
+      currency: string;
+      value: number;
+      percentage: number;
+    }> = [];
 
     Object.entries(wallet.currencies).forEach(([currency, data]) => {
       const currencyInfo = this.getCurrencyInfo(currency);
@@ -411,7 +523,7 @@ class WalletService {
         breakdown.push({
           currency,
           value: usdValue,
-          percentage
+          percentage,
         });
       }
     });
@@ -420,16 +532,16 @@ class WalletService {
   }
 
   // Real-time price data
-  getPriceData(currency: string): {price: number, change24h: number} {
+  getPriceData(currency: string): { price: number; change24h: number } {
     const currencyInfo = this.getCurrencyInfo(currency);
-    if (!currencyInfo) return {price: 0, change24h: 0};
+    if (!currencyInfo) return { price: 0, change24h: 0 };
 
     // Simulate 24h price change
     const change24h = (Math.random() - 0.5) * 10; // -5% to +5%
-    
+
     return {
       price: currencyInfo.exchangeRate,
-      change24h
+      change24h,
     };
   }
 }

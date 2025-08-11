@@ -1,11 +1,40 @@
 export interface Lead {
   id: string;
-  source: "organic" | "social_media" | "referral" | "paid_ads" | "content" | "email" | "chat";
-  platform?: "facebook" | "instagram" | "twitter" | "youtube" | "linkedin" | "tiktok" | "snapchat";
-  type: "comment" | "dm" | "mention" | "click" | "signup" | "referral" | "support_inquiry";
-  status: "new" | "contacted" | "qualified" | "hot" | "warm" | "cold" | "converted" | "lost";
+  source:
+    | "organic"
+    | "social_media"
+    | "referral"
+    | "paid_ads"
+    | "content"
+    | "email"
+    | "chat";
+  platform?:
+    | "facebook"
+    | "instagram"
+    | "twitter"
+    | "youtube"
+    | "linkedin"
+    | "tiktok"
+    | "snapchat";
+  type:
+    | "comment"
+    | "dm"
+    | "mention"
+    | "click"
+    | "signup"
+    | "referral"
+    | "support_inquiry";
+  status:
+    | "new"
+    | "contacted"
+    | "qualified"
+    | "hot"
+    | "warm"
+    | "cold"
+    | "converted"
+    | "lost";
   priority: "low" | "medium" | "high" | "urgent";
-  
+
   // User Information
   userData: {
     email?: string;
@@ -32,10 +61,22 @@ export interface Lead {
   // Lead Details
   content: string;
   originalMessage?: string;
-  sentiment: "positive" | "negative" | "neutral" | "excited" | "confused" | "frustrated";
+  sentiment:
+    | "positive"
+    | "negative"
+    | "neutral"
+    | "excited"
+    | "confused"
+    | "frustrated";
   aiScore: number; // 0-100 scoring based on conversion likelihood
   aiAnalysis: {
-    intent: "gaming" | "bonus_seeking" | "price_shopping" | "competitor_comparison" | "support" | "unknown";
+    intent:
+      | "gaming"
+      | "bonus_seeking"
+      | "price_shopping"
+      | "competitor_comparison"
+      | "support"
+      | "unknown";
     urgency: "immediate" | "short_term" | "long_term";
     valueIndicators: string[];
     redFlags: string[];
@@ -70,7 +111,13 @@ export interface Lead {
 export interface LeadInteraction {
   id: string;
   leadId: string;
-  type: "ai_message" | "human_message" | "email" | "call" | "social_reply" | "system_note";
+  type:
+    | "ai_message"
+    | "human_message"
+    | "email"
+    | "call"
+    | "social_reply"
+    | "system_note";
   direction: "inbound" | "outbound";
   channel: "email" | "social_media" | "chat" | "phone" | "sms";
   content: string;
@@ -92,7 +139,12 @@ export interface LeadInteraction {
 export interface ProactiveStrategy {
   id: string;
   name: string;
-  type: "social_monitoring" | "content_generation" | "influencer_outreach" | "competitor_analysis" | "trend_analysis";
+  type:
+    | "social_monitoring"
+    | "content_generation"
+    | "influencer_outreach"
+    | "competitor_analysis"
+    | "trend_analysis";
   isActive: boolean;
   settings: {
     keywords: string[];
@@ -175,30 +227,40 @@ class JoseyAIService {
         type: "social_monitoring",
         isActive: true,
         settings: {
-          keywords: ["coinkrazy", "sweepstakes casino", "online casino", "social casino", "crypto casino", "bitcoin casino"],
+          keywords: [
+            "coinkrazy",
+            "sweepstakes casino",
+            "online casino",
+            "social casino",
+            "crypto casino",
+            "bitcoin casino",
+          ],
           platforms: ["twitter", "facebook", "instagram", "reddit", "youtube"],
           targetAudience: {
             minFollowers: 100,
             locations: ["United States", "Canada"],
-            interests: ["gambling", "casino", "slots", "bitcoin", "crypto"]
+            interests: ["gambling", "casino", "slots", "bitcoin", "crypto"],
           },
           engagementRules: {
             autoReply: true,
             replyTemplates: {
-              positive: "Thanks for mentioning CoinKrazy! 🎰 Have you tried our instant withdrawals yet? Unlike other platforms, we actually pay out immediately!",
-              question: "Great question! CoinKrazy offers something unique - real instant withdrawals and better odds than our competitors. Want to see for yourself?",
-              complaint: "I'm sorry to hear about your experience with other platforms. CoinKrazy was built specifically to solve those problems. We'd love to show you the difference!"
+              positive:
+                "Thanks for mentioning CoinKrazy! 🎰 Have you tried our instant withdrawals yet? Unlike other platforms, we actually pay out immediately!",
+              question:
+                "Great question! CoinKrazy offers something unique - real instant withdrawals and better odds than our competitors. Want to see for yourself?",
+              complaint:
+                "I'm sorry to hear about your experience with other platforms. CoinKrazy was built specifically to solve those problems. We'd love to show you the difference!",
             },
             escalationThreshold: 80,
-            maxDailyInteractions: 50
-          }
+            maxDailyInteractions: 50,
+          },
         },
         metrics: {
           leadsGenerated: 0,
           conversions: 0,
           engagementRate: 0,
-          roi: 0
-        }
+          roi: 0,
+        },
       },
       {
         id: "competitor_analysis",
@@ -206,23 +268,30 @@ class JoseyAIService {
         type: "competitor_analysis",
         isActive: true,
         settings: {
-          keywords: ["stake", "chumba", "luckyland", "pulsz", "sweepstakes casino complaints", "casino withdrawal problems"],
+          keywords: [
+            "stake",
+            "chumba",
+            "luckyland",
+            "pulsz",
+            "sweepstakes casino complaints",
+            "casino withdrawal problems",
+          ],
           platforms: ["twitter", "reddit", "facebook", "instagram"],
           targetAudience: {
-            interests: ["online gambling", "sweepstakes", "casino games"]
+            interests: ["online gambling", "sweepstakes", "casino games"],
           },
           engagementRules: {
             autoReply: false,
             escalationThreshold: 70,
-            maxDailyInteractions: 20
-          }
+            maxDailyInteractions: 20,
+          },
         },
         metrics: {
           leadsGenerated: 0,
           conversions: 0,
           engagementRate: 0,
-          roi: 0
-        }
+          roi: 0,
+        },
       },
       {
         id: "influencer_outreach",
@@ -235,20 +304,20 @@ class JoseyAIService {
           targetAudience: {
             minFollowers: 1000,
             maxFollowers: 100000,
-            interests: ["casino", "slots", "gambling", "streaming"]
+            interests: ["casino", "slots", "gambling", "streaming"],
           },
           engagementRules: {
             autoReply: false,
             escalationThreshold: 85,
-            maxDailyInteractions: 10
-          }
+            maxDailyInteractions: 10,
+          },
         },
         metrics: {
           leadsGenerated: 0,
           conversions: 0,
           engagementRate: 0,
-          roi: 0
-        }
+          roi: 0,
+        },
       },
       {
         id: "content_opportunities",
@@ -256,26 +325,31 @@ class JoseyAIService {
         type: "content_generation",
         isActive: true,
         settings: {
-          keywords: ["casino tips", "how to win slots", "best sweepstakes casino", "casino strategy"],
+          keywords: [
+            "casino tips",
+            "how to win slots",
+            "best sweepstakes casino",
+            "casino strategy",
+          ],
           platforms: ["youtube", "reddit", "quora", "medium"],
           targetAudience: {
-            interests: ["casino strategy", "gambling tips", "online gaming"]
+            interests: ["casino strategy", "gambling tips", "online gaming"],
           },
           engagementRules: {
             autoReply: false,
-            maxDailyInteractions: 15
-          }
+            maxDailyInteractions: 15,
+          },
         },
         metrics: {
           leadsGenerated: 0,
           conversions: 0,
           engagementRate: 0,
-          roi: 0
-        }
-      }
+          roi: 0,
+        },
+      },
     ];
 
-    defaultStrategies.forEach(strategy => {
+    defaultStrategies.forEach((strategy) => {
       this.strategies.set(strategy.id, strategy);
     });
   }
@@ -284,21 +358,31 @@ class JoseyAIService {
     const monitors: SocialMediaMonitor[] = [
       {
         platform: "twitter",
-        queries: ["coinkrazy", "#sweepstakescasino", "instant casino withdrawal", "casino complaints"],
+        queries: [
+          "coinkrazy",
+          "#sweepstakescasino",
+          "instant casino withdrawal",
+          "casino complaints",
+        ],
         lastChecked: new Date(),
         isActive: true,
         newMentions: 0,
         dailyLimit: 100,
-        currentDailyCount: 0
+        currentDailyCount: 0,
       },
       {
         platform: "reddit",
-        queries: ["sweepstakes casino", "social casino", "coinkrazy", "casino withdrawal problems"],
+        queries: [
+          "sweepstakes casino",
+          "social casino",
+          "coinkrazy",
+          "casino withdrawal problems",
+        ],
         lastChecked: new Date(),
         isActive: true,
         newMentions: 0,
         dailyLimit: 50,
-        currentDailyCount: 0
+        currentDailyCount: 0,
       },
       {
         platform: "facebook",
@@ -307,7 +391,7 @@ class JoseyAIService {
         isActive: true,
         newMentions: 0,
         dailyLimit: 75,
-        currentDailyCount: 0
+        currentDailyCount: 0,
       },
       {
         platform: "instagram",
@@ -316,59 +400,82 @@ class JoseyAIService {
         isActive: true,
         newMentions: 0,
         dailyLimit: 60,
-        currentDailyCount: 0
-      }
+        currentDailyCount: 0,
+      },
     ];
 
-    monitors.forEach(monitor => {
+    monitors.forEach((monitor) => {
       this.socialMonitors.set(monitor.platform, monitor);
     });
   }
 
   private startProactiveProcesses() {
     // Social media monitoring - every 5 minutes
-    setInterval(() => {
-      this.runSocialMediaMonitoring();
-    }, 5 * 60 * 1000);
+    setInterval(
+      () => {
+        this.runSocialMediaMonitoring();
+      },
+      5 * 60 * 1000,
+    );
 
     // Generate insights - every 15 minutes
-    setInterval(() => {
-      this.generateAIInsights();
-    }, 15 * 60 * 1000);
+    setInterval(
+      () => {
+        this.generateAIInsights();
+      },
+      15 * 60 * 1000,
+    );
 
     // Competitor analysis - every 30 minutes
-    setInterval(() => {
-      this.runCompetitorAnalysis();
-    }, 30 * 60 * 1000);
+    setInterval(
+      () => {
+        this.runCompetitorAnalysis();
+      },
+      30 * 60 * 1000,
+    );
 
     // Lead scoring updates - every hour
-    setInterval(() => {
-      this.updateLeadScoring();
-    }, 60 * 60 * 1000);
+    setInterval(
+      () => {
+        this.updateLeadScoring();
+      },
+      60 * 60 * 1000,
+    );
 
     // Daily strategy optimization
-    setInterval(() => {
-      this.optimizeStrategies();
-    }, 24 * 60 * 60 * 1000);
+    setInterval(
+      () => {
+        this.optimizeStrategies();
+      },
+      24 * 60 * 60 * 1000,
+    );
 
     // Reset daily counters at midnight
     this.scheduleDailyReset();
   }
 
   private async runSocialMediaMonitoring() {
-    const activeMonitors = Array.from(this.socialMonitors.values()).filter(m => m.isActive);
+    const activeMonitors = Array.from(this.socialMonitors.values()).filter(
+      (m) => m.isActive,
+    );
 
     for (const monitor of activeMonitors) {
       if (monitor.currentDailyCount >= monitor.dailyLimit) continue;
 
       try {
         // Simulate social media API calls
-        const newMentions = await this.fetchSocialMentions(monitor.platform, monitor.queries);
-        
+        const newMentions = await this.fetchSocialMentions(
+          monitor.platform,
+          monitor.queries,
+        );
+
         for (const mention of newMentions) {
           if (monitor.currentDailyCount >= monitor.dailyLimit) break;
 
-          const lead = await this.processSocialMention(mention, monitor.platform);
+          const lead = await this.processSocialMention(
+            mention,
+            monitor.platform,
+          );
           if (lead) {
             this.addLead(lead);
             monitor.currentDailyCount++;
@@ -383,49 +490,55 @@ class JoseyAIService {
     }
   }
 
-  private async fetchSocialMentions(platform: string, queries: string[]): Promise<any[]> {
+  private async fetchSocialMentions(
+    platform: string,
+    queries: string[],
+  ): Promise<any[]> {
     // In a real implementation, this would call actual social media APIs
     // For now, we'll simulate finding mentions
     const mockMentions = [
       {
         id: `${platform}_${Date.now()}_1`,
-        content: "Looking for a casino with instant withdrawals, tired of waiting weeks!",
+        content:
+          "Looking for a casino with instant withdrawals, tired of waiting weeks!",
         user: {
           username: "casino_fan_2024",
           followers: 1250,
           verified: false,
-          location: "Las Vegas, NV"
+          location: "Las Vegas, NV",
         },
         engagement: { likes: 5, comments: 2, shares: 1 },
         timestamp: new Date(),
-        sentiment: "frustrated"
+        sentiment: "frustrated",
       },
       {
         id: `${platform}_${Date.now()}_2`,
-        content: "Has anyone tried CoinKrazy? Seeing ads everywhere but want real reviews",
+        content:
+          "Has anyone tried CoinKrazy? Seeing ads everywhere but want real reviews",
         user: {
           username: "slots_lover",
           followers: 890,
           verified: false,
-          location: "California, USA"
+          location: "California, USA",
         },
         engagement: { likes: 8, comments: 4, shares: 0 },
         timestamp: new Date(),
-        sentiment: "curious"
+        sentiment: "curious",
       },
       {
         id: `${platform}_${Date.now()}_3`,
-        content: "Just hit a big win on slots! Love when casinos actually pay out fast 🎰💰",
+        content:
+          "Just hit a big win on slots! Love when casinos actually pay out fast 🎰💰",
         user: {
           username: "lucky_winner",
           followers: 2340,
           verified: true,
-          location: "Florida, USA"
+          location: "Florida, USA",
         },
         engagement: { likes: 45, comments: 12, shares: 8 },
         timestamp: new Date(),
-        sentiment: "excited"
-      }
+        sentiment: "excited",
+      },
     ];
 
     // Randomly return 0-3 mentions to simulate real-world variance
@@ -433,9 +546,12 @@ class JoseyAIService {
     return mockMentions.slice(0, count);
   }
 
-  private async processSocialMention(mention: any, platform: string): Promise<Lead | null> {
+  private async processSocialMention(
+    mention: any,
+    platform: string,
+  ): Promise<Lead | null> {
     const aiScore = this.calculateLeadScore(mention);
-    
+
     // Only process high-potential leads
     if (aiScore < 60) return null;
 
@@ -454,8 +570,8 @@ class JoseyAIService {
         location: mention.user.location,
         demographics: {
           deviceType: "mobile", // Would be detected in real implementation
-          timezone: "EST" // Would be detected based on location
-        }
+          timezone: "EST", // Would be detected based on location
+        },
       },
       content: mention.content,
       originalMessage: mention.content,
@@ -469,10 +585,13 @@ class JoseyAIService {
       updatedAt: new Date(),
       socialMetrics: {
         originalPostId: mention.id,
-        engagementRate: this.calculateEngagementRate(mention.engagement, mention.user.followers),
+        engagementRate: this.calculateEngagementRate(
+          mention.engagement,
+          mention.user.followers,
+        ),
         shareCount: mention.engagement.shares,
-        reachEstimate: mention.user.followers * 0.1 // Estimated reach
-      }
+        reachEstimate: mention.user.followers * 0.1, // Estimated reach
+      },
     };
 
     // Auto-engage if strategy allows it
@@ -490,7 +609,8 @@ class JoseyAIService {
     // Sentiment analysis
     if (mention.sentiment === "excited") score += 20;
     else if (mention.sentiment === "positive") score += 10;
-    else if (mention.sentiment === "frustrated") score += 15; // Frustrated users might switch
+    else if (mention.sentiment === "frustrated")
+      score += 15; // Frustrated users might switch
     else if (mention.sentiment === "negative") score -= 10;
 
     // Follower count (social proof)
@@ -502,20 +622,29 @@ class JoseyAIService {
     if (mention.user.verified) score += 15;
 
     // Engagement rate
-    const engagementRate = this.calculateEngagementRate(mention.engagement, mention.user.followers);
+    const engagementRate = this.calculateEngagementRate(
+      mention.engagement,
+      mention.user.followers,
+    );
     if (engagementRate > 5) score += 15;
     else if (engagementRate > 2) score += 10;
 
     // Content analysis
     const keywords = mention.content.toLowerCase();
     if (keywords.includes("instant") || keywords.includes("fast")) score += 10;
-    if (keywords.includes("withdrawal") || keywords.includes("payout")) score += 15;
-    if (keywords.includes("complaint") || keywords.includes("problem")) score += 10;
-    if (keywords.includes("recommend") || keywords.includes("review")) score += 8;
+    if (keywords.includes("withdrawal") || keywords.includes("payout"))
+      score += 15;
+    if (keywords.includes("complaint") || keywords.includes("problem"))
+      score += 10;
+    if (keywords.includes("recommend") || keywords.includes("review"))
+      score += 8;
     if (keywords.includes("coinkrazy")) score += 25;
 
     // Location bonus (US/Canada)
-    if (mention.user.location?.includes("USA") || mention.user.location?.includes("Canada")) {
+    if (
+      mention.user.location?.includes("USA") ||
+      mention.user.location?.includes("Canada")
+    ) {
       score += 10;
     }
 
@@ -524,7 +653,10 @@ class JoseyAIService {
 
   private calculateEngagementRate(engagement: any, followers: number): number {
     if (!followers || followers === 0) return 0;
-    const totalEngagement = (engagement.likes || 0) + (engagement.comments || 0) + (engagement.shares || 0);
+    const totalEngagement =
+      (engagement.likes || 0) +
+      (engagement.comments || 0) +
+      (engagement.shares || 0);
     return (totalEngagement / followers) * 100;
   }
 
@@ -536,40 +668,71 @@ class JoseyAIService {
     const redFlags: string[] = [];
 
     // Intent analysis
-    if (lowerContent.includes("withdraw") || lowerContent.includes("payout") || lowerContent.includes("cash out")) {
+    if (
+      lowerContent.includes("withdraw") ||
+      lowerContent.includes("payout") ||
+      lowerContent.includes("cash out")
+    ) {
       intent = "gaming";
       valueIndicators.push("Interested in withdrawals");
     }
-    if (lowerContent.includes("bonus") || lowerContent.includes("free") || lowerContent.includes("promo")) {
+    if (
+      lowerContent.includes("bonus") ||
+      lowerContent.includes("free") ||
+      lowerContent.includes("promo")
+    ) {
       intent = "bonus_seeking";
       valueIndicators.push("Bonus motivated");
     }
-    if (lowerContent.includes("vs") || lowerContent.includes("compare") || lowerContent.includes("better than")) {
+    if (
+      lowerContent.includes("vs") ||
+      lowerContent.includes("compare") ||
+      lowerContent.includes("better than")
+    ) {
       intent = "competitor_comparison";
       valueIndicators.push("Comparing options");
     }
-    if (lowerContent.includes("problem") || lowerContent.includes("help") || lowerContent.includes("support")) {
+    if (
+      lowerContent.includes("problem") ||
+      lowerContent.includes("help") ||
+      lowerContent.includes("support")
+    ) {
       intent = "support";
       redFlags.push("May have had bad experience");
     }
 
     // Urgency analysis
-    if (lowerContent.includes("now") || lowerContent.includes("today") || lowerContent.includes("asap")) {
+    if (
+      lowerContent.includes("now") ||
+      lowerContent.includes("today") ||
+      lowerContent.includes("asap")
+    ) {
       urgency = "immediate";
-    } else if (lowerContent.includes("soon") || lowerContent.includes("this week")) {
+    } else if (
+      lowerContent.includes("soon") ||
+      lowerContent.includes("this week")
+    ) {
       urgency = "short_term";
     }
 
     // Value indicators
-    if (mention.user.followers > 1000) valueIndicators.push("Social influencer potential");
+    if (mention.user.followers > 1000)
+      valueIndicators.push("Social influencer potential");
     if (mention.user.verified) valueIndicators.push("Verified account");
-    if (lowerContent.includes("big win") || lowerContent.includes("jackpot")) valueIndicators.push("Gaming enthusiast");
+    if (lowerContent.includes("big win") || lowerContent.includes("jackpot"))
+      valueIndicators.push("Gaming enthusiast");
 
     // Red flags
-    if (lowerContent.includes("scam") || lowerContent.includes("fake")) redFlags.push("Negative sentiment");
+    if (lowerContent.includes("scam") || lowerContent.includes("fake"))
+      redFlags.push("Negative sentiment");
     if (mention.user.followers < 10) redFlags.push("Very low following");
 
-    const recommendedApproach = this.getRecommendedApproach(intent, urgency, valueIndicators, redFlags);
+    const recommendedApproach = this.getRecommendedApproach(
+      intent,
+      urgency,
+      valueIndicators,
+      redFlags,
+    );
     const nextBestAction = this.getNextBestAction(intent, urgency);
 
     return {
@@ -578,31 +741,36 @@ class JoseyAIService {
       valueIndicators,
       redFlags,
       recommendedApproach,
-      nextBestAction
+      nextBestAction,
     };
   }
 
-  private getRecommendedApproach(intent: string, urgency: string, valueIndicators: string[], redFlags: string[]): string {
-    if (redFlags.some(flag => flag.includes("Negative"))) {
+  private getRecommendedApproach(
+    intent: string,
+    urgency: string,
+    valueIndicators: string[],
+    redFlags: string[],
+  ): string {
+    if (redFlags.some((flag) => flag.includes("Negative"))) {
       return "Address concerns first, then highlight CoinKrazy advantages";
     }
-    
+
     if (intent === "bonus_seeking") {
       return "Lead with welcome bonus, emphasize value proposition";
     }
-    
+
     if (intent === "competitor_comparison") {
       return "Highlight instant withdrawals and better odds vs competitors";
     }
-    
+
     if (urgency === "immediate") {
       return "Direct approach with immediate call-to-action";
     }
-    
-    if (valueIndicators.some(vi => vi.includes("influencer"))) {
+
+    if (valueIndicators.some((vi) => vi.includes("influencer"))) {
       return "Influencer partnership approach, offer exclusive access";
     }
-    
+
     return "Educational approach focusing on unique value proposition";
   }
 
@@ -610,15 +778,15 @@ class JoseyAIService {
     if (urgency === "immediate") {
       return "Send direct message with signup link and bonus offer";
     }
-    
+
     if (intent === "support") {
       return "Offer helpful support and then introduce CoinKrazy";
     }
-    
+
     if (intent === "competitor_comparison") {
       return "Share comparison content highlighting CoinKrazy advantages";
     }
-    
+
     return "Engage with helpful comment, then follow up with DM";
   }
 
@@ -627,22 +795,30 @@ class JoseyAIService {
     const lowerContent = content.toLowerCase();
 
     // Content-based tags
-    if (lowerContent.includes("withdrawal") || lowerContent.includes("payout")) tags.push("withdrawal-focused");
-    if (lowerContent.includes("bonus") || lowerContent.includes("free")) tags.push("bonus-seeker");
-    if (lowerContent.includes("instant") || lowerContent.includes("fast")) tags.push("speed-conscious");
-    if (lowerContent.includes("review") || lowerContent.includes("opinion")) tags.push("researcher");
-    if (lowerContent.includes("win") || lowerContent.includes("jackpot")) tags.push("winner");
+    if (lowerContent.includes("withdrawal") || lowerContent.includes("payout"))
+      tags.push("withdrawal-focused");
+    if (lowerContent.includes("bonus") || lowerContent.includes("free"))
+      tags.push("bonus-seeker");
+    if (lowerContent.includes("instant") || lowerContent.includes("fast"))
+      tags.push("speed-conscious");
+    if (lowerContent.includes("review") || lowerContent.includes("opinion"))
+      tags.push("researcher");
+    if (lowerContent.includes("win") || lowerContent.includes("jackpot"))
+      tags.push("winner");
 
     // User-based tags
     if (mention.user.verified) tags.push("verified-account");
     if (mention.user.followers > 10000) tags.push("macro-influencer");
     else if (mention.user.followers > 1000) tags.push("micro-influencer");
-    
+
     // Platform-specific tags
-    tags.push(`${mention.platform || 'social'}-lead`);
+    tags.push(`${mention.platform || "social"}-lead`);
 
     // Engagement-based tags
-    const engagementRate = this.calculateEngagementRate(mention.engagement, mention.user.followers);
+    const engagementRate = this.calculateEngagementRate(
+      mention.engagement,
+      mention.user.followers,
+    );
     if (engagementRate > 5) tags.push("high-engagement");
     else if (engagementRate > 2) tags.push("medium-engagement");
 
@@ -653,13 +829,22 @@ class JoseyAIService {
     const strategy = this.strategies.get("social_mentions");
     if (!strategy?.settings.engagementRules.autoReply) return;
 
-    let template = strategy.settings.engagementRules.replyTemplates?.positive || "";
+    let template =
+      strategy.settings.engagementRules.replyTemplates?.positive || "";
 
     // Choose appropriate template based on sentiment and content
-    if (lead.sentiment === "frustrated" || lead.content.toLowerCase().includes("problem")) {
-      template = strategy.settings.engagementRules.replyTemplates?.complaint || template;
-    } else if (lead.content.includes("?") || lead.aiAnalysis.intent === "competitor_comparison") {
-      template = strategy.settings.engagementRules.replyTemplates?.question || template;
+    if (
+      lead.sentiment === "frustrated" ||
+      lead.content.toLowerCase().includes("problem")
+    ) {
+      template =
+        strategy.settings.engagementRules.replyTemplates?.complaint || template;
+    } else if (
+      lead.content.includes("?") ||
+      lead.aiAnalysis.intent === "competitor_comparison"
+    ) {
+      template =
+        strategy.settings.engagementRules.replyTemplates?.question || template;
     }
 
     const interaction: LeadInteraction = {
@@ -673,8 +858,8 @@ class JoseyAIService {
       timestamp: new Date(),
       performedBy: "joseyai",
       metadata: {
-        templateId: "auto_reply"
-      }
+        templateId: "auto_reply",
+      },
     };
 
     lead.interactions.push(interaction);
@@ -692,22 +877,22 @@ class JoseyAIService {
         issue: "Withdrawal delays reported on Reddit",
         opportunity: "Highlight instant withdrawals",
         affectedUsers: 15,
-        sentiment: "negative"
+        sentiment: "negative",
       },
       {
         competitor: "Stake Casino",
         issue: "Customer service complaints",
         opportunity: "Emphasize human support",
         affectedUsers: 8,
-        sentiment: "frustrated"
+        sentiment: "frustrated",
       },
       {
         competitor: "LuckyLand Slots",
         issue: "Limited game selection mentioned",
         opportunity: "Showcase game variety",
         affectedUsers: 12,
-        sentiment: "disappointed"
-      }
+        sentiment: "disappointed",
+      },
     ];
 
     for (const insight of competitorInsights) {
@@ -722,23 +907,26 @@ class JoseyAIService {
         suggestedActions: [
           `Create targeted content addressing ${insight.issue}`,
           `Reach out to affected users highlighting our advantage`,
-          `Develop social media campaign emphasizing ${insight.opportunity.toLowerCase()}`
+          `Develop social media campaign emphasizing ${insight.opportunity.toLowerCase()}`,
         ],
         confidence: 85,
-        createdAt: new Date()
+        createdAt: new Date(),
       };
 
       this.insights.push(aiInsight);
     }
 
-    this.notifyListeners("competitor_analysis_complete", { insights: competitorInsights });
+    this.notifyListeners("competitor_analysis_complete", {
+      insights: competitorInsights,
+    });
   }
 
   private updateLeadScoring() {
-    this.leads.forEach(lead => {
+    this.leads.forEach((lead) => {
       // Decay score over time for inactive leads
-      const daysSinceCreated = (Date.now() - lead.createdAt.getTime()) / (1000 * 60 * 60 * 24);
-      const daysSinceLastContact = lead.lastContactedAt 
+      const daysSinceCreated =
+        (Date.now() - lead.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      const daysSinceLastContact = lead.lastContactedAt
         ? (Date.now() - lead.lastContactedAt.getTime()) / (1000 * 60 * 60 * 24)
         : daysSinceCreated;
 
@@ -752,7 +940,7 @@ class JoseyAIService {
       // Boost score for engaged leads
       if (lead.interactions.length > 0) {
         const recentInteractions = lead.interactions.filter(
-          i => (Date.now() - i.timestamp.getTime()) < (7 * 24 * 60 * 60 * 1000)
+          (i) => Date.now() - i.timestamp.getTime() < 7 * 24 * 60 * 60 * 1000,
         );
         scoreAdjustment += recentInteractions.length * 2;
       }
@@ -775,7 +963,7 @@ class JoseyAIService {
 
   private generateAIInsights() {
     const currentHour = new Date().getHours();
-    
+
     // Generate different insights based on time of day
     if (currentHour >= 9 && currentHour <= 17) {
       // Business hours - focus on business insights
@@ -789,11 +977,11 @@ class JoseyAIService {
   private generateBusinessInsights() {
     const totalLeads = this.leads.size;
     const todayLeads = Array.from(this.leads.values()).filter(
-      lead => lead.createdAt.toDateString() === new Date().toDateString()
+      (lead) => lead.createdAt.toDateString() === new Date().toDateString(),
     ).length;
 
     const highValueLeads = Array.from(this.leads.values()).filter(
-      lead => lead.aiScore > 80
+      (lead) => lead.aiScore > 80,
     ).length;
 
     if (todayLeads > 20) {
@@ -808,10 +996,10 @@ class JoseyAIService {
         suggestedActions: [
           "Increase staff allocation for lead follow-up",
           "Launch targeted re-engagement campaign",
-          "Analyze successful content for replication"
+          "Analyze successful content for replication",
         ],
         confidence: 90,
-        createdAt: new Date()
+        createdAt: new Date(),
       };
 
       this.insights.push(insight);
@@ -825,16 +1013,21 @@ class JoseyAIService {
 
   private generateSocialInsights() {
     const socialLeads = Array.from(this.leads.values()).filter(
-      lead => lead.source === "social_media"
+      (lead) => lead.source === "social_media",
     );
 
-    const platformDistribution = socialLeads.reduce((acc, lead) => {
-      acc[lead.platform || "unknown"] = (acc[lead.platform || "unknown"] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const platformDistribution = socialLeads.reduce(
+      (acc, lead) => {
+        acc[lead.platform || "unknown"] =
+          (acc[lead.platform || "unknown"] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const topPlatform = Object.entries(platformDistribution)
-      .sort(([,a], [,b]) => b - a)[0];
+    const topPlatform = Object.entries(platformDistribution).sort(
+      ([, a], [, b]) => b - a,
+    )[0];
 
     if (topPlatform && topPlatform[1] > 5) {
       const insight: AIInsight = {
@@ -848,10 +1041,10 @@ class JoseyAIService {
         suggestedActions: [
           `Increase content frequency on ${topPlatform[0]}`,
           `Analyze successful ${topPlatform[0]} content patterns`,
-          `Allocate more budget to ${topPlatform[0]} advertising`
+          `Allocate more budget to ${topPlatform[0]} advertising`,
         ],
         confidence: 80,
-        createdAt: new Date()
+        createdAt: new Date(),
       };
 
       this.insights.push(insight);
@@ -859,29 +1052,38 @@ class JoseyAIService {
   }
 
   private optimizeStrategies() {
-    this.strategies.forEach(strategy => {
+    this.strategies.forEach((strategy) => {
       // Calculate ROI and adjust settings
-      const strategyLeads = Array.from(this.leads.values()).filter(
-        lead => this.isLeadFromStrategy(lead, strategy)
+      const strategyLeads = Array.from(this.leads.values()).filter((lead) =>
+        this.isLeadFromStrategy(lead, strategy),
       );
 
-      const conversions = strategyLeads.filter(lead => lead.status === "converted").length;
-      const conversionRate = strategyLeads.length > 0 ? conversions / strategyLeads.length : 0;
+      const conversions = strategyLeads.filter(
+        (lead) => lead.status === "converted",
+      ).length;
+      const conversionRate =
+        strategyLeads.length > 0 ? conversions / strategyLeads.length : 0;
 
       strategy.metrics.leadsGenerated = strategyLeads.length;
       strategy.metrics.conversions = conversions;
       strategy.metrics.engagementRate = conversionRate;
 
       // Auto-adjust engagement rules based on performance
-      if (conversionRate > 0.1 && strategy.settings.engagementRules.maxDailyInteractions) {
+      if (
+        conversionRate > 0.1 &&
+        strategy.settings.engagementRules.maxDailyInteractions
+      ) {
         strategy.settings.engagementRules.maxDailyInteractions = Math.min(
           strategy.settings.engagementRules.maxDailyInteractions + 10,
-          100
+          100,
         );
-      } else if (conversionRate < 0.05 && strategy.settings.engagementRules.maxDailyInteractions) {
+      } else if (
+        conversionRate < 0.05 &&
+        strategy.settings.engagementRules.maxDailyInteractions
+      ) {
         strategy.settings.engagementRules.maxDailyInteractions = Math.max(
           strategy.settings.engagementRules.maxDailyInteractions - 5,
-          10
+          10,
         );
       }
     });
@@ -893,11 +1095,16 @@ class JoseyAIService {
       case "social_monitoring":
         return lead.source === "social_media" && lead.type === "mention";
       case "competitor_analysis":
-        return lead.content.toLowerCase().includes("vs") || 
-               lead.content.toLowerCase().includes("compare") ||
-               lead.tags.includes("competitor-comparison");
+        return (
+          lead.content.toLowerCase().includes("vs") ||
+          lead.content.toLowerCase().includes("compare") ||
+          lead.tags.includes("competitor-comparison")
+        );
       case "influencer_outreach":
-        return lead.tags.includes("micro-influencer") || lead.tags.includes("macro-influencer");
+        return (
+          lead.tags.includes("micro-influencer") ||
+          lead.tags.includes("macro-influencer")
+        );
       case "content_generation":
         return lead.source === "content" || lead.type === "click";
       default:
@@ -910,20 +1117,23 @@ class JoseyAIService {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    
+
     const msUntilMidnight = tomorrow.getTime() - now.getTime();
-    
+
     setTimeout(() => {
       this.resetDailyCounters();
       // Schedule for next day
-      setInterval(() => {
-        this.resetDailyCounters();
-      }, 24 * 60 * 60 * 1000);
+      setInterval(
+        () => {
+          this.resetDailyCounters();
+        },
+        24 * 60 * 60 * 1000,
+      );
     }, msUntilMidnight);
   }
 
   private resetDailyCounters() {
-    this.socialMonitors.forEach(monitor => {
+    this.socialMonitors.forEach((monitor) => {
       monitor.currentDailyCount = 0;
     });
   }
@@ -940,25 +1150,33 @@ class JoseyAIService {
 
   getAllLeads(): Lead[] {
     return Array.from(this.leads.values()).sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
   }
 
   getLeadsByStatus(status: Lead["status"]): Lead[] {
-    return Array.from(this.leads.values()).filter(lead => lead.status === status);
+    return Array.from(this.leads.values()).filter(
+      (lead) => lead.status === status,
+    );
   }
 
   getLeadsByPriority(priority: Lead["priority"]): Lead[] {
-    return Array.from(this.leads.values()).filter(lead => lead.priority === priority);
+    return Array.from(this.leads.values()).filter(
+      (lead) => lead.priority === priority,
+    );
   }
 
-  updateLeadStatus(leadId: string, status: Lead["status"], notes?: string): boolean {
+  updateLeadStatus(
+    leadId: string,
+    status: Lead["status"],
+    notes?: string,
+  ): boolean {
     const lead = this.leads.get(leadId);
     if (!lead) return false;
 
     lead.status = status;
     lead.updatedAt = new Date();
-    
+
     if (notes) {
       lead.notes = notes;
     }
@@ -970,10 +1188,10 @@ class JoseyAIService {
       type: "system_note",
       direction: "outbound",
       channel: "chat",
-      content: `Status updated to ${status}${notes ? `: ${notes}` : ''}`,
+      content: `Status updated to ${status}${notes ? `: ${notes}` : ""}`,
       status: "sent",
       timestamp: new Date(),
-      performedBy: "joseyai"
+      performedBy: "joseyai",
     };
 
     lead.interactions.push(interaction);
@@ -981,7 +1199,10 @@ class JoseyAIService {
     return true;
   }
 
-  addLeadInteraction(leadId: string, interaction: Omit<LeadInteraction, "id" | "leadId" | "timestamp">): boolean {
+  addLeadInteraction(
+    leadId: string,
+    interaction: Omit<LeadInteraction, "id" | "leadId" | "timestamp">,
+  ): boolean {
     const lead = this.leads.get(leadId);
     if (!lead) return false;
 
@@ -989,26 +1210,31 @@ class JoseyAIService {
       ...interaction,
       id: `interaction_${Date.now()}`,
       leadId,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     lead.interactions.push(fullInteraction);
     lead.updatedAt = new Date();
-    
+
     if (interaction.direction === "outbound") {
       lead.lastContactedAt = new Date();
     }
 
-    this.notifyListeners("interaction_added", { lead, interaction: fullInteraction });
+    this.notifyListeners("interaction_added", {
+      lead,
+      interaction: fullInteraction,
+    });
     return true;
   }
 
   getInsights(): AIInsight[] {
-    return this.insights.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return this.insights.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
   }
 
   acknowledgeInsight(insightId: string): boolean {
-    const insight = this.insights.find(i => i.id === insightId);
+    const insight = this.insights.find((i) => i.id === insightId);
     if (!insight) return false;
 
     insight.acknowledgedAt = new Date();
@@ -1020,7 +1246,10 @@ class JoseyAIService {
     return Array.from(this.strategies.values());
   }
 
-  updateStrategy(strategyId: string, updates: Partial<ProactiveStrategy>): boolean {
+  updateStrategy(
+    strategyId: string,
+    updates: Partial<ProactiveStrategy>,
+  ): boolean {
     const strategy = this.strategies.get(strategyId);
     if (!strategy) return false;
 
@@ -1040,33 +1269,41 @@ class JoseyAIService {
   } {
     const allLeads = Array.from(this.leads.values());
     const last7Days = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    
-    const recentLeads = allLeads.filter(lead => lead.createdAt >= last7Days);
-    const newLeads = allLeads.filter(lead => lead.status === "new").length;
-    const hotLeads = allLeads.filter(lead => lead.priority === "high").length;
-    const conversions = allLeads.filter(lead => lead.status === "converted").length;
-    
-    const conversionRate = allLeads.length > 0 ? conversions / allLeads.length : 0;
-    const averageScore = allLeads.length > 0 
-      ? allLeads.reduce((sum, lead) => sum + lead.aiScore, 0) / allLeads.length 
-      : 0;
 
-    const sourceCounts = allLeads.reduce((acc, lead) => {
-      acc[lead.source] = (acc[lead.source] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const recentLeads = allLeads.filter((lead) => lead.createdAt >= last7Days);
+    const newLeads = allLeads.filter((lead) => lead.status === "new").length;
+    const hotLeads = allLeads.filter((lead) => lead.priority === "high").length;
+    const conversions = allLeads.filter(
+      (lead) => lead.status === "converted",
+    ).length;
+
+    const conversionRate =
+      allLeads.length > 0 ? conversions / allLeads.length : 0;
+    const averageScore =
+      allLeads.length > 0
+        ? allLeads.reduce((sum, lead) => sum + lead.aiScore, 0) /
+          allLeads.length
+        : 0;
+
+    const sourceCounts = allLeads.reduce(
+      (acc, lead) => {
+        acc[lead.source] = (acc[lead.source] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const topSources = Object.entries(sourceCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([source, count]) => ({ source, count }));
 
     // Generate daily trend for last 7 days
-    const dailyTrend = Array.from({length: 7}, (_, i) => {
+    const dailyTrend = Array.from({ length: 7 }, (_, i) => {
       const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = date.toISOString().split("T")[0];
       const dayLeads = allLeads.filter(
-        lead => lead.createdAt.toISOString().split('T')[0] === dateStr
+        (lead) => lead.createdAt.toISOString().split("T")[0] === dateStr,
       ).length;
       return { date: dateStr, leads: dayLeads };
     }).reverse();
@@ -1078,7 +1315,7 @@ class JoseyAIService {
       conversionRate,
       averageScore,
       topSources,
-      dailyTrend
+      dailyTrend,
     };
   }
 
@@ -1089,7 +1326,7 @@ class JoseyAIService {
   }
 
   private notifyListeners(event: string, data: any): void {
-    this.listeners.forEach(callback => callback(event, data));
+    this.listeners.forEach((callback) => callback(event, data));
   }
 
   // AI-powered lead generation methods
@@ -1100,11 +1337,19 @@ class JoseyAIService {
       "The Real Truth About Sweepstakes Casino Odds",
       "Why Most Online Casinos Make You Wait (And We Don't)",
       "Social Casino vs Traditional Casino: What's Better?",
-      "The Ultimate Guide to Maximizing Your Sweepstakes Wins"
+      "The Ultimate Guide to Maximizing Your Sweepstakes Wins",
     ];
   }
 
-  async identifyInfluencerOpportunities(): Promise<Array<{username: string; platform: string; followers: number; engagement: number; fit: number}>> {
+  async identifyInfluencerOpportunities(): Promise<
+    Array<{
+      username: string;
+      platform: string;
+      followers: number;
+      engagement: number;
+      fit: number;
+    }>
+  > {
     // Mock influencer identification - in real implementation would use social media APIs
     return [
       {
@@ -1112,26 +1357,32 @@ class JoseyAIService {
         platform: "instagram",
         followers: 15600,
         engagement: 4.2,
-        fit: 92
+        fit: 92,
       },
       {
         username: "casino_critic",
         platform: "youtube",
         followers: 45000,
         engagement: 3.8,
-        fit: 88
+        fit: 88,
       },
       {
         username: "lucky_gaming",
         platform: "tiktok",
         followers: 8900,
         engagement: 6.1,
-        fit: 85
-      }
+        fit: 85,
+      },
     ];
   }
 
-  async predictLeadConversion(leadId: string): Promise<{probability: number; factors: string[]; recommendations: string[]}> {
+  async predictLeadConversion(
+    leadId: string,
+  ): Promise<{
+    probability: number;
+    factors: string[];
+    recommendations: string[];
+  }> {
     const lead = this.leads.get(leadId);
     if (!lead) throw new Error("Lead not found");
 
@@ -1168,14 +1419,16 @@ class JoseyAIService {
       recommendations.push("Engage with personalized approach");
       recommendations.push("Offer limited-time incentive");
     } else {
-      recommendations.push("High conversion probability - prioritize for immediate contact");
+      recommendations.push(
+        "High conversion probability - prioritize for immediate contact",
+      );
       recommendations.push("Use direct call-to-action");
     }
 
     return {
       probability: Math.min(probability, 0.95),
       factors,
-      recommendations
+      recommendations,
     };
   }
 }

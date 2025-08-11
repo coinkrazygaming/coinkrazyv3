@@ -95,23 +95,24 @@ export const useAuth = (): UseAuthReturn => {
           id: response.user.id.toString(),
           email: response.user.email,
           username: response.user.username,
-          accountType: response.user.role === 'vip' ? 'admin' : 'user'
+          accountType: response.user.role === "vip" ? "admin" : "user",
         });
 
         // Start comprehensive welcome email sequence
-        const sequenceId = response.user.role === 'vip' ? 'vip_welcome' : 'standard_welcome';
+        const sequenceId =
+          response.user.role === "vip" ? "vip_welcome" : "standard_welcome";
         welcomeEmailAutomationService.startWelcomeSequence(
           response.user.id.toString(),
           response.user.email,
           response.user.username,
-          sequenceId
+          sequenceId,
         );
 
         // Also send immediate welcome email for backward compatibility
         emailService.sendWelcomeEmail(
           response.user.id.toString(),
           response.user.email,
-          response.user.username
+          response.user.username,
         );
       }
 
@@ -149,7 +150,7 @@ export const useAuth = (): UseAuthReturn => {
         // Trigger email verification event in welcome automation
         welcomeEmailAutomationService.triggerEmailByEvent(
           response.user.id.toString(),
-          'email_verified'
+          "email_verified",
         );
       }
 

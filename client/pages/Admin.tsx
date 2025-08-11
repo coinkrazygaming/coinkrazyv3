@@ -228,12 +228,12 @@ export default function Admin() {
 
   const handleMarkAllAsRead = async () => {
     try {
-      const unreadNotifications = notifications.filter(n => !n.read_status);
+      const unreadNotifications = notifications.filter((n) => !n.read_status);
       await Promise.all(
-        unreadNotifications.map(n => adminService.markNotificationRead(n.id))
+        unreadNotifications.map((n) => adminService.markNotificationRead(n.id)),
       );
-      setNotifications(prev =>
-        prev.map(n => ({ ...n, read_status: true }))
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, read_status: true })),
       );
       setUnreadCount(0);
       toast({
@@ -253,7 +253,7 @@ export default function Admin() {
   const handleDeleteNotification = async (id: string) => {
     try {
       // In production, call API to delete notification
-      setNotifications(prev => prev.filter(n => n.id !== parseInt(id)));
+      setNotifications((prev) => prev.filter((n) => n.id !== parseInt(id)));
       toast({
         title: "Success",
         description: "Notification deleted",
@@ -920,20 +920,29 @@ export default function Admin() {
           {/* Enhanced Notifications */}
           <TabsContent value="notifications" className="mt-6">
             <AdminNotificationCenter
-              notifications={notifications.map(n => ({
+              notifications={notifications.map((n) => ({
                 id: n.id.toString(),
-                type: n.notification_type === "error" ? "security" :
-                      n.notification_type === "warning" ? "system" :
-                      n.notification_type === "info" ? "general" : "general",
-                priority: n.notification_type === "error" ? "high" :
-                         n.notification_type === "warning" ? "medium" : "low",
+                type:
+                  n.notification_type === "error"
+                    ? "security"
+                    : n.notification_type === "warning"
+                      ? "system"
+                      : n.notification_type === "info"
+                        ? "general"
+                        : "general",
+                priority:
+                  n.notification_type === "error"
+                    ? "high"
+                    : n.notification_type === "warning"
+                      ? "medium"
+                      : "low",
                 title: n.title,
                 message: n.message,
                 timestamp: new Date(n.created_at),
                 read: n.read_status,
                 actionable: false,
                 user_id: n.admin_user_id,
-                metadata: { ai_name: n.ai_name }
+                metadata: { ai_name: n.ai_name },
               }))}
               onMarkAsRead={handleMarkAsRead}
               onMarkAllAsRead={handleMarkAllAsRead}

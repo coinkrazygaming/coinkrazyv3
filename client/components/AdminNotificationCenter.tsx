@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -84,13 +90,13 @@ export default function AdminNotificationCenter({
 
   const getNotificationIcon = (type: string, priority: string) => {
     const iconClass = `w-4 h-4 ${
-      priority === "critical" 
-        ? "text-red-500" 
+      priority === "critical"
+        ? "text-red-500"
         : priority === "high"
-        ? "text-orange-500"
-        : priority === "medium"
-        ? "text-yellow-500"
-        : "text-blue-500"
+          ? "text-orange-500"
+          : priority === "medium"
+            ? "text-yellow-500"
+            : "text-blue-500"
     }`;
 
     switch (type) {
@@ -142,26 +148,31 @@ export default function AdminNotificationCenter({
 
   // Filter notifications
   const filteredNotifications = notifications.filter((notification) => {
-    const matchesSearch = 
+    const matchesSearch =
       notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       notification.message.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesType = filterType === "all" || notification.type === filterType;
-    const matchesPriority = filterPriority === "all" || notification.priority === filterPriority;
+
+    const matchesType =
+      filterType === "all" || notification.type === filterType;
+    const matchesPriority =
+      filterPriority === "all" || notification.priority === filterPriority;
     const matchesReadStatus = !showUnreadOnly || !notification.read;
 
     return matchesSearch && matchesType && matchesPriority && matchesReadStatus;
   });
 
   // Group notifications by type for summary
-  const notificationSummary = notifications.reduce((acc, notification) => {
-    if (!notification.read) {
-      acc[notification.type] = (acc[notification.type] || 0) + 1;
-    }
-    return acc;
-  }, {} as Record<string, number>);
+  const notificationSummary = notifications.reduce(
+    (acc, notification) => {
+      if (!notification.read) {
+        acc[notification.type] = (acc[notification.type] || 0) + 1;
+      }
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <Card className="h-full">
@@ -183,7 +194,9 @@ export default function AdminNotificationCenter({
               onClick={onRefresh}
               disabled={isRefreshing}
             >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
             </Button>
             <Button
               variant="outline"
@@ -199,7 +212,11 @@ export default function AdminNotificationCenter({
         {/* Quick Summary */}
         <div className="grid grid-cols-6 gap-2 mt-4">
           {Object.entries(notificationSummary).map(([type, count]) => (
-            <Badge key={type} variant="outline" className="text-center justify-center">
+            <Badge
+              key={type}
+              variant="outline"
+              className="text-center justify-center"
+            >
               {type}: {count}
             </Badge>
           ))}
@@ -257,11 +274,7 @@ export default function AdminNotificationCenter({
               Unread Only
             </Button>
             {unreadCount > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onMarkAllAsRead}
-              >
+              <Button variant="outline" size="sm" onClick={onMarkAllAsRead}>
                 <CheckCircle className="w-4 h-4" />
               </Button>
             )}
@@ -282,15 +295,18 @@ export default function AdminNotificationCenter({
                 <Card
                   key={notification.id}
                   className={`transition-all hover:shadow-md ${
-                    !notification.read 
-                      ? "border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/20" 
+                    !notification.read
+                      ? "border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/20"
                       : "border-l-4 border-l-gray-200"
                   }`}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1">
-                        {getNotificationIcon(notification.type, notification.priority)}
+                        {getNotificationIcon(
+                          notification.type,
+                          notification.priority,
+                        )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-medium text-sm leading-tight">
@@ -308,10 +324,15 @@ export default function AdminNotificationCenter({
                             <Clock className="w-3 h-3" />
                             {formatTimestamp(notification.timestamp)}
                             <Separator orientation="vertical" className="h-3" />
-                            <span className="capitalize">{notification.type}</span>
+                            <span className="capitalize">
+                              {notification.type}
+                            </span>
                             {notification.user_id && (
                               <>
-                                <Separator orientation="vertical" className="h-3" />
+                                <Separator
+                                  orientation="vertical"
+                                  className="h-3"
+                                />
                                 <span>User #{notification.user_id}</span>
                               </>
                             )}
@@ -358,11 +379,10 @@ export default function AdminNotificationCenter({
         {/* Footer Stats */}
         <div className="flex items-center justify-between pt-4 border-t text-sm text-muted-foreground">
           <span>
-            Showing {filteredNotifications.length} of {notifications.length} notifications
+            Showing {filteredNotifications.length} of {notifications.length}{" "}
+            notifications
           </span>
-          <span>
-            Auto-refresh: {autoRefresh ? "ON" : "OFF"}
-          </span>
+          <span>Auto-refresh: {autoRefresh ? "ON" : "OFF"}</span>
         </div>
       </CardContent>
     </Card>

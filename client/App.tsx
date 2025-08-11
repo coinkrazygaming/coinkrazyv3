@@ -95,16 +95,22 @@ const App = () => (
             <Route path="/support" element={<Support />} />
             <Route path="/social" element={<Social />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/daily-rewards" element={
-              <ProtectedRoute>
-                <DailyRewards />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/daily-rewards"
+              element={
+                <ProtectedRoute>
+                  <DailyRewards />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

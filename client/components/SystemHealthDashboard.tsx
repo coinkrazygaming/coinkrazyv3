@@ -69,7 +69,7 @@ export default function SystemHealthDashboard() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  
+
   // System metrics state
   const [systemMetrics, setSystemMetrics] = useState<SystemMetric[]>([
     {
@@ -78,7 +78,7 @@ export default function SystemHealthDashboard() {
       unit: "%",
       status: "healthy",
       threshold: { warning: 70, critical: 90 },
-      history: [20, 22, 25, 23, 24, 23, 21, 23]
+      history: [20, 22, 25, 23, 24, 23, 21, 23],
     },
     {
       name: "Memory Usage",
@@ -86,7 +86,7 @@ export default function SystemHealthDashboard() {
       unit: "%",
       status: "healthy",
       threshold: { warning: 80, critical: 95 },
-      history: [65, 66, 68, 67, 69, 67, 66, 67]
+      history: [65, 66, 68, 67, 69, 67, 66, 67],
     },
     {
       name: "Disk Usage",
@@ -94,7 +94,7 @@ export default function SystemHealthDashboard() {
       unit: "%",
       status: "healthy",
       threshold: { warning: 85, critical: 95 },
-      history: [44, 45, 46, 45, 46, 46, 45, 46]
+      history: [44, 45, 46, 45, 46, 46, 45, 46],
     },
     {
       name: "Network I/O",
@@ -102,7 +102,7 @@ export default function SystemHealthDashboard() {
       unit: "MB/s",
       status: "healthy",
       threshold: { warning: 100, critical: 150 },
-      history: [10, 11, 13, 12, 14, 12, 11, 12]
+      history: [10, 11, 13, 12, 14, 12, 11, 12],
     },
     {
       name: "Active Users",
@@ -110,7 +110,7 @@ export default function SystemHealthDashboard() {
       unit: "users",
       status: "healthy",
       threshold: { warning: 10000, critical: 15000 },
-      history: [1200, 1230, 1260, 1247, 1280, 1247, 1220, 1247]
+      history: [1200, 1230, 1260, 1247, 1280, 1247, 1220, 1247],
     },
     {
       name: "API Response Time",
@@ -118,8 +118,8 @@ export default function SystemHealthDashboard() {
       unit: "ms",
       status: "healthy",
       threshold: { warning: 500, critical: 1000 },
-      history: [85, 87, 92, 89, 94, 89, 86, 89]
-    }
+      history: [85, 87, 92, 89, 94, 89, 86, 89],
+    },
   ]);
 
   const [services, setServices] = useState<ServiceStatus[]>([
@@ -129,7 +129,7 @@ export default function SystemHealthDashboard() {
       uptime: 99.98,
       lastCheck: new Date(),
       responseTime: 120,
-      endpoint: "https://coinkrazy.com"
+      endpoint: "https://coinkrazy.com",
     },
     {
       name: "API Gateway",
@@ -137,7 +137,7 @@ export default function SystemHealthDashboard() {
       uptime: 99.95,
       lastCheck: new Date(),
       responseTime: 89,
-      endpoint: "https://api.coinkrazy.com"
+      endpoint: "https://api.coinkrazy.com",
     },
     {
       name: "Database Primary",
@@ -166,7 +166,7 @@ export default function SystemHealthDashboard() {
       uptime: 99.92,
       lastCheck: new Date(),
       responseTime: 340,
-      endpoint: "https://payments.coinkrazy.com"
+      endpoint: "https://payments.coinkrazy.com",
     },
     {
       name: "Game Servers",
@@ -181,7 +181,7 @@ export default function SystemHealthDashboard() {
       uptime: 99.88,
       lastCheck: new Date(),
       responseTime: 450,
-    }
+    },
   ]);
 
   const [securityAlerts, setSecurityAlerts] = useState<SecurityAlert[]>([
@@ -192,7 +192,7 @@ export default function SystemHealthDashboard() {
       message: "Multiple failed login attempts detected from IP 192.168.1.100",
       timestamp: new Date(Date.now() - 300000),
       source: "Auth System",
-      resolved: false
+      resolved: false,
     },
     {
       id: "sec_002",
@@ -201,7 +201,7 @@ export default function SystemHealthDashboard() {
       message: "Unusual betting pattern detected for user ID 12847",
       timestamp: new Date(Date.now() - 600000),
       source: "Fraud Detection",
-      resolved: false
+      resolved: false,
     },
     {
       id: "sec_003",
@@ -210,8 +210,8 @@ export default function SystemHealthDashboard() {
       message: "Potential SQL injection attempt blocked",
       timestamp: new Date(Date.now() - 900000),
       source: "WAF",
-      resolved: true
-    }
+      resolved: true,
+    },
   ]);
 
   // Simulate real-time updates
@@ -226,11 +226,13 @@ export default function SystemHealthDashboard() {
   }, [autoRefresh]);
 
   const updateMetrics = () => {
-    setSystemMetrics(prev => prev.map(metric => ({
-      ...metric,
-      value: metric.value + (Math.random() - 0.5) * 2,
-      history: [...(metric.history?.slice(-7) || []), metric.value]
-    })));
+    setSystemMetrics((prev) =>
+      prev.map((metric) => ({
+        ...metric,
+        value: metric.value + (Math.random() - 0.5) * 2,
+        history: [...(metric.history?.slice(-7) || []), metric.value],
+      })),
+    );
   };
 
   const getStatusIcon = (status: string) => {
@@ -295,10 +297,10 @@ export default function SystemHealthDashboard() {
   };
 
   const resolveSecurityAlert = (alertId: string) => {
-    setSecurityAlerts(prev =>
-      prev.map(alert =>
-        alert.id === alertId ? { ...alert, resolved: true } : alert
-      )
+    setSecurityAlerts((prev) =>
+      prev.map((alert) =>
+        alert.id === alertId ? { ...alert, resolved: true } : alert,
+      ),
     );
     toast({
       title: "Alert Resolved",
@@ -306,8 +308,10 @@ export default function SystemHealthDashboard() {
     });
   };
 
-  const unresolvedAlerts = securityAlerts.filter(alert => !alert.resolved);
-  const criticalAlerts = unresolvedAlerts.filter(alert => alert.severity === "critical");
+  const unresolvedAlerts = securityAlerts.filter((alert) => !alert.resolved);
+  const criticalAlerts = unresolvedAlerts.filter(
+    (alert) => alert.severity === "critical",
+  );
 
   return (
     <div className="space-y-6">
@@ -338,7 +342,9 @@ export default function SystemHealthDashboard() {
             onClick={handleRefresh}
             disabled={loading}
           >
-            <RefreshCw className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -349,7 +355,8 @@ export default function SystemHealthDashboard() {
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-500" />
           <AlertDescription className="text-red-700">
-            <strong>{criticalAlerts.length} critical security alerts</strong> require immediate attention.
+            <strong>{criticalAlerts.length} critical security alerts</strong>{" "}
+            require immediate attention.
           </AlertDescription>
         </Alert>
       )}
@@ -387,19 +394,25 @@ export default function SystemHealthDashboard() {
                         {metric.unit}
                       </span>
                     </div>
-                    
+
                     <Progress
                       value={
-                        metric.unit === "%" 
-                          ? metric.value 
+                        metric.unit === "%"
+                          ? metric.value
                           : (metric.value / metric.threshold.critical) * 100
                       }
                       className="h-2"
                     />
-                    
+
                     <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Warning: {metric.threshold.warning}{metric.unit}</span>
-                      <span>Critical: {metric.threshold.critical}{metric.unit}</span>
+                      <span>
+                        Warning: {metric.threshold.warning}
+                        {metric.unit}
+                      </span>
+                      <span>
+                        Critical: {metric.threshold.critical}
+                        {metric.unit}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -419,12 +432,20 @@ export default function SystemHealthDashboard() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-500">98.7%</div>
-                    <div className="text-sm text-muted-foreground">Overall Uptime</div>
+                    <div className="text-2xl font-bold text-green-500">
+                      98.7%
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Overall Uptime
+                    </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-500">156ms</div>
-                    <div className="text-sm text-muted-foreground">Avg Response</div>
+                    <div className="text-2xl font-bold text-blue-500">
+                      156ms
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Avg Response
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -443,11 +464,17 @@ export default function SystemHealthDashboard() {
                     <div className="text-2xl font-bold text-yellow-500">
                       {unresolvedAlerts.length}
                     </div>
-                    <div className="text-sm text-muted-foreground">Active Alerts</div>
+                    <div className="text-sm text-muted-foreground">
+                      Active Alerts
+                    </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-500">24/7</div>
-                    <div className="text-sm text-muted-foreground">Monitoring</div>
+                    <div className="text-2xl font-bold text-green-500">
+                      24/7
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Monitoring
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -465,8 +492,11 @@ export default function SystemHealthDashboard() {
                     <span>{service.name}</span>
                     <Badge
                       variant={
-                        service.status === "online" ? "default" :
-                        service.status === "degraded" ? "secondary" : "destructive"
+                        service.status === "online"
+                          ? "default"
+                          : service.status === "degraded"
+                            ? "secondary"
+                            : "destructive"
                       }
                     >
                       {service.status.toUpperCase()}
@@ -477,11 +507,15 @@ export default function SystemHealthDashboard() {
                   <div className="grid grid-cols-3 gap-2 text-sm">
                     <div>
                       <div className="text-muted-foreground">Uptime</div>
-                      <div className="font-medium">{service.uptime.toFixed(2)}%</div>
+                      <div className="font-medium">
+                        {service.uptime.toFixed(2)}%
+                      </div>
                     </div>
                     <div>
                       <div className="text-muted-foreground">Response</div>
-                      <div className="font-medium">{service.responseTime}ms</div>
+                      <div className="font-medium">
+                        {service.responseTime}ms
+                      </div>
                     </div>
                     <div>
                       <div className="text-muted-foreground">Last Check</div>
@@ -507,13 +541,14 @@ export default function SystemHealthDashboard() {
             {securityAlerts.map((alert) => (
               <Card
                 key={alert.id}
-                className={`${
-                  alert.resolved ? "opacity-60" : ""
-                } ${
-                  alert.severity === "critical" ? "border-red-200 bg-red-50" :
-                  alert.severity === "high" ? "border-orange-200 bg-orange-50" :
-                  alert.severity === "medium" ? "border-yellow-200 bg-yellow-50" :
-                  "border-blue-200 bg-blue-50"
+                className={`${alert.resolved ? "opacity-60" : ""} ${
+                  alert.severity === "critical"
+                    ? "border-red-200 bg-red-50"
+                    : alert.severity === "high"
+                      ? "border-orange-200 bg-orange-50"
+                      : alert.severity === "medium"
+                        ? "border-yellow-200 bg-yellow-50"
+                        : "border-blue-200 bg-blue-50"
                 }`}
               >
                 <CardContent className="p-4">
@@ -522,23 +557,33 @@ export default function SystemHealthDashboard() {
                       <div className="flex items-center gap-2 mb-2">
                         <Badge
                           variant={
-                            alert.severity === "critical" ? "destructive" :
-                            alert.severity === "high" ? "destructive" :
-                            alert.severity === "medium" ? "secondary" : "outline"
+                            alert.severity === "critical"
+                              ? "destructive"
+                              : alert.severity === "high"
+                                ? "destructive"
+                                : alert.severity === "medium"
+                                  ? "secondary"
+                                  : "outline"
                           }
                         >
                           {alert.severity.toUpperCase()}
                         </Badge>
-                        <Badge variant="outline">{alert.type.replace("_", " ").toUpperCase()}</Badge>
+                        <Badge variant="outline">
+                          {alert.type.replace("_", " ").toUpperCase()}
+                        </Badge>
                         {alert.resolved && (
-                          <Badge variant="outline" className="bg-green-50 text-green-700">
+                          <Badge
+                            variant="outline"
+                            className="bg-green-50 text-green-700"
+                          >
                             RESOLVED
                           </Badge>
                         )}
                       </div>
                       <p className="font-medium mb-1">{alert.message}</p>
                       <div className="text-sm text-muted-foreground">
-                        Source: {alert.source} • {alert.timestamp.toLocaleString()}
+                        Source: {alert.source} •{" "}
+                        {alert.timestamp.toLocaleString()}
                       </div>
                     </div>
                     {!alert.resolved && (
@@ -571,14 +616,19 @@ export default function SystemHealthDashboard() {
                       <div className="flex justify-between text-sm">
                         <span>{metric.name}</span>
                         <span className={getStatusColor(metric.status)}>
-                          {metric.value.toFixed(1)}{metric.unit}
+                          {metric.value.toFixed(1)}
+                          {metric.unit}
                         </span>
                       </div>
                       <Progress
                         value={
-                          metric.unit === "%" 
-                            ? metric.value 
-                            : Math.min((metric.value / metric.threshold.critical) * 100, 100)
+                          metric.unit === "%"
+                            ? metric.value
+                            : Math.min(
+                                (metric.value / metric.threshold.critical) *
+                                  100,
+                                100,
+                              )
                         }
                         className="h-2"
                       />
@@ -596,22 +646,38 @@ export default function SystemHealthDashboard() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-500">1,247</div>
-                      <div className="text-sm text-muted-foreground">Active Sessions</div>
+                      <div className="text-2xl font-bold text-blue-500">
+                        1,247
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Active Sessions
+                      </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-500">89ms</div>
-                      <div className="text-sm text-muted-foreground">API Response</div>
+                      <div className="text-2xl font-bold text-green-500">
+                        89ms
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        API Response
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-500">156</div>
-                      <div className="text-sm text-muted-foreground">Req/min</div>
+                      <div className="text-2xl font-bold text-purple-500">
+                        156
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Req/min
+                      </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-500">0.02%</div>
-                      <div className="text-sm text-muted-foreground">Error Rate</div>
+                      <div className="text-2xl font-bold text-orange-500">
+                        0.02%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Error Rate
+                      </div>
                     </div>
                   </div>
                 </div>

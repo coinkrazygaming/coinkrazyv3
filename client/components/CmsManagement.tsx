@@ -10,12 +10,12 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Dialog,
@@ -114,13 +114,13 @@ import {
   Heading2,
   Heading3,
 } from "lucide-react";
-import { 
-  cmsService, 
-  CMSPage, 
-  CMSMedia, 
-  CMSTemplate, 
-  CMSForm, 
-  CMSNavigation, 
+import {
+  cmsService,
+  CMSPage,
+  CMSMedia,
+  CMSTemplate,
+  CMSForm,
+  CMSNavigation,
   CMSRedirect,
   CMSContent,
   CMSAnalytics,
@@ -133,17 +133,17 @@ interface RichTextEditorProps {
   height?: string;
 }
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({ 
-  value, 
-  onChange, 
+const RichTextEditor: React.FC<RichTextEditorProps> = ({
+  value,
+  onChange,
   placeholder = "Start writing...",
-  height = "300px"
+  height = "300px",
 }) => {
   const [content, setContent] = useState(value);
 
   const handleFormat = (command: string, value?: string) => {
     document.execCommand(command, false, value);
-    const editor = document.getElementById('rich-text-editor') as HTMLElement;
+    const editor = document.getElementById("rich-text-editor") as HTMLElement;
     if (editor) {
       onChange(editor.innerHTML);
     }
@@ -155,7 +155,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('bold')}
+          onClick={() => handleFormat("bold")}
           className="h-8 w-8 p-0"
         >
           <Bold className="w-4 h-4" />
@@ -163,7 +163,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('italic')}
+          onClick={() => handleFormat("italic")}
           className="h-8 w-8 p-0"
         >
           <Italic className="w-4 h-4" />
@@ -171,18 +171,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('underline')}
+          onClick={() => handleFormat("underline")}
           className="h-8 w-8 p-0"
         >
           <Underline className="w-4 h-4" />
         </Button>
-        
+
         <Separator orientation="vertical" className="h-6 mx-1" />
-        
+
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('formatBlock', 'h1')}
+          onClick={() => handleFormat("formatBlock", "h1")}
           className="h-8 w-8 p-0"
         >
           <Heading1 className="w-4 h-4" />
@@ -190,7 +190,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('formatBlock', 'h2')}
+          onClick={() => handleFormat("formatBlock", "h2")}
           className="h-8 w-8 p-0"
         >
           <Heading2 className="w-4 h-4" />
@@ -198,18 +198,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('formatBlock', 'h3')}
+          onClick={() => handleFormat("formatBlock", "h3")}
           className="h-8 w-8 p-0"
         >
           <Heading3 className="w-4 h-4" />
         </Button>
-        
+
         <Separator orientation="vertical" className="h-6 mx-1" />
-        
+
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('justifyLeft')}
+          onClick={() => handleFormat("justifyLeft")}
           className="h-8 w-8 p-0"
         >
           <AlignLeft className="w-4 h-4" />
@@ -217,7 +217,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('justifyCenter')}
+          onClick={() => handleFormat("justifyCenter")}
           className="h-8 w-8 p-0"
         >
           <AlignCenter className="w-4 h-4" />
@@ -225,18 +225,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('justifyRight')}
+          onClick={() => handleFormat("justifyRight")}
           className="h-8 w-8 p-0"
         >
           <AlignRight className="w-4 h-4" />
         </Button>
-        
+
         <Separator orientation="vertical" className="h-6 mx-1" />
-        
+
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('insertUnorderedList')}
+          onClick={() => handleFormat("insertUnorderedList")}
           className="h-8 w-8 p-0"
         >
           <List className="w-4 h-4" />
@@ -244,7 +244,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('insertOrderedList')}
+          onClick={() => handleFormat("insertOrderedList")}
           className="h-8 w-8 p-0"
         >
           <ListOrdered className="w-4 h-4" />
@@ -252,13 +252,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => handleFormat('formatBlock', 'blockquote')}
+          onClick={() => handleFormat("formatBlock", "blockquote")}
           className="h-8 w-8 p-0"
         >
           <Quote className="w-4 h-4" />
         </Button>
       </div>
-      
+
       <div
         id="rich-text-editor"
         contentEditable
@@ -284,7 +284,7 @@ export default function CmsManagement() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [sortBy, setSortBy] = useState("updatedAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  
+
   // Data states
   const [pages, setPages] = useState<CMSPage[]>([]);
   const [media, setMedia] = useState<CMSMedia[]>([]);
@@ -292,7 +292,7 @@ export default function CmsManagement() {
   const [forms, setForms] = useState<CMSForm[]>([]);
   const [navigations, setNavigations] = useState<CMSNavigation[]>([]);
   const [redirects, setRedirects] = useState<CMSRedirect[]>([]);
-  
+
   // Dialog states
   const [pageDialogOpen, setPageDialogOpen] = useState(false);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
@@ -300,7 +300,7 @@ export default function CmsManagement() {
   const [redirectDialogOpen, setRedirectDialogOpen] = useState(false);
   const [selectedPage, setSelectedPage] = useState<CMSPage | null>(null);
   const [selectedMedia, setSelectedMedia] = useState<CMSMedia | null>(null);
-  
+
   // Form states
   const [pageForm, setPageForm] = useState<Partial<CMSPage>>({
     title: "",
@@ -323,7 +323,7 @@ export default function CmsManagement() {
     },
     sortOrder: 0,
   });
-  
+
   const [formData, setFormData] = useState<Partial<CMSForm>>({
     name: "",
     description: "",
@@ -352,7 +352,14 @@ export default function CmsManagement() {
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [pagesData, mediaData, templatesData, formsData, navigationsData, redirectsData] = await Promise.all([
+      const [
+        pagesData,
+        mediaData,
+        templatesData,
+        formsData,
+        navigationsData,
+        redirectsData,
+      ] = await Promise.all([
         cmsService.getAllPages(),
         cmsService.getAllMedia(),
         cmsService.getAllTemplates(),
@@ -360,7 +367,7 @@ export default function CmsManagement() {
         cmsService.getAllNavigations(),
         cmsService.getAllRedirects(),
       ]);
-      
+
       setPages(pagesData);
       setMedia(mediaData);
       setTemplates(templatesData);
@@ -399,8 +406,8 @@ export default function CmsManagement() {
           email: "admin@coinkrazy.com",
         },
       } as Omit<CMSPage, "id" | "createdAt" | "updatedAt" | "version">);
-      
-      setPages(prev => [newPage, ...prev]);
+
+      setPages((prev) => [newPage, ...prev]);
       setPageDialogOpen(false);
       setPageForm({
         title: "",
@@ -418,7 +425,7 @@ export default function CmsManagement() {
         analytics: { views: 0 },
         sortOrder: 0,
       });
-      
+
       toast({
         title: "Success",
         description: "Page created successfully.",
@@ -436,8 +443,8 @@ export default function CmsManagement() {
   const handleUpdatePage = async (id: string, updates: Partial<CMSPage>) => {
     try {
       const updatedPage = await cmsService.updatePage(id, updates);
-      setPages(prev => prev.map(p => p.id === id ? updatedPage : p));
-      
+      setPages((prev) => prev.map((p) => (p.id === id ? updatedPage : p)));
+
       toast({
         title: "Success",
         description: "Page updated successfully.",
@@ -455,8 +462,8 @@ export default function CmsManagement() {
   const handleDeletePage = async (id: string) => {
     try {
       await cmsService.deletePage(id);
-      setPages(prev => prev.filter(p => p.id !== id));
-      
+      setPages((prev) => prev.filter((p) => p.id !== id));
+
       toast({
         title: "Success",
         description: "Page deleted successfully.",
@@ -474,8 +481,8 @@ export default function CmsManagement() {
   const handlePublishPage = async (id: string) => {
     try {
       const publishedPage = await cmsService.publishPage(id);
-      setPages(prev => prev.map(p => p.id === id ? publishedPage : p));
-      
+      setPages((prev) => prev.map((p) => (p.id === id ? publishedPage : p)));
+
       toast({
         title: "Success",
         description: "Page published successfully.",
@@ -493,8 +500,8 @@ export default function CmsManagement() {
   const handleDuplicatePage = async (id: string) => {
     try {
       const duplicatedPage = await cmsService.duplicatePage(id);
-      setPages(prev => [duplicatedPage, ...prev]);
-      
+      setPages((prev) => [duplicatedPage, ...prev]);
+
       toast({
         title: "Success",
         description: "Page duplicated successfully.",
@@ -512,13 +519,13 @@ export default function CmsManagement() {
   // Media management functions
   const handleUploadMedia = async (files: FileList) => {
     try {
-      const uploadPromises = Array.from(files).map(file => 
-        cmsService.uploadMedia(file, "general")
+      const uploadPromises = Array.from(files).map((file) =>
+        cmsService.uploadMedia(file, "general"),
       );
-      
+
       const uploadedMedia = await Promise.all(uploadPromises);
-      setMedia(prev => [...uploadedMedia, ...prev]);
-      
+      setMedia((prev) => [...uploadedMedia, ...prev]);
+
       toast({
         title: "Success",
         description: `${uploadedMedia.length} file(s) uploaded successfully.`,
@@ -536,8 +543,8 @@ export default function CmsManagement() {
   const handleDeleteMedia = async (id: string) => {
     try {
       await cmsService.deleteMedia(id);
-      setMedia(prev => prev.filter(m => m.id !== id));
-      
+      setMedia((prev) => prev.filter((m) => m.id !== id));
+
       toast({
         title: "Success",
         description: "Media deleted successfully.",
@@ -564,8 +571,10 @@ export default function CmsManagement() {
         return;
       }
 
-      const newForm = await cmsService.createForm(formData as Omit<CMSForm, "id" | "createdAt" | "submissions">);
-      setForms(prev => [newForm, ...prev]);
+      const newForm = await cmsService.createForm(
+        formData as Omit<CMSForm, "id" | "createdAt" | "submissions">,
+      );
+      setForms((prev) => [newForm, ...prev]);
       setFormDialogOpen(false);
       setFormData({
         name: "",
@@ -579,7 +588,7 @@ export default function CmsManagement() {
         },
         isActive: true,
       });
-      
+
       toast({
         title: "Success",
         description: "Form created successfully.",
@@ -606,8 +615,10 @@ export default function CmsManagement() {
         return;
       }
 
-      const newRedirect = await cmsService.createRedirect(redirectForm as Omit<CMSRedirect, "id" | "createdAt" | "hits">);
-      setRedirects(prev => [newRedirect, ...prev]);
+      const newRedirect = await cmsService.createRedirect(
+        redirectForm as Omit<CMSRedirect, "id" | "createdAt" | "hits">,
+      );
+      setRedirects((prev) => [newRedirect, ...prev]);
       setRedirectDialogOpen(false);
       setRedirectForm({
         from: "",
@@ -615,7 +626,7 @@ export default function CmsManagement() {
         type: 301,
         isActive: true,
       });
-      
+
       toast({
         title: "Success",
         description: "Redirect created successfully.",
@@ -631,29 +642,38 @@ export default function CmsManagement() {
   };
 
   // Filter and sort functions
-  const filteredPages = pages.filter(page => {
-    const matchesSearch = page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         page.slug.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || page.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  }).sort((a, b) => {
-    const aVal = a[sortBy as keyof CMSPage];
-    const bVal = b[sortBy as keyof CMSPage];
-    
-    if (sortOrder === "asc") {
-      return aVal > bVal ? 1 : -1;
-    } else {
-      return aVal < bVal ? 1 : -1;
-    }
-  });
+  const filteredPages = pages
+    .filter((page) => {
+      const matchesSearch =
+        page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        page.slug.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        filterStatus === "all" || page.status === filterStatus;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      const aVal = a[sortBy as keyof CMSPage];
+      const bVal = b[sortBy as keyof CMSPage];
+
+      if (sortOrder === "asc") {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "published": return "default";
-      case "draft": return "secondary";
-      case "archived": return "outline";
-      case "scheduled": return "destructive";
-      default: return "secondary";
+      case "published":
+        return "default";
+      case "draft":
+        return "secondary";
+      case "archived":
+        return "outline";
+      case "scheduled":
+        return "destructive";
+      default:
+        return "secondary";
     }
   };
 
@@ -685,7 +705,9 @@ export default function CmsManagement() {
             onClick={loadAllData}
             disabled={loading}
           >
-            <RefreshCw className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -740,7 +762,7 @@ export default function CmsManagement() {
                   className="pl-10 w-64"
                 />
               </div>
-              
+
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Status" />
@@ -772,7 +794,11 @@ export default function CmsManagement() {
                     Status
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                    }
+                  >
                     {sortOrder === "asc" ? "Descending" : "Ascending"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -790,10 +816,11 @@ export default function CmsManagement() {
                 <DialogHeader>
                   <DialogTitle>Create New Page</DialogTitle>
                   <DialogDescription>
-                    Create a new page for your website with all the necessary settings.
+                    Create a new page for your website with all the necessary
+                    settings.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="grid gap-6 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -801,7 +828,12 @@ export default function CmsManagement() {
                       <Input
                         id="page-title"
                         value={pageForm.title}
-                        onChange={(e) => setPageForm(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setPageForm((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
                         placeholder="Enter page title"
                       />
                     </div>
@@ -810,7 +842,14 @@ export default function CmsManagement() {
                       <Input
                         id="page-slug"
                         value={pageForm.slug}
-                        onChange={(e) => setPageForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/\s+/g, "-") }))}
+                        onChange={(e) =>
+                          setPageForm((prev) => ({
+                            ...prev,
+                            slug: e.target.value
+                              .toLowerCase()
+                              .replace(/\s+/g, "-"),
+                          }))
+                        }
                         placeholder="page-url-slug"
                       />
                     </div>
@@ -821,27 +860,36 @@ export default function CmsManagement() {
                     <Textarea
                       id="page-description"
                       value={pageForm.meta?.description || ""}
-                      onChange={(e) => setPageForm(prev => ({ 
-                        ...prev, 
-                        meta: { ...prev.meta, description: e.target.value } 
-                      }))}
+                      onChange={(e) =>
+                        setPageForm((prev) => ({
+                          ...prev,
+                          meta: { ...prev.meta, description: e.target.value },
+                        }))
+                      }
                       placeholder="Brief description for search engines (150-160 characters)"
                       rows={3}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="page-keywords">Keywords (comma-separated)</Label>
+                    <Label htmlFor="page-keywords">
+                      Keywords (comma-separated)
+                    </Label>
                     <Input
                       id="page-keywords"
                       value={pageForm.meta?.keywords?.join(", ") || ""}
-                      onChange={(e) => setPageForm(prev => ({ 
-                        ...prev, 
-                        meta: { 
-                          ...prev.meta, 
-                          keywords: e.target.value.split(",").map(k => k.trim()).filter(k => k) 
-                        } 
-                      }))}
+                      onChange={(e) =>
+                        setPageForm((prev) => ({
+                          ...prev,
+                          meta: {
+                            ...prev.meta,
+                            keywords: e.target.value
+                              .split(",")
+                              .map((k) => k.trim())
+                              .filter((k) => k),
+                          },
+                        }))
+                      }
                       placeholder="keyword1, keyword2, keyword3"
                     />
                   </div>
@@ -849,9 +897,14 @@ export default function CmsManagement() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="page-status">Status</Label>
-                      <Select 
-                        value={pageForm.status} 
-                        onValueChange={(value) => setPageForm(prev => ({ ...prev, status: value as any }))}
+                      <Select
+                        value={pageForm.status}
+                        onValueChange={(value) =>
+                          setPageForm((prev) => ({
+                            ...prev,
+                            status: value as any,
+                          }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
@@ -866,9 +919,11 @@ export default function CmsManagement() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="page-template">Template</Label>
-                      <Select 
-                        value={pageForm.template} 
-                        onValueChange={(value) => setPageForm(prev => ({ ...prev, template: value }))}
+                      <Select
+                        value={pageForm.template}
+                        onValueChange={(value) =>
+                          setPageForm((prev) => ({ ...prev, template: value }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select template" />
@@ -892,21 +947,33 @@ export default function CmsManagement() {
                         <Switch
                           id="show-in-nav"
                           checked={pageForm.settings?.showInNav}
-                          onCheckedChange={(checked) => setPageForm(prev => ({
-                            ...prev,
-                            settings: { ...prev.settings, showInNav: checked }
-                          }))}
+                          onCheckedChange={(checked) =>
+                            setPageForm((prev) => ({
+                              ...prev,
+                              settings: {
+                                ...prev.settings,
+                                showInNav: checked,
+                              },
+                            }))
+                          }
                         />
                       </div>
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="require-auth">Require Authentication</Label>
+                        <Label htmlFor="require-auth">
+                          Require Authentication
+                        </Label>
                         <Switch
                           id="require-auth"
                           checked={pageForm.settings?.requireAuth}
-                          onCheckedChange={(checked) => setPageForm(prev => ({
-                            ...prev,
-                            settings: { ...prev.settings, requireAuth: checked }
-                          }))}
+                          onCheckedChange={(checked) =>
+                            setPageForm((prev) => ({
+                              ...prev,
+                              settings: {
+                                ...prev.settings,
+                                requireAuth: checked,
+                              },
+                            }))
+                          }
                         />
                       </div>
                       <div className="flex items-center justify-between">
@@ -914,10 +981,15 @@ export default function CmsManagement() {
                         <Switch
                           id="allow-comments"
                           checked={pageForm.settings?.allowComments}
-                          onCheckedChange={(checked) => setPageForm(prev => ({
-                            ...prev,
-                            settings: { ...prev.settings, allowComments: checked }
-                          }))}
+                          onCheckedChange={(checked) =>
+                            setPageForm((prev) => ({
+                              ...prev,
+                              settings: {
+                                ...prev.settings,
+                                allowComments: checked,
+                              },
+                            }))
+                          }
                         />
                       </div>
                       <div className="flex items-center justify-between">
@@ -925,10 +997,15 @@ export default function CmsManagement() {
                         <Switch
                           id="enable-sharing"
                           checked={pageForm.settings?.enableSharing}
-                          onCheckedChange={(checked) => setPageForm(prev => ({
-                            ...prev,
-                            settings: { ...prev.settings, enableSharing: checked }
-                          }))}
+                          onCheckedChange={(checked) =>
+                            setPageForm((prev) => ({
+                              ...prev,
+                              settings: {
+                                ...prev.settings,
+                                enableSharing: checked,
+                              },
+                            }))
+                          }
                         />
                       </div>
                     </div>
@@ -936,12 +1013,13 @@ export default function CmsManagement() {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setPageDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setPageDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleCreatePage}>
-                    Create Page
-                  </Button>
+                  <Button onClick={handleCreatePage}>Create Page</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -971,15 +1049,18 @@ export default function CmsManagement() {
                           </Badge>
                         )}
                       </div>
-                      
+
                       <p className="text-sm text-muted-foreground mb-2">
                         {page.meta.description || "No description available"}
                       </p>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>/{page.slug}</span>
                         <span>•</span>
-                        <span>Modified: {new Date(page.updatedAt).toLocaleDateString()}</span>
+                        <span>
+                          Modified:{" "}
+                          {new Date(page.updatedAt).toLocaleDateString()}
+                        </span>
                         <span>•</span>
                         <span>Author: {page.author.name}</span>
                         <span>•</span>
@@ -997,24 +1078,32 @@ export default function CmsManagement() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedPage(page);
-                          setPageForm(page);
-                          setPageDialogOpen(true);
-                        }}>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedPage(page);
+                            setPageForm(page);
+                            setPageDialogOpen(true);
+                          }}
+                        >
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => window.open(`/${page.slug}`, "_blank")}>
+                        <DropdownMenuItem
+                          onClick={() => window.open(`/${page.slug}`, "_blank")}
+                        >
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Preview
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDuplicatePage(page.id)}>
+                        <DropdownMenuItem
+                          onClick={() => handleDuplicatePage(page.id)}
+                        >
                           <Copy className="w-4 h-4 mr-2" />
                           Duplicate
                         </DropdownMenuItem>
                         {page.status === "draft" && (
-                          <DropdownMenuItem onClick={() => handlePublishPage(page.id)}>
+                          <DropdownMenuItem
+                            onClick={() => handlePublishPage(page.id)}
+                          >
                             <Globe className="w-4 h-4 mr-2" />
                             Publish
                           </DropdownMenuItem>
@@ -1022,7 +1111,9 @@ export default function CmsManagement() {
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                            >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
@@ -1031,12 +1122,15 @@ export default function CmsManagement() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Page</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{page.title}"? This action cannot be undone.
+                                Are you sure you want to delete "{page.title}"?
+                                This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeletePage(page.id)}>
+                              <AlertDialogAction
+                                onClick={() => handleDeletePage(page.id)}
+                              >
                                 Delete
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -1048,17 +1142,16 @@ export default function CmsManagement() {
                 </CardContent>
               </Card>
             ))}
-            
+
             {filteredPages.length === 0 && (
               <Card>
                 <CardContent className="p-12 text-center">
                   <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-lg font-semibold mb-2">No pages found</h3>
                   <p className="text-muted-foreground mb-4">
-                    {searchTerm || filterStatus !== "all" 
+                    {searchTerm || filterStatus !== "all"
                       ? "Try adjusting your search or filter settings"
-                      : "Get started by creating your first page"
-                    }
+                      : "Get started by creating your first page"}
                   </p>
                   {!searchTerm && filterStatus === "all" && (
                     <Button onClick={() => setPageDialogOpen(true)}>
@@ -1078,10 +1171,7 @@ export default function CmsManagement() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search media..."
-                  className="pl-10 w-64"
-                />
+                <Input placeholder="Search media..." className="pl-10 w-64" />
               </div>
             </div>
 
@@ -1090,7 +1180,9 @@ export default function CmsManagement() {
                 type="file"
                 multiple
                 accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-                onChange={(e) => e.target.files && handleUploadMedia(e.target.files)}
+                onChange={(e) =>
+                  e.target.files && handleUploadMedia(e.target.files)
+                }
                 className="hidden"
                 id="media-upload"
               />
@@ -1118,16 +1210,26 @@ export default function CmsManagement() {
                   ) : (
                     <div className="flex flex-col items-center text-muted-foreground">
                       <FileText className="w-8 h-8 mb-2" />
-                      <span className="text-xs">{item.mimeType.split("/")[1].toUpperCase()}</span>
+                      <span className="text-xs">
+                        {item.mimeType.split("/")[1].toUpperCase()}
+                      </span>
                     </div>
                   )}
                 </div>
-                
+
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <Button size="sm" variant="secondary" onClick={() => setSelectedMedia(item)}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setSelectedMedia(item)}
+                  >
                     <Eye className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => navigator.clipboard.writeText(item.url)}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => navigator.clipboard.writeText(item.url)}
+                  >
                     <Copy className="w-4 h-4" />
                   </Button>
                   <AlertDialog>
@@ -1140,12 +1242,15 @@ export default function CmsManagement() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Media</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete "{item.originalName}"? This action cannot be undone.
+                          Are you sure you want to delete "{item.originalName}"?
+                          This action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteMedia(item.id)}>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteMedia(item.id)}
+                        >
                           Delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -1154,7 +1259,10 @@ export default function CmsManagement() {
                 </div>
 
                 <CardContent className="p-3">
-                  <p className="text-xs font-medium truncate" title={item.originalName}>
+                  <p
+                    className="text-xs font-medium truncate"
+                    title={item.originalName}
+                  >
                     {item.originalName}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -1192,10 +1300,7 @@ export default function CmsManagement() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search forms..."
-                  className="pl-10 w-64"
-                />
+                <Input placeholder="Search forms..." className="pl-10 w-64" />
               </div>
             </div>
 
@@ -1213,14 +1318,19 @@ export default function CmsManagement() {
                     Create a new form to collect user information and feedback.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="grid gap-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="form-name">Form Name *</Label>
                     <Input
                       id="form-name"
                       value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       placeholder="Contact Form"
                     />
                   </div>
@@ -1230,7 +1340,12 @@ export default function CmsManagement() {
                     <Textarea
                       id="form-description"
                       value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                       placeholder="Brief description of this form"
                       rows={3}
                     />
@@ -1241,10 +1356,15 @@ export default function CmsManagement() {
                     <Input
                       id="submit-text"
                       value={formData.settings?.submitText}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        settings: { ...prev.settings, submitText: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          settings: {
+                            ...prev.settings,
+                            submitText: e.target.value,
+                          },
+                        }))
+                      }
                       placeholder="Submit"
                     />
                   </div>
@@ -1253,14 +1373,21 @@ export default function CmsManagement() {
                     <Label>Form Settings</Label>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="email-notifications">Email Notifications</Label>
+                        <Label htmlFor="email-notifications">
+                          Email Notifications
+                        </Label>
                         <Switch
                           id="email-notifications"
                           checked={formData.settings?.emailNotifications}
-                          onCheckedChange={(checked) => setFormData(prev => ({
-                            ...prev,
-                            settings: { ...prev.settings, emailNotifications: checked }
-                          }))}
+                          onCheckedChange={(checked) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              settings: {
+                                ...prev.settings,
+                                emailNotifications: checked,
+                              },
+                            }))
+                          }
                         />
                       </div>
                       <div className="flex items-center justify-between">
@@ -1268,10 +1395,12 @@ export default function CmsManagement() {
                         <Switch
                           id="captcha"
                           checked={formData.settings?.captcha}
-                          onCheckedChange={(checked) => setFormData(prev => ({
-                            ...prev,
-                            settings: { ...prev.settings, captcha: checked }
-                          }))}
+                          onCheckedChange={(checked) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              settings: { ...prev.settings, captcha: checked },
+                            }))
+                          }
                         />
                       </div>
                     </div>
@@ -1279,12 +1408,13 @@ export default function CmsManagement() {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setFormDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setFormDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleCreateForm}>
-                    Create Form
-                  </Button>
+                  <Button onClick={handleCreateForm}>Create Form</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -1298,25 +1428,32 @@ export default function CmsManagement() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-semibold">{form.name}</h3>
-                        <Badge variant={form.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={form.isActive ? "default" : "secondary"}
+                        >
                           {form.isActive ? "Active" : "Inactive"}
                         </Badge>
                         <Badge variant="outline">
-                          {form.fields.length} field{form.fields.length !== 1 ? "s" : ""}
+                          {form.fields.length} field
+                          {form.fields.length !== 1 ? "s" : ""}
                         </Badge>
                         <Badge variant="outline">
-                          {form.submissions.length} submission{form.submissions.length !== 1 ? "s" : ""}
+                          {form.submissions.length} submission
+                          {form.submissions.length !== 1 ? "s" : ""}
                         </Badge>
                       </div>
-                      
+
                       {form.description && (
                         <p className="text-sm text-muted-foreground mb-2">
                           {form.description}
                         </p>
                       )}
-                      
+
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Created: {new Date(form.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          Created:{" "}
+                          {new Date(form.createdAt).toLocaleDateString()}
+                        </span>
                         {form.settings.emailNotifications && (
                           <>
                             <span>•</span>
@@ -1392,16 +1529,16 @@ export default function CmsManagement() {
                         <Badge variant={nav.isActive ? "default" : "secondary"}>
                           {nav.isActive ? "Active" : "Inactive"}
                         </Badge>
+                        <Badge variant="outline">{nav.location}</Badge>
                         <Badge variant="outline">
-                          {nav.location}
-                        </Badge>
-                        <Badge variant="outline">
-                          {nav.items.length} item{nav.items.length !== 1 ? "s" : ""}
+                          {nav.items.length} item
+                          {nav.items.length !== 1 ? "s" : ""}
                         </Badge>
                       </div>
-                      
+
                       <div className="text-sm text-muted-foreground">
-                        Menu items: {nav.items.map(item => item.label).join(", ")}
+                        Menu items:{" "}
+                        {nav.items.map((item) => item.label).join(", ")}
                       </div>
                     </div>
 
@@ -1438,8 +1575,11 @@ export default function CmsManagement() {
         <TabsContent value="redirects" className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">URL Redirects</h3>
-            
-            <Dialog open={redirectDialogOpen} onOpenChange={setRedirectDialogOpen}>
+
+            <Dialog
+              open={redirectDialogOpen}
+              onOpenChange={setRedirectDialogOpen}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
@@ -1450,17 +1590,23 @@ export default function CmsManagement() {
                 <DialogHeader>
                   <DialogTitle>Create URL Redirect</DialogTitle>
                   <DialogDescription>
-                    Redirect users from old URLs to new ones to maintain SEO and user experience.
+                    Redirect users from old URLs to new ones to maintain SEO and
+                    user experience.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="grid gap-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="redirect-from">From URL *</Label>
                     <Input
                       id="redirect-from"
                       value={redirectForm.from}
-                      onChange={(e) => setRedirectForm(prev => ({ ...prev, from: e.target.value }))}
+                      onChange={(e) =>
+                        setRedirectForm((prev) => ({
+                          ...prev,
+                          from: e.target.value,
+                        }))
+                      }
                       placeholder="/old-page"
                     />
                   </div>
@@ -1470,16 +1616,26 @@ export default function CmsManagement() {
                     <Input
                       id="redirect-to"
                       value={redirectForm.to}
-                      onChange={(e) => setRedirectForm(prev => ({ ...prev, to: e.target.value }))}
+                      onChange={(e) =>
+                        setRedirectForm((prev) => ({
+                          ...prev,
+                          to: e.target.value,
+                        }))
+                      }
                       placeholder="/new-page"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="redirect-type">Redirect Type</Label>
-                    <Select 
-                      value={redirectForm.type?.toString()} 
-                      onValueChange={(value) => setRedirectForm(prev => ({ ...prev, type: parseInt(value) as 301 | 302 }))}
+                    <Select
+                      value={redirectForm.type?.toString()}
+                      onValueChange={(value) =>
+                        setRedirectForm((prev) => ({
+                          ...prev,
+                          type: parseInt(value) as 301 | 302,
+                        }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select redirect type" />
@@ -1496,13 +1652,21 @@ export default function CmsManagement() {
                     <Switch
                       id="redirect-active"
                       checked={redirectForm.isActive}
-                      onCheckedChange={(checked) => setRedirectForm(prev => ({ ...prev, isActive: checked }))}
+                      onCheckedChange={(checked) =>
+                        setRedirectForm((prev) => ({
+                          ...prev,
+                          isActive: checked,
+                        }))
+                      }
                     />
                   </div>
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setRedirectDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setRedirectDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button onClick={handleCreateRedirect}>
@@ -1527,16 +1691,19 @@ export default function CmsManagement() {
                         <code className="text-sm bg-muted px-2 py-1 rounded">
                           {redirect.to}
                         </code>
-                        <Badge variant={redirect.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={redirect.isActive ? "default" : "secondary"}
+                        >
                           {redirect.isActive ? "Active" : "Inactive"}
                         </Badge>
-                        <Badge variant="outline">
-                          {redirect.type}
-                        </Badge>
+                        <Badge variant="outline">{redirect.type}</Badge>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Created: {new Date(redirect.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          Created:{" "}
+                          {new Date(redirect.createdAt).toLocaleDateString()}
+                        </span>
                         <span>•</span>
                         <span>{redirect.hits} hits</span>
                       </div>
@@ -1626,7 +1793,7 @@ export default function CmsManagement() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
                       {template.category}
@@ -1674,12 +1841,12 @@ export default function CmsManagement() {
                     ))}
                   </SelectContent>
                 </Select>
-                
+
                 <Button className="w-full">
                   <Activity className="w-4 h-4 mr-2" />
                   Analyze SEO
                 </Button>
-                
+
                 <div className="space-y-3">
                   <div>
                     <div className="flex justify-between text-sm mb-1">
@@ -1688,7 +1855,7 @@ export default function CmsManagement() {
                     </div>
                     <Progress value={85} className="h-2" />
                   </div>
-                  
+
                   <div className="text-sm space-y-1">
                     <div className="flex items-center gap-2 text-green-600">
                       <CheckCircle className="w-4 h-4" />
@@ -1721,21 +1888,25 @@ export default function CmsManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold">{pages.length}</div>
-                    <div className="text-sm text-muted-foreground">Total Pages</div>
+                    <div className="text-sm text-muted-foreground">
+                      Total Pages
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold">
-                      {pages.filter(p => p.status === "published").length}
+                      {pages.filter((p) => p.status === "published").length}
                     </div>
-                    <div className="text-sm text-muted-foreground">Published</div>
+                    <div className="text-sm text-muted-foreground">
+                      Published
+                    </div>
                   </div>
                 </div>
-                
+
                 <Button className="w-full">
                   <Download className="w-4 h-4 mr-2" />
                   Generate Sitemap
                 </Button>
-                
+
                 <div className="text-sm text-muted-foreground">
                   Last generated: {new Date().toLocaleDateString()}
                 </div>
@@ -1757,23 +1928,28 @@ export default function CmsManagement() {
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <h4 className="font-medium">{page.title}</h4>
-                        <code className="text-sm text-muted-foreground">/{page.slug}</code>
+                        <code className="text-sm text-muted-foreground">
+                          /{page.slug}
+                        </code>
                       </div>
                       <Button variant="ghost" size="sm">
                         <Edit className="w-4 h-4" />
                       </Button>
                     </div>
-                    
+
                     <div className="space-y-2 text-sm">
                       <div>
-                        <strong>Title:</strong> {page.meta.description ? "✓" : "⚠️"} {page.title}
+                        <strong>Title:</strong>{" "}
+                        {page.meta.description ? "✓" : "⚠️"} {page.title}
                       </div>
                       <div>
-                        <strong>Description:</strong> {page.meta.description ? "✓" : "⚠️"} 
+                        <strong>Description:</strong>{" "}
+                        {page.meta.description ? "✓" : "⚠️"}
                         {page.meta.description || "No description set"}
                       </div>
                       <div>
-                        <strong>Keywords:</strong> {page.meta.keywords?.length ? "✓" : "⚠️"} 
+                        <strong>Keywords:</strong>{" "}
+                        {page.meta.keywords?.length ? "✓" : "⚠️"}
                         {page.meta.keywords?.length || 0} keywords
                       </div>
                     </div>
@@ -1793,7 +1969,9 @@ export default function CmsManagement() {
                   <div>
                     <p className="text-sm text-muted-foreground">Total Views</p>
                     <p className="text-2xl font-bold">
-                      {pages.reduce((sum, page) => sum + page.analytics.views, 0).toLocaleString()}
+                      {pages
+                        .reduce((sum, page) => sum + page.analytics.views, 0)
+                        .toLocaleString()}
                     </p>
                   </div>
                   <Eye className="w-8 h-8 text-blue-500" />
@@ -1805,9 +1983,11 @@ export default function CmsManagement() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Published Pages</p>
+                    <p className="text-sm text-muted-foreground">
+                      Published Pages
+                    </p>
                     <p className="text-2xl font-bold">
-                      {pages.filter(p => p.status === "published").length}
+                      {pages.filter((p) => p.status === "published").length}
                     </p>
                   </div>
                   <Globe className="w-8 h-8 text-green-500" />
@@ -1831,9 +2011,11 @@ export default function CmsManagement() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Active Forms</p>
+                    <p className="text-sm text-muted-foreground">
+                      Active Forms
+                    </p>
                     <p className="text-2xl font-bold">
-                      {forms.filter(f => f.isActive).length}
+                      {forms.filter((f) => f.isActive).length}
                     </p>
                   </div>
                   <MessageSquare className="w-8 h-8 text-orange-500" />
@@ -1855,22 +2037,29 @@ export default function CmsManagement() {
                   .sort((a, b) => b.analytics.views - a.analytics.views)
                   .slice(0, 10)
                   .map((page, index) => (
-                  <div key={page.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-mono w-6">
-                        #{index + 1}
-                      </span>
-                      <div>
-                        <p className="font-medium">{page.title}</p>
-                        <p className="text-sm text-muted-foreground">/{page.slug}</p>
+                    <div
+                      key={page.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-mono w-6">
+                          #{index + 1}
+                        </span>
+                        <div>
+                          <p className="font-medium">{page.title}</p>
+                          <p className="text-sm text-muted-foreground">
+                            /{page.slug}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">
+                          {page.analytics.views.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-muted-foreground">views</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium">{page.analytics.views.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground">views</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>

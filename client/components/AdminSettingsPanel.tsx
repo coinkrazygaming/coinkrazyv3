@@ -202,8 +202,8 @@ export default function AdminSettingsPanel() {
     setSaving(true);
     try {
       // In production: save to backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast({
         title: "Settings Saved",
         description: "All CoinKrazy settings have been updated successfully.",
@@ -220,38 +220,50 @@ export default function AdminSettingsPanel() {
   };
 
   const updateGameSetting = (gameId: string, field: string, value: any) => {
-    setGameSettings(prev => 
-      prev.map(game => 
-        game.id === gameId ? { ...game, [field]: value } : game
-      )
+    setGameSettings((prev) =>
+      prev.map((game) =>
+        game.id === gameId ? { ...game, [field]: value } : game,
+      ),
     );
   };
 
   const updateCurrencySetting = (code: string, field: string, value: any) => {
-    setCurrencySettings(prev => 
-      prev.map(currency => 
-        currency.code === code ? { ...currency, [field]: value } : currency
-      )
+    setCurrencySettings((prev) =>
+      prev.map((currency) =>
+        currency.code === code ? { ...currency, [field]: value } : currency,
+      ),
     );
   };
 
   const updateSystemSetting = (field: string, value: any) => {
-    setSystemSettings(prev => ({ ...prev, [field]: value }));
+    setSystemSettings((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateSecuritySetting = (field: string, value: any) => {
-    setSecuritySettings(prev => ({ ...prev, [field]: value }));
+    setSecuritySettings((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-foreground">CoinKrazy Admin Settings</h2>
-          <p className="text-muted-foreground">Configure games, currencies, security, and system settings</p>
+          <h2 className="text-3xl font-bold text-foreground">
+            CoinKrazy Admin Settings
+          </h2>
+          <p className="text-muted-foreground">
+            Configure games, currencies, security, and system settings
+          </p>
         </div>
-        <Button onClick={handleSaveSettings} disabled={saving} className="bg-gradient-to-r from-gold-500 to-gold-600">
-          {saving ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+        <Button
+          onClick={handleSaveSettings}
+          disabled={saving}
+          className="bg-gradient-to-r from-gold-500 to-gold-600"
+        >
+          {saving ? (
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4 mr-2" />
+          )}
           Save All Settings
         </Button>
       </div>
@@ -300,7 +312,9 @@ export default function AdminSettingsPanel() {
                         </Badge>
                         <Switch
                           checked={game.enabled}
-                          onCheckedChange={(checked) => updateGameSetting(game.id, "enabled", checked)}
+                          onCheckedChange={(checked) =>
+                            updateGameSetting(game.id, "enabled", checked)
+                          }
                         />
                       </div>
                     </div>
@@ -315,7 +329,13 @@ export default function AdminSettingsPanel() {
                           min="85"
                           max="99"
                           step="0.1"
-                          onChange={(e) => updateGameSetting(game.id, "rtp", safeParseFloat(e.target.value, game.rtp))}
+                          onChange={(e) =>
+                            updateGameSetting(
+                              game.id,
+                              "rtp",
+                              safeParseFloat(e.target.value, game.rtp),
+                            )
+                          }
                         />
                       </div>
                       <div>
@@ -324,7 +344,13 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={game.minBet}
                           min="1"
-                          onChange={(e) => updateGameSetting(game.id, "minBet", safeParseInt(e.target.value, game.minBet))}
+                          onChange={(e) =>
+                            updateGameSetting(
+                              game.id,
+                              "minBet",
+                              safeParseInt(e.target.value, game.minBet),
+                            )
+                          }
                         />
                       </div>
                       <div>
@@ -333,7 +359,13 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={game.maxBet}
                           min="10"
-                          onChange={(e) => updateGameSetting(game.id, "maxBet", safeParseInt(e.target.value, game.maxBet))}
+                          onChange={(e) =>
+                            updateGameSetting(
+                              game.id,
+                              "maxBet",
+                              safeParseInt(e.target.value, game.maxBet),
+                            )
+                          }
                         />
                       </div>
                       <div>
@@ -342,14 +374,29 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={game.maxWinMultiplier}
                           min="100"
-                          onChange={(e) => updateGameSetting(game.id, "maxWinMultiplier", safeParseInt(e.target.value, game.maxWinMultiplier))}
+                          onChange={(e) =>
+                            updateGameSetting(
+                              game.id,
+                              "maxWinMultiplier",
+                              safeParseInt(
+                                e.target.value,
+                                game.maxWinMultiplier,
+                              ),
+                            )
+                          }
                         />
                       </div>
                       <div>
                         <Label>Jackpot</Label>
                         <Switch
                           checked={game.jackpotEnabled}
-                          onCheckedChange={(checked) => updateGameSetting(game.id, "jackpotEnabled", checked)}
+                          onCheckedChange={(checked) =>
+                            updateGameSetting(
+                              game.id,
+                              "jackpotEnabled",
+                              checked,
+                            )
+                          }
                         />
                       </div>
                       {game.jackpotEnabled && (
@@ -359,7 +406,16 @@ export default function AdminSettingsPanel() {
                             type="number"
                             value={game.jackpotSeedAmount}
                             min="10000"
-                            onChange={(e) => updateGameSetting(game.id, "jackpotSeedAmount", safeParseInt(e.target.value, game.jackpotSeedAmount))}
+                            onChange={(e) =>
+                              updateGameSetting(
+                                game.id,
+                                "jackpotSeedAmount",
+                                safeParseInt(
+                                  e.target.value,
+                                  game.jackpotSeedAmount,
+                                ),
+                              )
+                            }
                           />
                         </div>
                       )}
@@ -388,12 +444,20 @@ export default function AdminSettingsPanel() {
                         {currency.code === "GC" ? "🪙" : "👑"} {currency.name}
                       </CardTitle>
                       <div className="flex items-center gap-2">
-                        <Badge variant={currency.enabled ? "default" : "secondary"}>
+                        <Badge
+                          variant={currency.enabled ? "default" : "secondary"}
+                        >
                           {currency.enabled ? "Active" : "Inactive"}
                         </Badge>
                         <Switch
                           checked={currency.enabled}
-                          onCheckedChange={(checked) => updateCurrencySetting(currency.code, "enabled", checked)}
+                          onCheckedChange={(checked) =>
+                            updateCurrencySetting(
+                              currency.code,
+                              "enabled",
+                              checked,
+                            )
+                          }
                         />
                       </div>
                     </div>
@@ -407,10 +471,21 @@ export default function AdminSettingsPanel() {
                           value={currency.exchangeRate}
                           step="0.0001"
                           disabled={currency.code === "GC"} // GC has no real cash value
-                          onChange={(e) => updateCurrencySetting(currency.code, "exchangeRate", safeParseFloat(e.target.value, currency.exchangeRate))}
+                          onChange={(e) =>
+                            updateCurrencySetting(
+                              currency.code,
+                              "exchangeRate",
+                              safeParseFloat(
+                                e.target.value,
+                                currency.exchangeRate,
+                              ),
+                            )
+                          }
                         />
                         {currency.code === "GC" && (
-                          <p className="text-xs text-muted-foreground mt-1">No real cash value</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            No real cash value
+                          </p>
                         )}
                       </div>
                       <div>
@@ -419,7 +494,16 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={currency.welcomeBonus}
                           min="0"
-                          onChange={(e) => updateCurrencySetting(currency.code, "welcomeBonus", safeParseInt(e.target.value, currency.welcomeBonus))}
+                          onChange={(e) =>
+                            updateCurrencySetting(
+                              currency.code,
+                              "welcomeBonus",
+                              safeParseInt(
+                                e.target.value,
+                                currency.welcomeBonus,
+                              ),
+                            )
+                          }
                         />
                       </div>
                       <div>
@@ -428,26 +512,55 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={currency.dailyBonus}
                           min="0"
-                          onChange={(e) => updateCurrencySetting(currency.code, "dailyBonus", safeParseInt(e.target.value, currency.dailyBonus))}
+                          onChange={(e) =>
+                            updateCurrencySetting(
+                              currency.code,
+                              "dailyBonus",
+                              safeParseInt(e.target.value, currency.dailyBonus),
+                            )
+                          }
                         />
                       </div>
                       <div>
                         <Label>Purchase Limits</Label>
                         {currency.code === "SC" ? (
-                          <Badge variant="outline" className="w-full justify-center">Cannot be purchased</Badge>
+                          <Badge
+                            variant="outline"
+                            className="w-full justify-center"
+                          >
+                            Cannot be purchased
+                          </Badge>
                         ) : (
                           <div className="flex gap-2">
                             <Input
                               placeholder="Min"
                               type="number"
                               value={currency.minPurchase}
-                              onChange={(e) => updateCurrencySetting(currency.code, "minPurchase", safeParseInt(e.target.value, currency.minPurchase))}
+                              onChange={(e) =>
+                                updateCurrencySetting(
+                                  currency.code,
+                                  "minPurchase",
+                                  safeParseInt(
+                                    e.target.value,
+                                    currency.minPurchase,
+                                  ),
+                                )
+                              }
                             />
                             <Input
                               placeholder="Max"
                               type="number"
                               value={currency.maxPurchase}
-                              onChange={(e) => updateCurrencySetting(currency.code, "maxPurchase", safeParseInt(e.target.value, currency.maxPurchase))}
+                              onChange={(e) =>
+                                updateCurrencySetting(
+                                  currency.code,
+                                  "maxPurchase",
+                                  safeParseInt(
+                                    e.target.value,
+                                    currency.maxPurchase,
+                                  ),
+                                )
+                              }
                             />
                           </div>
                         )}
@@ -474,28 +587,36 @@ export default function AdminSettingsPanel() {
                   <Label>Maintenance Mode</Label>
                   <Switch
                     checked={systemSettings.maintenanceMode}
-                    onCheckedChange={(checked) => updateSystemSetting("maintenanceMode", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSystemSetting("maintenanceMode", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <Label>Registration Enabled</Label>
                   <Switch
                     checked={systemSettings.registrationEnabled}
-                    onCheckedChange={(checked) => updateSystemSetting("registrationEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSystemSetting("registrationEnabled", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <Label>Games Enabled</Label>
                   <Switch
                     checked={systemSettings.gamesEnabled}
-                    onCheckedChange={(checked) => updateSystemSetting("gamesEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSystemSetting("gamesEnabled", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <Label>Chat Enabled</Label>
                   <Switch
                     checked={systemSettings.chatEnabled}
-                    onCheckedChange={(checked) => updateSystemSetting("chatEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSystemSetting("chatEnabled", checked)
+                    }
                   />
                 </div>
               </CardContent>
@@ -516,7 +637,15 @@ export default function AdminSettingsPanel() {
                     value={systemSettings.maxPlayersOnline}
                     min="100"
                     max="100000"
-                    onChange={(e) => updateSystemSetting("maxPlayersOnline", safeParseInt(e.target.value, systemSettings.maxPlayersOnline))}
+                    onChange={(e) =>
+                      updateSystemSetting(
+                        "maxPlayersOnline",
+                        safeParseInt(
+                          e.target.value,
+                          systemSettings.maxPlayersOnline,
+                        ),
+                      )
+                    }
                   />
                 </div>
                 <div>
@@ -526,7 +655,15 @@ export default function AdminSettingsPanel() {
                     value={systemSettings.sessionTimeout}
                     min="300"
                     max="86400"
-                    onChange={(e) => updateSystemSetting("sessionTimeout", safeParseInt(e.target.value, systemSettings.sessionTimeout))}
+                    onChange={(e) =>
+                      updateSystemSetting(
+                        "sessionTimeout",
+                        safeParseInt(
+                          e.target.value,
+                          systemSettings.sessionTimeout,
+                        ),
+                      )
+                    }
                   />
                 </div>
               </CardContent>
@@ -549,35 +686,48 @@ export default function AdminSettingsPanel() {
                     <Label>Two-Factor Authentication Required</Label>
                     <Switch
                       checked={securitySettings.twoFactorRequired}
-                      onCheckedChange={(checked) => updateSecuritySetting("twoFactorRequired", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSecuritySetting("twoFactorRequired", checked)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label>KYC Verification Required</Label>
                     <Switch
                       checked={securitySettings.kycRequired}
-                      onCheckedChange={(checked) => updateSecuritySetting("kycRequired", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSecuritySetting("kycRequired", checked)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label>Suspicious Activity Alerts</Label>
                     <Switch
                       checked={securitySettings.suspiciousActivityAlerts}
-                      onCheckedChange={(checked) => updateSecuritySetting("suspiciousActivityAlerts", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSecuritySetting(
+                          "suspiciousActivityAlerts",
+                          checked,
+                        )
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label>Geo-blocking</Label>
                     <Switch
                       checked={securitySettings.geoBlocking}
-                      onCheckedChange={(checked) => updateSecuritySetting("geoBlocking", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSecuritySetting("geoBlocking", checked)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <Label>VPN Blocking</Label>
                     <Switch
                       checked={securitySettings.vpnBlocking}
-                      onCheckedChange={(checked) => updateSecuritySetting("vpnBlocking", checked)}
+                      onCheckedChange={(checked) =>
+                        updateSecuritySetting("vpnBlocking", checked)
+                      }
                     />
                   </div>
                 </div>
@@ -589,7 +739,15 @@ export default function AdminSettingsPanel() {
                       value={securitySettings.maxLoginAttempts}
                       min="3"
                       max="10"
-                      onChange={(e) => updateSecuritySetting("maxLoginAttempts", safeParseInt(e.target.value, securitySettings.maxLoginAttempts))}
+                      onChange={(e) =>
+                        updateSecuritySetting(
+                          "maxLoginAttempts",
+                          safeParseInt(
+                            e.target.value,
+                            securitySettings.maxLoginAttempts,
+                          ),
+                        )
+                      }
                     />
                   </div>
                   <div>
@@ -599,7 +757,15 @@ export default function AdminSettingsPanel() {
                       value={securitySettings.passwordMinLength}
                       min="6"
                       max="20"
-                      onChange={(e) => updateSecuritySetting("passwordMinLength", safeParseInt(e.target.value, securitySettings.passwordMinLength))}
+                      onChange={(e) =>
+                        updateSecuritySetting(
+                          "passwordMinLength",
+                          safeParseInt(
+                            e.target.value,
+                            securitySettings.passwordMinLength,
+                          ),
+                        )
+                      }
                     />
                   </div>
                 </div>
@@ -622,14 +788,18 @@ export default function AdminSettingsPanel() {
                   <Label>Welcome Email Automation</Label>
                   <Switch
                     checked={systemSettings.welcomeEmailEnabled}
-                    onCheckedChange={(checked) => updateSystemSetting("welcomeEmailEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSystemSetting("welcomeEmailEnabled", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <Label>Josey AI Assistant</Label>
                   <Switch
                     checked={systemSettings.joseyAIEnabled}
-                    onCheckedChange={(checked) => updateSystemSetting("joseyAIEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSystemSetting("joseyAIEnabled", checked)
+                    }
                   />
                 </div>
               </CardContent>
@@ -645,15 +815,30 @@ export default function AdminSettingsPanel() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Josey AI Lead Generation</Label>
-                  <Badge variant="outline" className="border-green-500 text-green-400">Active</Badge>
+                  <Badge
+                    variant="outline"
+                    className="border-green-500 text-green-400"
+                  >
+                    Active
+                  </Badge>
                 </div>
                 <div className="space-y-2">
                   <Label>Automated Customer Support</Label>
-                  <Badge variant="outline" className="border-green-500 text-green-400">Active</Badge>
+                  <Badge
+                    variant="outline"
+                    className="border-green-500 text-green-400"
+                  >
+                    Active
+                  </Badge>
                 </div>
                 <div className="space-y-2">
                   <Label>Fraud Detection</Label>
-                  <Badge variant="outline" className="border-green-500 text-green-400">Active</Badge>
+                  <Badge
+                    variant="outline"
+                    className="border-green-500 text-green-400"
+                  >
+                    Active
+                  </Badge>
                 </div>
               </CardContent>
             </Card>

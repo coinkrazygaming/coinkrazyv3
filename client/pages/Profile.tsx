@@ -11,7 +11,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -49,7 +55,7 @@ import {
 export default function Profile() {
   const { user, updateBalance } = useAuth();
   const { toast } = useToast();
-  
+
   // Profile form state
   const [profileData, setProfileData] = useState({
     firstName: user?.username.split(" ")[0] || "",
@@ -121,8 +127,10 @@ export default function Profile() {
       profileData.zipCode,
       profileData.bio,
     ];
-    
-    const completedFields = fields.filter(field => field && field.length > 0).length;
+
+    const completedFields = fields.filter(
+      (field) => field && field.length > 0,
+    ).length;
     return Math.round((completedFields / fields.length) * 100);
   };
 
@@ -132,8 +140,8 @@ export default function Profile() {
     setLoading(true);
     try {
       // Simulate API call to update profile
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
@@ -153,8 +161,8 @@ export default function Profile() {
     setLoading(true);
     try {
       // Simulate API call to update preferences
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       toast({
         title: "Preferences Updated",
         description: "Your preferences have been saved successfully.",
@@ -192,12 +200,12 @@ export default function Profile() {
     setLoading(true);
     try {
       // Simulate API call to change password
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       setNewPassword("");
       setConfirmPassword("");
       setCurrentPassword("");
-      
+
       toast({
         title: "Password Changed",
         description: "Your password has been updated successfully.",
@@ -218,13 +226,13 @@ export default function Profile() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileData(prev => ({
+        setProfileData((prev) => ({
           ...prev,
-          avatar: e.target?.result as string
+          avatar: e.target?.result as string,
         }));
       };
       reader.readAsDataURL(file);
-      
+
       toast({
         title: "Avatar Updated",
         description: "Your profile picture has been updated.",
@@ -268,7 +276,8 @@ export default function Profile() {
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Your profile is {profileCompletion}% complete. Complete your profile to unlock all features and receive personalized bonuses.
+            Your profile is {profileCompletion}% complete. Complete your profile
+            to unlock all features and receive personalized bonuses.
           </AlertDescription>
         </Alert>
       )}
@@ -311,7 +320,8 @@ export default function Profile() {
                     <Avatar className="w-32 h-32">
                       <AvatarImage src={profileData.avatar} />
                       <AvatarFallback className="text-2xl">
-                        {profileData.firstName.charAt(0)}{profileData.lastName.charAt(0)}
+                        {profileData.firstName.charAt(0)}
+                        {profileData.lastName.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <label
@@ -328,14 +338,22 @@ export default function Profile() {
                       />
                     </label>
                   </div>
-                  
+
                   <div className="text-center">
                     <h3 className="font-semibold text-lg">
                       {profileData.firstName} {profileData.lastName}
                     </h3>
                     <p className="text-muted-foreground">{profileData.email}</p>
                     <div className="flex items-center justify-center gap-2 mt-2">
-                      <Badge variant={user?.role === "admin" ? "destructive" : user?.role === "staff" ? "secondary" : "default"}>
+                      <Badge
+                        variant={
+                          user?.role === "admin"
+                            ? "destructive"
+                            : user?.role === "staff"
+                              ? "secondary"
+                              : "default"
+                        }
+                      >
                         {user?.role?.toUpperCase()}
                       </Badge>
                       <Badge variant="outline">
@@ -371,7 +389,12 @@ export default function Profile() {
                     <Input
                       id="firstName"
                       value={profileData.firstName}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          firstName: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your first name"
                     />
                   </div>
@@ -380,7 +403,12 @@ export default function Profile() {
                     <Input
                       id="lastName"
                       value={profileData.lastName}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          lastName: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your last name"
                     />
                   </div>
@@ -392,7 +420,12 @@ export default function Profile() {
                     id="email"
                     type="email"
                     value={profileData.email}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     placeholder="Enter your email"
                   />
                 </div>
@@ -404,7 +437,12 @@ export default function Profile() {
                       id="phone"
                       type="tel"
                       value={profileData.phone}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
                       placeholder="(555) 123-4567"
                     />
                   </div>
@@ -414,7 +452,12 @@ export default function Profile() {
                       id="dateOfBirth"
                       type="date"
                       value={profileData.dateOfBirth}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          dateOfBirth: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -424,7 +467,12 @@ export default function Profile() {
                   <Input
                     id="address"
                     value={profileData.address}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, address: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        address: e.target.value,
+                      }))
+                    }
                     placeholder="Enter your street address"
                   />
                 </div>
@@ -435,7 +483,12 @@ export default function Profile() {
                     <Input
                       id="city"
                       value={profileData.city}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, city: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          city: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your city"
                     />
                   </div>
@@ -444,7 +497,12 @@ export default function Profile() {
                     <Input
                       id="state"
                       value={profileData.state}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, state: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          state: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your state"
                     />
                   </div>
@@ -453,7 +511,12 @@ export default function Profile() {
                     <Input
                       id="zipCode"
                       value={profileData.zipCode}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, zipCode: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          zipCode: e.target.value,
+                        }))
+                      }
                       placeholder="12345"
                     />
                   </div>
@@ -464,13 +527,22 @@ export default function Profile() {
                   <Textarea
                     id="bio"
                     value={profileData.bio}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        bio: e.target.value,
+                      }))
+                    }
                     placeholder="Tell us about yourself..."
                     rows={3}
                   />
                 </div>
 
-                <Button onClick={handleSaveProfile} disabled={loading} className="w-full">
+                <Button
+                  onClick={handleSaveProfile}
+                  disabled={loading}
+                  className="w-full"
+                >
                   <Save className="w-4 h-4 mr-2" />
                   {loading ? "Saving..." : "Save Profile"}
                 </Button>
@@ -495,10 +567,26 @@ export default function Profile() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { key: "emailNotifications", label: "Email Notifications", icon: Mail },
-                  { key: "pushNotifications", label: "Push Notifications", icon: Smartphone },
-                  { key: "smsNotifications", label: "SMS Notifications", icon: Phone },
-                  { key: "marketingEmails", label: "Marketing Emails", icon: Gift },
+                  {
+                    key: "emailNotifications",
+                    label: "Email Notifications",
+                    icon: Mail,
+                  },
+                  {
+                    key: "pushNotifications",
+                    label: "Push Notifications",
+                    icon: Smartphone,
+                  },
+                  {
+                    key: "smsNotifications",
+                    label: "SMS Notifications",
+                    icon: Phone,
+                  },
+                  {
+                    key: "marketingEmails",
+                    label: "Marketing Emails",
+                    icon: Gift,
+                  },
                   { key: "gameUpdates", label: "Game Updates", icon: Activity },
                   { key: "bonusOffers", label: "Bonus Offers", icon: Star },
                   { key: "newsletter", label: "Newsletter", icon: FileText },
@@ -510,9 +598,11 @@ export default function Profile() {
                     </div>
                     <Switch
                       id={key}
-                      checked={preferences[key as keyof typeof preferences] as boolean}
-                      onCheckedChange={(checked) => 
-                        setPreferences(prev => ({ ...prev, [key]: checked }))
+                      checked={
+                        preferences[key as keyof typeof preferences] as boolean
+                      }
+                      onCheckedChange={(checked) =>
+                        setPreferences((prev) => ({ ...prev, [key]: checked }))
                       }
                     />
                   </div>
@@ -534,9 +624,11 @@ export default function Profile() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="language">Language</Label>
-                  <Select 
-                    value={preferences.language} 
-                    onValueChange={(value) => setPreferences(prev => ({ ...prev, language: value }))}
+                  <Select
+                    value={preferences.language}
+                    onValueChange={(value) =>
+                      setPreferences((prev) => ({ ...prev, language: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select language" />
@@ -552,27 +644,39 @@ export default function Profile() {
 
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Timezone</Label>
-                  <Select 
-                    value={preferences.timezone} 
-                    onValueChange={(value) => setPreferences(prev => ({ ...prev, timezone: value }))}
+                  <Select
+                    value={preferences.timezone}
+                    onValueChange={(value) =>
+                      setPreferences((prev) => ({ ...prev, timezone: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select timezone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                      <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                      <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                      <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                      <SelectItem value="America/New_York">
+                        Eastern Time (ET)
+                      </SelectItem>
+                      <SelectItem value="America/Chicago">
+                        Central Time (CT)
+                      </SelectItem>
+                      <SelectItem value="America/Denver">
+                        Mountain Time (MT)
+                      </SelectItem>
+                      <SelectItem value="America/Los_Angeles">
+                        Pacific Time (PT)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="currency">Preferred Currency</Label>
-                  <Select 
-                    value={preferences.currency} 
-                    onValueChange={(value) => setPreferences(prev => ({ ...prev, currency: value }))}
+                  <Select
+                    value={preferences.currency}
+                    onValueChange={(value) =>
+                      setPreferences((prev) => ({ ...prev, currency: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select currency" />
@@ -588,9 +692,11 @@ export default function Profile() {
 
                 <div className="space-y-2">
                   <Label htmlFor="theme">Theme</Label>
-                  <Select 
-                    value={preferences.theme} 
-                    onValueChange={(value) => setPreferences(prev => ({ ...prev, theme: value }))}
+                  <Select
+                    value={preferences.theme}
+                    onValueChange={(value) =>
+                      setPreferences((prev) => ({ ...prev, theme: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select theme" />
@@ -603,7 +709,11 @@ export default function Profile() {
                   </Select>
                 </div>
 
-                <Button onClick={handleSavePreferences} disabled={loading} className="w-full">
+                <Button
+                  onClick={handleSavePreferences}
+                  disabled={loading}
+                  className="w-full"
+                >
                   <Save className="w-4 h-4 mr-2" />
                   {loading ? "Saving..." : "Save Preferences"}
                 </Button>
@@ -630,15 +740,23 @@ export default function Profile() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Password Strength</span>
-                    <span className={`text-sm font-medium ${getPasswordStrengthColor(securitySettings.passwordStrength)}`}>
-                      {getPasswordStrengthText(securitySettings.passwordStrength)}
+                    <span
+                      className={`text-sm font-medium ${getPasswordStrengthColor(securitySettings.passwordStrength)}`}
+                    >
+                      {getPasswordStrengthText(
+                        securitySettings.passwordStrength,
+                      )}
                     </span>
                   </div>
-                  <Progress value={securitySettings.passwordStrength} className="h-2" />
+                  <Progress
+                    value={securitySettings.passwordStrength}
+                    className="h-2"
+                  />
                 </div>
 
                 <div className="text-sm text-muted-foreground">
-                  Last changed: {securitySettings.lastPasswordChange.toLocaleDateString()}
+                  Last changed:{" "}
+                  {securitySettings.lastPasswordChange.toLocaleDateString()}
                 </div>
 
                 <Separator />
@@ -671,7 +789,11 @@ export default function Profile() {
                       className="absolute right-0 top-0 h-full px-3 py-2"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -687,7 +809,11 @@ export default function Profile() {
                   />
                 </div>
 
-                <Button onClick={handleChangePassword} disabled={loading} className="w-full">
+                <Button
+                  onClick={handleChangePassword}
+                  disabled={loading}
+                  className="w-full"
+                >
                   <Lock className="w-4 h-4 mr-2" />
                   {loading ? "Changing..." : "Change Password"}
                 </Button>
@@ -715,8 +841,11 @@ export default function Profile() {
                   </div>
                   <Switch
                     checked={securitySettings.twoFactorEnabled}
-                    onCheckedChange={(checked) => 
-                      setSecuritySettings(prev => ({ ...prev, twoFactorEnabled: checked }))
+                    onCheckedChange={(checked) =>
+                      setSecuritySettings((prev) => ({
+                        ...prev,
+                        twoFactorEnabled: checked,
+                      }))
                     }
                   />
                 </div>
@@ -730,18 +859,24 @@ export default function Profile() {
                   </div>
                   <Switch
                     checked={securitySettings.loginAlerts}
-                    onCheckedChange={(checked) => 
-                      setSecuritySettings(prev => ({ ...prev, loginAlerts: checked }))
+                    onCheckedChange={(checked) =>
+                      setSecuritySettings((prev) => ({
+                        ...prev,
+                        loginAlerts: checked,
+                      }))
                     }
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Session Timeout</Label>
-                  <Select 
-                    value={securitySettings.sessionTimeout.toString()} 
-                    onValueChange={(value) => 
-                      setSecuritySettings(prev => ({ ...prev, sessionTimeout: parseInt(value) }))
+                  <Select
+                    value={securitySettings.sessionTimeout.toString()}
+                    onValueChange={(value) =>
+                      setSecuritySettings((prev) => ({
+                        ...prev,
+                        sessionTimeout: parseInt(value),
+                      }))
                     }
                   >
                     <SelectTrigger>
@@ -790,10 +925,13 @@ export default function Profile() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Profile Visibility</Label>
-                    <Select 
-                      value={privacySettings.profileVisibility} 
-                      onValueChange={(value) => 
-                        setPrivacySettings(prev => ({ ...prev, profileVisibility: value }))
+                    <Select
+                      value={privacySettings.profileVisibility}
+                      onValueChange={(value) =>
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          profileVisibility: value,
+                        }))
                       }
                     >
                       <SelectTrigger>
@@ -816,8 +954,11 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={privacySettings.showOnlineStatus}
-                      onCheckedChange={(checked) => 
-                        setPrivacySettings(prev => ({ ...prev, showOnlineStatus: checked }))
+                      onCheckedChange={(checked) =>
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          showOnlineStatus: checked,
+                        }))
                       }
                     />
                   </div>
@@ -831,8 +972,11 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={privacySettings.allowFriendRequests}
-                      onCheckedChange={(checked) => 
-                        setPrivacySettings(prev => ({ ...prev, allowFriendRequests: checked }))
+                      onCheckedChange={(checked) =>
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          allowFriendRequests: checked,
+                        }))
                       }
                     />
                   </div>
@@ -848,8 +992,11 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={privacySettings.showGameHistory}
-                      onCheckedChange={(checked) => 
-                        setPrivacySettings(prev => ({ ...prev, showGameHistory: checked }))
+                      onCheckedChange={(checked) =>
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          showGameHistory: checked,
+                        }))
                       }
                     />
                   </div>
@@ -863,8 +1010,11 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={privacySettings.allowDataCollection}
-                      onCheckedChange={(checked) => 
-                        setPrivacySettings(prev => ({ ...prev, allowDataCollection: checked }))
+                      onCheckedChange={(checked) =>
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          allowDataCollection: checked,
+                        }))
                       }
                     />
                   </div>
@@ -878,8 +1028,11 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={privacySettings.shareAnalytics}
-                      onCheckedChange={(checked) => 
-                        setPrivacySettings(prev => ({ ...prev, shareAnalytics: checked }))
+                      onCheckedChange={(checked) =>
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          shareAnalytics: checked,
+                        }))
                       }
                     />
                   </div>
@@ -903,9 +1056,21 @@ export default function Profile() {
               <CardContent>
                 <div className="space-y-4">
                   {[
-                    { action: "Profile updated", time: "2 hours ago", icon: User },
-                    { action: "Password changed", time: "1 day ago", icon: Lock },
-                    { action: "Game session ended", time: "3 days ago", icon: Activity },
+                    {
+                      action: "Profile updated",
+                      time: "2 hours ago",
+                      icon: User,
+                    },
+                    {
+                      action: "Password changed",
+                      time: "1 day ago",
+                      icon: Lock,
+                    },
+                    {
+                      action: "Game session ended",
+                      time: "3 days ago",
+                      icon: Activity,
+                    },
                     { action: "Bonus claimed", time: "1 week ago", icon: Gift },
                   ].map((item, index) => (
                     <div key={index} className="flex items-center gap-3">
@@ -914,7 +1079,9 @@ export default function Profile() {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium">{item.action}</p>
-                        <p className="text-xs text-muted-foreground">{item.time}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.time}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -934,23 +1101,34 @@ export default function Profile() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-500">
-                      {user?.balances?.find(b => b.currency === "GC")?.balance.toLocaleString() || "0"}
+                      {user?.balances
+                        ?.find((b) => b.currency === "GC")
+                        ?.balance.toLocaleString() || "0"}
                     </div>
-                    <div className="text-sm text-muted-foreground">Gold Coins</div>
+                    <div className="text-sm text-muted-foreground">
+                      Gold Coins
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-500">
-                      {user?.balances?.find(b => b.currency === "SC")?.balance || "0"}
+                      {user?.balances?.find((b) => b.currency === "SC")
+                        ?.balance || "0"}
                     </div>
-                    <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                    <div className="text-sm text-muted-foreground">
+                      Sweeps Coins
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-500">156</div>
-                    <div className="text-sm text-muted-foreground">Games Played</div>
+                    <div className="text-sm text-muted-foreground">
+                      Games Played
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-orange-500">42</div>
-                    <div className="text-sm text-muted-foreground">Days Active</div>
+                    <div className="text-sm text-muted-foreground">
+                      Days Active
+                    </div>
                   </div>
                 </div>
               </CardContent>

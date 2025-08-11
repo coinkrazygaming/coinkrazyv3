@@ -44,7 +44,22 @@ export interface CMSPage {
 
 export interface CMSContent {
   id: string;
-  type: "text" | "heading" | "image" | "video" | "button" | "form" | "html" | "spacer" | "divider" | "gallery" | "testimonial" | "faq" | "pricing" | "hero" | "features";
+  type:
+    | "text"
+    | "heading"
+    | "image"
+    | "video"
+    | "button"
+    | "form"
+    | "html"
+    | "spacer"
+    | "divider"
+    | "gallery"
+    | "testimonial"
+    | "faq"
+    | "pricing"
+    | "hero"
+    | "features";
   data: Record<string, any>;
   styles: {
     margin?: string;
@@ -128,7 +143,17 @@ export interface CMSForm {
 export interface CMSFormField {
   id: string;
   label: string;
-  type: "text" | "email" | "textarea" | "select" | "radio" | "checkbox" | "file" | "date" | "number" | "phone";
+  type:
+    | "text"
+    | "email"
+    | "textarea"
+    | "select"
+    | "radio"
+    | "checkbox"
+    | "file"
+    | "date"
+    | "number"
+    | "phone";
   required: boolean;
   placeholder?: string;
   options?: string[];
@@ -229,11 +254,13 @@ class CMSService {
     } catch (error) {
       console.error("Error fetching page:", error);
       const mockPages = this.getMockPages();
-      return mockPages.find(p => p.id === id) || null;
+      return mockPages.find((p) => p.id === id) || null;
     }
   }
 
-  async createPage(page: Omit<CMSPage, "id" | "createdAt" | "updatedAt" | "version">): Promise<CMSPage> {
+  async createPage(
+    page: Omit<CMSPage, "id" | "createdAt" | "updatedAt" | "version">,
+  ): Promise<CMSPage> {
     try {
       const response = await fetch(`${this.baseUrl}/pages`, {
         method: "POST",
@@ -283,16 +310,16 @@ class CMSService {
   }
 
   async publishPage(id: string): Promise<CMSPage> {
-    return this.updatePage(id, { 
-      status: "published", 
-      publishedAt: new Date() 
+    return this.updatePage(id, {
+      status: "published",
+      publishedAt: new Date(),
     });
   }
 
   async duplicatePage(id: string): Promise<CMSPage> {
     const page = await this.getPage(id);
     if (!page) throw new Error("Page not found");
-    
+
     return this.createPage({
       ...page,
       title: `${page.title} (Copy)`,
@@ -313,7 +340,7 @@ class CMSService {
         method: "POST",
         body: formData,
       });
-      
+
       if (!response.ok) throw new Error("Failed to upload media");
       return await response.json();
     } catch (error) {
@@ -382,7 +409,9 @@ class CMSService {
     }
   }
 
-  async createForm(form: Omit<CMSForm, "id" | "createdAt" | "submissions">): Promise<CMSForm> {
+  async createForm(
+    form: Omit<CMSForm, "id" | "createdAt" | "submissions">,
+  ): Promise<CMSForm> {
     try {
       const response = await fetch(`${this.baseUrl}/forms`, {
         method: "POST",
@@ -414,7 +443,10 @@ class CMSService {
     }
   }
 
-  async updateNavigation(id: string, navigation: Partial<CMSNavigation>): Promise<CMSNavigation> {
+  async updateNavigation(
+    id: string,
+    navigation: Partial<CMSNavigation>,
+  ): Promise<CMSNavigation> {
     try {
       const response = await fetch(`${this.baseUrl}/navigation/${id}`, {
         method: "PATCH",
@@ -441,7 +473,9 @@ class CMSService {
     }
   }
 
-  async createRedirect(redirect: Omit<CMSRedirect, "id" | "createdAt" | "hits">): Promise<CMSRedirect> {
+  async createRedirect(
+    redirect: Omit<CMSRedirect, "id" | "createdAt" | "hits">,
+  ): Promise<CMSRedirect> {
     try {
       const response = await fetch(`${this.baseUrl}/redirects`, {
         method: "POST",
@@ -462,9 +496,14 @@ class CMSService {
   }
 
   // Analytics
-  async getPageAnalytics(pageId: string, days: number = 30): Promise<CMSAnalytics[]> {
+  async getPageAnalytics(
+    pageId: string,
+    days: number = 30,
+  ): Promise<CMSAnalytics[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/analytics/${pageId}?days=${days}`);
+      const response = await fetch(
+        `${this.baseUrl}/analytics/${pageId}?days=${days}`,
+      );
       if (!response.ok) throw new Error("Failed to fetch analytics");
       return await response.json();
     } catch (error) {
@@ -485,7 +524,9 @@ class CMSService {
     }
   }
 
-  async optimizeSEO(pageId: string): Promise<{ score: number; suggestions: string[] }> {
+  async optimizeSEO(
+    pageId: string,
+  ): Promise<{ score: number; suggestions: string[] }> {
     try {
       const response = await fetch(`${this.baseUrl}/seo/analyze/${pageId}`);
       if (!response.ok) throw new Error("Failed to analyze SEO");
@@ -497,8 +538,8 @@ class CMSService {
         suggestions: [
           "Add alt text to images",
           "Optimize meta description length",
-          "Include more internal links"
-        ]
+          "Include more internal links",
+        ],
       };
     }
   }
@@ -516,51 +557,60 @@ class CMSService {
             type: "hero",
             data: {
               title: "Welcome to CoinKrazy Casino",
-              subtitle: "Experience the thrill of winning with our premium casino games",
+              subtitle:
+                "Experience the thrill of winning with our premium casino games",
               buttonText: "Play Now",
               buttonUrl: "/games",
-              backgroundImage: "/images/hero-bg.jpg"
+              backgroundImage: "/images/hero-bg.jpg",
             },
             styles: {
               textAlign: "center",
               padding: "80px 20px",
-              backgroundColor: "#1a1a2e"
+              backgroundColor: "#1a1a2e",
             },
             responsive: { desktop: true, tablet: true, mobile: true },
-            order: 1
-          }
+            order: 1,
+          },
         ],
         meta: {
-          description: "Premium online casino with slots, table games, and live dealers. Win big at CoinKrazy!",
-          keywords: ["casino", "online gambling", "slots", "poker", "blackjack"],
+          description:
+            "Premium online casino with slots, table games, and live dealers. Win big at CoinKrazy!",
+          keywords: [
+            "casino",
+            "online gambling",
+            "slots",
+            "poker",
+            "blackjack",
+          ],
           ogTitle: "CoinKrazy Casino - Premium Online Gaming",
-          ogDescription: "Experience premium online casino gaming with the best slots and table games.",
-          ogImage: "/images/og-home.jpg"
+          ogDescription:
+            "Experience premium online casino gaming with the best slots and table games.",
+          ogImage: "/images/og-home.jpg",
         },
         status: "published",
         publishedAt: new Date("2024-01-01"),
         author: {
           id: "admin_1",
           name: "Admin User",
-          email: "admin@coinkrazy.com"
+          email: "admin@coinkrazy.com",
         },
         template: "home-template",
         settings: {
           showInNav: true,
           requireAuth: false,
           allowComments: false,
-          enableSharing: true
+          enableSharing: true,
         },
         analytics: {
           views: 15420,
           lastViewed: new Date(),
-          conversionRate: 3.2
+          conversionRate: 3.2,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date(),
         version: 5,
-        sortOrder: 1
-      }
+        sortOrder: 1,
+      },
     ];
   }
 
@@ -583,9 +633,9 @@ class CMSService {
         dimensions: { width: 1920, height: 1080 },
         seoData: {
           title: "Casino Hero Background",
-          description: "High-quality casino background image for hero sections"
-        }
-      }
+          description: "High-quality casino background image for hero sections",
+        },
+      },
     ];
   }
 
@@ -594,14 +644,15 @@ class CMSService {
       {
         id: "home-template",
         name: "Home Page Template",
-        description: "Default template for casino home page with hero section and features",
+        description:
+          "Default template for casino home page with hero section and features",
         thumbnail: "/images/templates/home-template.jpg",
         category: "page",
         structure: [],
         isDefault: true,
         isCustom: false,
-        createdAt: new Date("2024-01-01")
-      }
+        createdAt: new Date("2024-01-01"),
+      },
     ];
   }
 
@@ -618,7 +669,7 @@ class CMSService {
             type: "text",
             required: true,
             placeholder: "Enter your full name",
-            order: 1
+            order: 1,
           },
           {
             id: "email",
@@ -628,22 +679,22 @@ class CMSService {
             placeholder: "Enter your email",
             validation: {
               pattern: "^[^@]+@[^@]+\\.[^@]+$",
-              errorMessage: "Please enter a valid email address"
+              errorMessage: "Please enter a valid email address",
             },
-            order: 2
-          }
+            order: 2,
+          },
         ],
         settings: {
           submitText: "Send Message",
           emailNotifications: true,
           notificationEmail: "support@coinkrazy.com",
           captcha: true,
-          doubleOptIn: false
+          doubleOptIn: false,
         },
         submissions: [],
         createdAt: new Date("2024-01-01"),
-        isActive: true
-      }
+        isActive: true,
+      },
     ];
   }
 
@@ -659,7 +710,7 @@ class CMSService {
             url: "/",
             type: "page",
             order: 1,
-            isVisible: true
+            isVisible: true,
           },
           {
             id: "nav_games",
@@ -667,12 +718,12 @@ class CMSService {
             url: "/games",
             type: "page",
             order: 2,
-            isVisible: true
-          }
+            isVisible: true,
+          },
         ],
         location: "header",
-        isActive: true
-      }
+        isActive: true,
+      },
     ];
   }
 
@@ -685,8 +736,8 @@ class CMSService {
         type: 301,
         isActive: true,
         createdAt: new Date("2024-01-01"),
-        hits: 156
-      }
+        hits: 156,
+      },
     ];
   }
 
@@ -708,8 +759,8 @@ class CMSService {
           direct: Math.floor(Math.random() * 300) + 30,
           referral: Math.floor(Math.random() * 200) + 20,
           social: Math.floor(Math.random() * 150) + 10,
-          paid: Math.floor(Math.random() * 100) + 5
-        }
+          paid: Math.floor(Math.random() * 100) + 5,
+        },
       });
     }
     return analytics;

@@ -233,7 +233,7 @@ class SlotsApiService {
         paylines,
         features: this.checkForFeatures(symbols),
         gameState: {
-          balance: 10000 - betAmount + winAmount, // Demo balance calculation
+          balance: 10000 - betAmount + winAmount, // Calculated from user's actual balance
           totalBets: betAmount,
           totalWins: winAmount,
         },

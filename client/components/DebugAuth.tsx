@@ -6,12 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export default function DebugAuth() {
   const { user, login, logout, getBalance } = useAuth();
 
-  const handleTestLogin = async () => {
+  const handleTestLogin = async (userType: 'user' | 'staff' | 'admin' = 'user') => {
+    const emails = {
+      user: 'user@coinkrazy.com',
+      staff: 'staff@coinkrazy.com',
+      admin: 'admin@coinkrazy.com'
+    };
+
     try {
-      await login('user@coinkrazy.com', 'password');
-      console.log('Login successful!');
+      await login(emails[userType], 'password');
+      console.log(`${userType} login successful!`);
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error(`${userType} login failed:`, error);
     }
   };
 
@@ -34,11 +40,19 @@ export default function DebugAuth() {
           </div>
         )}
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {!user ? (
-            <Button onClick={handleTestLogin}>
-              Test Login
-            </Button>
+            <>
+              <Button onClick={() => handleTestLogin('user')} size="sm">
+                User Login
+              </Button>
+              <Button onClick={() => handleTestLogin('staff')} size="sm" variant="outline">
+                Staff Login
+              </Button>
+              <Button onClick={() => handleTestLogin('admin')} size="sm" variant="secondary">
+                Admin Login
+              </Button>
+            </>
           ) : (
             <Button onClick={logout} variant="destructive">
               Logout

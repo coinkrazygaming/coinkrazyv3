@@ -39,24 +39,27 @@ class BalanceService {
   }
 
   private initializeDefaultBalances() {
-    // Initialize some default user balances for demo
-    const defaultUsers = [
-      { userId: "user-1", gc: 125000, sc: 450 },
-      { userId: "user-2", gc: 89000, sc: 125 },
-      { userId: "user-3", gc: 450000, sc: 1250 },
-      { userId: "coinkrazy00@gmail.com", gc: 1000000, sc: 5000 }, // Admin account
-      { userId: "test@example.com", gc: 75000, sc: 250 }, // Test user account
-      { userId: "staff@example.com", gc: 50000, sc: 100 }, // Staff account
-    ];
+    // Load balances from real data service
+    const users = realDataService.getAllUsers();
 
-    defaultUsers.forEach((user) => {
-      this.balances.set(user.userId, {
-        userId: user.userId,
-        gc: user.gc,
-        sc: user.sc,
+    users.forEach((user) => {
+      this.balances.set(user.email, {
+        userId: user.email,
+        gc: user.balances.goldCoins,
+        sc: user.balances.sweepsCoins,
         lastUpdated: new Date(),
       });
     });
+
+    // Ensure admin account exists
+    if (!this.balances.has('admin@coinkrazy.com')) {
+      this.balances.set('admin@coinkrazy.com', {
+        userId: 'admin@coinkrazy.com',
+        gc: 1000000,
+        sc: 5000,
+        lastUpdated: new Date(),
+      });
+    }
   }
 
   private startPeriodicUpdates() {

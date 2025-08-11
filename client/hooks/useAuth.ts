@@ -5,6 +5,8 @@ import {
   AuthResponse,
   RegisterData,
 } from "../services/authService";
+import { emailService } from "../services/emailService";
+import { walletService } from "../services/walletService";
 
 interface UseAuthReturn {
   user: User | null;

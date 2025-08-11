@@ -47,7 +47,7 @@ export default function EnhancedWalletBalance({
   showPortfolio = false,
   showExchange = false,
 }: EnhancedWalletBalanceProps) {
-  const { user } = useAuth();
+  const { user, getBalance } = useAuth();
   const { toast } = useToast();
 
   const [wallet, setWallet] = useState<WalletBalance | null>(null);
@@ -96,18 +96,17 @@ export default function EnhancedWalletBalance({
   };
 
   const getDisplayBalance = () => {
-    if (!wallet || hideBalances) return hideBalances ? "***" : "0";
+    if (!user || hideBalances) return hideBalances ? "***" : "0";
 
     const selectedCurrencyInfo = currencies.find(
       (c) => c.code === selectedCurrency,
     );
     if (!selectedCurrencyInfo) return "0";
 
-    const currencyBalance = wallet.currencies[selectedCurrency];
-    if (!currencyBalance) return "0";
-
+    const balance = getBalance(selectedCurrency as 'GC' | 'SC');
     const decimals = selectedCurrencyInfo.decimals;
-    return `${currencyBalance.available.toLocaleString(undefined, {
+
+    return `${balance.toLocaleString(undefined, {
       minimumFractionDigits: decimals > 2 ? 2 : decimals,
       maximumFractionDigits: decimals,
     })} ${selectedCurrencyInfo.symbol}`;

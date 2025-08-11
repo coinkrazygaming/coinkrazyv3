@@ -19,7 +19,7 @@ import {
 import AIEmployeeManager from "@/components/AIEmployeeManager";
 import CasinoAnalytics from "@/components/CasinoAnalytics";
 import CasinoBanking from "@/components/CasinoBanking";
-import PackageEditor from "@/components/PackageEditor";
+import GoldStoreManager from "@/components/GoldStoreManager";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
 import GameManagement from "@/components/GameManagement";

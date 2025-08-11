@@ -382,7 +382,7 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/media`);
       if (!response.ok) throw new Error("Failed to fetch media");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching media:", error);
       return this.getMockMedia();

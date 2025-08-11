@@ -86,15 +86,18 @@ Games communicate with the parent frame via `postMessage` API:
 
 ```javascript
 // Send message to parent
-window.parent.postMessage({
-  type: 'SPIN_REQUEST',
-  data: { betAmount: 10, currency: 'GC' }
-}, '*');
+window.parent.postMessage(
+  {
+    type: "SPIN_REQUEST",
+    data: { betAmount: 10, currency: "GC" },
+  },
+  "*",
+);
 
 // Listen for responses
-window.addEventListener('message', (event) => {
+window.addEventListener("message", (event) => {
   const { type, data } = event.data;
-  if (type === 'SPIN_RESULT') {
+  if (type === "SPIN_RESULT") {
     // Handle spin result
   }
 });
@@ -129,16 +132,19 @@ npm run deploy:prod
 ## 🎯 Game Features
 
 ### Slot Games
+
 - **CoinKrazy Spinner**: 5-reel progressive jackpot slot
 - **Lucky Scratch Gold**: Instant win scratch cards
 - **Josey Duck Adventure**: Themed slot with bonus features
 
 ### Bingo
+
 - **Multi-card gameplay**: Up to 4 cards simultaneously
 - **Auto-daub feature**: Automatic number marking
 - **Progressive jackpots**: Growing prize pools
 
 ### Social Features
+
 - **Live chat**: Real-time player interaction
 - **Tournaments**: Competitive gameplay
 - **Leaderboards**: Daily, weekly, monthly rankings
@@ -146,12 +152,14 @@ npm run deploy:prod
 ## 🔐 Security & Compliance
 
 ### Player Protection
+
 - **Age verification**: 18+ requirement
 - **Responsible gaming tools**: Limits and self-exclusion
 - **Secure transactions**: Encrypted payment processing
 - **Fair play**: Certified RNG and game testing
 
 ### Regulatory Compliance
+
 - **Licensed operation**: Regulated gaming jurisdiction
 - **KYC verification**: Identity verification for withdrawals
 - **Anti-money laundering**: Transaction monitoring

@@ -97,8 +97,8 @@ class KYCService {
       return response.json();
     } catch (error) {
       console.error('Error fetching KYC status:', error);
-      // Return demo status for development
-      return this.getDemoKYCStatus(userId);
+      // Return real KYC status from local data
+      return this.getRealKYCStatus(userId);
     }
   }
 

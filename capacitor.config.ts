@@ -1,0 +1,118 @@
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.coinkrazy.casino',
+  appName: 'CoinKrazy Casino',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https'
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      backgroundColor: "#1a1a2e",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: true,
+      androidSpinnerStyle: "large",
+      iosSpinnerStyle: "small",
+      spinnerColor: "#ffd700",
+      splashFullScreen: true,
+      splashImmersive: true,
+      layoutName: "launch_screen",
+      useDialog: true,
+    },
+    StatusBar: {
+      style: 'DARK',
+      backgroundColor: '#1a1a2e',
+    },
+    Keyboard: {
+      resize: 'body',
+      style: 'DARK',
+      resizeOnFullScreen: true,
+    },
+    LocalNotifications: {
+      smallIcon: "ic_stat_icon_config_sample",
+      iconColor: "#ffd700",
+      sound: "beep.wav",
+    },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+    Haptics: {},
+    App: {
+      launchUrl: "https://coinkrazy.com"
+    },
+    Browser: {
+      windowName: '_blank',
+    },
+    Camera: {
+      permissions: ['camera', 'photos']
+    },
+    Geolocation: {
+      permissions: ['location']
+    },
+    Network: {},
+    Device: {},
+    Storage: {},
+    Clipboard: {},
+    Share: {},
+    Toast: {},
+    Dialog: {},
+    ActionSheet: {},
+    FilePicker: {
+      permissions: ['camera', 'photos']
+    }
+  },
+  ios: {
+    contentInset: 'automatic',
+    backgroundColor: '#1a1a2e',
+    allowsLinkPreview: false,
+    presentationStyle: 'fullscreen',
+    modalPresentationStyle: 'fullscreen',
+    popoverPresentationStyle: 'popover',
+    scheme: 'CoinKrazy Casino',
+    path: 'ios'
+  },
+  android: {
+    buildOptions: {
+      keystorePath: undefined,
+      keystorePassword: undefined,
+      keystoreAlias: undefined,
+      keystoreAliasPassword: undefined,
+      releaseType: 'AAB',
+      signingType: 'apksigner'
+    },
+    backgroundColor: '#1a1a2e',
+    allowMixedContent: true,
+    captureInput: true,
+    webContentsDebuggingEnabled: false,
+    appendUserAgent: 'CoinKrazy/1.0.0',
+    overrideUserAgent: undefined,
+    path: 'android'
+  },
+  bundledWebRuntime: false,
+  includePlugins: [
+    '@capacitor/app',
+    '@capacitor/haptics',
+    '@capacitor/keyboard',
+    '@capacitor/status-bar',
+    '@capacitor/splash-screen',
+    '@capacitor/local-notifications',
+    '@capacitor/push-notifications',
+    '@capacitor/browser',
+    '@capacitor/camera',
+    '@capacitor/geolocation',
+    '@capacitor/network',
+    '@capacitor/device',
+    '@capacitor/storage',
+    '@capacitor/clipboard',
+    '@capacitor/share',
+    '@capacitor/toast',
+    '@capacitor/dialog',
+    '@capacitor/action-sheet'
+  ]
+};
+
+export default config;

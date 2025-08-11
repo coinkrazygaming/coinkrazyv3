@@ -140,39 +140,71 @@ export default function GamePlayer({
       <div className="relative">
         {!isPlaying ? (
           <div className="h-96 bg-gradient-to-br from-casino-blue/20 to-gold/20 flex items-center justify-center">
-            <div className="text-center">
+            <div className="text-center max-w-2xl">
               <img
-                src={game.image_url}
+                src={game.thumbnailUrl}
                 alt={game.name}
-                className="w-48 h-32 object-cover rounded-lg mx-auto mb-4"
+                className="w-64 h-40 object-cover rounded-lg mx-auto mb-6 shadow-lg"
               />
-              <h3 className="text-2xl font-bold mb-2">{game.name}</h3>
-              <p className="text-muted-foreground mb-4">{game.description}</p>
-              <Button
-                onClick={startGame}
-                className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold px-8 py-3"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Start Game
-              </Button>
+              <h3 className="text-3xl font-bold mb-4 text-foreground">{game.name}</h3>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gold-400">{game.rtp}%</div>
+                  <div className="text-xs text-muted-foreground">RTP</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-casino-blue">{game.paylines}</div>
+                  <div className="text-xs text-muted-foreground">Paylines</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-400">{game.minBet}-{game.maxBet}</div>
+                  <div className="text-xs text-muted-foreground">Bet Range</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">{game.volatility}</div>
+                  <div className="text-xs text-muted-foreground">Volatility</div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                {game.features.map((feature) => (
+                  <Badge key={feature} variant="outline" className="border-gold-500/50 text-gold-400">
+                    {feature}
+                  </Badge>
+                ))}
+              </div>
+
+              <div className="flex gap-4 justify-center">
+                <Button
+                  onClick={startGame}
+                  className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold px-8 py-4 text-lg"
+                >
+                  <Play className="w-6 h-6 mr-2" />
+                  Play with {currency === "GC" ? "Gold Coins" : "Sweeps Coins"}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="px-6 py-4"
+                  title="Game Rules"
+                >
+                  <Info className="w-5 h-5 mr-2" />
+                  How to Play
+                </Button>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="h-96 bg-gray-900 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-xl font-bold mb-4">Game Loading...</div>
-              <div className="text-muted-foreground">
-                In a real implementation, this would load the game iframe
-              </div>
-              <Button
-                onClick={() => setIsPlaying(false)}
-                className="mt-4"
-                variant="outline"
-              >
-                Back to Game Info
-              </Button>
-            </div>
-          </div>
+          <GameIframeLoader
+            gameId={gameId}
+            currency={currency}
+            onClose={() => setIsPlaying(false)}
+            onError={(error) => {
+              setError(error);
+              setIsPlaying(false);
+            }}
+          />
         )}
       </div>
     </div>

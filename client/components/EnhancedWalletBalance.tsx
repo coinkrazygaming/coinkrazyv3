@@ -103,13 +103,6 @@ export default function EnhancedWalletBalance({
     );
     if (!selectedCurrencyInfo) return "0";
 
-    if (selectedCurrency === "USD") {
-      return `$${wallet.totalUSDValue.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`;
-    }
-
     const currencyBalance = wallet.currencies[selectedCurrency];
     if (!currencyBalance) return "0";
 
@@ -216,7 +209,7 @@ export default function EnhancedWalletBalance({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
-                    Portfolio Balance
+                    CoinKrazy Balance
                   </span>
                   {!hideBalances && (
                     <div className="flex items-center gap-1">
@@ -333,27 +326,10 @@ export default function EnhancedWalletBalance({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
-                  <DropdownMenuLabel>Select Display Currency</DropdownMenuLabel>
+                  <DropdownMenuLabel>CoinKrazy Virtual Currencies</DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuItem onClick={() => handleCurrencyChange("USD")}>
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2">
-                        <span>💵</span>
-                        <span>USD - Total Portfolio</span>
-                      </div>
-                      {selectedCurrency === "USD" && (
-                        <span className="text-green-500">✓</span>
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Individual Currencies</DropdownMenuLabel>
-
-                  {currencies
-                    .filter((c) => c.code !== "USD")
-                    .map((currency) => {
+                  {currencies.map((currency) => {
                       const balance = wallet.currencies[currency.code];
                       const change = getPriceChange(currency.code);
                       const hasBalance = balance && balance.available > 0;
@@ -371,8 +347,14 @@ export default function EnhancedWalletBalance({
                                 <div className="font-medium">
                                   {currency.code} - {currency.name}
                                 </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {currency.code === "GC"
+                                    ? "Can be purchased • No cash value"
+                                    : "Won/Rewarded only • Redeemable"
+                                  }
+                                </div>
                                 {hasBalance && !hideBalances && (
-                                  <div className="text-xs text-muted-foreground">
+                                  <div className="text-xs font-medium">
                                     {balance.available.toLocaleString()}{" "}
                                     {currency.symbol}
                                   </div>

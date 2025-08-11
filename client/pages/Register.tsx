@@ -133,30 +133,11 @@ export default function Register() {
         setError("");
 
         try {
-          const response = await register({
-            username: formData.username,
-            email: formData.email,
-            password: formData.password,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            dateOfBirth: formData.dateOfBirth,
-            phone: formData.phone,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zipCode: formData.zipCode,
-            agreeMarketing: formData.agreeMarketing,
-          });
+          await register(formData.email, formData.username, formData.password);
 
-          if (response.success) {
-            if (response.requiresEmailVerification) {
-              setPendingVerification(true);
-            } else {
-              setRegistrationComplete(true);
-            }
-          } else {
-            setError(response.message || "Registration failed");
-          }
+          // Registration successful - for now just mark as complete
+          // In production, you might want to check if email verification is required
+          setRegistrationComplete(true);
         } catch (error) {
           console.error("Registration error:", error);
           setError("Registration failed. Please try again.");

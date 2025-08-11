@@ -319,7 +319,7 @@ class SportsDataService {
     const now = new Date();
     const games: GameWithLines[] = [];
 
-    // Generate realistic demo games for next 7 days
+    // Generate realistic sports games for next 7 days
     for (let day = 0; day < 7; day++) {
       const gameDate = new Date(now.getTime() + day * 24 * 60 * 60 * 1000);
 

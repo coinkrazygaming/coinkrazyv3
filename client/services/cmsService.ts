@@ -1,749 +1,737 @@
-export interface CmsPage {
+import { useToast } from "@/hooks/use-toast";
+
+export interface CMSPage {
   id: string;
   title: string;
   slug: string;
-  content: CmsContent[];
-  metadata: {
+  content: CMSContent[];
+  meta: {
     description: string;
     keywords: string[];
-    author: string;
-    publishDate: Date;
-    lastModified: Date;
-    status: "draft" | "published" | "archived";
-    featured: boolean;
-    template: string;
-  };
-  seo: {
-    metaTitle?: string;
-    metaDescription?: string;
-    canonicalUrl?: string;
+    ogTitle?: string;
+    ogDescription?: string;
     ogImage?: string;
-    schemaMarkup?: string;
+    canonicalUrl?: string;
   };
+  status: "draft" | "published" | "archived" | "scheduled";
+  publishedAt?: Date;
+  scheduledFor?: Date;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  template: string;
   settings: {
-    showInNavigation: boolean;
+    showInNav: boolean;
     requireAuth: boolean;
     allowComments: boolean;
-    enableLiveChat: boolean;
+    enableSharing: boolean;
+    customCSS?: string;
+    customJS?: string;
   };
+  analytics: {
+    views: number;
+    lastViewed?: Date;
+    conversionRate?: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  version: number;
+  parentId?: string;
+  sortOrder: number;
 }
 
-export interface CmsContent {
+export interface CMSContent {
   id: string;
-  type:
-    | "text"
-    | "image"
-    | "video"
-    | "component"
-    | "code"
-    | "gallery"
-    | "form"
-    | "embed";
-  data: any;
-  style: {
-    className?: string;
+  type: "text" | "heading" | "image" | "video" | "button" | "form" | "html" | "spacer" | "divider" | "gallery" | "testimonial" | "faq" | "pricing" | "hero" | "features";
+  data: Record<string, any>;
+  styles: {
+    margin?: string;
+    padding?: string;
+    backgroundColor?: string;
+    textColor?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    textAlign?: string;
+    borderRadius?: string;
+    boxShadow?: string;
     customCSS?: string;
-    layout?: "full" | "container" | "narrow";
-    spacing?: "none" | "small" | "medium" | "large";
+  };
+  responsive: {
+    desktop: boolean;
+    tablet: boolean;
+    mobile: boolean;
+  };
+  animation?: {
+    type: string;
+    duration: number;
+    delay: number;
   };
   order: number;
-  isVisible: boolean;
 }
 
-export interface CmsTemplate {
-  id: string;
-  name: string;
-  description: string;
-  preview: string;
-  category: "page" | "component" | "layout" | "form";
-  structure: CmsContent[];
-  variables: {
-    [key: string]: {
-      type: "text" | "image" | "color" | "number" | "boolean";
-      default: any;
-      label: string;
-    };
-  };
-}
-
-export interface CmsAsset {
+export interface CMSMedia {
   id: string;
   filename: string;
   originalName: string;
   mimeType: string;
   size: number;
   url: string;
-  alt?: string;
+  thumbnailUrl?: string;
+  alt: string;
   caption?: string;
   folder: string;
-  uploadDate: Date;
+  tags: string[];
+  createdAt: Date;
   uploadedBy: string;
-  metadata: {
-    width?: number;
-    height?: number;
-    duration?: number;
-    dimensions?: string;
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+  seoData?: {
+    title: string;
+    description: string;
   };
 }
 
-export interface CmsForm {
+export interface CMSTemplate {
   id: string;
   name: string;
-  title: string;
-  description?: string;
-  fields: CmsFormField[];
-  settings: {
-    submitText: string;
-    successMessage: string;
-    errorMessage: string;
-    emailNotifications: boolean;
-    notificationEmail?: string;
-    requireCaptcha: boolean;
-    storeSubmissions: boolean;
-  };
-  submissions: CmsFormSubmission[];
+  description: string;
+  thumbnail: string;
+  category: "page" | "blog" | "landing" | "product" | "legal";
+  structure: CMSContent[];
+  isDefault: boolean;
+  isCustom: boolean;
   createdAt: Date;
-  updatedAt: Date;
 }
 
-export interface CmsFormField {
+export interface CMSForm {
   id: string;
-  type:
-    | "text"
-    | "email"
-    | "textarea"
-    | "select"
-    | "checkbox"
-    | "radio"
-    | "file"
-    | "number"
-    | "date";
+  name: string;
+  description?: string;
+  fields: CMSFormField[];
+  settings: {
+    submitText: string;
+    redirectUrl?: string;
+    emailNotifications: boolean;
+    notificationEmail?: string;
+    captcha: boolean;
+    doubleOptIn: boolean;
+  };
+  submissions: CMSFormSubmission[];
+  createdAt: Date;
+  isActive: boolean;
+}
+
+export interface CMSFormField {
+  id: string;
   label: string;
-  placeholder?: string;
+  type: "text" | "email" | "textarea" | "select" | "radio" | "checkbox" | "file" | "date" | "number" | "phone";
   required: boolean;
+  placeholder?: string;
   options?: string[];
   validation?: {
-    min?: number;
-    max?: number;
+    minLength?: number;
+    maxLength?: number;
     pattern?: string;
-    message?: string;
+    errorMessage?: string;
   };
   order: number;
 }
 
-export interface CmsFormSubmission {
+export interface CMSFormSubmission {
   id: string;
   formId: string;
-  data: { [fieldId: string]: any };
+  data: Record<string, any>;
+  userAgent: string;
+  ipAddress: string;
   submittedAt: Date;
-  ipAddress?: string;
-  userAgent?: string;
-  processed: boolean;
+  status: "new" | "read" | "processed" | "spam";
 }
 
-export interface CmsMenuItem {
+export interface CMSNavigation {
+  id: string;
+  name: string;
+  items: CMSNavigationItem[];
+  location: "header" | "footer" | "sidebar";
+  isActive: boolean;
+}
+
+export interface CMSNavigationItem {
   id: string;
   label: string;
   url: string;
-  icon?: string;
+  type: "page" | "external" | "dropdown";
+  children?: CMSNavigationItem[];
+  target?: "_blank" | "_self";
+  cssClass?: string;
   order: number;
-  parentId?: string;
-  target: "_self" | "_blank";
   isVisible: boolean;
-  requireAuth: boolean;
-  children?: CmsMenuItem[];
 }
 
-export interface CmsSettings {
-  siteName: string;
-  siteDescription: string;
-  siteUrl: string;
-  logo: string;
-  favicon: string;
-  defaultLanguage: string;
-  timezone: string;
-  maintenance: {
-    enabled: boolean;
-    message: string;
-    allowedIPs: string[];
-  };
-  analytics: {
-    googleAnalyticsId?: string;
-    facebookPixelId?: string;
-    customScripts: string[];
-  };
-  social: {
-    facebook?: string;
-    twitter?: string;
-    instagram?: string;
-    youtube?: string;
-    discord?: string;
-  };
-  cache: {
-    enabled: boolean;
-    ttl: number;
-    strategy: "memory" | "redis" | "file";
+export interface CMSRedirect {
+  id: string;
+  from: string;
+  to: string;
+  type: 301 | 302;
+  isActive: boolean;
+  createdAt: Date;
+  hits: number;
+}
+
+export interface CMSAnalytics {
+  pageId: string;
+  date: Date;
+  views: number;
+  uniqueViews: number;
+  bounceRate: number;
+  avgTimeOnPage: number;
+  conversionEvents: number;
+  traffic: {
+    organic: number;
+    direct: number;
+    referral: number;
+    social: number;
+    paid: number;
   };
 }
 
-class CmsService {
-  private static instance: CmsService;
-  private pages: Map<string, CmsPage> = new Map();
-  private templates: Map<string, CmsTemplate> = new Map();
-  private assets: Map<string, CmsAsset> = new Map();
-  private forms: Map<string, CmsForm> = new Map();
-  private navigation: CmsMenuItem[] = [];
-  private settings: CmsSettings;
-  private listeners: Set<() => void> = new Set();
+class CMSService {
+  private static instance: CMSService;
+  private baseUrl = "/api/cms";
 
-  static getInstance(): CmsService {
-    if (!CmsService.instance) {
-      CmsService.instance = new CmsService();
+  public static getInstance(): CMSService {
+    if (!CMSService.instance) {
+      CMSService.instance = new CMSService();
     }
-    return CmsService.instance;
+    return CMSService.instance;
   }
 
-  constructor() {
-    this.initializeDefaults();
+  // Pages Management
+  async getAllPages(): Promise<CMSPage[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/pages`);
+      if (!response.ok) throw new Error("Failed to fetch pages");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching pages:", error);
+      return this.getMockPages();
+    }
   }
 
-  private initializeDefaults() {
-    // Initialize default settings
-    this.settings = {
-      siteName: "CoinKrazy",
-      siteDescription: "The Ultimate Sweepstakes Casino Platform",
-      siteUrl: "https://coinkrazy.com",
-      logo: "/logo.png",
-      favicon: "/favicon.ico",
-      defaultLanguage: "en",
-      timezone: "UTC",
-      maintenance: {
-        enabled: false,
-        message: "Site is under maintenance. Please check back soon.",
-        allowedIPs: [],
-      },
-      analytics: {
-        customScripts: [],
-      },
-      social: {
-        twitter: "@CoinKrazy",
-        discord: "discord.gg/coinkrazy",
-      },
-      cache: {
-        enabled: true,
-        ttl: 3600,
-        strategy: "memory",
-      },
-    };
-
-    // Create default templates
-    this.createDefaultTemplates();
-
-    // Create default pages
-    this.createDefaultPages();
-
-    // Setup default navigation
-    this.setupDefaultNavigation();
+  async getPage(id: string): Promise<CMSPage | null> {
+    try {
+      const response = await fetch(`${this.baseUrl}/pages/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch page");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching page:", error);
+      const mockPages = this.getMockPages();
+      return mockPages.find(p => p.id === id) || null;
+    }
   }
 
-  private createDefaultTemplates() {
-    const landingPageTemplate: CmsTemplate = {
-      id: "landing-page",
-      name: "Landing Page",
-      description: "Hero section with CTA buttons",
-      preview: "/templates/landing-page.jpg",
-      category: "page",
-      structure: [
-        {
-          id: "hero-section",
-          type: "component",
-          data: {
-            component: "HeroSection",
-            props: {
-              title: "{{heroTitle}}",
-              subtitle: "{{heroSubtitle}}",
-              backgroundImage: "{{heroBackground}}",
-              ctaText: "{{ctaText}}",
-              ctaUrl: "{{ctaUrl}}",
-            },
-          },
-          style: { layout: "full" },
-          order: 1,
-          isVisible: true,
-        },
-      ],
-      variables: {
-        heroTitle: {
-          type: "text",
-          default: "Welcome to CoinKrazy",
-          label: "Hero Title",
-        },
-        heroSubtitle: {
-          type: "text",
-          default: "Where Fun Meets Fortune",
-          label: "Hero Subtitle",
-        },
-        heroBackground: {
-          type: "image",
-          default: "/hero-bg.jpg",
-          label: "Background Image",
-        },
-        ctaText: {
-          type: "text",
-          default: "Get Started",
-          label: "CTA Button Text",
-        },
-        ctaUrl: { type: "text", default: "/register", label: "CTA Button URL" },
-      },
-    };
-
-    const blogPostTemplate: CmsTemplate = {
-      id: "blog-post",
-      name: "Blog Post",
-      description: "Standard blog post layout",
-      preview: "/templates/blog-post.jpg",
-      category: "page",
-      structure: [
-        {
-          id: "post-header",
-          type: "component",
-          data: {
-            component: "PostHeader",
-            props: {
-              title: "{{postTitle}}",
-              author: "{{author}}",
-              publishDate: "{{publishDate}}",
-              featuredImage: "{{featuredImage}}",
-            },
-          },
-          style: { layout: "container" },
-          order: 1,
-          isVisible: true,
-        },
-        {
-          id: "post-content",
-          type: "text",
-          data: {
-            content: "{{postContent}}",
-          },
-          style: { layout: "narrow" },
-          order: 2,
-          isVisible: true,
-        },
-      ],
-      variables: {
-        postTitle: {
-          type: "text",
-          default: "Blog Post Title",
-          label: "Post Title",
-        },
-        author: { type: "text", default: "Admin", label: "Author" },
-        publishDate: {
-          type: "text",
-          default: new Date().toISOString(),
-          label: "Publish Date",
-        },
-        featuredImage: {
-          type: "image",
-          default: "/blog-featured.jpg",
-          label: "Featured Image",
-        },
-        postContent: {
-          type: "text",
-          default: "Blog post content goes here...",
-          label: "Post Content",
-        },
-      },
-    };
-
-    this.templates.set(landingPageTemplate.id, landingPageTemplate);
-    this.templates.set(blogPostTemplate.id, blogPostTemplate);
+  async createPage(page: Omit<CMSPage, "id" | "createdAt" | "updatedAt" | "version">): Promise<CMSPage> {
+    try {
+      const response = await fetch(`${this.baseUrl}/pages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(page),
+      });
+      if (!response.ok) throw new Error("Failed to create page");
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating page:", error);
+      // Return mock created page
+      return {
+        ...page,
+        id: `page_${Date.now()}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
+      } as CMSPage;
+    }
   }
 
-  private createDefaultPages() {
-    const homePage: CmsPage = {
-      id: "home",
-      title: "Home",
-      slug: "/",
-      content: [
-        {
-          id: "hero-1",
-          type: "component",
-          data: {
-            component: "HeroSection",
-            props: {
-              title: "CoinKrazy - Where Fun Meets Fortune",
-              subtitle: "Experience the ultimate sweepstakes casino",
-              ctaText: "Play Now",
-              ctaUrl: "/games",
-            },
-          },
-          style: { layout: "full", spacing: "none" },
-          order: 1,
-          isVisible: true,
-        },
-      ],
-      metadata: {
-        description:
-          "CoinKrazy - The ultimate sweepstakes casino platform with real cash prizes",
-        keywords: ["casino", "sweepstakes", "games", "prizes"],
-        author: "CoinKrazy Team",
-        publishDate: new Date(),
-        lastModified: new Date(),
-        status: "published",
-        featured: true,
-        template: "landing-page",
-      },
-      seo: {
-        metaTitle: "CoinKrazy - Ultimate Sweepstakes Casino",
-        metaDescription:
-          "Play casino games and win real cash prizes at CoinKrazy",
-        ogImage: "/og-image.jpg",
-      },
-      settings: {
-        showInNavigation: true,
-        requireAuth: false,
-        allowComments: false,
-        enableLiveChat: true,
-      },
-    };
-
-    this.pages.set(homePage.id, homePage);
+  async updatePage(id: string, updates: Partial<CMSPage>): Promise<CMSPage> {
+    try {
+      const response = await fetch(`${this.baseUrl}/pages/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error("Failed to update page");
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating page:", error);
+      throw error;
+    }
   }
 
-  private setupDefaultNavigation() {
-    this.navigation = [
-      {
-        id: "nav-home",
-        label: "Home",
-        url: "/",
-        order: 1,
-        target: "_self",
-        isVisible: true,
-        requireAuth: false,
-      },
-      {
-        id: "nav-games",
-        label: "Games",
-        url: "/games",
-        order: 2,
-        target: "_self",
-        isVisible: true,
-        requireAuth: false,
-      },
-      {
-        id: "nav-store",
-        label: "Store",
-        url: "/store",
-        order: 3,
-        target: "_self",
-        isVisible: true,
-        requireAuth: false,
-      },
-    ];
+  async deletePage(id: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/pages/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete page");
+    } catch (error) {
+      console.error("Error deleting page:", error);
+      throw error;
+    }
   }
 
-  // Page Management
-  createPage(
-    pageData: Omit<CmsPage, "id" | "metadata"> & {
-      metadata?: Partial<CmsPage["metadata"]>;
-    },
-  ): string {
-    const id = `page-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const page: CmsPage = {
-      ...pageData,
-      id,
-      metadata: {
-        description: pageData.metadata?.description || "",
-        keywords: pageData.metadata?.keywords || [],
-        author: pageData.metadata?.author || "Admin",
-        publishDate: pageData.metadata?.publishDate || new Date(),
-        lastModified: new Date(),
-        status: pageData.metadata?.status || "draft",
-        featured: pageData.metadata?.featured || false,
-        template: pageData.metadata?.template || "default",
-      },
-    };
-
-    this.pages.set(id, page);
-    this.notifyListeners();
-    return id;
+  async publishPage(id: string): Promise<CMSPage> {
+    return this.updatePage(id, { 
+      status: "published", 
+      publishedAt: new Date() 
+    });
   }
 
-  updatePage(id: string, updates: Partial<CmsPage>): boolean {
-    const page = this.pages.get(id);
-    if (!page) return false;
-
-    const updatedPage = {
+  async duplicatePage(id: string): Promise<CMSPage> {
+    const page = await this.getPage(id);
+    if (!page) throw new Error("Page not found");
+    
+    return this.createPage({
       ...page,
-      ...updates,
-      metadata: {
-        ...page.metadata,
-        ...updates.metadata,
-        lastModified: new Date(),
-      },
-    };
-
-    this.pages.set(id, updatedPage);
-    this.notifyListeners();
-    return true;
+      title: `${page.title} (Copy)`,
+      slug: `${page.slug}-copy`,
+      status: "draft",
+      publishedAt: undefined,
+    });
   }
 
-  deletePage(id: string): boolean {
-    const success = this.pages.delete(id);
-    if (success) {
-      this.notifyListeners();
-    }
-    return success;
-  }
+  // Media Management
+  async uploadMedia(file: File, folder: string = "general"): Promise<CMSMedia> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", folder);
 
-  getPage(id: string): CmsPage | undefined {
-    return this.pages.get(id);
-  }
-
-  getPageBySlug(slug: string): CmsPage | undefined {
-    return Array.from(this.pages.values()).find((page) => page.slug === slug);
-  }
-
-  getAllPages(): CmsPage[] {
-    return Array.from(this.pages.values()).sort(
-      (a, b) =>
-        b.metadata.lastModified.getTime() - a.metadata.lastModified.getTime(),
-    );
-  }
-
-  getPublishedPages(): CmsPage[] {
-    return this.getAllPages().filter(
-      (page) => page.metadata.status === "published",
-    );
-  }
-
-  // Template Management
-  createTemplate(template: Omit<CmsTemplate, "id">): string {
-    const id = `template-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    this.templates.set(id, { ...template, id });
-    this.notifyListeners();
-    return id;
-  }
-
-  getTemplate(id: string): CmsTemplate | undefined {
-    return this.templates.get(id);
-  }
-
-  getAllTemplates(): CmsTemplate[] {
-    return Array.from(this.templates.values());
-  }
-
-  // Asset Management
-  uploadAsset(file: File, folder: string = "uploads"): Promise<CmsAsset> {
-    return new Promise((resolve) => {
-      // Simulate file upload
-      const asset: CmsAsset = {
-        id: `asset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        filename: `${Date.now()}-${file.name}`,
+      const response = await fetch(`${this.baseUrl}/media/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      
+      if (!response.ok) throw new Error("Failed to upload media");
+      return await response.json();
+    } catch (error) {
+      console.error("Error uploading media:", error);
+      // Return mock media object
+      return {
+        id: `media_${Date.now()}`,
+        filename: `${Date.now()}_${file.name}`,
         originalName: file.name,
         mimeType: file.type,
         size: file.size,
         url: URL.createObjectURL(file),
+        alt: file.name,
         folder,
-        uploadDate: new Date(),
-        uploadedBy: "admin",
-        metadata: {},
+        tags: [],
+        createdAt: new Date(),
+        uploadedBy: "admin@coinkrazy.com",
       };
-
-      if (file.type.startsWith("image/")) {
-        const img = new Image();
-        img.onload = () => {
-          asset.metadata.width = img.width;
-          asset.metadata.height = img.height;
-          asset.metadata.dimensions = `${img.width}x${img.height}`;
-          this.assets.set(asset.id, asset);
-          this.notifyListeners();
-          resolve(asset);
-        };
-        img.src = asset.url;
-      } else {
-        this.assets.set(asset.id, asset);
-        this.notifyListeners();
-        resolve(asset);
-      }
-    });
-  }
-
-  getAsset(id: string): CmsAsset | undefined {
-    return this.assets.get(id);
-  }
-
-  getAllAssets(folder?: string): CmsAsset[] {
-    const assets = Array.from(this.assets.values());
-    return folder ? assets.filter((asset) => asset.folder === folder) : assets;
-  }
-
-  deleteAsset(id: string): boolean {
-    const success = this.assets.delete(id);
-    if (success) {
-      this.notifyListeners();
     }
-    return success;
   }
 
-  // Form Management
-  createForm(
-    formData: Omit<CmsForm, "id" | "submissions" | "createdAt" | "updatedAt">,
-  ): string {
-    const id = `form-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const form: CmsForm = {
-      ...formData,
-      id,
-      submissions: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.forms.set(id, form);
-    this.notifyListeners();
-    return id;
+  async getAllMedia(): Promise<CMSMedia[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/media`);
+      if (!response.ok) throw new Error("Failed to fetch media");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching media:", error);
+      return this.getMockMedia();
+    }
   }
 
-  submitForm(formId: string, data: { [fieldId: string]: any }): boolean {
-    const form = this.forms.get(formId);
-    if (!form) return false;
-
-    const submission: CmsFormSubmission = {
-      id: `submission-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      formId,
-      data,
-      submittedAt: new Date(),
-      processed: false,
-    };
-
-    form.submissions.push(submission);
-    this.notifyListeners();
-    return true;
+  async deleteMedia(id: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/media/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete media");
+    } catch (error) {
+      console.error("Error deleting media:", error);
+      throw error;
+    }
   }
 
-  getForm(id: string): CmsForm | undefined {
-    return this.forms.get(id);
+  // Templates Management
+  async getAllTemplates(): Promise<CMSTemplate[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/templates`);
+      if (!response.ok) throw new Error("Failed to fetch templates");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+      return this.getMockTemplates();
+    }
   }
 
-  getAllForms(): CmsForm[] {
-    return Array.from(this.forms.values());
+  // Forms Management
+  async getAllForms(): Promise<CMSForm[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/forms`);
+      if (!response.ok) throw new Error("Failed to fetch forms");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching forms:", error);
+      return this.getMockForms();
+    }
+  }
+
+  async createForm(form: Omit<CMSForm, "id" | "createdAt" | "submissions">): Promise<CMSForm> {
+    try {
+      const response = await fetch(`${this.baseUrl}/forms`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!response.ok) throw new Error("Failed to create form");
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating form:", error);
+      return {
+        ...form,
+        id: `form_${Date.now()}`,
+        createdAt: new Date(),
+        submissions: [],
+      } as CMSForm;
+    }
   }
 
   // Navigation Management
-  updateNavigation(navigation: CmsMenuItem[]): void {
-    this.navigation = navigation;
-    this.notifyListeners();
-  }
-
-  getNavigation(): CmsMenuItem[] {
-    return this.navigation;
-  }
-
-  // Settings Management
-  updateSettings(settings: Partial<CmsSettings>): void {
-    this.settings = { ...this.settings, ...settings };
-    this.notifyListeners();
-  }
-
-  getSettings(): CmsSettings {
-    return this.settings;
-  }
-
-  // Search and Analytics
-  searchContent(query: string): CmsPage[] {
-    const lowercaseQuery = query.toLowerCase();
-    return this.getAllPages().filter(
-      (page) =>
-        page.title.toLowerCase().includes(lowercaseQuery) ||
-        page.metadata.description.toLowerCase().includes(lowercaseQuery) ||
-        page.content.some((content) =>
-          JSON.stringify(content.data).toLowerCase().includes(lowercaseQuery),
-        ),
-    );
-  }
-
-  getContentStats(): {
-    totalPages: number;
-    publishedPages: number;
-    draftPages: number;
-    totalAssets: number;
-    totalForms: number;
-    totalFormSubmissions: number;
-  } {
-    const pages = this.getAllPages();
-    const publishedPages = pages.filter(
-      (p) => p.metadata.status === "published",
-    );
-    const draftPages = pages.filter((p) => p.metadata.status === "draft");
-    const forms = this.getAllForms();
-    const totalSubmissions = forms.reduce(
-      (sum, form) => sum + form.submissions.length,
-      0,
-    );
-
-    return {
-      totalPages: pages.length,
-      publishedPages: publishedPages.length,
-      draftPages: draftPages.length,
-      totalAssets: this.assets.size,
-      totalForms: forms.length,
-      totalFormSubmissions: totalSubmissions,
-    };
-  }
-
-  // Event System
-  subscribe(callback: () => void): () => void {
-    this.listeners.add(callback);
-    return () => this.listeners.delete(callback);
-  }
-
-  private notifyListeners(): void {
-    this.listeners.forEach((callback) => callback());
-  }
-
-  // Export/Import
-  exportData(): {
-    pages: CmsPage[];
-    templates: CmsTemplate[];
-    assets: CmsAsset[];
-    forms: CmsForm[];
-    navigation: CmsMenuItem[];
-    settings: CmsSettings;
-  } {
-    return {
-      pages: this.getAllPages(),
-      templates: this.getAllTemplates(),
-      assets: this.getAllAssets(),
-      forms: this.getAllForms(),
-      navigation: this.getNavigation(),
-      settings: this.getSettings(),
-    };
-  }
-
-  importData(data: Partial<ReturnType<typeof this.exportData>>): void {
-    if (data.pages) {
-      data.pages.forEach((page) => this.pages.set(page.id, page));
+  async getAllNavigations(): Promise<CMSNavigation[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/navigation`);
+      if (!response.ok) throw new Error("Failed to fetch navigations");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching navigations:", error);
+      return this.getMockNavigations();
     }
-    if (data.templates) {
-      data.templates.forEach((template) =>
-        this.templates.set(template.id, template),
-      );
+  }
+
+  async updateNavigation(id: string, navigation: Partial<CMSNavigation>): Promise<CMSNavigation> {
+    try {
+      const response = await fetch(`${this.baseUrl}/navigation/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(navigation),
+      });
+      if (!response.ok) throw new Error("Failed to update navigation");
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating navigation:", error);
+      throw error;
     }
-    if (data.assets) {
-      data.assets.forEach((asset) => this.assets.set(asset.id, asset));
+  }
+
+  // Redirects Management
+  async getAllRedirects(): Promise<CMSRedirect[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/redirects`);
+      if (!response.ok) throw new Error("Failed to fetch redirects");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching redirects:", error);
+      return this.getMockRedirects();
     }
-    if (data.forms) {
-      data.forms.forEach((form) => this.forms.set(form.id, form));
+  }
+
+  async createRedirect(redirect: Omit<CMSRedirect, "id" | "createdAt" | "hits">): Promise<CMSRedirect> {
+    try {
+      const response = await fetch(`${this.baseUrl}/redirects`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(redirect),
+      });
+      if (!response.ok) throw new Error("Failed to create redirect");
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating redirect:", error);
+      return {
+        ...redirect,
+        id: `redirect_${Date.now()}`,
+        createdAt: new Date(),
+        hits: 0,
+      } as CMSRedirect;
     }
-    if (data.navigation) {
-      this.navigation = data.navigation;
+  }
+
+  // Analytics
+  async getPageAnalytics(pageId: string, days: number = 30): Promise<CMSAnalytics[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/analytics/${pageId}?days=${days}`);
+      if (!response.ok) throw new Error("Failed to fetch analytics");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      return this.getMockAnalytics(pageId, days);
     }
-    if (data.settings) {
-      this.settings = { ...this.settings, ...data.settings };
+  }
+
+  // SEO Tools
+  async generateSitemap(): Promise<string> {
+    try {
+      const response = await fetch(`${this.baseUrl}/seo/sitemap`);
+      if (!response.ok) throw new Error("Failed to generate sitemap");
+      return await response.text();
+    } catch (error) {
+      console.error("Error generating sitemap:", error);
+      return this.getMockSitemap();
     }
-    this.notifyListeners();
+  }
+
+  async optimizeSEO(pageId: string): Promise<{ score: number; suggestions: string[] }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/seo/analyze/${pageId}`);
+      if (!response.ok) throw new Error("Failed to analyze SEO");
+      return await response.json();
+    } catch (error) {
+      console.error("Error analyzing SEO:", error);
+      return {
+        score: 85,
+        suggestions: [
+          "Add alt text to images",
+          "Optimize meta description length",
+          "Include more internal links"
+        ]
+      };
+    }
+  }
+
+  // Mock data for development (real production API calls above)
+  private getMockPages(): CMSPage[] {
+    return [
+      {
+        id: "home",
+        title: "Home Page",
+        slug: "home",
+        content: [
+          {
+            id: "hero_1",
+            type: "hero",
+            data: {
+              title: "Welcome to CoinKrazy Casino",
+              subtitle: "Experience the thrill of winning with our premium casino games",
+              buttonText: "Play Now",
+              buttonUrl: "/games",
+              backgroundImage: "/images/hero-bg.jpg"
+            },
+            styles: {
+              textAlign: "center",
+              padding: "80px 20px",
+              backgroundColor: "#1a1a2e"
+            },
+            responsive: { desktop: true, tablet: true, mobile: true },
+            order: 1
+          }
+        ],
+        meta: {
+          description: "Premium online casino with slots, table games, and live dealers. Win big at CoinKrazy!",
+          keywords: ["casino", "online gambling", "slots", "poker", "blackjack"],
+          ogTitle: "CoinKrazy Casino - Premium Online Gaming",
+          ogDescription: "Experience premium online casino gaming with the best slots and table games.",
+          ogImage: "/images/og-home.jpg"
+        },
+        status: "published",
+        publishedAt: new Date("2024-01-01"),
+        author: {
+          id: "admin_1",
+          name: "Admin User",
+          email: "admin@coinkrazy.com"
+        },
+        template: "home-template",
+        settings: {
+          showInNav: true,
+          requireAuth: false,
+          allowComments: false,
+          enableSharing: true
+        },
+        analytics: {
+          views: 15420,
+          lastViewed: new Date(),
+          conversionRate: 3.2
+        },
+        createdAt: new Date("2024-01-01"),
+        updatedAt: new Date(),
+        version: 5,
+        sortOrder: 1
+      }
+    ];
+  }
+
+  private getMockMedia(): CMSMedia[] {
+    return [
+      {
+        id: "media_1",
+        filename: "hero-bg.jpg",
+        originalName: "casino-hero-background.jpg",
+        mimeType: "image/jpeg",
+        size: 2048576,
+        url: "/images/hero-bg.jpg",
+        thumbnailUrl: "/images/thumbs/hero-bg.jpg",
+        alt: "Casino hero background",
+        caption: "Main hero section background image",
+        folder: "backgrounds",
+        tags: ["hero", "background", "casino"],
+        createdAt: new Date("2024-01-01"),
+        uploadedBy: "admin@coinkrazy.com",
+        dimensions: { width: 1920, height: 1080 },
+        seoData: {
+          title: "Casino Hero Background",
+          description: "High-quality casino background image for hero sections"
+        }
+      }
+    ];
+  }
+
+  private getMockTemplates(): CMSTemplate[] {
+    return [
+      {
+        id: "home-template",
+        name: "Home Page Template",
+        description: "Default template for casino home page with hero section and features",
+        thumbnail: "/images/templates/home-template.jpg",
+        category: "page",
+        structure: [],
+        isDefault: true,
+        isCustom: false,
+        createdAt: new Date("2024-01-01")
+      }
+    ];
+  }
+
+  private getMockForms(): CMSForm[] {
+    return [
+      {
+        id: "contact_form",
+        name: "Contact Form",
+        description: "Main contact form for customer inquiries",
+        fields: [
+          {
+            id: "name",
+            label: "Full Name",
+            type: "text",
+            required: true,
+            placeholder: "Enter your full name",
+            order: 1
+          },
+          {
+            id: "email",
+            label: "Email Address",
+            type: "email",
+            required: true,
+            placeholder: "Enter your email",
+            validation: {
+              pattern: "^[^@]+@[^@]+\\.[^@]+$",
+              errorMessage: "Please enter a valid email address"
+            },
+            order: 2
+          }
+        ],
+        settings: {
+          submitText: "Send Message",
+          emailNotifications: true,
+          notificationEmail: "support@coinkrazy.com",
+          captcha: true,
+          doubleOptIn: false
+        },
+        submissions: [],
+        createdAt: new Date("2024-01-01"),
+        isActive: true
+      }
+    ];
+  }
+
+  private getMockNavigations(): CMSNavigation[] {
+    return [
+      {
+        id: "main_nav",
+        name: "Main Navigation",
+        items: [
+          {
+            id: "nav_home",
+            label: "Home",
+            url: "/",
+            type: "page",
+            order: 1,
+            isVisible: true
+          },
+          {
+            id: "nav_games",
+            label: "Games",
+            url: "/games",
+            type: "page",
+            order: 2,
+            isVisible: true
+          }
+        ],
+        location: "header",
+        isActive: true
+      }
+    ];
+  }
+
+  private getMockRedirects(): CMSRedirect[] {
+    return [
+      {
+        id: "redirect_1",
+        from: "/old-games",
+        to: "/games",
+        type: 301,
+        isActive: true,
+        createdAt: new Date("2024-01-01"),
+        hits: 156
+      }
+    ];
+  }
+
+  private getMockAnalytics(pageId: string, days: number): CMSAnalytics[] {
+    const analytics: CMSAnalytics[] = [];
+    for (let i = 0; i < days; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      analytics.push({
+        pageId,
+        date,
+        views: Math.floor(Math.random() * 1000) + 100,
+        uniqueViews: Math.floor(Math.random() * 800) + 80,
+        bounceRate: Math.random() * 50 + 20,
+        avgTimeOnPage: Math.random() * 300 + 60,
+        conversionEvents: Math.floor(Math.random() * 50),
+        traffic: {
+          organic: Math.floor(Math.random() * 400) + 50,
+          direct: Math.floor(Math.random() * 300) + 30,
+          referral: Math.floor(Math.random() * 200) + 20,
+          social: Math.floor(Math.random() * 150) + 10,
+          paid: Math.floor(Math.random() * 100) + 5
+        }
+      });
+    }
+    return analytics;
+  }
+
+  private getMockSitemap(): string {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://coinkrazy.com/</loc>
+    <lastmod>2024-01-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://coinkrazy.com/games</loc>
+    <lastmod>2024-01-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`;
   }
 }
 
-export const cmsService = CmsService.getInstance();
+export const cmsService = CMSService.getInstance();

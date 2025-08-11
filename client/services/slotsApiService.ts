@@ -83,7 +83,7 @@ class SlotsApiService {
       id: "netent",
       name: "NetEnt",
       apiEndpoint: "https://api.netent.com/games",
-      apiKey: import.meta.env.VITE_NETENT_API_KEY || "demo-key",
+      apiKey: import.meta.env.VITE_NETENT_API_KEY || "production-api-key",
       isActive: true,
       gameCount: 150,
       supportedCurrencies: ["GC", "SC", "USD"],
@@ -398,7 +398,7 @@ class SlotsApiService {
       "🔔": [0, 0, 8, 30, 100],    // Bell
       "🍇": [0, 0, 5, 20, 75],     // Grapes
       "🍊": [0, 0, 4, 15, 50],     // Orange
-      "🍋": [0, 0, 3, 10, 35],     // Lemon
+      "���": [0, 0, 3, 10, 35],     // Lemon
       "🍒": [0, 0, 2, 8, 25],      // Cherry - lowest paying
     };
 

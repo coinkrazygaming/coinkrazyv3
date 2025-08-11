@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Gift, Calendar, CheckCircle, Lock, Coins, Star } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Gift, Calendar, CheckCircle, Lock, Coins, Star } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DailyReward {
   day: number;
@@ -17,20 +17,36 @@ interface DailyReward {
 
 export default function DailyRewards() {
   const { user } = useAuth();
-  
+
   // Mock data - in production this would come from the backend
   const [currentStreak, setCurrentStreak] = useState(3);
   const [totalClaimed, setTotalClaimed] = useState(15);
-  const [nextRewardAvailable, setNextRewardAvailable] = useState(new Date(Date.now() + 5 * 60 * 60 * 1000)); // 5 hours from now
-  
+  const [nextRewardAvailable, setNextRewardAvailable] = useState(
+    new Date(Date.now() + 5 * 60 * 60 * 1000),
+  ); // 5 hours from now
+
   const [dailyRewards] = useState<DailyReward[]>([
     { day: 1, gcAmount: 1000, scAmount: 0, claimed: true, available: false },
     { day: 2, gcAmount: 1500, scAmount: 0, claimed: true, available: false },
     { day: 3, gcAmount: 2000, scAmount: 1, claimed: true, available: false },
     { day: 4, gcAmount: 2500, scAmount: 0, claimed: false, available: true },
-    { day: 5, gcAmount: 3000, scAmount: 2, claimed: false, available: false, bonus: 'Bonus SC!' },
+    {
+      day: 5,
+      gcAmount: 3000,
+      scAmount: 2,
+      claimed: false,
+      available: false,
+      bonus: "Bonus SC!",
+    },
     { day: 6, gcAmount: 4000, scAmount: 1, claimed: false, available: false },
-    { day: 7, gcAmount: 5000, scAmount: 5, claimed: false, available: false, bonus: 'Weekly Bonus!' },
+    {
+      day: 7,
+      gcAmount: 5000,
+      scAmount: 5,
+      claimed: false,
+      available: false,
+      bonus: "Weekly Bonus!",
+    },
   ]);
 
   const handleClaimReward = (day: number) => {
@@ -42,12 +58,12 @@ export default function DailyRewards() {
   const formatTimeUntilNext = () => {
     const now = new Date();
     const diff = nextRewardAvailable.getTime() - now.getTime();
-    
+
     if (diff <= 0) return "Available now!";
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     return `${hours}h ${minutes}m`;
   };
 
@@ -74,7 +90,9 @@ export default function DailyRewards() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">{currentStreak} days</div>
+            <div className="text-2xl font-bold text-orange-500">
+              {currentStreak} days
+            </div>
             <p className="text-sm text-muted-foreground">Keep it up!</p>
           </CardContent>
         </Card>
@@ -87,7 +105,9 @@ export default function DailyRewards() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">{totalClaimed} rewards</div>
+            <div className="text-2xl font-bold text-blue-500">
+              {totalClaimed} rewards
+            </div>
             <p className="text-sm text-muted-foreground">All time</p>
           </CardContent>
         </Card>
@@ -138,21 +158,25 @@ export default function DailyRewards() {
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
             {dailyRewards.map((reward) => (
-              <Card 
-                key={reward.day} 
+              <Card
+                key={reward.day}
                 className={`relative transition-all duration-200 ${
-                  reward.claimed 
-                    ? 'bg-green-50 border-green-200 dark:bg-green-950/20' 
-                    : reward.available 
-                    ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 shadow-md' 
-                    : 'bg-gray-50 border-gray-200 dark:bg-gray-950/20 opacity-75'
+                  reward.claimed
+                    ? "bg-green-50 border-green-200 dark:bg-green-950/20"
+                    : reward.available
+                      ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 shadow-md"
+                      : "bg-gray-50 border-gray-200 dark:bg-gray-950/20 opacity-75"
                 }`}
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-center text-sm flex items-center justify-center gap-1">
                     Day {reward.day}
-                    {reward.claimed && <CheckCircle className="w-4 h-4 text-green-500" />}
-                    {!reward.available && !reward.claimed && <Lock className="w-4 h-4 text-gray-400" />}
+                    {reward.claimed && (
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    )}
+                    {!reward.available && !reward.claimed && (
+                      <Lock className="w-4 h-4 text-gray-400" />
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -160,12 +184,16 @@ export default function DailyRewards() {
                   <div className="text-center space-y-1">
                     <div className="flex items-center justify-center gap-1 text-sm">
                       <Coins className="w-4 h-4 text-yellow-500" />
-                      <span className="font-medium">{reward.gcAmount.toLocaleString()} GC</span>
+                      <span className="font-medium">
+                        {reward.gcAmount.toLocaleString()} GC
+                      </span>
                     </div>
                     {reward.scAmount > 0 && (
                       <div className="flex items-center justify-center gap-1 text-sm">
                         <Coins className="w-4 h-4 text-purple-500" />
-                        <span className="font-medium">{reward.scAmount} SC</span>
+                        <span className="font-medium">
+                          {reward.scAmount} SC
+                        </span>
                       </div>
                     )}
                     {reward.bonus && (
@@ -183,8 +211,8 @@ export default function DailyRewards() {
                         Claimed
                       </Badge>
                     ) : reward.available ? (
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className="w-full text-xs"
                         onClick={() => handleClaimReward(reward.day)}
                       >
@@ -217,10 +245,11 @@ export default function DailyRewards() {
                 Daily Collection
               </h4>
               <p className="text-sm text-muted-foreground">
-                Rewards reset every 24 hours. Come back daily to maintain your streak!
+                Rewards reset every 24 hours. Come back daily to maintain your
+                streak!
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <h4 className="font-medium flex items-center gap-2">
                 <Star className="w-4 h-4" />
@@ -230,7 +259,7 @@ export default function DailyRewards() {
                 Longer streaks unlock bigger rewards and special bonuses.
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <h4 className="font-medium flex items-center gap-2">
                 <Gift className="w-4 h-4" />
@@ -240,7 +269,7 @@ export default function DailyRewards() {
                 Complete all 7 days for extra Gold Coins and Sweeps Coins!
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <h4 className="font-medium flex items-center gap-2">
                 <Coins className="w-4 h-4" />

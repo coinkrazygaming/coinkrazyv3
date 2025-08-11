@@ -1,10 +1,10 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import GlobalChat from '@/components/GlobalChat';
-import { MessageCircle, Users, Settings, Shield } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import GlobalChat from "@/components/GlobalChat";
+import { MessageCircle, Users, Settings, Shield } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Chat() {
   const { user } = useAuth();
@@ -14,9 +14,7 @@ export default function Chat() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">
-            Chat Center
-          </h1>
+          <h1 className="text-3xl font-bold gradient-text">Chat Center</h1>
           <p className="text-muted-foreground mt-2">
             Connect with other players, join discussions, and get support
           </p>
@@ -41,7 +39,7 @@ export default function Chat() {
             <Settings className="w-4 h-4" />
             Settings
           </TabsTrigger>
-          {(user?.role === 'admin' || user?.role === 'staff') && (
+          {(user?.role === "admin" || user?.role === "staff") && (
             <TabsTrigger value="moderation" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Moderation
@@ -58,7 +56,8 @@ export default function Chat() {
                 Global Chat
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Join the community conversation with players from around the world
+                Join the community conversation with players from around the
+                world
               </p>
             </CardHeader>
             <CardContent>
@@ -139,14 +138,16 @@ export default function Chat() {
               <div className="text-center py-8 text-muted-foreground">
                 <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Chat settings panel coming soon</p>
-                <p className="text-sm">Configure notifications, privacy, and more</p>
+                <p className="text-sm">
+                  Configure notifications, privacy, and more
+                </p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Moderation Tab (Admin/Staff only) */}
-        {(user?.role === 'admin' || user?.role === 'staff') && (
+        {(user?.role === "admin" || user?.role === "staff") && (
           <TabsContent value="moderation" className="space-y-6">
             <Card>
               <CardHeader>
@@ -162,7 +163,9 @@ export default function Chat() {
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>Moderation tools coming soon</p>
-                  <p className="text-sm">Manage messages, users, and chat policies</p>
+                  <p className="text-sm">
+                    Manage messages, users, and chat policies
+                  </p>
                 </div>
               </CardContent>
             </Card>

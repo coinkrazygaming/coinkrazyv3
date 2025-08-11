@@ -32,7 +32,7 @@ const blockedStates = ["WA", "ID", "MT", "NV", "NY"];
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register, loading } = useAuth();
+  const { user, register, loading, getRedirectPath } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState("");

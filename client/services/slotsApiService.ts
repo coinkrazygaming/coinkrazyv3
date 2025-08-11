@@ -267,7 +267,7 @@ class SlotsApiService {
       const params = new URLSearchParams({
         sessionId,
         currency,
-        mode: currency === "SC" ? "real" : "demo",
+        mode: currency === "SC" ? "real" : "practice",
         language: "en",
         returnUrl: window.location.origin + "/games",
       });

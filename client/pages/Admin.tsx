@@ -24,6 +24,7 @@ import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
 import GameManagement from "@/components/GameManagement";
 import AdminToolbar from "@/components/AdminToolbar";
+import AdminSettingsPanel from "@/components/AdminSettingsPanel";
 import {
   Shield,
   Users,
@@ -965,57 +966,7 @@ export default function Admin() {
 
           {/* Settings */}
           <TabsContent value="settings" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>System Settings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span>Maintenance Mode</span>
-                      <Button variant="outline" size="sm">
-                        Disabled
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Auto-Backup</span>
-                      <Button variant="default" size="sm">
-                        Enabled
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>AI Monitoring</span>
-                      <Button variant="default" size="sm">
-                        Active
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Database Settings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span>Connection Pool</span>
-                      <span className="text-green-500">20/20 Active</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Last Backup</span>
-                      <span>2 hours ago</span>
-                    </div>
-                    <Button className="w-full">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Backup
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <AdminSettingsPanel />
           </TabsContent>
         </Tabs>
       </div>

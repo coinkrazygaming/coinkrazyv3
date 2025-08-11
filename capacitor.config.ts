@@ -1,11 +1,11 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'com.coinkrazy.casino',
-  appName: 'CoinKrazy Casino',
-  webDir: 'dist',
+  appId: "com.coinkrazy.casino",
+  appName: "CoinKrazy Casino",
+  webDir: "dist",
   server: {
-    androidScheme: 'https'
+    androidScheme: "https",
   },
   plugins: {
     SplashScreen: {
@@ -24,12 +24,12 @@ const config: CapacitorConfig = {
       useDialog: true,
     },
     StatusBar: {
-      style: 'DARK',
-      backgroundColor: '#1a1a2e',
+      style: "DARK",
+      backgroundColor: "#1a1a2e",
     },
     Keyboard: {
-      resize: 'body',
-      style: 'DARK',
+      resize: "body",
+      style: "DARK",
       resizeOnFullScreen: true,
     },
     LocalNotifications: {
@@ -42,16 +42,16 @@ const config: CapacitorConfig = {
     },
     Haptics: {},
     App: {
-      launchUrl: "https://coinkrazy.com"
+      launchUrl: "https://coinkrazy.com",
     },
     Browser: {
-      windowName: '_blank',
+      windowName: "_blank",
     },
     Camera: {
-      permissions: ['camera', 'photos']
+      permissions: ["camera", "photos"],
     },
     Geolocation: {
-      permissions: ['location']
+      permissions: ["location"],
     },
     Network: {},
     Device: {},
@@ -62,18 +62,18 @@ const config: CapacitorConfig = {
     Dialog: {},
     ActionSheet: {},
     FilePicker: {
-      permissions: ['camera', 'photos']
-    }
+      permissions: ["camera", "photos"],
+    },
   },
   ios: {
-    contentInset: 'automatic',
-    backgroundColor: '#1a1a2e',
+    contentInset: "automatic",
+    backgroundColor: "#1a1a2e",
     allowsLinkPreview: false,
-    presentationStyle: 'fullscreen',
-    modalPresentationStyle: 'fullscreen',
-    popoverPresentationStyle: 'popover',
-    scheme: 'CoinKrazy Casino',
-    path: 'ios'
+    presentationStyle: "fullscreen",
+    modalPresentationStyle: "fullscreen",
+    popoverPresentationStyle: "popover",
+    scheme: "CoinKrazy Casino",
+    path: "ios",
   },
   android: {
     buildOptions: {
@@ -81,38 +81,38 @@ const config: CapacitorConfig = {
       keystorePassword: undefined,
       keystoreAlias: undefined,
       keystoreAliasPassword: undefined,
-      releaseType: 'AAB',
-      signingType: 'apksigner'
+      releaseType: "AAB",
+      signingType: "apksigner",
     },
-    backgroundColor: '#1a1a2e',
+    backgroundColor: "#1a1a2e",
     allowMixedContent: true,
     captureInput: true,
     webContentsDebuggingEnabled: false,
-    appendUserAgent: 'CoinKrazy/1.0.0',
+    appendUserAgent: "CoinKrazy/1.0.0",
     overrideUserAgent: undefined,
-    path: 'android'
+    path: "android",
   },
   bundledWebRuntime: false,
   includePlugins: [
-    '@capacitor/app',
-    '@capacitor/haptics',
-    '@capacitor/keyboard',
-    '@capacitor/status-bar',
-    '@capacitor/splash-screen',
-    '@capacitor/local-notifications',
-    '@capacitor/push-notifications',
-    '@capacitor/browser',
-    '@capacitor/camera',
-    '@capacitor/geolocation',
-    '@capacitor/network',
-    '@capacitor/device',
-    '@capacitor/storage',
-    '@capacitor/clipboard',
-    '@capacitor/share',
-    '@capacitor/toast',
-    '@capacitor/dialog',
-    '@capacitor/action-sheet'
-  ]
+    "@capacitor/app",
+    "@capacitor/haptics",
+    "@capacitor/keyboard",
+    "@capacitor/status-bar",
+    "@capacitor/splash-screen",
+    "@capacitor/local-notifications",
+    "@capacitor/push-notifications",
+    "@capacitor/browser",
+    "@capacitor/camera",
+    "@capacitor/geolocation",
+    "@capacitor/network",
+    "@capacitor/device",
+    "@capacitor/storage",
+    "@capacitor/clipboard",
+    "@capacitor/share",
+    "@capacitor/toast",
+    "@capacitor/dialog",
+    "@capacitor/action-sheet",
+  ],
 };
 
 export default config;

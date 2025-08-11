@@ -28,7 +28,15 @@ export interface GoldPackage {
     backgroundGradient: {
       from: string;
       to: string;
-      direction: "to-r" | "to-br" | "to-b" | "to-bl" | "to-l" | "to-tl" | "to-t" | "to-tr";
+      direction:
+        | "to-r"
+        | "to-br"
+        | "to-b"
+        | "to-bl"
+        | "to-l"
+        | "to-tl"
+        | "to-t"
+        | "to-tr";
     };
     textColor: string;
     accentColor: string;
@@ -74,7 +82,12 @@ export interface PurchaseHistory {
   sweepsCoins: number;
   price: number;
   currency: string;
-  paymentMethod: "credit_card" | "paypal" | "apple_pay" | "google_pay" | "crypto";
+  paymentMethod:
+    | "credit_card"
+    | "paypal"
+    | "apple_pay"
+    | "google_pay"
+    | "crypto";
   paymentStatus: "pending" | "completed" | "failed" | "refunded" | "disputed";
   transactionId: string;
   bonusApplied?: {
@@ -176,12 +189,12 @@ class GoldStoreService {
     try {
       const response = await fetch(`${this.baseUrl}/packages`);
       if (!response.ok) throw new Error("Failed to fetch packages");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error fetching packages:", error);
@@ -193,39 +206,44 @@ class GoldStoreService {
     try {
       const response = await fetch(`${this.baseUrl}/packages/${id}`);
       if (!response.ok) throw new Error("Failed to fetch package");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error fetching package:", error);
       const packages = this.getDefaultPackages();
-      return packages.find(p => p.id === id) || null;
+      return packages.find((p) => p.id === id) || null;
     }
   }
 
-  async createPackage(packageData: Omit<GoldPackage, "id" | "createdAt" | "updatedAt" | "analytics">): Promise<GoldPackage> {
+  async createPackage(
+    packageData: Omit<
+      GoldPackage,
+      "id" | "createdAt" | "updatedAt" | "analytics"
+    >,
+  ): Promise<GoldPackage> {
     try {
       const response = await fetch(`${this.baseUrl}/packages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(packageData),
       });
-      
+
       if (!response.ok) throw new Error("Failed to create package");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error creating package:", error);
-      
+
       // Return mock created package
       const newPackage: GoldPackage = {
         ...packageData,
@@ -239,26 +257,29 @@ class GoldStoreService {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
+
       return newPackage;
     }
   }
 
-  async updatePackage(id: string, updates: Partial<GoldPackage>): Promise<GoldPackage> {
+  async updatePackage(
+    id: string,
+    updates: Partial<GoldPackage>,
+  ): Promise<GoldPackage> {
     try {
       const response = await fetch(`${this.baseUrl}/packages/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...updates, updatedAt: new Date() }),
       });
-      
+
       if (!response.ok) throw new Error("Failed to update package");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error updating package:", error);
@@ -271,7 +292,7 @@ class GoldStoreService {
       const response = await fetch(`${this.baseUrl}/packages/${id}`, {
         method: "DELETE",
       });
-      
+
       if (!response.ok) throw new Error("Failed to delete package");
     } catch (error) {
       console.error("Error deleting package:", error);
@@ -283,14 +304,14 @@ class GoldStoreService {
     try {
       const originalPackage = await this.getPackage(id);
       if (!originalPackage) throw new Error("Package not found");
-      
+
       const duplicatedPackage = await this.createPackage({
         ...originalPackage,
         name: `${originalPackage.name} (Copy)`,
         isActive: false,
         analytics: undefined,
       });
-      
+
       return duplicatedPackage;
     } catch (error) {
       console.error("Error duplicating package:", error);
@@ -299,20 +320,23 @@ class GoldStoreService {
   }
 
   // Purchase Management
-  async getPurchaseHistory(userId?: string, limit: number = 100): Promise<PurchaseHistory[]> {
+  async getPurchaseHistory(
+    userId?: string,
+    limit: number = 100,
+  ): Promise<PurchaseHistory[]> {
     try {
-      const url = userId 
+      const url = userId
         ? `${this.baseUrl}/purchases?userId=${userId}&limit=${limit}`
         : `${this.baseUrl}/purchases?limit=${limit}`;
-        
+
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch purchase history");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error fetching purchase history:", error);
@@ -320,25 +344,28 @@ class GoldStoreService {
     }
   }
 
-  async purchasePackage(packageId: string, paymentMethod: string): Promise<{ success: boolean; transactionId: string; error?: string }> {
+  async purchasePackage(
+    packageId: string,
+    paymentMethod: string,
+  ): Promise<{ success: boolean; transactionId: string; error?: string }> {
     try {
       const response = await fetch(`${this.baseUrl}/purchase`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ packageId, paymentMethod }),
       });
-      
+
       if (!response.ok) throw new Error("Failed to process purchase");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error processing purchase:", error);
-      
+
       // Mock successful purchase for development
       return {
         success: true,
@@ -347,21 +374,24 @@ class GoldStoreService {
     }
   }
 
-  async refundPurchase(purchaseId: string, reason: string): Promise<{ success: boolean; refundId: string; error?: string }> {
+  async refundPurchase(
+    purchaseId: string,
+    reason: string,
+  ): Promise<{ success: boolean; refundId: string; error?: string }> {
     try {
       const response = await fetch(`${this.baseUrl}/refund`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ purchaseId, reason }),
       });
-      
+
       if (!response.ok) throw new Error("Failed to process refund");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error processing refund:", error);
@@ -374,12 +404,12 @@ class GoldStoreService {
     try {
       const response = await fetch(`${this.baseUrl}/analytics?days=${days}`);
       if (!response.ok) throw new Error("Failed to fetch analytics");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -392,12 +422,12 @@ class GoldStoreService {
     try {
       const response = await fetch(`${this.baseUrl}/settings`);
       if (!response.ok) throw new Error("Failed to fetch settings");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -405,21 +435,23 @@ class GoldStoreService {
     }
   }
 
-  async updateStoreSettings(settings: Partial<StoreSettings>): Promise<StoreSettings> {
+  async updateStoreSettings(
+    settings: Partial<StoreSettings>,
+  ): Promise<StoreSettings> {
     try {
       const response = await fetch(`${this.baseUrl}/settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
       });
-      
+
       if (!response.ok) throw new Error("Failed to update settings");
-      
+
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Response is not JSON");
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error("Error updating settings:", error);
@@ -433,7 +465,8 @@ class GoldStoreService {
       {
         id: "starter_pack",
         name: "Starter Pack",
-        description: "Perfect for new players to get started with some extra gold coins",
+        description:
+          "Perfect for new players to get started with some extra gold coins",
         goldCoins: 10000,
         sweepsCoins: 0,
         price: 4.99,
@@ -446,7 +479,7 @@ class GoldStoreService {
           enabled: true,
           type: "percentage",
           value: 10,
-          description: "10% Bonus Gold Coins"
+          description: "10% Bonus Gold Coins",
         },
         category: "starter",
         tier: 1,
@@ -455,34 +488,34 @@ class GoldStoreService {
           backgroundGradient: {
             from: "#3B82F6",
             to: "#1D4ED8",
-            direction: "to-br"
+            direction: "to-br",
           },
           textColor: "#FFFFFF",
           accentColor: "#FCD34D",
           borderColor: "#1D4ED8",
           shadowColor: "#3B82F6",
           icon: "🌟",
-          animation: "none"
+          animation: "none",
         },
         availability: {
           enabled: true,
-          purchaseCount: 1247
+          purchaseCount: 1247,
         },
         targeting: {
           userTiers: ["new", "bronze"],
           countries: ["US", "CA", "UK", "AU"],
           newUsersOnly: false,
-          vipOnly: false
+          vipOnly: false,
         },
         analytics: {
           views: 15420,
           purchases: 1247,
           conversionRate: 8.1,
-          revenue: 6224.53
+          revenue: 6224.53,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date("2024-01-15"),
-        isActive: true
+        isActive: true,
       },
       {
         id: "standard_pack",
@@ -501,9 +534,9 @@ class GoldStoreService {
           enabled: true,
           type: "fixed",
           value: 5000,
-          description: "+5,000 Bonus Gold Coins"
+          description: "+5,000 Bonus Gold Coins",
         },
-        savings: 3.00,
+        savings: 3.0,
         discount: 23,
         category: "standard",
         tier: 2,
@@ -512,34 +545,34 @@ class GoldStoreService {
           backgroundGradient: {
             from: "#10B981",
             to: "#047857",
-            direction: "to-br"
+            direction: "to-br",
           },
           textColor: "#FFFFFF",
           accentColor: "#FCD34D",
           borderColor: "#047857",
           shadowColor: "#10B981",
           icon: "💎",
-          animation: "glow"
+          animation: "glow",
         },
         availability: {
           enabled: true,
-          purchaseCount: 2841
+          purchaseCount: 2841,
         },
         targeting: {
           userTiers: ["bronze", "silver"],
           countries: ["US", "CA", "UK", "AU", "DE", "FR"],
           newUsersOnly: false,
-          vipOnly: false
+          vipOnly: false,
         },
         analytics: {
           views: 23180,
           purchases: 2841,
           conversionRate: 12.3,
-          revenue: 28385.59
+          revenue: 28385.59,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date("2024-01-15"),
-        isActive: true
+        isActive: true,
       },
       {
         id: "premium_pack",
@@ -558,9 +591,9 @@ class GoldStoreService {
           enabled: true,
           type: "multiplier",
           value: 1.5,
-          description: "50% More Gold Coins"
+          description: "50% More Gold Coins",
         },
-        savings: 10.00,
+        savings: 10.0,
         discount: 29,
         category: "premium",
         tier: 3,
@@ -569,39 +602,40 @@ class GoldStoreService {
           backgroundGradient: {
             from: "#8B5CF6",
             to: "#5B21B6",
-            direction: "to-br"
+            direction: "to-br",
           },
           textColor: "#FFFFFF",
           accentColor: "#FCD34D",
           borderColor: "#5B21B6",
           shadowColor: "#8B5CF6",
           icon: "👑",
-          animation: "pulse"
+          animation: "pulse",
         },
         availability: {
           enabled: true,
-          purchaseCount: 1683
+          purchaseCount: 1683,
         },
         targeting: {
           userTiers: ["silver", "gold", "platinum"],
           countries: ["US", "CA", "UK", "AU", "DE", "FR", "ES", "IT"],
           newUsersOnly: false,
-          vipOnly: false
+          vipOnly: false,
         },
         analytics: {
           views: 18920,
           purchases: 1683,
           conversionRate: 8.9,
-          revenue: 42033.17
+          revenue: 42033.17,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date("2024-01-15"),
-        isActive: true
+        isActive: true,
       },
       {
         id: "elite_pack",
         name: "Elite Pack",
-        description: "Elite tier package for serious players with massive coin bonuses",
+        description:
+          "Elite tier package for serious players with massive coin bonuses",
         goldCoins: 150000,
         sweepsCoins: 75,
         price: 49.99,
@@ -615,9 +649,9 @@ class GoldStoreService {
           enabled: true,
           type: "percentage",
           value: 100,
-          description: "Double Gold Coins Bonus"
+          description: "Double Gold Coins Bonus",
         },
-        savings: 20.00,
+        savings: 20.0,
         discount: 29,
         category: "elite",
         tier: 4,
@@ -626,40 +660,52 @@ class GoldStoreService {
           backgroundGradient: {
             from: "#F59E0B",
             to: "#D97706",
-            direction: "to-br"
+            direction: "to-br",
           },
           textColor: "#FFFFFF",
           accentColor: "#FEF3C7",
           borderColor: "#D97706",
           shadowColor: "#F59E0B",
           icon: "⚡",
-          animation: "bounce"
+          animation: "bounce",
         },
         availability: {
           enabled: true,
           endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-          purchaseCount: 847
+          purchaseCount: 847,
         },
         targeting: {
           userTiers: ["gold", "platinum", "diamond"],
-          countries: ["US", "CA", "UK", "AU", "DE", "FR", "ES", "IT", "NL", "SE"],
+          countries: [
+            "US",
+            "CA",
+            "UK",
+            "AU",
+            "DE",
+            "FR",
+            "ES",
+            "IT",
+            "NL",
+            "SE",
+          ],
           newUsersOnly: false,
-          vipOnly: false
+          vipOnly: false,
         },
         analytics: {
           views: 12450,
           purchases: 847,
           conversionRate: 6.8,
-          revenue: 42341.53
+          revenue: 42341.53,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date("2024-01-15"),
-        isActive: true
+        isActive: true,
       },
       {
         id: "mega_pack",
         name: "Mega Pack",
-        description: "The ultimate package for high rollers with exclusive VIP benefits",
+        description:
+          "The ultimate package for high rollers with exclusive VIP benefits",
         goldCoins: 500000,
         sweepsCoins: 250,
         price: 99.99,
@@ -673,9 +719,9 @@ class GoldStoreService {
           enabled: true,
           type: "free_spins",
           value: 100,
-          description: "100 Free Spins + VIP Treatment"
+          description: "100 Free Spins + VIP Treatment",
         },
-        savings: 50.00,
+        savings: 50.0,
         discount: 33,
         category: "mega",
         tier: 5,
@@ -684,40 +730,54 @@ class GoldStoreService {
           backgroundGradient: {
             from: "#EF4444",
             to: "#B91C1C",
-            direction: "to-br"
+            direction: "to-br",
           },
           textColor: "#FFFFFF",
           accentColor: "#FEF3C7",
           borderColor: "#B91C1C",
           shadowColor: "#EF4444",
           icon: "🔥",
-          animation: "glow"
+          animation: "glow",
         },
         availability: {
           enabled: true,
           maxPurchases: 1000,
-          purchaseCount: 234
+          purchaseCount: 234,
         },
         targeting: {
           userTiers: ["platinum", "diamond", "vip"],
-          countries: ["US", "CA", "UK", "AU", "DE", "FR", "ES", "IT", "NL", "SE", "NO", "DK"],
+          countries: [
+            "US",
+            "CA",
+            "UK",
+            "AU",
+            "DE",
+            "FR",
+            "ES",
+            "IT",
+            "NL",
+            "SE",
+            "NO",
+            "DK",
+          ],
           vipOnly: false,
-          newUsersOnly: false
+          newUsersOnly: false,
         },
         analytics: {
           views: 8230,
           purchases: 234,
           conversionRate: 2.8,
-          revenue: 23397.66
+          revenue: 23397.66,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date("2024-01-15"),
-        isActive: true
+        isActive: true,
       },
       {
         id: "ultimate_pack",
         name: "Ultimate VIP Pack",
-        description: "The most exclusive package for VIP members only with unprecedented rewards",
+        description:
+          "The most exclusive package for VIP members only with unprecedented rewards",
         goldCoins: 1000000,
         sweepsCoins: 500,
         price: 199.99,
@@ -731,9 +791,9 @@ class GoldStoreService {
           enabled: true,
           type: "multiplier",
           value: 2,
-          description: "Triple Rewards + Personal Account Manager"
+          description: "Triple Rewards + Personal Account Manager",
         },
-        savings: 100.00,
+        savings: 100.0,
         discount: 33,
         category: "ultimate",
         tier: 6,
@@ -742,7 +802,7 @@ class GoldStoreService {
           backgroundGradient: {
             from: "#1F2937",
             to: "#111827",
-            direction: "to-br"
+            direction: "to-br",
           },
           textColor: "#F9FAFB",
           accentColor: "#FCD34D",
@@ -750,31 +810,31 @@ class GoldStoreService {
           shadowColor: "#F59E0B",
           icon: "💎",
           pattern: "diamond",
-          animation: "shake"
+          animation: "shake",
         },
         availability: {
           enabled: true,
           maxPurchases: 100,
           purchaseCount: 47,
-          endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 days from now
+          endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
         },
         targeting: {
           userTiers: ["diamond", "vip"],
           countries: ["US", "CA", "UK", "AU"],
           vipOnly: true,
           newUsersOnly: false,
-          minAge: 21
+          minAge: 21,
         },
         analytics: {
           views: 1820,
           purchases: 47,
           conversionRate: 2.6,
-          revenue: 9399.53
+          revenue: 9399.53,
         },
         createdAt: new Date("2024-01-01"),
         updatedAt: new Date("2024-01-15"),
-        isActive: true
-      }
+        isActive: true,
+      },
     ];
   }
 
@@ -795,12 +855,13 @@ class GoldStoreService {
         bonusApplied: {
           type: "multiplier",
           value: 1.5,
-          description: "50% More Gold Coins"
+          description: "50% More Gold Coins",
         },
         purchaseDate: new Date("2024-01-15T10:30:00Z"),
         deliveryStatus: "delivered",
         ipAddress: "192.168.1.100",
-        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       },
       {
         id: "purchase_002",
@@ -817,8 +878,8 @@ class GoldStoreService {
         purchaseDate: new Date("2024-01-14T14:20:00Z"),
         deliveryStatus: "delivered",
         ipAddress: "192.168.1.101",
-        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X)"
-      }
+        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X)",
+      },
     ];
   }
 
@@ -829,54 +890,75 @@ class GoldStoreService {
       averageOrderValue: 25.93,
       conversionRate: 8.7,
       topPackages: [
-        { packageId: "premium_pack", name: "Premium Pack", purchases: 1683, revenue: 42033.17 },
-        { packageId: "standard_pack", name: "Standard Pack", purchases: 2841, revenue: 28385.59 },
-        { packageId: "elite_pack", name: "Elite Pack", purchases: 847, revenue: 42341.53 },
+        {
+          packageId: "premium_pack",
+          name: "Premium Pack",
+          purchases: 1683,
+          revenue: 42033.17,
+        },
+        {
+          packageId: "standard_pack",
+          name: "Standard Pack",
+          purchases: 2841,
+          revenue: 28385.59,
+        },
+        {
+          packageId: "elite_pack",
+          name: "Elite Pack",
+          purchases: 847,
+          revenue: 42341.53,
+        },
       ],
       revenueByDay: Array.from({ length: 30 }, (_, i) => ({
         date: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
         revenue: Math.random() * 5000 + 1000,
-        purchases: Math.floor(Math.random() * 50) + 10
+        purchases: Math.floor(Math.random() * 50) + 10,
       })),
       userDemographics: {
         newUsers: 2341,
         returningUsers: 3511,
-        vipUsers: 47
+        vipUsers: 47,
       },
       paymentMethods: [
         { method: "Credit Card", count: 3456, percentage: 59.1 },
         { method: "PayPal", count: 1789, percentage: 30.6 },
         { method: "Apple Pay", count: 423, percentage: 7.2 },
-        { method: "Google Pay", count: 184, percentage: 3.1 }
-      ]
+        { method: "Google Pay", count: 184, percentage: 3.1 },
+      ],
     };
   }
 
   private getDefaultSettings(): StoreSettings {
     return {
       storeName: "CoinKrazy Gold Store",
-      storeDescription: "Premium gold coins and sweeps coins packages for the ultimate gaming experience",
+      storeDescription:
+        "Premium gold coins and sweeps coins packages for the ultimate gaming experience",
       defaultCurrency: "USD",
-      allowedPaymentMethods: ["credit_card", "paypal", "apple_pay", "google_pay"],
+      allowedPaymentMethods: [
+        "credit_card",
+        "paypal",
+        "apple_pay",
+        "google_pay",
+      ],
       taxSettings: {
         enabled: true,
         rate: 8.5,
-        includedInPrice: false
+        includedInPrice: false,
       },
       discountSettings: {
         maxDiscountPercentage: 50,
         allowStackingDiscounts: false,
-        minimumPurchaseForDiscount: 10
+        minimumPurchaseForDiscount: 10,
       },
       purchaseLimits: {
         dailyLimit: 500,
         weeklyLimit: 2000,
-        monthlyLimit: 5000
+        monthlyLimit: 5000,
       },
       notifications: {
         emailReceipts: true,
         purchaseAlerts: true,
-        lowStockAlerts: true
+        lowStockAlerts: true,
       },
       uiSettings: {
         theme: "casino",
@@ -884,14 +966,21 @@ class GoldStoreService {
         showPrices: true,
         showSavings: true,
         showPopularBadges: true,
-        animationsEnabled: true
+        animationsEnabled: true,
       },
       seoSettings: {
         metaTitle: "CoinKrazy Gold Store - Premium Casino Coins",
-        metaDescription: "Buy premium gold coins and sweeps coins for the ultimate casino gaming experience at CoinKrazy",
-        keywords: ["gold coins", "sweeps coins", "casino", "gaming", "premium packages"],
-        canonicalUrl: "https://coinkrazy.com/store"
-      }
+        metaDescription:
+          "Buy premium gold coins and sweeps coins for the ultimate casino gaming experience at CoinKrazy",
+        keywords: [
+          "gold coins",
+          "sweeps coins",
+          "casino",
+          "gaming",
+          "premium packages",
+        ],
+        canonicalUrl: "https://coinkrazy.com/store",
+      },
     };
   }
 }

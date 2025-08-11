@@ -10,12 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Dialog,
@@ -93,12 +93,12 @@ import {
   Monitor,
   Tablet,
 } from "lucide-react";
-import { 
-  goldStoreService, 
-  GoldPackage, 
-  PurchaseHistory, 
-  StoreAnalytics, 
-  StoreSettings 
+import {
+  goldStoreService,
+  GoldPackage,
+  PurchaseHistory,
+  StoreAnalytics,
+  StoreSettings,
 } from "@/services/goldStoreService";
 
 interface PackageFormData {
@@ -126,7 +126,15 @@ interface PackageFormData {
     backgroundGradient: {
       from: string;
       to: string;
-      direction: "to-r" | "to-br" | "to-b" | "to-bl" | "to-l" | "to-tl" | "to-t" | "to-tr";
+      direction:
+        | "to-r"
+        | "to-br"
+        | "to-b"
+        | "to-bl"
+        | "to-l"
+        | "to-tl"
+        | "to-t"
+        | "to-tr";
     };
     textColor: string;
     accentColor: string;
@@ -185,13 +193,17 @@ export default function GoldStoreManager() {
   const [analytics, setAnalytics] = useState<StoreAnalytics | null>(null);
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(false);
-  
+
   // Dialog states
   const [packageDialogOpen, setPackageDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(null);
-  const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
-  
+  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(
+    null,
+  );
+  const [previewMode, setPreviewMode] = useState<
+    "desktop" | "tablet" | "mobile"
+  >("desktop");
+
   // Form state
   const [packageForm, setPackageForm] = useState<PackageFormData>({
     name: "",
@@ -210,32 +222,32 @@ export default function GoldStoreManager() {
       enabled: false,
       type: "percentage",
       value: 0,
-      description: ""
+      description: "",
     },
     design: {
       backgroundColor: "#3B82F6",
       backgroundGradient: {
         from: "#3B82F6",
         to: "#1D4ED8",
-        direction: "to-br"
+        direction: "to-br",
       },
       textColor: "#FFFFFF",
       accentColor: "#FCD34D",
       borderColor: "#1D4ED8",
       shadowColor: "#3B82F6",
       icon: "🌟",
-      animation: "none"
+      animation: "none",
     },
     availability: {
-      enabled: true
+      enabled: true,
     },
     targeting: {
       userTiers: ["new", "bronze"],
       countries: ["US"],
       newUsersOnly: false,
-      vipOnly: false
+      vipOnly: false,
     },
-    isActive: true
+    isActive: true,
   });
 
   // Search and filter states
@@ -251,13 +263,14 @@ export default function GoldStoreManager() {
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [packagesData, historyData, analyticsData, settingsData] = await Promise.all([
-        goldStoreService.getAllPackages(),
-        goldStoreService.getPurchaseHistory(),
-        goldStoreService.getStoreAnalytics(),
-        goldStoreService.getStoreSettings(),
-      ]);
-      
+      const [packagesData, historyData, analyticsData, settingsData] =
+        await Promise.all([
+          goldStoreService.getAllPackages(),
+          goldStoreService.getPurchaseHistory(),
+          goldStoreService.getStoreAnalytics(),
+          goldStoreService.getStoreSettings(),
+        ]);
+
       setPackages(packagesData);
       setPurchaseHistory(historyData);
       setAnalytics(analyticsData);
@@ -278,10 +291,10 @@ export default function GoldStoreManager() {
   const handleCreatePackage = async () => {
     try {
       const newPackage = await goldStoreService.createPackage(packageForm);
-      setPackages(prev => [newPackage, ...prev]);
+      setPackages((prev) => [newPackage, ...prev]);
       setPackageDialogOpen(false);
       resetPackageForm();
-      
+
       toast({
         title: "Success",
         description: "Package created successfully.",
@@ -296,11 +309,16 @@ export default function GoldStoreManager() {
     }
   };
 
-  const handleUpdatePackage = async (id: string, updates: Partial<GoldPackage>) => {
+  const handleUpdatePackage = async (
+    id: string,
+    updates: Partial<GoldPackage>,
+  ) => {
     try {
       const updatedPackage = await goldStoreService.updatePackage(id, updates);
-      setPackages(prev => prev.map(p => p.id === id ? updatedPackage : p));
-      
+      setPackages((prev) =>
+        prev.map((p) => (p.id === id ? updatedPackage : p)),
+      );
+
       toast({
         title: "Success",
         description: "Package updated successfully.",
@@ -318,8 +336,8 @@ export default function GoldStoreManager() {
   const handleDeletePackage = async (id: string) => {
     try {
       await goldStoreService.deletePackage(id);
-      setPackages(prev => prev.filter(p => p.id !== id));
-      
+      setPackages((prev) => prev.filter((p) => p.id !== id));
+
       toast({
         title: "Success",
         description: "Package deleted successfully.",
@@ -337,8 +355,8 @@ export default function GoldStoreManager() {
   const handleDuplicatePackage = async (id: string) => {
     try {
       const duplicatedPackage = await goldStoreService.duplicatePackage(id);
-      setPackages(prev => [duplicatedPackage, ...prev]);
-      
+      setPackages((prev) => [duplicatedPackage, ...prev]);
+
       toast({
         title: "Success",
         description: "Package duplicated successfully.",
@@ -371,32 +389,32 @@ export default function GoldStoreManager() {
         enabled: false,
         type: "percentage",
         value: 0,
-        description: ""
+        description: "",
       },
       design: {
         backgroundColor: "#3B82F6",
         backgroundGradient: {
           from: "#3B82F6",
           to: "#1D4ED8",
-          direction: "to-br"
+          direction: "to-br",
         },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#1D4ED8",
         shadowColor: "#3B82F6",
         icon: "🌟",
-        animation: "none"
+        animation: "none",
       },
       availability: {
-        enabled: true
+        enabled: true,
       },
       targeting: {
         userTiers: ["new", "bronze"],
         countries: ["US"],
         newUsersOnly: false,
-        vipOnly: false
+        vipOnly: false,
       },
-      isActive: true
+      isActive: true,
     });
     setSelectedPackage(null);
   };
@@ -421,31 +439,35 @@ export default function GoldStoreManager() {
       design: pkg.design,
       availability: pkg.availability,
       targeting: pkg.targeting,
-      isActive: pkg.isActive
+      isActive: pkg.isActive,
     });
     setPackageDialogOpen(true);
   };
 
   // Filter and sort packages
-  const filteredPackages = packages.filter(pkg => {
-    const matchesSearch = pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === "all" || pkg.category === filterCategory;
-    return matchesSearch && matchesCategory;
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case "tier":
-        return a.tier - b.tier;
-      case "price":
-        return a.price - b.price;
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "purchases":
-        return b.analytics.purchases - a.analytics.purchases;
-      default:
-        return 0;
-    }
-  });
+  const filteredPackages = packages
+    .filter((pkg) => {
+      const matchesSearch =
+        pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        filterCategory === "all" || pkg.category === filterCategory;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "tier":
+          return a.tier - b.tier;
+        case "price":
+          return a.price - b.price;
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "purchases":
+          return b.analytics.purchases - a.analytics.purchases;
+        default:
+          return 0;
+      }
+    });
 
   const getStatusColor = (isActive: boolean) => {
     return isActive ? "default" : "secondary";
@@ -458,16 +480,19 @@ export default function GoldStoreManager() {
       premium: "bg-purple-500",
       elite: "bg-orange-500",
       mega: "bg-red-500",
-      ultimate: "bg-gray-900"
+      ultimate: "bg-gray-900",
     };
     return colors[category as keyof typeof colors] || "bg-gray-500";
   };
 
   const getPreviewWidth = () => {
     switch (previewMode) {
-      case "mobile": return "w-80";
-      case "tablet": return "w-96";
-      default: return "w-full";
+      case "mobile":
+        return "w-80";
+      case "tablet":
+        return "w-96";
+      default:
+        return "w-full";
     }
   };
 
@@ -481,14 +506,22 @@ export default function GoldStoreManager() {
 
     return (
       <div className={`${getPreviewWidth()} mx-auto`}>
-        <Card 
+        <Card
           className={`relative overflow-hidden transition-all duration-300 ${
-            packageForm.design.animation === "pulse" ? "animate-pulse" :
-            packageForm.design.animation === "bounce" ? "animate-bounce" :
-            packageForm.design.animation === "glow" ? "hover:shadow-2xl" :
-            packageForm.design.animation === "shake" ? "hover:animate-bounce" : ""
+            packageForm.design.animation === "pulse"
+              ? "animate-pulse"
+              : packageForm.design.animation === "bounce"
+                ? "animate-bounce"
+                : packageForm.design.animation === "glow"
+                  ? "hover:shadow-2xl"
+                  : packageForm.design.animation === "shake"
+                    ? "hover:animate-bounce"
+                    : ""
           }`}
-          style={{ ...style, border: `2px solid ${packageForm.design.borderColor}` }}
+          style={{
+            ...style,
+            border: `2px solid ${packageForm.design.borderColor}`,
+          }}
         >
           <CardContent className="p-6">
             {/* Badges */}
@@ -510,9 +543,7 @@ export default function GoldStoreManager() {
                   </Badge>
                 )}
                 {packageForm.limitedTime && (
-                  <Badge variant="destructive">
-                    ⏰ Limited Time
-                  </Badge>
+                  <Badge variant="destructive">⏰ Limited Time</Badge>
                 )}
               </div>
               <div className="text-3xl">{packageForm.design.icon}</div>
@@ -520,24 +551,38 @@ export default function GoldStoreManager() {
 
             {/* Title and Description */}
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">{packageForm.name || "Package Name"}</h3>
-              <p className="opacity-90">{packageForm.description || "Package description"}</p>
+              <h3 className="text-2xl font-bold mb-2">
+                {packageForm.name || "Package Name"}
+              </h3>
+              <p className="opacity-90">
+                {packageForm.description || "Package description"}
+              </p>
             </div>
 
             {/* Coins */}
             <div className="flex justify-around mb-6">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <Coins className="w-5 h-5" style={{ color: packageForm.design.accentColor }} />
-                  <span className="font-bold text-lg">{packageForm.goldCoins.toLocaleString()}</span>
+                  <Coins
+                    className="w-5 h-5"
+                    style={{ color: packageForm.design.accentColor }}
+                  />
+                  <span className="font-bold text-lg">
+                    {packageForm.goldCoins.toLocaleString()}
+                  </span>
                 </div>
                 <div className="text-sm opacity-75">Gold Coins</div>
               </div>
               {packageForm.sweepsCoins > 0 && (
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
-                    <Crown className="w-5 h-5" style={{ color: packageForm.design.accentColor }} />
-                    <span className="font-bold text-lg">{packageForm.sweepsCoins}</span>
+                    <Crown
+                      className="w-5 h-5"
+                      style={{ color: packageForm.design.accentColor }}
+                    />
+                    <span className="font-bold text-lg">
+                      {packageForm.sweepsCoins}
+                    </span>
                   </div>
                   <div className="text-sm opacity-75">Sweeps Coins</div>
                 </div>
@@ -546,12 +591,16 @@ export default function GoldStoreManager() {
 
             {/* Price */}
             <div className="text-center mb-4">
-              {packageForm.originalPrice && packageForm.originalPrice > packageForm.price && (
-                <div className="line-through text-sm opacity-60">
-                  ${packageForm.originalPrice.toFixed(2)}
-                </div>
-              )}
-              <div className="text-3xl font-bold" style={{ color: packageForm.design.accentColor }}>
+              {packageForm.originalPrice &&
+                packageForm.originalPrice > packageForm.price && (
+                  <div className="line-through text-sm opacity-60">
+                    ${packageForm.originalPrice.toFixed(2)}
+                  </div>
+                )}
+              <div
+                className="text-3xl font-bold"
+                style={{ color: packageForm.design.accentColor }}
+              >
                 ${packageForm.price.toFixed(2)}
               </div>
             </div>
@@ -559,10 +608,13 @@ export default function GoldStoreManager() {
             {/* Bonus */}
             {packageForm.bonus.enabled && (
               <div className="text-center mb-4">
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className="border-current text-current"
-                  style={{ borderColor: packageForm.design.accentColor, color: packageForm.design.accentColor }}
+                  style={{
+                    borderColor: packageForm.design.accentColor,
+                    color: packageForm.design.accentColor,
+                  }}
                 >
                   <Gift className="w-4 h-4 mr-1" />
                   {packageForm.bonus.description}
@@ -571,12 +623,12 @@ export default function GoldStoreManager() {
             )}
 
             {/* Purchase Button */}
-            <Button 
+            <Button
               className="w-full font-bold text-lg py-3"
-              style={{ 
+              style={{
                 backgroundColor: packageForm.design.accentColor,
                 color: "#000000",
-                border: "none"
+                border: "none",
               }}
             >
               Purchase Now
@@ -607,7 +659,9 @@ export default function GoldStoreManager() {
             onClick={loadAllData}
             disabled={loading}
           >
-            <RefreshCw className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -650,7 +704,7 @@ export default function GoldStoreManager() {
                   className="pl-10 w-64"
                 />
               </div>
-              
+
               <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Category" />
@@ -679,7 +733,10 @@ export default function GoldStoreManager() {
               </Select>
             </div>
 
-            <Dialog open={packageDialogOpen} onOpenChange={setPackageDialogOpen}>
+            <Dialog
+              open={packageDialogOpen}
+              onOpenChange={setPackageDialogOpen}
+            >
               <DialogTrigger asChild>
                 <Button onClick={resetPackageForm}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -692,7 +749,8 @@ export default function GoldStoreManager() {
                     {selectedPackage ? "Edit Package" : "Create New Package"}
                   </DialogTitle>
                   <DialogDescription>
-                    Design and configure your gold coin package with the visual builder
+                    Design and configure your gold coin package with the visual
+                    builder
                   </DialogDescription>
                 </DialogHeader>
 
@@ -715,37 +773,58 @@ export default function GoldStoreManager() {
                             <Input
                               id="package-name"
                               value={packageForm.name}
-                              onChange={(e) => setPackageForm(prev => ({ ...prev, name: e.target.value }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  name: e.target.value,
+                                }))
+                              }
                               placeholder="Premium Pack"
                             />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="package-category">Category</Label>
-                            <Select 
-                              value={packageForm.category} 
-                              onValueChange={(value) => setPackageForm(prev => ({ ...prev, category: value as any }))}
+                            <Select
+                              value={packageForm.category}
+                              onValueChange={(value) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  category: value as any,
+                                }))
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="starter">Starter</SelectItem>
-                                <SelectItem value="standard">Standard</SelectItem>
+                                <SelectItem value="standard">
+                                  Standard
+                                </SelectItem>
                                 <SelectItem value="premium">Premium</SelectItem>
                                 <SelectItem value="elite">Elite</SelectItem>
                                 <SelectItem value="mega">Mega</SelectItem>
-                                <SelectItem value="ultimate">Ultimate</SelectItem>
+                                <SelectItem value="ultimate">
+                                  Ultimate
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="package-description">Description</Label>
+                          <Label htmlFor="package-description">
+                            Description
+                          </Label>
                           <Textarea
                             id="package-description"
                             value={packageForm.description}
-                            onChange={(e) => setPackageForm(prev => ({ ...prev, description: e.target.value }))}
+                            onChange={(e) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                description: e.target.value,
+                              }))
+                            }
                             placeholder="Great value pack with bonus coins"
                             rows={3}
                           />
@@ -758,7 +837,12 @@ export default function GoldStoreManager() {
                               id="gold-coins"
                               type="number"
                               value={packageForm.goldCoins}
-                              onChange={(e) => setPackageForm(prev => ({ ...prev, goldCoins: parseInt(e.target.value) || 0 }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  goldCoins: parseInt(e.target.value) || 0,
+                                }))
+                              }
                               placeholder="25000"
                             />
                           </div>
@@ -768,15 +852,25 @@ export default function GoldStoreManager() {
                               id="sweeps-coins"
                               type="number"
                               value={packageForm.sweepsCoins}
-                              onChange={(e) => setPackageForm(prev => ({ ...prev, sweepsCoins: parseInt(e.target.value) || 0 }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  sweepsCoins: parseInt(e.target.value) || 0,
+                                }))
+                              }
                               placeholder="5"
                             />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="tier">Tier</Label>
-                            <Select 
-                              value={packageForm.tier.toString()} 
-                              onValueChange={(value) => setPackageForm(prev => ({ ...prev, tier: parseInt(value) as any }))}
+                            <Select
+                              value={packageForm.tier.toString()}
+                              onValueChange={(value) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  tier: parseInt(value) as any,
+                                }))
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select tier" />
@@ -801,26 +895,44 @@ export default function GoldStoreManager() {
                               type="number"
                               step="0.01"
                               value={packageForm.price}
-                              onChange={(e) => setPackageForm(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  price: parseFloat(e.target.value) || 0,
+                                }))
+                              }
                               placeholder="9.99"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="original-price">Original Price</Label>
+                            <Label htmlFor="original-price">
+                              Original Price
+                            </Label>
                             <Input
                               id="original-price"
                               type="number"
                               step="0.01"
                               value={packageForm.originalPrice || ""}
-                              onChange={(e) => setPackageForm(prev => ({ ...prev, originalPrice: parseFloat(e.target.value) || undefined }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  originalPrice:
+                                    parseFloat(e.target.value) || undefined,
+                                }))
+                              }
                               placeholder="12.99"
                             />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="currency">Currency</Label>
-                            <Select 
-                              value={packageForm.currency} 
-                              onValueChange={(value) => setPackageForm(prev => ({ ...prev, currency: value as any }))}
+                            <Select
+                              value={packageForm.currency}
+                              onValueChange={(value) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  currency: value as any,
+                                }))
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Currency" />
@@ -841,7 +953,12 @@ export default function GoldStoreManager() {
                             <Switch
                               id="popular"
                               checked={packageForm.popular}
-                              onCheckedChange={(checked) => setPackageForm(prev => ({ ...prev, popular: checked }))}
+                              onCheckedChange={(checked) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  popular: checked,
+                                }))
+                              }
                             />
                           </div>
                           <div className="flex items-center justify-between">
@@ -849,7 +966,12 @@ export default function GoldStoreManager() {
                             <Switch
                               id="featured"
                               checked={packageForm.featured}
-                              onCheckedChange={(checked) => setPackageForm(prev => ({ ...prev, featured: checked }))}
+                              onCheckedChange={(checked) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  featured: checked,
+                                }))
+                              }
                             />
                           </div>
                           <div className="flex items-center justify-between">
@@ -857,7 +979,12 @@ export default function GoldStoreManager() {
                             <Switch
                               id="best-value"
                               checked={packageForm.bestValue}
-                              onCheckedChange={(checked) => setPackageForm(prev => ({ ...prev, bestValue: checked }))}
+                              onCheckedChange={(checked) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  bestValue: checked,
+                                }))
+                              }
                             />
                           </div>
                           <div className="flex items-center justify-between">
@@ -865,7 +992,12 @@ export default function GoldStoreManager() {
                             <Switch
                               id="limited-time"
                               checked={packageForm.limitedTime}
-                              onCheckedChange={(checked) => setPackageForm(prev => ({ ...prev, limitedTime: checked }))}
+                              onCheckedChange={(checked) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  limitedTime: checked,
+                                }))
+                              }
                             />
                           </div>
                         </div>
@@ -875,12 +1007,14 @@ export default function GoldStoreManager() {
                       <TabsContent value="design" className="space-y-4">
                         <div className="space-y-2">
                           <Label htmlFor="icon">Icon</Label>
-                          <Select 
-                            value={packageForm.design.icon} 
-                            onValueChange={(value) => setPackageForm(prev => ({ 
-                              ...prev, 
-                              design: { ...prev.design, icon: value }
-                            }))}
+                          <Select
+                            value={packageForm.design.icon}
+                            onValueChange={(value) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                design: { ...prev.design, icon: value },
+                              }))
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select icon" />
@@ -902,13 +1036,18 @@ export default function GoldStoreManager() {
                               id="bg-from"
                               type="color"
                               value={packageForm.design.backgroundGradient.from}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                design: { 
-                                  ...prev.design, 
-                                  backgroundGradient: { ...prev.design.backgroundGradient, from: e.target.value }
-                                }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  design: {
+                                    ...prev.design,
+                                    backgroundGradient: {
+                                      ...prev.design.backgroundGradient,
+                                      from: e.target.value,
+                                    },
+                                  },
+                                }))
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -917,28 +1056,42 @@ export default function GoldStoreManager() {
                               id="bg-to"
                               type="color"
                               value={packageForm.design.backgroundGradient.to}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                design: { 
-                                  ...prev.design, 
-                                  backgroundGradient: { ...prev.design.backgroundGradient, to: e.target.value }
-                                }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  design: {
+                                    ...prev.design,
+                                    backgroundGradient: {
+                                      ...prev.design.backgroundGradient,
+                                      to: e.target.value,
+                                    },
+                                  },
+                                }))
+                              }
                             />
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="gradient-direction">Gradient Direction</Label>
-                          <Select 
-                            value={packageForm.design.backgroundGradient.direction} 
-                            onValueChange={(value) => setPackageForm(prev => ({ 
-                              ...prev, 
-                              design: { 
-                                ...prev.design, 
-                                backgroundGradient: { ...prev.design.backgroundGradient, direction: value as any }
-                              }
-                            }))}
+                          <Label htmlFor="gradient-direction">
+                            Gradient Direction
+                          </Label>
+                          <Select
+                            value={
+                              packageForm.design.backgroundGradient.direction
+                            }
+                            onValueChange={(value) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                design: {
+                                  ...prev.design,
+                                  backgroundGradient: {
+                                    ...prev.design.backgroundGradient,
+                                    direction: value as any,
+                                  },
+                                },
+                              }))
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select direction" />
@@ -960,10 +1113,15 @@ export default function GoldStoreManager() {
                               id="text-color"
                               type="color"
                               value={packageForm.design.textColor}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                design: { ...prev.design, textColor: e.target.value }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  design: {
+                                    ...prev.design,
+                                    textColor: e.target.value,
+                                  },
+                                }))
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -972,10 +1130,15 @@ export default function GoldStoreManager() {
                               id="accent-color"
                               type="color"
                               value={packageForm.design.accentColor}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                design: { ...prev.design, accentColor: e.target.value }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  design: {
+                                    ...prev.design,
+                                    accentColor: e.target.value,
+                                  },
+                                }))
+                              }
                             />
                           </div>
                         </div>
@@ -987,10 +1150,15 @@ export default function GoldStoreManager() {
                               id="border-color"
                               type="color"
                               value={packageForm.design.borderColor}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                design: { ...prev.design, borderColor: e.target.value }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  design: {
+                                    ...prev.design,
+                                    borderColor: e.target.value,
+                                  },
+                                }))
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -999,22 +1167,32 @@ export default function GoldStoreManager() {
                               id="shadow-color"
                               type="color"
                               value={packageForm.design.shadowColor}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                design: { ...prev.design, shadowColor: e.target.value }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  design: {
+                                    ...prev.design,
+                                    shadowColor: e.target.value,
+                                  },
+                                }))
+                              }
                             />
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           <Label htmlFor="animation">Animation</Label>
-                          <Select 
-                            value={packageForm.design.animation || "none"} 
-                            onValueChange={(value) => setPackageForm(prev => ({ 
-                              ...prev, 
-                              design: { ...prev.design, animation: value as any }
-                            }))}
+                          <Select
+                            value={packageForm.design.animation || "none"}
+                            onValueChange={(value) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                design: {
+                                  ...prev.design,
+                                  animation: value as any,
+                                },
+                              }))
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select animation" />
@@ -1037,10 +1215,12 @@ export default function GoldStoreManager() {
                           <Switch
                             id="bonus-enabled"
                             checked={packageForm.bonus.enabled}
-                            onCheckedChange={(checked) => setPackageForm(prev => ({ 
-                              ...prev, 
-                              bonus: { ...prev.bonus, enabled: checked }
-                            }))}
+                            onCheckedChange={(checked) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                bonus: { ...prev.bonus, enabled: checked },
+                              }))
+                            }
                           />
                         </div>
 
@@ -1049,21 +1229,34 @@ export default function GoldStoreManager() {
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-2">
                                 <Label htmlFor="bonus-type">Bonus Type</Label>
-                                <Select 
-                                  value={packageForm.bonus.type} 
-                                  onValueChange={(value) => setPackageForm(prev => ({ 
-                                    ...prev, 
-                                    bonus: { ...prev.bonus, type: value as any }
-                                  }))}
+                                <Select
+                                  value={packageForm.bonus.type}
+                                  onValueChange={(value) =>
+                                    setPackageForm((prev) => ({
+                                      ...prev,
+                                      bonus: {
+                                        ...prev.bonus,
+                                        type: value as any,
+                                      },
+                                    }))
+                                  }
                                 >
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select type" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="percentage">Percentage</SelectItem>
-                                    <SelectItem value="fixed">Fixed Amount</SelectItem>
-                                    <SelectItem value="free_spins">Free Spins</SelectItem>
-                                    <SelectItem value="multiplier">Multiplier</SelectItem>
+                                    <SelectItem value="percentage">
+                                      Percentage
+                                    </SelectItem>
+                                    <SelectItem value="fixed">
+                                      Fixed Amount
+                                    </SelectItem>
+                                    <SelectItem value="free_spins">
+                                      Free Spins
+                                    </SelectItem>
+                                    <SelectItem value="multiplier">
+                                      Multiplier
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -1073,24 +1266,36 @@ export default function GoldStoreManager() {
                                   id="bonus-value"
                                   type="number"
                                   value={packageForm.bonus.value}
-                                  onChange={(e) => setPackageForm(prev => ({ 
-                                    ...prev, 
-                                    bonus: { ...prev.bonus, value: parseFloat(e.target.value) || 0 }
-                                  }))}
+                                  onChange={(e) =>
+                                    setPackageForm((prev) => ({
+                                      ...prev,
+                                      bonus: {
+                                        ...prev.bonus,
+                                        value: parseFloat(e.target.value) || 0,
+                                      },
+                                    }))
+                                  }
                                   placeholder="10"
                                 />
                               </div>
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="bonus-description">Bonus Description</Label>
+                              <Label htmlFor="bonus-description">
+                                Bonus Description
+                              </Label>
                               <Input
                                 id="bonus-description"
                                 value={packageForm.bonus.description}
-                                onChange={(e) => setPackageForm(prev => ({ 
-                                  ...prev, 
-                                  bonus: { ...prev.bonus, description: e.target.value }
-                                }))}
+                                onChange={(e) =>
+                                  setPackageForm((prev) => ({
+                                    ...prev,
+                                    bonus: {
+                                      ...prev.bonus,
+                                      description: e.target.value,
+                                    },
+                                  }))
+                                }
                                 placeholder="10% Bonus Gold Coins"
                               />
                             </div>
@@ -1101,33 +1306,47 @@ export default function GoldStoreManager() {
                       {/* Targeting Tab */}
                       <TabsContent value="targeting" className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="user-tiers">User Tiers (comma-separated)</Label>
+                          <Label htmlFor="user-tiers">
+                            User Tiers (comma-separated)
+                          </Label>
                           <Input
                             id="user-tiers"
                             value={packageForm.targeting.userTiers.join(", ")}
-                            onChange={(e) => setPackageForm(prev => ({ 
-                              ...prev, 
-                              targeting: { 
-                                ...prev.targeting, 
-                                userTiers: e.target.value.split(",").map(t => t.trim()).filter(t => t)
-                              }
-                            }))}
+                            onChange={(e) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                targeting: {
+                                  ...prev.targeting,
+                                  userTiers: e.target.value
+                                    .split(",")
+                                    .map((t) => t.trim())
+                                    .filter((t) => t),
+                                },
+                              }))
+                            }
                             placeholder="new, bronze, silver"
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="countries">Countries (comma-separated)</Label>
+                          <Label htmlFor="countries">
+                            Countries (comma-separated)
+                          </Label>
                           <Input
                             id="countries"
                             value={packageForm.targeting.countries.join(", ")}
-                            onChange={(e) => setPackageForm(prev => ({ 
-                              ...prev, 
-                              targeting: { 
-                                ...prev.targeting, 
-                                countries: e.target.value.split(",").map(c => c.trim()).filter(c => c)
-                              }
-                            }))}
+                            onChange={(e) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                targeting: {
+                                  ...prev.targeting,
+                                  countries: e.target.value
+                                    .split(",")
+                                    .map((c) => c.trim())
+                                    .filter((c) => c),
+                                },
+                              }))
+                            }
                             placeholder="US, CA, UK"
                           />
                         </div>
@@ -1139,10 +1358,16 @@ export default function GoldStoreManager() {
                               id="min-age"
                               type="number"
                               value={packageForm.targeting.minAge || ""}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                targeting: { ...prev.targeting, minAge: parseInt(e.target.value) || undefined }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  targeting: {
+                                    ...prev.targeting,
+                                    minAge:
+                                      parseInt(e.target.value) || undefined,
+                                  },
+                                }))
+                              }
                               placeholder="18"
                             />
                           </div>
@@ -1152,10 +1377,16 @@ export default function GoldStoreManager() {
                               id="max-age"
                               type="number"
                               value={packageForm.targeting.maxAge || ""}
-                              onChange={(e) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                targeting: { ...prev.targeting, maxAge: parseInt(e.target.value) || undefined }
-                              }))}
+                              onChange={(e) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  targeting: {
+                                    ...prev.targeting,
+                                    maxAge:
+                                      parseInt(e.target.value) || undefined,
+                                  },
+                                }))
+                              }
                               placeholder="65"
                             />
                           </div>
@@ -1163,14 +1394,21 @@ export default function GoldStoreManager() {
 
                         <div className="grid grid-cols-2 gap-4">
                           <div className="flex items-center justify-between">
-                            <Label htmlFor="new-users-only">New Users Only</Label>
+                            <Label htmlFor="new-users-only">
+                              New Users Only
+                            </Label>
                             <Switch
                               id="new-users-only"
                               checked={packageForm.targeting.newUsersOnly}
-                              onCheckedChange={(checked) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                targeting: { ...prev.targeting, newUsersOnly: checked }
-                              }))}
+                              onCheckedChange={(checked) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  targeting: {
+                                    ...prev.targeting,
+                                    newUsersOnly: checked,
+                                  },
+                                }))
+                              }
                             />
                           </div>
                           <div className="flex items-center justify-between">
@@ -1178,10 +1416,15 @@ export default function GoldStoreManager() {
                             <Switch
                               id="vip-only"
                               checked={packageForm.targeting.vipOnly}
-                              onCheckedChange={(checked) => setPackageForm(prev => ({ 
-                                ...prev, 
-                                targeting: { ...prev.targeting, vipOnly: checked }
-                              }))}
+                              onCheckedChange={(checked) =>
+                                setPackageForm((prev) => ({
+                                  ...prev,
+                                  targeting: {
+                                    ...prev.targeting,
+                                    vipOnly: checked,
+                                  },
+                                }))
+                              }
                             />
                           </div>
                         </div>
@@ -1191,7 +1434,12 @@ export default function GoldStoreManager() {
                           <Switch
                             id="is-active"
                             checked={packageForm.isActive}
-                            onCheckedChange={(checked) => setPackageForm(prev => ({ ...prev, isActive: checked }))}
+                            onCheckedChange={(checked) =>
+                              setPackageForm((prev) => ({
+                                ...prev,
+                                isActive: checked,
+                              }))
+                            }
                           />
                         </div>
                       </TabsContent>
@@ -1204,21 +1452,27 @@ export default function GoldStoreManager() {
                       <Label>Live Preview</Label>
                       <div className="flex items-center gap-2">
                         <Button
-                          variant={previewMode === "desktop" ? "default" : "outline"}
+                          variant={
+                            previewMode === "desktop" ? "default" : "outline"
+                          }
                           size="sm"
                           onClick={() => setPreviewMode("desktop")}
                         >
                           <Monitor className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant={previewMode === "tablet" ? "default" : "outline"}
+                          variant={
+                            previewMode === "tablet" ? "default" : "outline"
+                          }
                           size="sm"
                           onClick={() => setPreviewMode("tablet")}
                         >
                           <Tablet className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant={previewMode === "mobile" ? "default" : "outline"}
+                          variant={
+                            previewMode === "mobile" ? "default" : "outline"
+                          }
                           size="sm"
                           onClick={() => setPreviewMode("mobile")}
                         >
@@ -1226,7 +1480,7 @@ export default function GoldStoreManager() {
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className="border rounded-lg p-4 bg-muted/20">
                       {renderPackagePreview()}
                     </div>
@@ -1234,10 +1488,20 @@ export default function GoldStoreManager() {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setPackageDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setPackageDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={selectedPackage ? () => handleUpdatePackage(selectedPackage.id, packageForm) : handleCreatePackage}>
+                  <Button
+                    onClick={
+                      selectedPackage
+                        ? () =>
+                            handleUpdatePackage(selectedPackage.id, packageForm)
+                        : handleCreatePackage
+                    }
+                  >
                     <Save className="w-4 h-4 mr-2" />
                     {selectedPackage ? "Update Package" : "Create Package"}
                   </Button>
@@ -1257,38 +1521,65 @@ export default function GoldStoreManager() {
                         <div className="text-2xl">{pkg.design.icon}</div>
                         <div>
                           <h3 className="text-lg font-semibold">{pkg.name}</h3>
-                          <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {pkg.description}
+                          </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           <Badge variant={getStatusColor(pkg.isActive)}>
                             {pkg.isActive ? "Active" : "Inactive"}
                           </Badge>
-                          <Badge variant="outline" className={getCategoryColor(pkg.category)}>
+                          <Badge
+                            variant="outline"
+                            className={getCategoryColor(pkg.category)}
+                          >
                             {pkg.category.toUpperCase()}
                           </Badge>
-                          {pkg.popular && <Badge className="bg-yellow-500">Popular</Badge>}
-                          {pkg.featured && <Badge className="bg-purple-500">Featured</Badge>}
-                          {pkg.bestValue && <Badge className="bg-green-500">Best Value</Badge>}
-                          {pkg.limitedTime && <Badge variant="destructive">Limited Time</Badge>}
+                          {pkg.popular && (
+                            <Badge className="bg-yellow-500">Popular</Badge>
+                          )}
+                          {pkg.featured && (
+                            <Badge className="bg-purple-500">Featured</Badge>
+                          )}
+                          {pkg.bestValue && (
+                            <Badge className="bg-green-500">Best Value</Badge>
+                          )}
+                          {pkg.limitedTime && (
+                            <Badge variant="destructive">Limited Time</Badge>
+                          )}
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                         <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Gold Coins</div>
-                          <div className="font-semibold">{pkg.goldCoins.toLocaleString()}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Gold Coins
+                          </div>
+                          <div className="font-semibold">
+                            {pkg.goldCoins.toLocaleString()}
+                          </div>
                         </div>
                         <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                          <div className="text-sm text-muted-foreground">
+                            Sweeps Coins
+                          </div>
                           <div className="font-semibold">{pkg.sweepsCoins}</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Price</div>
-                          <div className="font-semibold">${pkg.price.toFixed(2)}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Price
+                          </div>
+                          <div className="font-semibold">
+                            ${pkg.price.toFixed(2)}
+                          </div>
                         </div>
                         <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Purchases</div>
-                          <div className="font-semibold">{pkg.analytics.purchases}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Purchases
+                          </div>
+                          <div className="font-semibold">
+                            {pkg.analytics.purchases}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1304,11 +1595,19 @@ export default function GoldStoreManager() {
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDuplicatePackage(pkg.id)}>
+                        <DropdownMenuItem
+                          onClick={() => handleDuplicatePackage(pkg.id)}
+                        >
                           <Copy className="w-4 h-4 mr-2" />
                           Duplicate
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdatePackage(pkg.id, { isActive: !pkg.isActive })}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleUpdatePackage(pkg.id, {
+                              isActive: !pkg.isActive,
+                            })
+                          }
+                        >
                           {pkg.isActive ? (
                             <>
                               <XCircle className="w-4 h-4 mr-2" />
@@ -1324,21 +1623,28 @@ export default function GoldStoreManager() {
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                            >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Package</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Delete Package
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{pkg.name}"? This action cannot be undone.
+                                Are you sure you want to delete "{pkg.name}"?
+                                This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeletePackage(pkg.id)}>
+                              <AlertDialogAction
+                                onClick={() => handleDeletePackage(pkg.id)}
+                              >
                                 Delete
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -1350,20 +1656,26 @@ export default function GoldStoreManager() {
                 </CardContent>
               </Card>
             ))}
-            
+
             {filteredPackages.length === 0 && (
               <Card>
                 <CardContent className="p-12 text-center">
                   <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">No packages found</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No packages found
+                  </h3>
                   <p className="text-muted-foreground mb-4">
-                    {searchTerm || filterCategory !== "all" 
+                    {searchTerm || filterCategory !== "all"
                       ? "Try adjusting your search or filter settings"
-                      : "Get started by creating your first package"
-                    }
+                      : "Get started by creating your first package"}
                   </p>
                   {!searchTerm && filterCategory === "all" && (
-                    <Button onClick={() => { resetPackageForm(); setPackageDialogOpen(true); }}>
+                    <Button
+                      onClick={() => {
+                        resetPackageForm();
+                        setPackageDialogOpen(true);
+                      }}
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Create Your First Package
                     </Button>
@@ -1384,8 +1696,12 @@ export default function GoldStoreManager() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Total Revenue</p>
-                        <p className="text-2xl font-bold">${analytics.totalRevenue.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Revenue
+                        </p>
+                        <p className="text-2xl font-bold">
+                          ${analytics.totalRevenue.toLocaleString()}
+                        </p>
                       </div>
                       <DollarSign className="w-8 h-8 text-green-500" />
                     </div>
@@ -1396,8 +1712,12 @@ export default function GoldStoreManager() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Total Purchases</p>
-                        <p className="text-2xl font-bold">{analytics.totalPurchases.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Purchases
+                        </p>
+                        <p className="text-2xl font-bold">
+                          {analytics.totalPurchases.toLocaleString()}
+                        </p>
                       </div>
                       <ShoppingCart className="w-8 h-8 text-blue-500" />
                     </div>
@@ -1408,8 +1728,12 @@ export default function GoldStoreManager() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Avg Order Value</p>
-                        <p className="text-2xl font-bold">${analytics.averageOrderValue.toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Avg Order Value
+                        </p>
+                        <p className="text-2xl font-bold">
+                          ${analytics.averageOrderValue.toFixed(2)}
+                        </p>
                       </div>
                       <TrendingUp className="w-8 h-8 text-purple-500" />
                     </div>
@@ -1420,8 +1744,12 @@ export default function GoldStoreManager() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Conversion Rate</p>
-                        <p className="text-2xl font-bold">{analytics.conversionRate.toFixed(1)}%</p>
+                        <p className="text-sm text-muted-foreground">
+                          Conversion Rate
+                        </p>
+                        <p className="text-2xl font-bold">
+                          {analytics.conversionRate.toFixed(1)}%
+                        </p>
                       </div>
                       <Target className="w-8 h-8 text-orange-500" />
                     </div>
@@ -1438,17 +1766,28 @@ export default function GoldStoreManager() {
                   <CardContent>
                     <div className="space-y-4">
                       {analytics.topPackages.map((pkg, index) => (
-                        <div key={pkg.packageId} className="flex items-center justify-between">
+                        <div
+                          key={pkg.packageId}
+                          className="flex items-center justify-between"
+                        >
                           <div className="flex items-center gap-3">
-                            <span className="text-sm font-mono w-6">#{index + 1}</span>
+                            <span className="text-sm font-mono w-6">
+                              #{index + 1}
+                            </span>
                             <div>
                               <p className="font-medium">{pkg.name}</p>
-                              <p className="text-sm text-muted-foreground">{pkg.purchases} purchases</p>
+                              <p className="text-sm text-muted-foreground">
+                                {pkg.purchases} purchases
+                              </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">${pkg.revenue.toLocaleString()}</p>
-                            <p className="text-sm text-muted-foreground">revenue</p>
+                            <p className="font-medium">
+                              ${pkg.revenue.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              revenue
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -1464,15 +1803,21 @@ export default function GoldStoreManager() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <span>New Users</span>
-                        <span className="font-semibold">{analytics.userDemographics.newUsers}</span>
+                        <span className="font-semibold">
+                          {analytics.userDemographics.newUsers}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Returning Users</span>
-                        <span className="font-semibold">{analytics.userDemographics.returningUsers}</span>
+                        <span className="font-semibold">
+                          {analytics.userDemographics.returningUsers}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>VIP Users</span>
-                        <span className="font-semibold">{analytics.userDemographics.vipUsers}</span>
+                        <span className="font-semibold">
+                          {analytics.userDemographics.vipUsers}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -1490,7 +1835,9 @@ export default function GoldStoreManager() {
                       <div key={method.method} className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>{method.method}</span>
-                          <span>{method.percentage.toFixed(1)}% ({method.count})</span>
+                          <span>
+                            {method.percentage.toFixed(1)}% ({method.count})
+                          </span>
                         </div>
                         <Progress value={method.percentage} className="h-2" />
                       </div>
@@ -1518,43 +1865,66 @@ export default function GoldStoreManager() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-medium">{purchase.packageName}</h4>
-                          <Badge 
+                          <h4 className="font-medium">
+                            {purchase.packageName}
+                          </h4>
+                          <Badge
                             variant={
-                              purchase.paymentStatus === "completed" ? "default" :
-                              purchase.paymentStatus === "pending" ? "secondary" :
-                              purchase.paymentStatus === "failed" ? "destructive" : "outline"
+                              purchase.paymentStatus === "completed"
+                                ? "default"
+                                : purchase.paymentStatus === "pending"
+                                  ? "secondary"
+                                  : purchase.paymentStatus === "failed"
+                                    ? "destructive"
+                                    : "outline"
                             }
                           >
                             {purchase.paymentStatus.toUpperCase()}
                           </Badge>
                           <Badge variant="outline">
-                            {purchase.paymentMethod.replace("_", " ").toUpperCase()}
+                            {purchase.paymentMethod
+                              .replace("_", " ")
+                              .toUpperCase()}
                           </Badge>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
                             <div className="text-muted-foreground">Amount</div>
-                            <div className="font-medium">${purchase.price} {purchase.currency}</div>
+                            <div className="font-medium">
+                              ${purchase.price} {purchase.currency}
+                            </div>
                           </div>
                           <div>
-                            <div className="text-muted-foreground">Gold Coins</div>
-                            <div className="font-medium">{purchase.goldCoins.toLocaleString()}</div>
+                            <div className="text-muted-foreground">
+                              Gold Coins
+                            </div>
+                            <div className="font-medium">
+                              {purchase.goldCoins.toLocaleString()}
+                            </div>
                           </div>
                           <div>
-                            <div className="text-muted-foreground">Sweeps Coins</div>
-                            <div className="font-medium">{purchase.sweepsCoins}</div>
+                            <div className="text-muted-foreground">
+                              Sweeps Coins
+                            </div>
+                            <div className="font-medium">
+                              {purchase.sweepsCoins}
+                            </div>
                           </div>
                           <div>
                             <div className="text-muted-foreground">Date</div>
-                            <div className="font-medium">{purchase.purchaseDate.toLocaleDateString()}</div>
+                            <div className="font-medium">
+                              {purchase.purchaseDate.toLocaleDateString()}
+                            </div>
                           </div>
                         </div>
-                        
+
                         {purchase.bonusApplied && (
                           <div className="mt-2">
-                            <Badge variant="outline" className="text-green-600 border-green-600">
+                            <Badge
+                              variant="outline"
+                              className="text-green-600 border-green-600"
+                            >
                               <Gift className="w-3 h-3 mr-1" />
                               {purchase.bonusApplied.description}
                             </Badge>
@@ -1564,7 +1934,7 @@ export default function GoldStoreManager() {
                     </div>
                   </div>
                 ))}
-                
+
                 {purchaseHistory.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     <ShoppingCart className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -1590,25 +1960,41 @@ export default function GoldStoreManager() {
                     <Input
                       id="store-name"
                       value={settings.storeName}
-                      onChange={(e) => setSettings(prev => prev ? { ...prev, storeName: e.target.value } : null)}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev ? { ...prev, storeName: e.target.value } : null,
+                        )
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="store-description">Store Description</Label>
                     <Textarea
                       id="store-description"
                       value={settings.storeDescription}
-                      onChange={(e) => setSettings(prev => prev ? { ...prev, storeDescription: e.target.value } : null)}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev
+                            ? { ...prev, storeDescription: e.target.value }
+                            : null,
+                        )
+                      }
                       rows={3}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="default-currency">Default Currency</Label>
-                    <Select 
-                      value={settings.defaultCurrency} 
-                      onValueChange={(value) => setSettings(prev => prev ? { ...prev, defaultCurrency: value as any } : null)}
+                    <Select
+                      value={settings.defaultCurrency}
+                      onValueChange={(value) =>
+                        setSettings((prev) =>
+                          prev
+                            ? { ...prev, defaultCurrency: value as any }
+                            : null,
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select currency" />
@@ -1631,12 +2017,21 @@ export default function GoldStoreManager() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="theme">Theme</Label>
-                    <Select 
-                      value={settings.uiSettings.theme} 
-                      onValueChange={(value) => setSettings(prev => prev ? { 
-                        ...prev, 
-                        uiSettings: { ...prev.uiSettings, theme: value as any }
-                      } : null)}
+                    <Select
+                      value={settings.uiSettings.theme}
+                      onValueChange={(value) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                uiSettings: {
+                                  ...prev.uiSettings,
+                                  theme: value as any,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select theme" />
@@ -1649,15 +2044,24 @@ export default function GoldStoreManager() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="layout">Layout</Label>
-                    <Select 
-                      value={settings.uiSettings.layout} 
-                      onValueChange={(value) => setSettings(prev => prev ? { 
-                        ...prev, 
-                        uiSettings: { ...prev.uiSettings, layout: value as any }
-                      } : null)}
+                    <Select
+                      value={settings.uiSettings.layout}
+                      onValueChange={(value) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                uiSettings: {
+                                  ...prev.uiSettings,
+                                  layout: value as any,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select layout" />
@@ -1669,23 +2073,42 @@ export default function GoldStoreManager() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {[
                       { key: "showPrices", label: "Show Prices" },
                       { key: "showSavings", label: "Show Savings" },
-                      { key: "showPopularBadges", label: "Show Popular Badges" },
+                      {
+                        key: "showPopularBadges",
+                        label: "Show Popular Badges",
+                      },
                       { key: "animationsEnabled", label: "Enable Animations" },
                     ].map(({ key, label }) => (
-                      <div key={key} className="flex items-center justify-between">
+                      <div
+                        key={key}
+                        className="flex items-center justify-between"
+                      >
                         <Label htmlFor={key}>{label}</Label>
                         <Switch
                           id={key}
-                          checked={settings.uiSettings[key as keyof typeof settings.uiSettings] as boolean}
-                          onCheckedChange={(checked) => setSettings(prev => prev ? {
-                            ...prev,
-                            uiSettings: { ...prev.uiSettings, [key]: checked }
-                          } : null)}
+                          checked={
+                            settings.uiSettings[
+                              key as keyof typeof settings.uiSettings
+                            ] as boolean
+                          }
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    uiSettings: {
+                                      ...prev.uiSettings,
+                                      [key]: checked,
+                                    },
+                                  }
+                                : null,
+                            )
+                          }
                         />
                       </div>
                     ))}
@@ -1704,36 +2127,66 @@ export default function GoldStoreManager() {
                       id="daily-limit"
                       type="number"
                       value={settings.purchaseLimits.dailyLimit || ""}
-                      onChange={(e) => setSettings(prev => prev ? {
-                        ...prev,
-                        purchaseLimits: { ...prev.purchaseLimits, dailyLimit: parseInt(e.target.value) || undefined }
-                      } : null)}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                purchaseLimits: {
+                                  ...prev.purchaseLimits,
+                                  dailyLimit:
+                                    parseInt(e.target.value) || undefined,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="weekly-limit">Weekly Limit ($)</Label>
                     <Input
                       id="weekly-limit"
                       type="number"
                       value={settings.purchaseLimits.weeklyLimit || ""}
-                      onChange={(e) => setSettings(prev => prev ? {
-                        ...prev,
-                        purchaseLimits: { ...prev.purchaseLimits, weeklyLimit: parseInt(e.target.value) || undefined }
-                      } : null)}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                purchaseLimits: {
+                                  ...prev.purchaseLimits,
+                                  weeklyLimit:
+                                    parseInt(e.target.value) || undefined,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="monthly-limit">Monthly Limit ($)</Label>
                     <Input
                       id="monthly-limit"
                       type="number"
                       value={settings.purchaseLimits.monthlyLimit || ""}
-                      onChange={(e) => setSettings(prev => prev ? {
-                        ...prev,
-                        purchaseLimits: { ...prev.purchaseLimits, monthlyLimit: parseInt(e.target.value) || undefined }
-                      } : null)}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                purchaseLimits: {
+                                  ...prev.purchaseLimits,
+                                  monthlyLimit:
+                                    parseInt(e.target.value) || undefined,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     />
                   </div>
                 </CardContent>
@@ -1749,13 +2202,22 @@ export default function GoldStoreManager() {
                     <Switch
                       id="tax-enabled"
                       checked={settings.taxSettings.enabled}
-                      onCheckedChange={(checked) => setSettings(prev => prev ? {
-                        ...prev,
-                        taxSettings: { ...prev.taxSettings, enabled: checked }
-                      } : null)}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                taxSettings: {
+                                  ...prev.taxSettings,
+                                  enabled: checked,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     />
                   </div>
-                  
+
                   {settings.taxSettings.enabled && (
                     <div className="space-y-2">
                       <Label htmlFor="tax-rate">Tax Rate (%)</Label>
@@ -1764,24 +2226,43 @@ export default function GoldStoreManager() {
                         type="number"
                         step="0.1"
                         value={settings.taxSettings.rate}
-                        onChange={(e) => setSettings(prev => prev ? {
-                          ...prev,
-                          taxSettings: { ...prev.taxSettings, rate: parseFloat(e.target.value) || 0 }
-                        } : null)}
+                        onChange={(e) =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  taxSettings: {
+                                    ...prev.taxSettings,
+                                    rate: parseFloat(e.target.value) || 0,
+                                  },
+                                }
+                              : null,
+                          )
+                        }
                       />
                     </div>
                   )}
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="max-discount">Max Discount (%)</Label>
                     <Input
                       id="max-discount"
                       type="number"
                       value={settings.discountSettings.maxDiscountPercentage}
-                      onChange={(e) => setSettings(prev => prev ? {
-                        ...prev,
-                        discountSettings: { ...prev.discountSettings, maxDiscountPercentage: parseInt(e.target.value) || 0 }
-                      } : null)}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                discountSettings: {
+                                  ...prev.discountSettings,
+                                  maxDiscountPercentage:
+                                    parseInt(e.target.value) || 0,
+                                },
+                              }
+                            : null,
+                        )
+                      }
                     />
                   </div>
                 </CardContent>
@@ -1831,83 +2312,110 @@ export default function GoldStoreManager() {
                       {settings?.storeName || "CoinKrazy Gold Store"}
                     </h2>
                     <p className="text-muted-foreground">
-                      {settings?.storeDescription || "Premium gold coins and sweeps coins packages"}
+                      {settings?.storeDescription ||
+                        "Premium gold coins and sweeps coins packages"}
                     </p>
                   </div>
 
-                  <div className={`grid gap-4 ${
-                    previewMode === "mobile" ? "grid-cols-1" : 
-                    previewMode === "tablet" ? "grid-cols-2" : 
-                    "grid-cols-3"
-                  }`}>
-                    {packages.slice(0, previewMode === "mobile" ? 2 : previewMode === "tablet" ? 4 : 6).map((pkg) => (
-                      <div
-                        key={pkg.id}
-                        className="relative overflow-hidden rounded-lg border"
-                        style={{
-                          background: `linear-gradient(${pkg.design.backgroundGradient.direction}, ${pkg.design.backgroundGradient.from}, ${pkg.design.backgroundGradient.to})`,
-                          color: pkg.design.textColor,
-                          borderColor: pkg.design.borderColor,
-                        }}
-                      >
-                        <div className="p-4">
-                          {/* Badges */}
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex flex-wrap gap-1">
-                              {pkg.popular && (
-                                <Badge variant="default" className="text-xs bg-yellow-500">
-                                  Popular
-                                </Badge>
-                              )}
-                              {pkg.featured && (
-                                <Badge variant="default" className="text-xs bg-purple-500">
-                                  Featured
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="text-xl">{pkg.design.icon}</div>
-                          </div>
-
-                          {/* Title */}
-                          <div className="text-center mb-3">
-                            <h3 className="font-bold text-sm">{pkg.name}</h3>
-                          </div>
-
-                          {/* Coins */}
-                          <div className="flex justify-around mb-3 text-xs">
-                            <div className="text-center">
-                              <div className="font-bold">{pkg.goldCoins.toLocaleString()}</div>
-                              <div className="opacity-75">GC</div>
-                            </div>
-                            {pkg.sweepsCoins > 0 && (
-                              <div className="text-center">
-                                <div className="font-bold">{pkg.sweepsCoins}</div>
-                                <div className="opacity-75">SC</div>
+                  <div
+                    className={`grid gap-4 ${
+                      previewMode === "mobile"
+                        ? "grid-cols-1"
+                        : previewMode === "tablet"
+                          ? "grid-cols-2"
+                          : "grid-cols-3"
+                    }`}
+                  >
+                    {packages
+                      .slice(
+                        0,
+                        previewMode === "mobile"
+                          ? 2
+                          : previewMode === "tablet"
+                            ? 4
+                            : 6,
+                      )
+                      .map((pkg) => (
+                        <div
+                          key={pkg.id}
+                          className="relative overflow-hidden rounded-lg border"
+                          style={{
+                            background: `linear-gradient(${pkg.design.backgroundGradient.direction}, ${pkg.design.backgroundGradient.from}, ${pkg.design.backgroundGradient.to})`,
+                            color: pkg.design.textColor,
+                            borderColor: pkg.design.borderColor,
+                          }}
+                        >
+                          <div className="p-4">
+                            {/* Badges */}
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex flex-wrap gap-1">
+                                {pkg.popular && (
+                                  <Badge
+                                    variant="default"
+                                    className="text-xs bg-yellow-500"
+                                  >
+                                    Popular
+                                  </Badge>
+                                )}
+                                {pkg.featured && (
+                                  <Badge
+                                    variant="default"
+                                    className="text-xs bg-purple-500"
+                                  >
+                                    Featured
+                                  </Badge>
+                                )}
                               </div>
-                            )}
-                          </div>
-
-                          {/* Price */}
-                          <div className="text-center mb-3">
-                            <div className="font-bold" style={{ color: pkg.design.accentColor }}>
-                              ${pkg.price.toFixed(2)}
+                              <div className="text-xl">{pkg.design.icon}</div>
                             </div>
-                          </div>
 
-                          {/* Button */}
-                          <Button 
-                            size="sm" 
-                            className="w-full text-xs"
-                            style={{ 
-                              backgroundColor: pkg.design.accentColor,
-                              color: "#000000",
-                            }}
-                          >
-                            Buy Now
-                          </Button>
+                            {/* Title */}
+                            <div className="text-center mb-3">
+                              <h3 className="font-bold text-sm">{pkg.name}</h3>
+                            </div>
+
+                            {/* Coins */}
+                            <div className="flex justify-around mb-3 text-xs">
+                              <div className="text-center">
+                                <div className="font-bold">
+                                  {pkg.goldCoins.toLocaleString()}
+                                </div>
+                                <div className="opacity-75">GC</div>
+                              </div>
+                              {pkg.sweepsCoins > 0 && (
+                                <div className="text-center">
+                                  <div className="font-bold">
+                                    {pkg.sweepsCoins}
+                                  </div>
+                                  <div className="opacity-75">SC</div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Price */}
+                            <div className="text-center mb-3">
+                              <div
+                                className="font-bold"
+                                style={{ color: pkg.design.accentColor }}
+                              >
+                                ${pkg.price.toFixed(2)}
+                              </div>
+                            </div>
+
+                            {/* Button */}
+                            <Button
+                              size="sm"
+                              className="w-full text-xs"
+                              style={{
+                                backgroundColor: pkg.design.accentColor,
+                                color: "#000000",
+                              }}
+                            >
+                              Buy Now
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </div>
               </div>

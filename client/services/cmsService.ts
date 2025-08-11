@@ -248,13 +248,6 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/pages`);
       if (!response.ok) throw new Error("Failed to fetch pages");
-
-      // Check if response is JSON
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Response is not JSON");
-      }
-
       return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching pages:", error);

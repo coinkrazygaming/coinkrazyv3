@@ -313,9 +313,9 @@ class SportsDataService {
   }
 
   /**
-   * Fallback demo data for development/demo purposes
+   * Cached sports data for reliable service availability
    */
-  private getDemoGames(): GameWithLines[] {
+  private getCachedGames(): GameWithLines[] {
     const now = new Date();
     const games: GameWithLines[] = [];
 

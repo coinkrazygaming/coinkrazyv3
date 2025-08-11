@@ -917,73 +917,30 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
-          {/* Notifications */}
+          {/* Enhanced Notifications */}
           <TabsContent value="notifications" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Admin Notifications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`border rounded-lg p-4 ${
-                        !notification.read_status ? "bg-muted/20" : "bg-card"
-                      }`}
-                      onClick={() =>
-                        !notification.read_status &&
-                        handleNotificationRead(notification.id)
-                      }
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            {notification.notification_type === "error" && (
-                              <AlertTriangle className="w-4 h-4 text-red-500" />
-                            )}
-                            {notification.notification_type === "warning" && (
-                              <AlertTriangle className="w-4 h-4 text-orange-500" />
-                            )}
-                            {notification.notification_type === "info" && (
-                              <Zap className="w-4 h-4 text-blue-500" />
-                            )}
-                            {notification.notification_type === "success" && (
-                              <CheckCircle className="w-4 h-4 text-green-500" />
-                            )}
-                            <span className="font-medium">
-                              {notification.title}
-                            </span>
-                            {notification.ai_name && (
-                              <Badge variant="outline" className="text-xs">
-                                <Bot className="w-3 h-3 mr-1" />
-                                {notification.ai_name}
-                              </Badge>
-                            )}
-                            {!notification.read_status && (
-                              <Badge variant="destructive" className="text-xs">
-                                New
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {new Date(notification.created_at).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {notifications.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No notifications available
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <AdminNotificationCenter
+              notifications={notifications.map(n => ({
+                id: n.id.toString(),
+                type: n.notification_type === "error" ? "security" :
+                      n.notification_type === "warning" ? "system" :
+                      n.notification_type === "info" ? "general" : "general",
+                priority: n.notification_type === "error" ? "high" :
+                         n.notification_type === "warning" ? "medium" : "low",
+                title: n.title,
+                message: n.message,
+                timestamp: new Date(n.created_at),
+                read: n.read_status,
+                actionable: false,
+                user_id: n.admin_user_id,
+                metadata: { ai_name: n.ai_name }
+              }))}
+              onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllAsRead}
+              onDeleteNotification={handleDeleteNotification}
+              onRefresh={handleRefresh}
+              isRefreshing={refreshing}
+            />
           </TabsContent>
 
           {/* AI Employee Manager */}

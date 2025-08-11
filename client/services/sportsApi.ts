@@ -45,7 +45,7 @@ export interface GameWithLines extends Game {
 
 class SportsDataService {
   private readonly ODDS_API_KEY =
-    import.meta.env.VITE_ODDS_API_KEY || "demo-key";
+    import.meta.env.VITE_ODDS_API_KEY || "production-api-key";
   private readonly ESPN_API_BASE =
     "https://site.api.espn.com/apis/site/v2/sports";
   private readonly ODDS_API_BASE = "https://api.the-odds-api.com/v4";

@@ -397,6 +397,11 @@ export default function Index() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Debug Panel - Remove in production */}
+      <div className="container mx-auto px-4 py-8">
+        <DebugAuth />
+      </div>
     </div>
   );
 }

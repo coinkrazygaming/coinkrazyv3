@@ -48,6 +48,7 @@ import Support from "./pages/Support";
 import AdminSetup from "./pages/AdminSetup";
 import Social from "./pages/Social";
 import NotFound from "./pages/NotFound";
+import Chat from "./pages/Chat";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 

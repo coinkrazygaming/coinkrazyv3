@@ -81,6 +81,17 @@ export default function AdminSettingsPanel() {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("games");
 
+  // Helper functions to safely parse numbers and prevent NaN
+  const safeParseInt = (value: string, fallback: number = 0): number => {
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? fallback : parsed;
+  };
+
+  const safeParseFloat = (value: string, fallback: number = 0): number => {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? fallback : parsed;
+  };
+
   // Game Settings
   const [gameSettings, setGameSettings] = useState<GameSettings[]>([
     {

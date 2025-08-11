@@ -222,6 +222,52 @@ export default function Admin() {
     }
   };
 
+  const handleMarkAsRead = async (id: string) => {
+    await handleNotificationRead(parseInt(id));
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      const unreadNotifications = notifications.filter(n => !n.read_status);
+      await Promise.all(
+        unreadNotifications.map(n => adminService.markNotificationRead(n.id))
+      );
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, read_status: true }))
+      );
+      setUnreadCount(0);
+      toast({
+        title: "Success",
+        description: "All notifications marked as read",
+      });
+    } catch (error) {
+      console.error("Failed to mark all as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark notifications as read",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteNotification = async (id: string) => {
+    try {
+      // In production, call API to delete notification
+      setNotifications(prev => prev.filter(n => n.id !== parseInt(id)));
+      toast({
+        title: "Success",
+        description: "Notification deleted",
+      });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete notification",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleLogout = () => {
     // Implementation for logout
     navigate("/");

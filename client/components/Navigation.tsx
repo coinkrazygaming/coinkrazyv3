@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/ui/Logo";
 import { playerCountService } from "@/services/playerCountService";
-import RealTimeBalance from "@/components/RealTimeBalance";
-import WalletBalance from "@/components/WalletBalance";
+import EnhancedWalletBalance from "@/components/EnhancedWalletBalance";
 import {
   Coins,
   Users,

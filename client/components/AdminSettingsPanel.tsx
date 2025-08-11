@@ -315,7 +315,7 @@ export default function AdminSettingsPanel() {
                           min="85"
                           max="99"
                           step="0.1"
-                          onChange={(e) => updateGameSetting(game.id, "rtp", parseFloat(e.target.value))}
+                          onChange={(e) => updateGameSetting(game.id, "rtp", safeParseFloat(e.target.value, game.rtp))}
                         />
                       </div>
                       <div>
@@ -324,7 +324,7 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={game.minBet}
                           min="1"
-                          onChange={(e) => updateGameSetting(game.id, "minBet", parseInt(e.target.value))}
+                          onChange={(e) => updateGameSetting(game.id, "minBet", safeParseInt(e.target.value, game.minBet))}
                         />
                       </div>
                       <div>
@@ -333,7 +333,7 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={game.maxBet}
                           min="10"
-                          onChange={(e) => updateGameSetting(game.id, "maxBet", parseInt(e.target.value))}
+                          onChange={(e) => updateGameSetting(game.id, "maxBet", safeParseInt(e.target.value, game.maxBet))}
                         />
                       </div>
                       <div>
@@ -342,7 +342,7 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={game.maxWinMultiplier}
                           min="100"
-                          onChange={(e) => updateGameSetting(game.id, "maxWinMultiplier", parseInt(e.target.value))}
+                          onChange={(e) => updateGameSetting(game.id, "maxWinMultiplier", safeParseInt(e.target.value, game.maxWinMultiplier))}
                         />
                       </div>
                       <div>
@@ -359,7 +359,7 @@ export default function AdminSettingsPanel() {
                             type="number"
                             value={game.jackpotSeedAmount}
                             min="10000"
-                            onChange={(e) => updateGameSetting(game.id, "jackpotSeedAmount", parseInt(e.target.value))}
+                            onChange={(e) => updateGameSetting(game.id, "jackpotSeedAmount", safeParseInt(e.target.value, game.jackpotSeedAmount))}
                           />
                         </div>
                       )}
@@ -407,7 +407,7 @@ export default function AdminSettingsPanel() {
                           value={currency.exchangeRate}
                           step="0.0001"
                           disabled={currency.code === "GC"} // GC has no real cash value
-                          onChange={(e) => updateCurrencySetting(currency.code, "exchangeRate", parseFloat(e.target.value))}
+                          onChange={(e) => updateCurrencySetting(currency.code, "exchangeRate", safeParseFloat(e.target.value, currency.exchangeRate))}
                         />
                         {currency.code === "GC" && (
                           <p className="text-xs text-muted-foreground mt-1">No real cash value</p>
@@ -419,7 +419,7 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={currency.welcomeBonus}
                           min="0"
-                          onChange={(e) => updateCurrencySetting(currency.code, "welcomeBonus", parseInt(e.target.value))}
+                          onChange={(e) => updateCurrencySetting(currency.code, "welcomeBonus", safeParseInt(e.target.value, currency.welcomeBonus))}
                         />
                       </div>
                       <div>
@@ -428,7 +428,7 @@ export default function AdminSettingsPanel() {
                           type="number"
                           value={currency.dailyBonus}
                           min="0"
-                          onChange={(e) => updateCurrencySetting(currency.code, "dailyBonus", parseInt(e.target.value))}
+                          onChange={(e) => updateCurrencySetting(currency.code, "dailyBonus", safeParseInt(e.target.value, currency.dailyBonus))}
                         />
                       </div>
                       <div>
@@ -441,13 +441,13 @@ export default function AdminSettingsPanel() {
                               placeholder="Min"
                               type="number"
                               value={currency.minPurchase}
-                              onChange={(e) => updateCurrencySetting(currency.code, "minPurchase", parseInt(e.target.value))}
+                              onChange={(e) => updateCurrencySetting(currency.code, "minPurchase", safeParseInt(e.target.value, currency.minPurchase))}
                             />
                             <Input
                               placeholder="Max"
                               type="number"
                               value={currency.maxPurchase}
-                              onChange={(e) => updateCurrencySetting(currency.code, "maxPurchase", parseInt(e.target.value))}
+                              onChange={(e) => updateCurrencySetting(currency.code, "maxPurchase", safeParseInt(e.target.value, currency.maxPurchase))}
                             />
                           </div>
                         )}
@@ -516,7 +516,7 @@ export default function AdminSettingsPanel() {
                     value={systemSettings.maxPlayersOnline}
                     min="100"
                     max="100000"
-                    onChange={(e) => updateSystemSetting("maxPlayersOnline", parseInt(e.target.value))}
+                    onChange={(e) => updateSystemSetting("maxPlayersOnline", safeParseInt(e.target.value, systemSettings.maxPlayersOnline))}
                   />
                 </div>
                 <div>
@@ -526,7 +526,7 @@ export default function AdminSettingsPanel() {
                     value={systemSettings.sessionTimeout}
                     min="300"
                     max="86400"
-                    onChange={(e) => updateSystemSetting("sessionTimeout", parseInt(e.target.value))}
+                    onChange={(e) => updateSystemSetting("sessionTimeout", safeParseInt(e.target.value, systemSettings.sessionTimeout))}
                   />
                 </div>
               </CardContent>
@@ -589,7 +589,7 @@ export default function AdminSettingsPanel() {
                       value={securitySettings.maxLoginAttempts}
                       min="3"
                       max="10"
-                      onChange={(e) => updateSecuritySetting("maxLoginAttempts", parseInt(e.target.value))}
+                      onChange={(e) => updateSecuritySetting("maxLoginAttempts", safeParseInt(e.target.value, securitySettings.maxLoginAttempts))}
                     />
                   </div>
                   <div>
@@ -599,7 +599,7 @@ export default function AdminSettingsPanel() {
                       value={securitySettings.passwordMinLength}
                       min="6"
                       max="20"
-                      onChange={(e) => updateSecuritySetting("passwordMinLength", parseInt(e.target.value))}
+                      onChange={(e) => updateSecuritySetting("passwordMinLength", safeParseInt(e.target.value, securitySettings.passwordMinLength))}
                     />
                   </div>
                 </div>

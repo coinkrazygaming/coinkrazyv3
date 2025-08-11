@@ -22,7 +22,7 @@ import {
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, loading } = useAuth();
+  const { user, login, loading, getRedirectPath } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",

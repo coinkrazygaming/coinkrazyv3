@@ -141,15 +141,15 @@ class SlotsApiService {
         }
       }
 
-      // If no real games loaded, return demo games
+      // If no external games loaded, return cached games
       if (allGames.length === 0) {
-        return this.getDemoSlotGames();
+        return this.getCachedSlotGames();
       }
 
       return allGames.sort((a, b) => b.popularity - a.popularity);
     } catch (error) {
       console.error("Error loading slot games:", error);
-      return this.getDemoSlotGames();
+      return this.getCachedSlotGames();
     }
   }
 

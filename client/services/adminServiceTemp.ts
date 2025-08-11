@@ -104,14 +104,27 @@ class AdminService {
     };
 
     try {
+      // Create abort controller with 3 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const statsResponse = await fetch("/api/admin/stats", {
         headers: { Accept: "application/json" },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!statsResponse.ok) {
         console.warn(
           `Stats API returned ${statsResponse.status}, using fallback data`,
         );
+        return fallbackStats;
+      }
+
+      const contentType = statsResponse.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Stats API response is not JSON, using fallback data");
         return fallbackStats;
       }
 

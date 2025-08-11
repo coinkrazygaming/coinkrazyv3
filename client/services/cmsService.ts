@@ -418,7 +418,7 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/forms`);
       if (!response.ok) throw new Error("Failed to fetch forms");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching forms:", error);
       return this.getMockForms();

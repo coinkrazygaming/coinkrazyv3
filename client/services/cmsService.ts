@@ -255,7 +255,7 @@ class CMSService {
         throw new Error("Response is not JSON");
       }
 
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching pages:", error);
       return this.getMockPages();
@@ -435,7 +435,7 @@ class CMSService {
         body: JSON.stringify(form),
       });
       if (!response.ok) throw new Error("Failed to create form");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error creating form:", error);
       return {
@@ -452,7 +452,7 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/navigation`);
       if (!response.ok) throw new Error("Failed to fetch navigations");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching navigations:", error);
       return this.getMockNavigations();
@@ -470,7 +470,7 @@ class CMSService {
         body: JSON.stringify(navigation),
       });
       if (!response.ok) throw new Error("Failed to update navigation");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error updating navigation:", error);
       throw error;
@@ -482,7 +482,7 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/redirects`);
       if (!response.ok) throw new Error("Failed to fetch redirects");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching redirects:", error);
       return this.getMockRedirects();
@@ -499,7 +499,7 @@ class CMSService {
         body: JSON.stringify(redirect),
       });
       if (!response.ok) throw new Error("Failed to create redirect");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error creating redirect:", error);
       return {
@@ -521,7 +521,7 @@ class CMSService {
         `${this.baseUrl}/analytics/${pageId}?days=${days}`,
       );
       if (!response.ok) throw new Error("Failed to fetch analytics");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching analytics:", error);
       return this.getMockAnalytics(pageId, days);
@@ -546,7 +546,7 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/seo/analyze/${pageId}`);
       if (!response.ok) throw new Error("Failed to analyze SEO");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error analyzing SEO:", error);
       return {

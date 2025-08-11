@@ -84,6 +84,14 @@ export const useAuth = (): UseAuthReturn => {
       ) {
         setUser(response.user);
         localStorage.setItem("auth_user", JSON.stringify(response.user));
+
+        // Initialize user wallet and send welcome email
+        walletService.getUserBalance(response.user.email);
+        emailService.sendWelcomeEmail(
+          response.user.id.toString(),
+          response.user.email,
+          response.user.username
+        );
       }
 
       return response;

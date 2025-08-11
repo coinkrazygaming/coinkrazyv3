@@ -148,6 +148,49 @@ class BalanceService {
 
     this.balances.set(userId, updatedBalance);
 
+    // Sync with real data service
+    const user = realDataService.getUserByEmail(userId);
+    if (user) {
+      realDataService.updateUser(user.id, {
+        balances: {
+          goldCoins: newGC,
+          sweepsCoins: newSC,
+          usd: user.balances.usd
+        }
+      });
+
+      // Create transaction record in real data service
+      if (gcChange !== 0) {
+        realDataService.createTransaction({
+          userId: user.id,
+          type: gcChange > 0 ? 'bonus' : 'bet',
+          currency: 'GC',
+          amount: Math.abs(gcChange),
+          status: 'completed',
+          description,
+          metadata: {
+            gameId,
+            balanceAfter: newGC
+          }
+        });
+      }
+
+      if (scChange !== 0) {
+        realDataService.createTransaction({
+          userId: user.id,
+          type: scChange > 0 ? 'win' : 'bet',
+          currency: 'SC',
+          amount: Math.abs(scChange),
+          status: 'completed',
+          description,
+          metadata: {
+            gameId,
+            balanceAfter: newSC
+          }
+        });
+      }
+    }
+
     // Record transactions
     if (gcChange !== 0) {
       this.addTransaction(

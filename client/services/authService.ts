@@ -113,6 +113,32 @@ class AuthService {
         },
       ],
     },
+    {
+      id: 4,
+      email: "coinkrazy00@gmail.com",
+      username: "coinkrazy_admin",
+      role: "admin" as const,
+      is_verified: true,
+      kyc_status: "verified" as const,
+      created_at: new Date("2024-01-01"),
+      is_active: true,
+      balances: [
+        {
+          currency: "GC" as const,
+          balance: 5000000,
+          locked_balance: 0,
+          total_deposited: 5000000,
+          total_won: 0,
+        },
+        {
+          currency: "SC" as const,
+          balance: 1000,
+          locked_balance: 0,
+          total_deposited: 0,
+          total_won: 1000,
+        },
+      ],
+    },
   ];
 
   static getInstance(): AuthService {

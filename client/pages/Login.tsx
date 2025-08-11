@@ -37,6 +37,14 @@ export default function Login() {
   const verified = searchParams.get("verified");
   const verifyError = searchParams.get("verify_error");
 
+  // Redirect logged-in users to their appropriate dashboard
+  useEffect(() => {
+    if (user?.isLoggedIn) {
+      const redirectPath = getRedirectPath();
+      navigate(redirectPath, { replace: true });
+    }
+  }, [user, navigate, getRedirectPath]);
+
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (error) setError(""); // Clear error when user starts typing

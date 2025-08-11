@@ -158,14 +158,18 @@ class SlotsApiService {
    */
   async getProviderGames(provider: SlotProvider): Promise<SlotGame[]> {
     try {
-      // In a real implementation, this would make actual API calls
-      // For now, return demo data to avoid CORS issues in browser
-      console.log(`Loading games from ${provider.name} (demo mode)`);
-      
-      return this.getDemoGamesForProvider(provider.id);
+      // Attempt to fetch from backend API
+      const response = await fetch(`/api/slots/provider/${provider.id}`);
+      if (response.ok) {
+        return await response.json();
+      }
+
+      // Use cached games for provider
+      console.log(`Using cached games from ${provider.name}`);
+      return this.getCachedGamesForProvider(provider.id);
     } catch (error) {
       console.error(`Error loading games from ${provider.name}:`, error);
-      return [];
+      return this.getCachedGamesForProvider(provider.id);
     }
   }
 

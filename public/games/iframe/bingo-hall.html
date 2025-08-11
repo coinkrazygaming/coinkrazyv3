@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinKrazy Bingo Hall - Social Gaming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6b46c1 0%, #3b82f6 50%, #10b981 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .game-header {
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            color: #1a1a2e;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .balance-display {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .game-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .bingo-cards-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .bingo-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border: 3px solid #ffd700;
+            color: #1a1a2e;
+        }
+        
+        .card-header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #6b46c1;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            margin-bottom: 15px;
+        }
+        
+        .bingo-cell {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
+            border: 2px solid #6c757d;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #1a1a2e;
+        }
+        
+        .bingo-cell.called {
+            background: linear-gradient(145deg, #28a745 0%, #20c997 100%);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .bingo-cell.free {
+            background: linear-gradient(145deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .called-numbers {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .current-call {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .call-display {
+            background: linear-gradient(145deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+        
+        .number-ball {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .number-ball.called {
+            background: linear-gradient(145deg, #28a745 0%, #20c997 100%);
+            transform: scale(1.1);
+        }
+        
+        .controls-panel {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(145deg, #6b46c1 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 14px;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .auto-daub {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: #ccc;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .switch.active {
+            background: #28a745;
+        }
+        
+        .switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .switch.active::after {
+            transform: translateX(25px);
+        }
+        
+        .win-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            padding: 40px 60px;
+            border-radius: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            z-index: 1000;
+            border: 4px solid #fff;
+        }
+        
+        .win-display.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        
+        .game-status {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes bingo-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .bingo-winner {
+            animation: bingo-flash 0.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="game-title">🎯 CoinKrazy Bingo Hall</div>
+            <div class="balance-display">
+                Balance: <span id="balance">50,000</span> <span id="currency">GC</span>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="bingo-cards-area">
+                <div class="bingo-card">
+                    <div class="card-header">B I N G O</div>
+                    <div class="bingo-grid" id="bingoGrid">
+                        <!-- Grid will be populated by JavaScript -->
+                    </div>
+                    <div style="text-align: center; font-weight: bold;">
+                        Card #1 - Cost: <span id="cardCost">10</span> GC
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="called-numbers">
+                    <div class="current-call">
+                        <div class="call-display" id="currentCall">?</div>
+                        <div>Current Call</div>
+                    </div>
+                    <div class="numbers-grid" id="numbersGrid">
+                        <!-- Numbers 1-75 will be populated -->
+                    </div>
+                </div>
+                
+                <div class="controls-panel">
+                    <div class="auto-daub">
+                        <span>Auto Daub</span>
+                        <div class="switch" id="autoDaubSwitch" onclick="toggleAutoDaub()"></div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="control-btn" id="newGameBtn" onclick="newGame()">
+                            🎰 NEW GAME
+                        </button>
+                        <button class="control-btn" onclick="buyCard()">
+                            💳 BUY CARD
+                        </button>
+                        <button class="control-btn" onclick="toggleSound()">
+                            🔊 SOUND
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="win-display" id="winDisplay">
+            <div id="winText">BINGO!</div>
+            <div id="winAmount">+250 GC</div>
+        </div>
+        
+        <div class="game-status">
+            CoinKrazy.com - Licensed Gaming Platform - RTP: 95.5%
+        </div>
+    </div>
+
+    <script>
+        class CoinKrazyBingo {
+            constructor() {
+                this.balance = 50000;
+                this.currency = 'GC';
+                this.cardCost = 10;
+                this.autoDaub = true;
+                this.gameActive = false;
+                this.calledNumbers = [];
+                this.currentNumber = null;
+                this.bingoCard = [];
+                this.sessionId = new URLSearchParams(window.location.search).get('sessionId');
+                this.callInterval = null;
+                
+                this.initializeGame();
+            }
+            
+            initializeGame() {
+                const params = new URLSearchParams(window.location.search);
+                this.balance = parseInt(params.get('balance')) || 50000;
+                this.currency = params.get('currency') || 'GC';
+                
+                this.createBingoCard();
+                this.createNumbersGrid();
+                this.updateDisplay();
+                
+                this.sendMessage('GAME_LOADED', { gameId: 'bingo-hall' });
+                
+                window.addEventListener('message', (event) => {
+                    this.handleParentMessage(event);
+                });
+            }
+            
+            handleParentMessage(event) {
+                const { type, data } = event.data;
+                
+                switch (type) {
+                    case 'BALANCE_UPDATE':
+                        this.balance = data.balance;
+                        this.updateDisplay();
+                        break;
+                }
+            }
+            
+            sendMessage(type, data) {
+                window.parent.postMessage({ type, data }, '*');
+            }
+            
+            createBingoCard() {
+                const grid = document.getElementById('bingoGrid');
+                grid.innerHTML = '';
+                
+                this.bingoCard = [];
+                
+                // Create BINGO card (5x5 grid)
+                for (let row = 0; row < 5; row++) {
+                    this.bingoCard[row] = [];
+                    for (let col = 0; col < 5; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'bingo-cell';
+                        
+                        if (row === 2 && col === 2) {
+                            // Free space in center
+                            cell.textContent = 'FREE';
+                            cell.classList.add('free', 'called');
+                            this.bingoCard[row][col] = { number: 0, called: true };
+                        } else {
+                            // Generate number for each column
+                            let number;
+                            do {
+                                const min = col * 15 + 1;
+                                const max = col * 15 + 15;
+                                number = Math.floor(Math.random() * (max - min + 1)) + min;
+                            } while (this.isNumberUsed(number));
+                            
+                            cell.textContent = number;
+                            cell.onclick = () => this.toggleCell(row, col);
+                            this.bingoCard[row][col] = { number: number, called: false };
+                        }
+                        
+                        grid.appendChild(cell);
+                    }
+                }
+            }
+            
+            isNumberUsed(number) {
+                for (let row = 0; row < this.bingoCard.length; row++) {
+                    for (let col = 0; col < (this.bingoCard[row] || []).length; col++) {
+                        if (this.bingoCard[row][col] && this.bingoCard[row][col].number === number) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            createNumbersGrid() {
+                const grid = document.getElementById('numbersGrid');
+                grid.innerHTML = '';
+                
+                for (let i = 1; i <= 75; i++) {
+                    const ball = document.createElement('div');
+                    ball.className = 'number-ball';
+                    ball.textContent = i;
+                    ball.id = `ball-${i}`;
+                    grid.appendChild(ball);
+                }
+            }
+            
+            newGame() {
+                if (this.balance < this.cardCost) {
+                    alert('Insufficient balance!');
+                    return;
+                }
+                
+                if (this.gameActive) {
+                    this.endGame();
+                }
+                
+                // Deduct card cost
+                this.balance -= this.cardCost;
+                this.updateDisplay();
+                
+                // Reset game state
+                this.calledNumbers = [];
+                this.gameActive = true;
+                document.getElementById('newGameBtn').textContent = 'END GAME';
+                document.getElementById('currentCall').textContent = '?';
+                
+                // Reset all number balls
+                for (let i = 1; i <= 75; i++) {
+                    document.getElementById(`ball-${i}`).classList.remove('called');
+                }
+                
+                // Reset bingo card calls (except free space)
+                const cells = document.querySelectorAll('.bingo-cell');
+                cells.forEach((cell, index) => {
+                    const row = Math.floor(index / 5);
+                    const col = index % 5;
+                    if (!(row === 2 && col === 2)) {
+                        cell.classList.remove('called');
+                        this.bingoCard[row][col].called = false;
+                    }
+                });
+                
+                // Start calling numbers
+                this.startCalling();
+            }
+            
+            startCalling() {
+                this.callInterval = setInterval(() => {
+                    if (this.calledNumbers.length >= 75) {
+                        this.endGame();
+                        return;
+                    }
+                    
+                    let number;
+                    do {
+                        number = Math.floor(Math.random() * 75) + 1;
+                    } while (this.calledNumbers.includes(number));
+                    
+                    this.callNumber(number);
+                }, 3000); // Call every 3 seconds
+            }
+            
+            callNumber(number) {
+                this.calledNumbers.push(number);
+                this.currentNumber = number;
+                
+                // Update current call display
+                const letter = this.getColumnLetter(number);
+                document.getElementById('currentCall').textContent = `${letter}${number}`;
+                
+                // Mark number as called
+                document.getElementById(`ball-${number}`).classList.add('called');
+                
+                // Auto-daub if enabled
+                if (this.autoDaub) {
+                    this.autoDaubNumber(number);
+                }
+                
+                // Check for bingo
+                this.checkForBingo();
+            }
+            
+            getColumnLetter(number) {
+                if (number <= 15) return 'B';
+                if (number <= 30) return 'I';
+                if (number <= 45) return 'N';
+                if (number <= 60) return 'G';
+                return 'O';
+            }
+            
+            autoDaubNumber(number) {
+                for (let row = 0; row < 5; row++) {
+                    for (let col = 0; col < 5; col++) {
+                        if (this.bingoCard[row][col].number === number) {
+                            this.bingoCard[row][col].called = true;
+                            const cellIndex = row * 5 + col;
+                            document.querySelectorAll('.bingo-cell')[cellIndex].classList.add('called');
+                        }
+                    }
+                }
+            }
+            
+            toggleCell(row, col) {
+                if (this.bingoCard[row][col].number === 0) return; // Free space
+                
+                if (this.calledNumbers.includes(this.bingoCard[row][col].number)) {
+                    this.bingoCard[row][col].called = !this.bingoCard[row][col].called;
+                    const cellIndex = row * 5 + col;
+                    const cell = document.querySelectorAll('.bingo-cell')[cellIndex];
+                    cell.classList.toggle('called');
+                    
+                    this.checkForBingo();
+                }
+            }
+            
+            checkForBingo() {
+                // Check rows
+                for (let row = 0; row < 5; row++) {
+                    if (this.bingoCard[row].every(cell => cell.called)) {
+                        this.bingo();
+                        return;
+                    }
+                }
+                
+                // Check columns
+                for (let col = 0; col < 5; col++) {
+                    if (this.bingoCard.every(row => row[col].called)) {
+                        this.bingo();
+                        return;
+                    }
+                }
+                
+                // Check diagonals
+                if (this.bingoCard.every((row, index) => row[index].called) ||
+                    this.bingoCard.every((row, index) => row[4 - index].called)) {
+                    this.bingo();
+                    return;
+                }
+            }
+            
+            bingo() {
+                this.endGame();
+                
+                // Calculate win amount based on number of calls
+                const callsToWin = this.calledNumbers.length;
+                let multiplier = Math.max(1, 50 - callsToWin);
+                const winAmount = this.cardCost * multiplier;
+                
+                this.balance += winAmount;
+                this.updateDisplay();
+                
+                // Show win
+                this.showWin(winAmount);
+                
+                // Flash the card
+                document.querySelector('.bingo-card').classList.add('bingo-winner');
+                setTimeout(() => {
+                    document.querySelector('.bingo-card').classList.remove('bingo-winner');
+                }, 3000);
+                
+                // Notify parent
+                this.sendMessage('WIN_RESULT', {
+                    winAmount: winAmount,
+                    newBalance: this.balance
+                });
+            }
+            
+            endGame() {
+                this.gameActive = false;
+                if (this.callInterval) {
+                    clearInterval(this.callInterval);
+                    this.callInterval = null;
+                }
+                document.getElementById('newGameBtn').textContent = '🎰 NEW GAME';
+            }
+            
+            showWin(amount) {
+                const winDisplay = document.getElementById('winDisplay');
+                const winAmount = document.getElementById('winAmount');
+                
+                winAmount.textContent = `+${amount.toLocaleString()} ${this.currency}`;
+                winDisplay.classList.add('show');
+                
+                setTimeout(() => {
+                    winDisplay.classList.remove('show');
+                }, 4000);
+            }
+            
+            buyCard() {
+                if (this.balance < this.cardCost) {
+                    alert('Insufficient balance!');
+                    return;
+                }
+                
+                // Generate new card
+                this.createBingoCard();
+                this.balance -= this.cardCost;
+                this.updateDisplay();
+            }
+            
+            toggleAutoDaub() {
+                this.autoDaub = !this.autoDaub;
+                const switchEl = document.getElementById('autoDaubSwitch');
+                switchEl.classList.toggle('active');
+            }
+            
+            toggleSound() {
+                // Sound toggle logic would go here
+            }
+            
+            updateDisplay() {
+                document.getElementById('balance').textContent = this.balance.toLocaleString();
+                document.getElementById('currency').textContent = this.currency;
+                document.getElementById('cardCost').textContent = this.cardCost;
+            }
+        }
+        
+        // Initialize game when page loads
+        const game = new CoinKrazyBingo();
+        
+        // Global functions for onclick handlers
+        function newGame() { game.newGame(); }
+        function buyCard() { game.buyCard(); }
+        function toggleAutoDaub() { game.toggleAutoDaub(); }
+        function toggleSound() { game.toggleSound(); }
+    </script>
+</body>
+</html>

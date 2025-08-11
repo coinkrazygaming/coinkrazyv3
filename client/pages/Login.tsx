@@ -51,31 +51,15 @@ export default function Login() {
     }
 
     try {
-      const response = await login(formData.email, formData.password);
+      await login(formData.email, formData.password);
 
-      if (response.success && response.user) {
-        toast({
-          title: "Welcome back!",
-          description: "You have been logged in successfully.",
-        });
+      toast({
+        title: "Welcome back!",
+        description: "You have been logged in successfully.",
+      });
 
-        // Redirect based on user role
-        if (response.user.role === "admin") {
-          navigate("/admin");
-        } else if (response.user.role === "staff") {
-          navigate("/staff");
-        } else {
-          navigate("/dashboard");
-        }
-      } else {
-        setError(response.message || "Login failed");
-
-        if (response.requiresEmailVerification) {
-          setError(
-            "Please verify your email address before logging in. Check your inbox for the verification link.",
-          );
-        }
-      }
+      // Redirect to appropriate page based on user role
+      navigate(getRedirectPath());
     } catch (error) {
       setError("An unexpected error occurred. Please try again.");
       console.error("Login error:", error);

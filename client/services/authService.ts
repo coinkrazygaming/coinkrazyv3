@@ -1,4 +1,8 @@
-import { userService, User, UserBalance } from '../../server/services/userService.js';
+import {
+  userService,
+  User,
+  UserBalance,
+} from "../../server/services/userService.js";
 
 export interface AuthUser extends User {
   balances: UserBalance[];
@@ -31,9 +35,9 @@ class AuthService {
       // In a real app, this would make an API call to the backend
       // For now, we'll simulate it by calling the userService directly
       const user = await userService.authenticateUser(email, password);
-      
+
       if (!user) {
-        throw new Error('Invalid email or password');
+        throw new Error("Invalid email or password");
       }
 
       // Get user balances
@@ -43,8 +47,8 @@ class AuthService {
         ...user,
         balances,
         isLoggedIn: true,
-        isAdmin: user.role === 'admin',
-        isStaff: user.role === 'staff'
+        isAdmin: user.role === "admin",
+        isStaff: user.role === "staff",
       };
 
       this.currentUser = authUser;
@@ -53,7 +57,7 @@ class AuthService {
 
       return authUser;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     }
   }
@@ -61,7 +65,11 @@ class AuthService {
   /**
    * Register new user
    */
-  async register(email: string, username: string, password: string): Promise<AuthUser> {
+  async register(
+    email: string,
+    username: string,
+    password: string,
+  ): Promise<AuthUser> {
     try {
       const user = await userService.createUser(email, username, password);
       const balances = await userService.getUserBalances(user.id);
@@ -71,7 +79,7 @@ class AuthService {
         balances,
         isLoggedIn: true,
         isAdmin: false,
-        isStaff: false
+        isStaff: false,
       };
 
       this.currentUser = authUser;
@@ -80,7 +88,7 @@ class AuthService {
 
       return authUser;
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       throw error;
     }
   }
@@ -90,7 +98,7 @@ class AuthService {
    */
   async logout(): Promise<void> {
     this.currentUser = null;
-    localStorage.removeItem('coinkrazy_user');
+    localStorage.removeItem("coinkrazy_user");
     this.notifyListeners();
   }
 
@@ -126,14 +134,14 @@ class AuthService {
    * Update user balance
    */
   async updateBalance(
-    currency: 'GC' | 'SC',
+    currency: "GC" | "SC",
     amount: number,
-    type: 'deposit' | 'withdrawal' | 'win' | 'bet' | 'bonus',
+    type: "deposit" | "withdrawal" | "win" | "bet" | "bonus",
     description?: string,
-    gameId?: string
+    gameId?: string,
   ): Promise<number> {
     if (!this.currentUser) {
-      throw new Error('User not logged in');
+      throw new Error("User not logged in");
     }
 
     try {
@@ -143,11 +151,13 @@ class AuthService {
         amount,
         type,
         description,
-        gameId
+        gameId,
       );
 
       // Update local balance
-      const balanceIndex = this.currentUser.balances.findIndex(b => b.currency === currency);
+      const balanceIndex = this.currentUser.balances.findIndex(
+        (b) => b.currency === currency,
+      );
       if (balanceIndex !== -1) {
         this.currentUser.balances[balanceIndex].balance = result.newBalance;
       }
@@ -157,7 +167,7 @@ class AuthService {
 
       return result.newBalance;
     } catch (error) {
-      console.error('Balance update error:', error);
+      console.error("Balance update error:", error);
       throw error;
     }
   }
@@ -165,10 +175,12 @@ class AuthService {
   /**
    * Get user balance for specific currency
    */
-  getBalance(currency: 'GC' | 'SC'): number {
+  getBalance(currency: "GC" | "SC"): number {
     if (!this.currentUser) return 0;
-    
-    const balance = this.currentUser.balances.find(b => b.currency === currency);
+
+    const balance = this.currentUser.balances.find(
+      (b) => b.currency === currency,
+    );
     return balance?.balance || 0;
   }
 
@@ -191,14 +203,14 @@ class AuthService {
         ...user,
         balances,
         isLoggedIn: true,
-        isAdmin: user.role === 'admin',
-        isStaff: user.role === 'staff'
+        isAdmin: user.role === "admin",
+        isStaff: user.role === "staff",
       };
 
       this.saveUserToStorage(this.currentUser);
       this.notifyListeners();
     } catch (error) {
-      console.error('Error refreshing user:', error);
+      console.error("Error refreshing user:", error);
     }
   }
 
@@ -216,21 +228,21 @@ class AuthService {
    * Get redirect path based on user role
    */
   getRedirectPath(): string {
-    if (!this.currentUser) return '/';
-    
+    if (!this.currentUser) return "/";
+
     switch (this.currentUser.role) {
-      case 'admin':
-        return '/admin';
-      case 'staff':
-        return '/staff';
+      case "admin":
+        return "/admin";
+      case "staff":
+        return "/staff";
       default:
-        return '/dashboard';
+        return "/dashboard";
     }
   }
 
   private loadUserFromStorage(): void {
     try {
-      const stored = localStorage.getItem('coinkrazy_user');
+      const stored = localStorage.getItem("coinkrazy_user");
       if (stored) {
         const userData = JSON.parse(stored);
         // Validate stored data
@@ -241,21 +253,21 @@ class AuthService {
         }
       }
     } catch (error) {
-      console.error('Error loading user from storage:', error);
-      localStorage.removeItem('coinkrazy_user');
+      console.error("Error loading user from storage:", error);
+      localStorage.removeItem("coinkrazy_user");
     }
   }
 
   private saveUserToStorage(user: AuthUser): void {
     try {
-      localStorage.setItem('coinkrazy_user', JSON.stringify(user));
+      localStorage.setItem("coinkrazy_user", JSON.stringify(user));
     } catch (error) {
-      console.error('Error saving user to storage:', error);
+      console.error("Error saving user to storage:", error);
     }
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(callback => callback(this.currentUser));
+    this.listeners.forEach((callback) => callback(this.currentUser));
   }
 }
 

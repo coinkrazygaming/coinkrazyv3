@@ -40,17 +40,17 @@ interface ChatMessage {
   username: string;
   message: string;
   timestamp: Date;
-  type: 'text' | 'win_announcement' | 'system';
+  type: "text" | "win_announcement" | "system";
 }
 
 interface Activity {
   id: string;
-  type: 'win' | 'achievement' | 'friend_joined' | 'level_up';
+  type: "win" | "achievement" | "friend_joined" | "level_up";
   username: string;
   description: string;
   timestamp: Date;
   amount?: number;
-  currency?: 'GC' | 'SC';
+  currency?: "GC" | "SC";
 }
 
 export default function SocialSection() {
@@ -68,7 +68,7 @@ export default function SocialSection() {
       totalWins: 15420,
     },
     {
-      id: "2", 
+      id: "2",
       username: "SlotMaster",
       isOnline: false,
       level: 18,
@@ -145,15 +145,15 @@ export default function SocialSection() {
     }
   };
 
-  const getActivityIcon = (type: Activity['type']) => {
+  const getActivityIcon = (type: Activity["type"]) => {
     switch (type) {
-      case 'win':
+      case "win":
         return <Trophy className="w-4 h-4 text-gold-500" />;
-      case 'achievement':
+      case "achievement":
         return <Star className="w-4 h-4 text-purple-500" />;
-      case 'friend_joined':
+      case "friend_joined":
         return <Users className="w-4 h-4 text-blue-500" />;
-      case 'level_up':
+      case "level_up":
         return <Zap className="w-4 h-4 text-green-500" />;
       default:
         return <Heart className="w-4 h-4 text-red-500" />;
@@ -221,15 +221,22 @@ export default function SocialSection() {
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <Avatar>
-                          <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`} />
-                          <AvatarFallback>{friend.username.charAt(0)}</AvatarFallback>
+                          <AvatarImage
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
+                          />
+                          <AvatarFallback>
+                            {friend.username.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
-                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${friend.isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
+                        <div
+                          className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${friend.isOnline ? "bg-green-500" : "bg-gray-400"}`}
+                        />
                       </div>
                       <div>
                         <div className="font-medium">{friend.username}</div>
                         <div className="text-sm text-muted-foreground">
-                          Level {friend.level} • {friend.totalWins.toLocaleString()} total wins
+                          Level {friend.level} •{" "}
+                          {friend.totalWins.toLocaleString()} total wins
                         </div>
                         {!friend.isOnline && friend.lastSeen && (
                           <div className="text-xs text-muted-foreground">
@@ -270,23 +277,33 @@ export default function SocialSection() {
                 <div className="space-y-3">
                   {chatMessages.map((msg) => (
                     <div key={msg.id} className="flex gap-3">
-                      {msg.type !== 'system' && (
+                      {msg.type !== "system" && (
                         <Avatar className="w-8 h-8">
-                          <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.username}`} />
-                          <AvatarFallback>{msg.username.charAt(0)}</AvatarFallback>
+                          <AvatarImage
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.username}`}
+                          />
+                          <AvatarFallback>
+                            {msg.username.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                       )}
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className={`text-sm font-medium ${msg.type === 'system' ? 'text-purple-400' : msg.type === 'win_announcement' ? 'text-gold-400' : ''}`}>
+                          <span
+                            className={`text-sm font-medium ${msg.type === "system" ? "text-purple-400" : msg.type === "win_announcement" ? "text-gold-400" : ""}`}
+                          >
                             {msg.username}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {msg.timestamp.toLocaleTimeString()}
                           </span>
                         </div>
-                        <div className={`text-sm ${msg.type === 'win_announcement' ? 'text-gold-300' : ''}`}>
-                          {msg.type === 'win_announcement' && <Trophy className="w-4 h-4 inline mr-1" />}
+                        <div
+                          className={`text-sm ${msg.type === "win_announcement" ? "text-gold-300" : ""}`}
+                        >
+                          {msg.type === "win_announcement" && (
+                            <Trophy className="w-4 h-4 inline mr-1" />
+                          )}
                           {msg.message}
                         </div>
                       </div>
@@ -299,7 +316,7 @@ export default function SocialSection() {
                   placeholder="Type a message..."
                   value={chatMessage}
                   onChange={(e) => setChatMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                 />
                 <Button onClick={sendMessage}>
                   <Send className="w-4 h-4" />
@@ -329,7 +346,9 @@ export default function SocialSection() {
                         {activity.description}
                         {activity.amount && (
                           <span className="text-gold-400 font-medium">
-                            {" "}(+{activity.amount.toLocaleString()} {activity.currency})
+                            {" "}
+                            (+{activity.amount.toLocaleString()}{" "}
+                            {activity.currency})
                           </span>
                         )}
                       </div>
@@ -360,8 +379,18 @@ export default function SocialSection() {
               <CardContent>
                 <div className="space-y-3">
                   {[
-                    { rank: 1, username: "CoinMaster", wins: 45230, badge: "👑" },
-                    { rank: 2, username: "LuckyCharm", wins: 38910, badge: "🥈" },
+                    {
+                      rank: 1,
+                      username: "CoinMaster",
+                      wins: 45230,
+                      badge: "👑",
+                    },
+                    {
+                      rank: 2,
+                      username: "LuckyCharm",
+                      wins: 38910,
+                      badge: "🥈",
+                    },
                     { rank: 3, username: "SpinKing", wins: 34670, badge: "🥉" },
                     { rank: 4, username: "BingoStar", wins: 28450 },
                     { rank: 5, username: "SlotWiz", wins: 25120 },
@@ -371,8 +400,12 @@ export default function SocialSection() {
                         {player.badge || `#${player.rank}`}
                       </div>
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`} />
-                        <AvatarFallback>{player.username.charAt(0)}</AvatarFallback>
+                        <AvatarImage
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${player.username}`}
+                        />
+                        <AvatarFallback>
+                          {player.username.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="font-medium">{player.username}</div>
@@ -381,7 +414,10 @@ export default function SocialSection() {
                         </div>
                       </div>
                       {player.rank <= 3 && (
-                        <Badge variant="outline" className="border-gold-500 text-gold-400">
+                        <Badge
+                          variant="outline"
+                          className="border-gold-500 text-gold-400"
+                        >
                           Top {player.rank}
                         </Badge>
                       )}

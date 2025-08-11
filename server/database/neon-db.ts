@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
-import dotenv from 'dotenv';
+import { Pool } from "pg";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -7,14 +7,14 @@ dotenv.config();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
 // Database schema for CoinKrazy
 export const createTables = async () => {
   const client = await pool.connect();
-  
+
   try {
     // Users table
     await client.query(`
@@ -139,9 +139,9 @@ export const createTables = async () => {
       CREATE INDEX IF NOT EXISTS idx_game_sessions_active ON game_sessions(is_active);
     `);
 
-    console.log('Database tables created successfully');
+    console.log("Database tables created successfully");
   } catch (error) {
-    console.error('Error creating tables:', error);
+    console.error("Error creating tables:", error);
     throw error;
   } finally {
     client.release();
@@ -151,66 +151,113 @@ export const createTables = async () => {
 // Seed initial data
 export const seedDatabase = async () => {
   const client = await pool.connect();
-  
+
   try {
     // Create default admin user
-    const adminResult = await client.query(`
+    const adminResult = await client.query(
+      `
       INSERT INTO users (email, username, password_hash, role, is_verified, kyc_status)
       VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT (email) DO NOTHING
       RETURNING id
-    `, ['admin@coinkrazy.com', 'admin', '$2b$10$hash_here', 'admin', true, 'verified']);
+    `,
+      [
+        "admin@coinkrazy.com",
+        "admin",
+        "$2b$10$hash_here",
+        "admin",
+        true,
+        "verified",
+      ],
+    );
 
     // Create test staff user
-    const staffResult = await client.query(`
+    const staffResult = await client.query(
+      `
       INSERT INTO users (email, username, password_hash, role, is_verified, kyc_status)
       VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT (email) DO NOTHING
       RETURNING id
-    `, ['staff@coinkrazy.com', 'staff_user', '$2b$10$hash_here', 'staff', true, 'verified']);
+    `,
+      [
+        "staff@coinkrazy.com",
+        "staff_user",
+        "$2b$10$hash_here",
+        "staff",
+        true,
+        "verified",
+      ],
+    );
 
     // Create test regular user
-    const userResult = await client.query(`
+    const userResult = await client.query(
+      `
       INSERT INTO users (email, username, password_hash, role, is_verified, kyc_status)
       VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT (email) DO NOTHING
       RETURNING id
-    `, ['user@coinkrazy.com', 'test_user', '$2b$10$hash_here', 'user', true, 'verified']);
+    `,
+      [
+        "user@coinkrazy.com",
+        "test_user",
+        "$2b$10$hash_here",
+        "user",
+        true,
+        "verified",
+      ],
+    );
 
     // Get user IDs (either newly created or existing)
-    const users = await client.query(`
+    const users = await client.query(
+      `
       SELECT id, email FROM users WHERE email IN ($1, $2, $3)
-    `, ['admin@coinkrazy.com', 'staff@coinkrazy.com', 'user@coinkrazy.com']);
+    `,
+      ["admin@coinkrazy.com", "staff@coinkrazy.com", "user@coinkrazy.com"],
+    );
 
     // Seed balances for each user
     for (const user of users.rows) {
       // Add GC balance
-      await client.query(`
+      await client.query(
+        `
         INSERT INTO user_balances (user_id, currency, balance, total_deposited)
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (user_id, currency) 
         DO UPDATE SET balance = EXCLUDED.balance, total_deposited = EXCLUDED.total_deposited
-      `, [user.id, 'GC', 50000, 50000]);
+      `,
+        [user.id, "GC", 50000, 50000],
+      );
 
-      // Add SC balance  
-      await client.query(`
+      // Add SC balance
+      await client.query(
+        `
         INSERT INTO user_balances (user_id, currency, balance, total_won)
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (user_id, currency)
         DO UPDATE SET balance = EXCLUDED.balance, total_won = EXCLUDED.total_won
-      `, [user.id, 'SC', user.email === 'admin@coinkrazy.com' ? 3724 : 25, user.email === 'admin@coinkrazy.com' ? 3724 : 25]);
+      `,
+        [
+          user.id,
+          "SC",
+          user.email === "admin@coinkrazy.com" ? 3724 : 25,
+          user.email === "admin@coinkrazy.com" ? 3724 : 25,
+        ],
+      );
 
       // Create user preferences
-      await client.query(`
+      await client.query(
+        `
         INSERT INTO user_preferences (user_id)
         VALUES ($1)
         ON CONFLICT (user_id) DO NOTHING
-      `, [user.id]);
+      `,
+        [user.id],
+      );
     }
 
-    console.log('Database seeded successfully');
+    console.log("Database seeded successfully");
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error("Error seeding database:", error);
     throw error;
   } finally {
     client.release();

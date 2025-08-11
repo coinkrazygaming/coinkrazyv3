@@ -1,14 +1,24 @@
-import { useState, useEffect } from 'react';
-import { authService, AuthUser } from '@/services/authService';
+import { useState, useEffect } from "react";
+import { authService, AuthUser } from "@/services/authService";
 
 interface AuthHook {
   user: AuthUser | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, username: string, password: string) => Promise<void>;
+  register: (
+    email: string,
+    username: string,
+    password: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
-  updateBalance: (currency: 'GC' | 'SC', amount: number, type: 'deposit' | 'withdrawal' | 'win' | 'bet' | 'bonus', description?: string, gameId?: string) => Promise<number>;
-  getBalance: (currency: 'GC' | 'SC') => number;
+  updateBalance: (
+    currency: "GC" | "SC",
+    amount: number,
+    type: "deposit" | "withdrawal" | "win" | "bet" | "bonus",
+    description?: string,
+    gameId?: string,
+  ) => Promise<number>;
+  getBalance: (currency: "GC" | "SC") => number;
   refreshUser: () => Promise<void>;
   getRedirectPath: () => string;
 }
@@ -37,20 +47,24 @@ export function useAuth(): AuthHook {
       const user = await authService.login(email, password);
       setUser(user);
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (email: string, username: string, password: string): Promise<void> => {
+  const register = async (
+    email: string,
+    username: string,
+    password: string,
+  ): Promise<void> => {
     try {
       setIsLoading(true);
       const user = await authService.register(email, username, password);
       setUser(user);
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Registration failed:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -63,23 +77,29 @@ export function useAuth(): AuthHook {
       await authService.logout();
       setUser(null);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const updateBalance = async (
-    currency: 'GC' | 'SC',
+    currency: "GC" | "SC",
     amount: number,
-    type: 'deposit' | 'withdrawal' | 'win' | 'bet' | 'bonus',
+    type: "deposit" | "withdrawal" | "win" | "bet" | "bonus",
     description?: string,
-    gameId?: string
+    gameId?: string,
   ): Promise<number> => {
-    return await authService.updateBalance(currency, amount, type, description, gameId);
+    return await authService.updateBalance(
+      currency,
+      amount,
+      type,
+      description,
+      gameId,
+    );
   };
 
-  const getBalance = (currency: 'GC' | 'SC'): number => {
+  const getBalance = (currency: "GC" | "SC"): number => {
     return authService.getBalance(currency);
   };
 

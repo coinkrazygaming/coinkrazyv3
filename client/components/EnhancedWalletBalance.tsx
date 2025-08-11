@@ -103,7 +103,7 @@ export default function EnhancedWalletBalance({
     );
     if (!selectedCurrencyInfo) return "0";
 
-    const balance = getBalance(selectedCurrency as 'GC' | 'SC');
+    const balance = getBalance(selectedCurrency as "GC" | "SC");
     const decimals = selectedCurrencyInfo.decimals;
 
     return `${balance.toLocaleString(undefined, {
@@ -325,64 +325,65 @@ export default function EnhancedWalletBalance({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
-                  <DropdownMenuLabel>CoinKrazy Virtual Currencies</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    CoinKrazy Virtual Currencies
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
                   {currencies.map((currency) => {
-                      const balance = wallet.currencies[currency.code];
-                      const change = getPriceChange(currency.code);
-                      const hasBalance = balance && balance.available > 0;
+                    const balance = wallet.currencies[currency.code];
+                    const change = getPriceChange(currency.code);
+                    const hasBalance = balance && balance.available > 0;
 
-                      return (
-                        <DropdownMenuItem
-                          key={currency.code}
-                          onClick={() => handleCurrencyChange(currency.code)}
-                          className={hasBalance ? "" : "opacity-50"}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-2">
-                              <span>{currency.icon}</span>
-                              <div>
-                                <div className="font-medium">
-                                  {currency.code} - {currency.name}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {currency.code === "GC"
-                                    ? "Can be purchased • No cash value"
-                                    : "Won/Rewarded only • Redeemable"
-                                  }
-                                </div>
-                                {hasBalance && !hideBalances && (
-                                  <div className="text-xs font-medium">
-                                    {balance.available.toLocaleString()}{" "}
-                                    {currency.symbol}
-                                  </div>
-                                )}
+                    return (
+                      <DropdownMenuItem
+                        key={currency.code}
+                        onClick={() => handleCurrencyChange(currency.code)}
+                        className={hasBalance ? "" : "opacity-50"}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <span>{currency.icon}</span>
+                            <div>
+                              <div className="font-medium">
+                                {currency.code} - {currency.name}
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {change !== 0 && (
-                                <div
-                                  className={`flex items-center gap-1 ${change > 0 ? "text-green-500" : "text-red-500"}`}
-                                >
-                                  {change > 0 ? (
-                                    <TrendingUp className="w-3 h-3" />
-                                  ) : (
-                                    <TrendingDown className="w-3 h-3" />
-                                  )}
-                                  <span className="text-xs">
-                                    {Math.abs(change).toFixed(1)}%
-                                  </span>
+                              <div className="text-xs text-muted-foreground">
+                                {currency.code === "GC"
+                                  ? "Can be purchased • No cash value"
+                                  : "Won/Rewarded only • Redeemable"}
+                              </div>
+                              {hasBalance && !hideBalances && (
+                                <div className="text-xs font-medium">
+                                  {balance.available.toLocaleString()}{" "}
+                                  {currency.symbol}
                                 </div>
-                              )}
-                              {selectedCurrency === currency.code && (
-                                <span className="text-green-500">✓</span>
                               )}
                             </div>
                           </div>
-                        </DropdownMenuItem>
-                      );
-                    })}
+                          <div className="flex items-center gap-2">
+                            {change !== 0 && (
+                              <div
+                                className={`flex items-center gap-1 ${change > 0 ? "text-green-500" : "text-red-500"}`}
+                              >
+                                {change > 0 ? (
+                                  <TrendingUp className="w-3 h-3" />
+                                ) : (
+                                  <TrendingDown className="w-3 h-3" />
+                                )}
+                                <span className="text-xs">
+                                  {Math.abs(change).toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                            {selectedCurrency === currency.code && (
+                              <span className="text-green-500">✓</span>
+                            )}
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    );
+                  })}
 
                   {showPortfolio && (
                     <>

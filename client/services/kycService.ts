@@ -270,7 +270,7 @@ class KYCService {
       return response.json();
     } catch (error) {
       console.error('Error fetching withdrawal history:', error);
-      return this.getDemoWithdrawals(userId);
+      return this.getRealWithdrawals(userId);
     }
   }
 

@@ -1,5 +1,6 @@
 // KYC (Know Your Customer) Service for CoinKrazy.com
 // Production-ready identity verification system
+import { realDataService } from './realDataService';
 
 export interface KYCDocument {
   id: string;

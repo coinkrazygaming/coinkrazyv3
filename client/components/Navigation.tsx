@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/ui/Logo";
 import { playerCountService } from "@/services/playerCountService";
 import EnhancedWalletBalance from "@/components/EnhancedWalletBalance";
+import MyAccountDropdown from "@/components/MyAccountDropdown";
 import {
   Coins,
   Users,
@@ -196,38 +197,11 @@ export default function Navigation() {
             {/* Contact Phone */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="w-4 h-4" />
-              <span>319-473-0416</span>
+              <span>1-800-COIN-KRAZY</span>
             </div>
 
-            {/* Auth Buttons */}
-            {user?.isLoggedIn ? (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
-                  Welcome, {user.username}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="border-red-500/50 text-red-400 hover:bg-red-500/10"
-                >
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login">
-                  <Button variant="outline" size="sm">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
-                    Register
-                  </Button>
-                </Link>
-              </div>
-            )}
+            {/* Auth Section */}
+            <MyAccountDropdown />
           </div>
 
           {/* Mobile Menu Button */}

@@ -7,6 +7,8 @@ import {
 } from "../services/authService";
 import { emailService } from "../services/emailService";
 import { walletService } from "../services/walletService";
+import { welcomeEmailAutomationService } from "../services/welcomeEmailAutomation";
+import { joseyAiOnboardingService } from "../services/joseyAiOnboardingService";
 
 interface UseAuthReturn {
   user: User | null;

@@ -92,7 +92,7 @@ class SlotsApiService {
       id: "playtech",
       name: "Playtech",
       apiEndpoint: "https://api.playtech.com/gaming",
-      apiKey: import.meta.env.VITE_PLAYTECH_API_KEY || "demo-key",
+      apiKey: import.meta.env.VITE_PLAYTECH_API_KEY || "production-api-key",
       isActive: true,
       gameCount: 180,
       supportedCurrencies: ["GC", "SC", "USD"],
@@ -398,7 +398,7 @@ class SlotsApiService {
       "🔔": [0, 0, 8, 30, 100],    // Bell
       "🍇": [0, 0, 5, 20, 75],     // Grapes
       "🍊": [0, 0, 4, 15, 50],     // Orange
-      "���": [0, 0, 3, 10, 35],     // Lemon
+      "🍋": [0, 0, 3, 10, 35],     // Lemon
       "🍒": [0, 0, 2, 8, 25],      // Cherry - lowest paying
     };
 

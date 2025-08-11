@@ -110,7 +110,7 @@ class SlotsApiService {
       id: "evolution",
       name: "Evolution Gaming",
       apiEndpoint: "https://api.evolutiongaming.com/live",
-      apiKey: import.meta.env.VITE_EVOLUTION_API_KEY || "demo-key",
+      apiKey: import.meta.env.VITE_EVOLUTION_API_KEY || "production-api-key",
       isActive: true,
       gameCount: 50,
       supportedCurrencies: ["GC", "SC", "USD"],

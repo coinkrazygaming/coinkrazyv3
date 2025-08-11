@@ -49,6 +49,7 @@ import AdminSetup from "./pages/AdminSetup";
 import Social from "./pages/Social";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
+import DailyRewards from "./pages/DailyRewards";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 

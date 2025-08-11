@@ -57,6 +57,14 @@ export default function Register() {
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
 
+  // Redirect logged-in users to their appropriate dashboard
+  useEffect(() => {
+    if (user?.isLoggedIn) {
+      const redirectPath = getRedirectPath();
+      navigate(redirectPath, { replace: true });
+    }
+  }, [user, navigate, getRedirectPath]);
+
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (error) setError(""); // Clear error when user starts typing

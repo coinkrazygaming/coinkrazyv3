@@ -345,80 +345,118 @@ class KYCService {
   }
 
   /**
-   * Demo KYC status for development
+   * Get real KYC status from user data
    */
-  private getDemoKYCStatus(userId: string): KYCVerification {
+  private getRealKYCStatus(userId: string): KYCVerification {
+    const user = realDataService.getUser(userId);
+
+    if (!user) {
+      // Return default status for unknown users
+      return {
+        id: `kyc_${userId}`,
+        userId,
+        level: 'basic',
+        status: 'unverified',
+        documentsRequired: ['drivers_license', 'utility_bill'],
+        documentsProvided: [],
+        personalInfo: {
+          firstName: '',
+          lastName: '',
+          dateOfBirth: '',
+          address: {
+            street: '',
+            city: '',
+            state: '',
+            zipCode: '',
+            country: 'US'
+          }
+        },
+        verification: {
+          emailVerified: false,
+          phoneVerified: false,
+          identityVerified: false,
+          addressVerified: false
+        },
+        limits: {
+          dailyWithdrawal: 5000,
+          monthlyWithdrawal: 50000,
+          maximumWithdrawal: 10000,
+          minimumWithdrawal: 100
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    // Map user data to KYC status
+    const kycStatus: 'unverified' | 'pending' | 'verified' | 'suspended' =
+      user.kycStatus === 'approved' ? 'verified' :
+      user.kycStatus === 'pending' ? 'pending' :
+      user.kycStatus === 'rejected' ? 'suspended' : 'unverified';
+
     return {
       id: `kyc_${userId}`,
       userId,
-      level: 'basic',
-      status: 'unverified',
-      documentsRequired: ['drivers_license', 'utility_bill'],
+      level: user.role === 'vip' ? 'premium' : 'basic',
+      status: kycStatus,
+      documentsRequired: user.kycStatus === 'not_started' ? ['drivers_license', 'utility_bill'] : [],
       documentsProvided: [],
       personalInfo: {
-        firstName: '',
-        lastName: '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
         dateOfBirth: '',
         address: {
-          street: '',
-          city: '',
-          state: '',
+          street: user.location?.city || '',
+          city: user.location?.city || '',
+          state: user.location?.state || '',
           zipCode: '',
-          country: 'US'
+          country: user.location?.country || 'US'
         }
       },
       verification: {
-        emailVerified: false,
-        phoneVerified: false,
-        identityVerified: false,
-        addressVerified: false
+        emailVerified: user.emailVerified,
+        phoneVerified: user.phoneVerified,
+        identityVerified: user.kycStatus === 'approved',
+        addressVerified: user.kycStatus === 'approved'
       },
       limits: {
-        dailyWithdrawal: 5000,
-        monthlyWithdrawal: 50000,
-        maximumWithdrawal: 10000,
-        minimumWithdrawal: 100 // 100 SC minimum
+        dailyWithdrawal: user.role === 'vip' ? 25000 : 5000,
+        monthlyWithdrawal: user.role === 'vip' ? 250000 : 50000,
+        maximumWithdrawal: user.role === 'vip' ? 50000 : 10000,
+        minimumWithdrawal: 100
       },
-      createdAt: new Date().toISOString(),
+      createdAt: user.registrationDate.toISOString(),
       updatedAt: new Date().toISOString()
     };
   }
 
   /**
-   * Demo withdrawal history for development
+   * Get real withdrawal history from transaction data
    */
-  private getDemoWithdrawals(userId: string): WithdrawalRequest[] {
-    return [
-      {
-        id: 'wd_001',
-        userId,
-        amount: 250,
-        currency: 'SC',
-        method: 'bank_transfer',
-        status: 'completed',
-        requestedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        processedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-        completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        transactionId: 'txn_abc123',
-        fees: 10,
-        netAmount: 240,
+  private getRealWithdrawals(userId: string): WithdrawalRequest[] {
+    const transactions = realDataService.getUserTransactions(userId);
+
+    return transactions
+      .filter(tx => tx.type === 'withdrawal')
+      .map(tx => ({
+        id: tx.id,
+        userId: tx.userId,
+        amount: tx.amount,
+        currency: tx.currency as 'SC' | 'USD',
+        method: 'bank_transfer' as const,
+        status: tx.status === 'completed' ? 'completed' :
+                tx.status === 'failed' ? 'rejected' : 'pending',
+        requestedAt: tx.timestamp.toISOString(),
+        processedAt: tx.status !== 'pending' ? tx.timestamp.toISOString() : undefined,
+        completedAt: tx.status === 'completed' ? tx.timestamp.toISOString() : undefined,
+        transactionId: tx.id,
+        rejectionReason: tx.status === 'failed' ? 'Processing error' : undefined,
+        fees: tx.metadata.feeAmount || Math.floor(tx.amount * 0.02), // 2% fee
+        netAmount: tx.amount - (tx.metadata.feeAmount || Math.floor(tx.amount * 0.02)),
         kycRequired: true,
         kycVerificationId: `kyc_${userId}`
-      },
-      {
-        id: 'wd_002',
-        userId,
-        amount: 150,
-        currency: 'SC',
-        method: 'paypal',
-        status: 'pending',
-        requestedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        fees: 5,
-        netAmount: 145,
-        kycRequired: true,
-        kycVerificationId: `kyc_${userId}`
-      }
-    ];
+      }))
+      .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
   }
 }
 

@@ -358,7 +358,7 @@ class CMSService {
       });
 
       if (!response.ok) throw new Error("Failed to upload media");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error uploading media:", error);
       // Return mock media object

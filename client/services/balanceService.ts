@@ -1,3 +1,5 @@
+import { realDataService } from './realDataService';
+
 export interface UserBalance {
   userId: string;
   gc: number; // Gold Coins

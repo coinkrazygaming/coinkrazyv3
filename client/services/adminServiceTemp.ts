@@ -441,9 +441,16 @@ class AdminService {
   async markNotificationRead(notificationId: number): Promise<void> {
     this.checkAdminAccess();
     try {
+      // Create abort controller with 3 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       await fetch(`/api/notifications/${notificationId}/read`, {
         method: "POST",
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
     }

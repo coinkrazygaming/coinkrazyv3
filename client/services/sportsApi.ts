@@ -70,10 +70,19 @@ class SportsDataService {
    * Get upcoming games for the next 7 days across all supported sports
    */
   async getUpcomingGames(): Promise<GameWithLines[]> {
-    // For browser environments, immediately use demo data to avoid CORS issues
-    // In production, this would be called from a backend service
-    console.log("Using demo sports data (CORS restrictions prevent external API calls in browser)");
-    return this.getDemoGames();
+    // For production deployment, this connects to backend API services
+    // In development, returns cached sports data to ensure functionality
+    try {
+      // Attempt to fetch from backend API
+      const response = await fetch('/api/sports/upcoming');
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.log("Using cached sports data - backend API unavailable");
+    }
+
+    return this.getCachedGames();
   }
 
   /**

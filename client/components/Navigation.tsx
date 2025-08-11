@@ -256,36 +256,10 @@ export default function Navigation() {
                 );
               })}
               <div className="pt-4 mt-4 border-t border-border/50">
-                {user?.isLoggedIn ? (
-                  <div className="space-y-2">
-                    <div className="text-center text-sm text-muted-foreground mb-2">
-                      Welcome, {user.username}
-                    </div>
-                    <Button
-                      onClick={handleLogout}
-                      className="w-full border-red-500/50 text-red-400 hover:bg-red-500/10"
-                      variant="outline"
-                    >
-                      Logout
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full">
-                        Login
-                      </Button>
-                    </Link>
-                    <Link
-                      to="/register"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Button className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold">
-                        Register
-                      </Button>
-                    </Link>
-                  </div>
-                )}
+                {/* Mobile Account Section - Use MyAccountDropdown for consistent experience */}
+                <div className="w-full">
+                  <MyAccountDropdown />
+                </div>
               </div>
             </div>
           </div>

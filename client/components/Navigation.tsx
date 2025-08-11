@@ -192,8 +192,8 @@ export default function Navigation() {
             </div>
 
             {/* Enhanced Wallet Balance (logged in users only) */}
-            {user?.isLoggedIn && (
-              <WalletBalance userId={user.id || "user-1"} compact={true} />
+            {user && (
+              <EnhancedWalletBalance showExchange={true} />
             )}
 
             {/* Contact Phone */}

@@ -1,41 +1,16 @@
-// Client-side auth service using API calls
+import { userService, User, UserBalance } from '../../server/services/userService.js';
 
-export interface User {
-  id: number;
-  email: string;
-  username: string;
-  first_name?: string;
-  last_name?: string;
-  role: "user" | "admin" | "staff" | "vip";
-  status: "active" | "suspended" | "banned" | "pending_verification";
-  kyc_status: "not_submitted" | "pending" | "verified" | "rejected";
-  is_email_verified: boolean;
-  vip_expires_at?: Date;
-  created_at: Date;
-  last_login?: Date;
-}
-
-export interface AuthResponse {
-  success: boolean;
-  user?: User;
-  token?: string;
-  message?: string;
-  requiresEmailVerification?: boolean;
-}
-
-export interface RegisterData {
-  email: string;
-  username: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-  dateOfBirth?: string;
+export interface AuthUser extends User {
+  balances: UserBalance[];
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+  isStaff: boolean;
 }
 
 class AuthService {
   private static instance: AuthService;
-  private currentUser: User | null = null;
-  private authToken: string | null = null;
+  private currentUser: AuthUser | null = null;
+  private listeners: Set<(user: AuthUser | null) => void> = new Set();
 
   static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -45,181 +20,242 @@ class AuthService {
   }
 
   constructor() {
-    // Check for existing session
-    this.loadSession();
+    this.loadUserFromStorage();
   }
 
-  private loadSession() {
-    const token = localStorage.getItem("auth_token");
-    const userStr = localStorage.getItem("current_user");
-
-    if (token && userStr) {
-      try {
-        this.authToken = token;
-        this.currentUser = JSON.parse(userStr);
-      } catch (error) {
-        this.clearSession();
-      }
-    }
-  }
-
-  private saveSession(user: User, token: string) {
-    this.currentUser = user;
-    this.authToken = token;
-    localStorage.setItem("auth_token", token);
-    localStorage.setItem("current_user", JSON.stringify(user));
-  }
-
-  private clearSession() {
-    this.currentUser = null;
-    this.authToken = null;
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("current_user");
-  }
-
-  private generateToken(): string {
-    return (
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15) +
-      Date.now().toString(36)
-    );
-  }
-
-  async register(data: RegisterData): Promise<AuthResponse> {
+  /**
+   * Login user with email and password
+   */
+  async login(email: string, password: string): Promise<AuthUser> {
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error("Registration error:", error);
-      return {
-        success: false,
-        message: "Registration failed. Please try again.",
-      };
-    }
-  }
-
-  async login(email: string, password: string): Promise<AuthResponse> {
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-
-      if (result.success && result.user) {
-        this.saveSession(result.user, result.token);
+      // In a real app, this would make an API call to the backend
+      // For now, we'll simulate it by calling the userService directly
+      const user = await userService.authenticateUser(email, password);
+      
+      if (!user) {
+        throw new Error('Invalid email or password');
       }
 
-      return result;
-    } catch (error) {
-      console.error("Login error:", error);
-      return { success: false, message: "Login failed. Please try again." };
-    }
-  }
+      // Get user balances
+      const balances = await userService.getUserBalances(user.id);
 
-  async verifyEmail(token: string): Promise<AuthResponse> {
-    try {
-      const response = await fetch("/api/auth/verify-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error("Email verification error:", error);
-      return {
-        success: false,
-        message: "Email verification failed. Please try again.",
+      const authUser: AuthUser = {
+        ...user,
+        balances,
+        isLoggedIn: true,
+        isAdmin: user.role === 'admin',
+        isStaff: user.role === 'staff'
       };
+
+      this.currentUser = authUser;
+      this.saveUserToStorage(authUser);
+      this.notifyListeners();
+
+      return authUser;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
   }
 
+  /**
+   * Register new user
+   */
+  async register(email: string, username: string, password: string): Promise<AuthUser> {
+    try {
+      const user = await userService.createUser(email, username, password);
+      const balances = await userService.getUserBalances(user.id);
+
+      const authUser: AuthUser = {
+        ...user,
+        balances,
+        isLoggedIn: true,
+        isAdmin: false,
+        isStaff: false
+      };
+
+      this.currentUser = authUser;
+      this.saveUserToStorage(authUser);
+      this.notifyListeners();
+
+      return authUser;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Logout current user
+   */
   async logout(): Promise<void> {
-    this.clearSession();
+    this.currentUser = null;
+    localStorage.removeItem('coinkrazy_user');
+    this.notifyListeners();
   }
 
-  getCurrentUser(): User | null {
+  /**
+   * Get current user
+   */
+  getCurrentUser(): AuthUser | null {
     return this.currentUser;
   }
 
-  getAuthToken(): string | null {
-    return this.authToken;
+  /**
+   * Check if user is logged in
+   */
+  isLoggedIn(): boolean {
+    return this.currentUser !== null && this.currentUser.isLoggedIn;
   }
 
-  isAuthenticated(): boolean {
-    return this.currentUser !== null && this.authToken !== null;
-  }
-
+  /**
+   * Check if user is admin
+   */
   isAdmin(): boolean {
-    return this.currentUser?.role === "admin";
+    return this.currentUser?.isAdmin || false;
   }
 
+  /**
+   * Check if user is staff
+   */
   isStaff(): boolean {
-    return this.currentUser?.role === "staff";
+    return this.currentUser?.isStaff || false;
   }
 
-  isVIP(): boolean {
-    const user = this.currentUser;
-    if (!user || user.role !== "vip") return false;
-
-    if (user.vip_expires_at) {
-      return new Date(user.vip_expires_at) > new Date();
+  /**
+   * Update user balance
+   */
+  async updateBalance(
+    currency: 'GC' | 'SC',
+    amount: number,
+    type: 'deposit' | 'withdrawal' | 'win' | 'bet' | 'bonus',
+    description?: string,
+    gameId?: string
+  ): Promise<number> {
+    if (!this.currentUser) {
+      throw new Error('User not logged in');
     }
 
-    return false;
-  }
-
-  async requestPasswordReset(email: string): Promise<AuthResponse> {
     try {
-      // Simple placeholder implementation
-      return {
-        success: true,
-        message:
-          "If an account with that email exists, a password reset link has been sent.",
-      };
+      const result = await userService.updateUserBalance(
+        this.currentUser.id,
+        currency,
+        amount,
+        type,
+        description,
+        gameId
+      );
+
+      // Update local balance
+      const balanceIndex = this.currentUser.balances.findIndex(b => b.currency === currency);
+      if (balanceIndex !== -1) {
+        this.currentUser.balances[balanceIndex].balance = result.newBalance;
+      }
+
+      this.saveUserToStorage(this.currentUser);
+      this.notifyListeners();
+
+      return result.newBalance;
     } catch (error) {
-      console.error("Password reset error:", error);
-      return {
-        success: false,
-        message: "Failed to send password reset email. Please try again.",
-      };
+      console.error('Balance update error:', error);
+      throw error;
     }
   }
 
-  async resetPassword(
-    token: string,
-    newPassword: string,
-  ): Promise<AuthResponse> {
+  /**
+   * Get user balance for specific currency
+   */
+  getBalance(currency: 'GC' | 'SC'): number {
+    if (!this.currentUser) return 0;
+    
+    const balance = this.currentUser.balances.find(b => b.currency === currency);
+    return balance?.balance || 0;
+  }
+
+  /**
+   * Refresh user data from database
+   */
+  async refreshUser(): Promise<void> {
+    if (!this.currentUser) return;
+
     try {
-      // Simple placeholder implementation
-      return {
-        success: true,
-        message:
-          "Password has been reset successfully. You can now log in with your new password.",
+      const user = await userService.getUserById(this.currentUser.id);
+      if (!user) {
+        await this.logout();
+        return;
+      }
+
+      const balances = await userService.getUserBalances(user.id);
+
+      this.currentUser = {
+        ...user,
+        balances,
+        isLoggedIn: true,
+        isAdmin: user.role === 'admin',
+        isStaff: user.role === 'staff'
       };
+
+      this.saveUserToStorage(this.currentUser);
+      this.notifyListeners();
     } catch (error) {
-      console.error("Password reset error:", error);
-      return {
-        success: false,
-        message: "Failed to reset password. Please try again.",
-      };
+      console.error('Error refreshing user:', error);
     }
+  }
+
+  /**
+   * Subscribe to auth changes
+   */
+  subscribe(callback: (user: AuthUser | null) => void): () => void {
+    this.listeners.add(callback);
+    return () => {
+      this.listeners.delete(callback);
+    };
+  }
+
+  /**
+   * Get redirect path based on user role
+   */
+  getRedirectPath(): string {
+    if (!this.currentUser) return '/';
+    
+    switch (this.currentUser.role) {
+      case 'admin':
+        return '/admin';
+      case 'staff':
+        return '/staff';
+      default:
+        return '/dashboard';
+    }
+  }
+
+  private loadUserFromStorage(): void {
+    try {
+      const stored = localStorage.getItem('coinkrazy_user');
+      if (stored) {
+        const userData = JSON.parse(stored);
+        // Validate stored data
+        if (userData && userData.id && userData.email) {
+          this.currentUser = userData;
+          // Refresh user data from database in background
+          this.refreshUser();
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user from storage:', error);
+      localStorage.removeItem('coinkrazy_user');
+    }
+  }
+
+  private saveUserToStorage(user: AuthUser): void {
+    try {
+      localStorage.setItem('coinkrazy_user', JSON.stringify(user));
+    } catch (error) {
+      console.error('Error saving user to storage:', error);
+    }
+  }
+
+  private notifyListeners(): void {
+    this.listeners.forEach(callback => callback(this.currentUser));
   }
 }
 

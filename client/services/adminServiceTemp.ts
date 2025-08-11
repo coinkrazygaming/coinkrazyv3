@@ -175,17 +175,30 @@ class AdminService {
 
     try {
       const offset = (page - 1) * limit;
+      // Create abort controller with 3 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch(
         `/api/admin/users?limit=${limit}&offset=${offset}`,
         {
           headers: { Accept: "application/json" },
+          signal: controller.signal,
         },
       );
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         console.warn(
           `Users API returned ${response.status}, using fallback data`,
         );
+        return { users: fallbackUsers, total: fallbackUsers.length };
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Users API response is not JSON, using fallback data");
         return { users: fallbackUsers, total: fallbackUsers.length };
       }
 
@@ -241,14 +254,27 @@ class AdminService {
     ];
 
     try {
+      // Create abort controller with 3 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch("/api/games", {
         headers: { Accept: "application/json" },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         console.warn(
           `Games API returned ${response.status}, using fallback data`,
         );
+        return fallbackGames;
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Games API response is not JSON, using fallback data");
         return fallbackGames;
       }
 
@@ -290,14 +316,27 @@ class AdminService {
     ];
 
     try {
+      // Create abort controller with 3 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch(`/api/admin/transactions?limit=${limit}`, {
         headers: { Accept: "application/json" },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         console.warn(
           `Transactions API returned ${response.status}, using fallback data`,
         );
+        return fallbackTransactions;
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Transactions API response is not JSON, using fallback data");
         return fallbackTransactions;
       }
 

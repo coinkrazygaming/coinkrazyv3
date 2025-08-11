@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { gamesService, Game } from "@/services/gamesService";
+import { coinKrazySlotsServer, SlotGameConfig } from "@/services/coinKrazySlotsServer";
+import GameIframeLoader from "@/components/GameIframeLoader";
 import {
   Play,
   Square,
@@ -12,6 +13,8 @@ import {
   Maximize,
   AlertTriangle,
   Loader2,
+  Trophy,
+  Info,
 } from "lucide-react";
 
 interface GamePlayerProps {
@@ -26,7 +29,7 @@ export default function GamePlayer({
   onClose,
 }: GamePlayerProps) {
   const { user } = useAuth();
-  const [game, setGame] = useState<Game | null>(null);
+  const [game, setGame] = useState<SlotGameConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,7 +44,7 @@ export default function GamePlayer({
       setLoading(true);
       setError("");
 
-      const gameData = await gamesService.getGameById(gameId);
+      const gameData = await coinKrazySlotsServer.getGameById(gameId);
       if (!gameData) {
         throw new Error("Game not found");
       }
@@ -101,7 +104,7 @@ export default function GamePlayer({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <img
-              src={game.image_url}
+              src={game.thumbnailUrl}
               alt={game.name}
               className="w-12 h-12 rounded-lg object-cover"
             />
@@ -112,15 +115,18 @@ export default function GamePlayer({
             <Badge variant="outline" className="border-gold-500 text-gold-400">
               RTP: {game.rtp}%
             </Badge>
+            <Badge variant="outline" className="border-casino-blue text-casino-blue">
+              {game.volatility.toUpperCase()}
+            </Badge>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm">
-              <Volume2 className="w-4 h-4" />
-            </Button>
+            <Badge variant="outline" className="border-green-500 text-green-400">
+              {currency === "GC" ? "🪙 Gold Coins" : "👑 Sweeps Coins"}
+            </Badge>
 
-            <Button variant="outline" size="sm">
-              <Maximize className="w-4 h-4" />
+            <Button variant="outline" size="sm" title="Game Info">
+              <Info className="w-4 h-4" />
             </Button>
 
             <Button variant="destructive" size="sm" onClick={stopGame}>

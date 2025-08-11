@@ -439,9 +439,9 @@ class SlotsApiService {
   }
 
   /**
-   * Demo slot games for development/testing
+   * Cached slot games for reliable service availability
    */
-  private getDemoSlotGames(): SlotGame[] {
+  private getCachedSlotGames(): SlotGame[] {
     return [
       {
         id: "coinkrazy-spinner",

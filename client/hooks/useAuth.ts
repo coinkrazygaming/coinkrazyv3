@@ -87,8 +87,27 @@ export const useAuth = (): UseAuthReturn => {
         setUser(response.user);
         localStorage.setItem("auth_user", JSON.stringify(response.user));
 
-        // Initialize user wallet and send welcome email
+        // Initialize user services and start welcome automation
         walletService.getUserBalance(response.user.email);
+
+        // Create JoseyAI onboarding account for personalized experience
+        joseyAiOnboardingService.createUserAccount({
+          id: response.user.id.toString(),
+          email: response.user.email,
+          username: response.user.username,
+          accountType: response.user.role === 'vip' ? 'admin' : 'user'
+        });
+
+        // Start comprehensive welcome email sequence
+        const sequenceId = response.user.role === 'vip' ? 'vip_welcome' : 'standard_welcome';
+        welcomeEmailAutomationService.startWelcomeSequence(
+          response.user.id.toString(),
+          response.user.email,
+          response.user.username,
+          sequenceId
+        );
+
+        // Also send immediate welcome email for backward compatibility
         emailService.sendWelcomeEmail(
           response.user.id.toString(),
           response.user.email,

@@ -406,7 +406,7 @@ class CMSService {
     try {
       const response = await fetch(`${this.baseUrl}/templates`);
       if (!response.ok) throw new Error("Failed to fetch templates");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error fetching templates:", error);
       return this.getMockTemplates();

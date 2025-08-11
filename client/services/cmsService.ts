@@ -234,6 +234,15 @@ class CMSService {
     return CMSService.instance;
   }
 
+  // Helper method to safely parse JSON responses
+  private async safeJsonParse(response: Response): Promise<any> {
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Response is not JSON");
+    }
+    return await response.json();
+  }
+
   // Pages Management
   async getAllPages(): Promise<CMSPage[]> {
     try {

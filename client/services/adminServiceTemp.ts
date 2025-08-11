@@ -336,7 +336,9 @@ class AdminService {
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        console.warn("Transactions API response is not JSON, using fallback data");
+        console.warn(
+          "Transactions API response is not JSON, using fallback data",
+        );
         return fallbackTransactions;
       }
 
@@ -400,7 +402,9 @@ class AdminService {
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        console.warn("Notifications API response is not JSON, using fallback data");
+        console.warn(
+          "Notifications API response is not JSON, using fallback data",
+        );
         return fallbackNotifications;
       }
 

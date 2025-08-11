@@ -286,7 +286,7 @@ class GoldStoreService {
 
       // For development, return a mock updated package instead of throwing
       const packages = this.getDefaultPackages();
-      const existingPackage = packages.find(p => p.id === id);
+      const existingPackage = packages.find((p) => p.id === id);
       if (existingPackage) {
         return {
           ...existingPackage,

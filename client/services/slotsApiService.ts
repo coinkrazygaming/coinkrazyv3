@@ -507,9 +507,9 @@ class SlotsApiService {
   }
 
   /**
-   * Get demo games for a specific provider
+   * Get cached games for a specific provider
    */
-  private getDemoGamesForProvider(providerId: string): SlotGame[] {
+  private getCachedGamesForProvider(providerId: string): SlotGame[] {
     const providerGames: { [key: string]: SlotGame[] } = {
       "pragmatic-play": [
         {

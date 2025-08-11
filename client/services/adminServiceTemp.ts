@@ -341,14 +341,27 @@ class AdminService {
     ];
 
     try {
+      // Create abort controller with 3 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch("/api/notifications/unread", {
         headers: { Accept: "application/json" },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         console.warn(
           `Notifications API returned ${response.status}, using fallback data`,
         );
+        return fallbackNotifications;
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Notifications API response is not JSON, using fallback data");
         return fallbackNotifications;
       }
 

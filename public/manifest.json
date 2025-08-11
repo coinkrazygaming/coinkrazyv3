@@ -1,0 +1,137 @@
+{
+  "name": "CoinKrazy Casino",
+  "short_name": "CoinKrazy",
+  "description": "Premium online casino with gold coins and sweeps coins. Experience the ultimate gaming with slots, table games, and exclusive rewards.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#ffd700",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "CoinKrazy Casino Desktop View"
+    },
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "CoinKrazy Casino Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Play Games",
+      "short_name": "Games",
+      "description": "Access all casino games",
+      "url": "/games",
+      "icons": [
+        {
+          "src": "/icons/games-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Gold Store",
+      "short_name": "Store",
+      "description": "Buy gold coins and sweeps coins",
+      "url": "/store",
+      "icons": [
+        {
+          "src": "/icons/store-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Daily Rewards",
+      "short_name": "Rewards",
+      "description": "Claim your daily rewards",
+      "url": "/daily-rewards",
+      "icons": [
+        {
+          "src": "/icons/rewards-shortcut.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.coinkrazy.casino",
+      "id": "com.coinkrazy.casino"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/coinkrazy-casino/id123456789"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-new"
+  },
+  "handle_links": "preferred",
+  "capture_links": "new-client"
+}

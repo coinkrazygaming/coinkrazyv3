@@ -101,7 +101,7 @@ class SlotsApiService {
       id: "microgaming",
       name: "Microgaming",
       apiEndpoint: "https://api.microgaming.com/slots",
-      apiKey: import.meta.env.VITE_MICROGAMING_API_KEY || "demo-key",
+      apiKey: import.meta.env.VITE_MICROGAMING_API_KEY || "production-api-key",
       isActive: true,
       gameCount: 300,
       supportedCurrencies: ["GC", "SC", "USD"],

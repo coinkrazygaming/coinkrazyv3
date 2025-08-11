@@ -959,7 +959,7 @@ export default function Admin() {
 
           {/* Gold Coin Store Management */}
           <TabsContent value="store" className="mt-6">
-            <PackageEditor />
+            <GoldStoreManager />
           </TabsContent>
 
           {/* Bonus Management */}

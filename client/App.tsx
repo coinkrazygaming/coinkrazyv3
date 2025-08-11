@@ -92,6 +92,7 @@ const App = () => (
             <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
             <Route path="/support" element={<Support />} />
             <Route path="/social" element={<Social />} />
+            <Route path="/chat" element={<Chat />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

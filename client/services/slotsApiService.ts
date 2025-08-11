@@ -74,7 +74,7 @@ class SlotsApiService {
       id: "pragmatic-play",
       name: "Pragmatic Play",
       apiEndpoint: "https://api.pragmaticplay.net/gaming",
-      apiKey: import.meta.env.VITE_PRAGMATIC_API_KEY || "demo-key",
+      apiKey: import.meta.env.VITE_PRAGMATIC_API_KEY || "production-api-key",
       isActive: true,
       gameCount: 200,
       supportedCurrencies: ["GC", "SC", "USD"],

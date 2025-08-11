@@ -306,7 +306,7 @@ class CMSService {
         body: JSON.stringify(updates),
       });
       if (!response.ok) throw new Error("Failed to update page");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error updating page:", error);
       throw error;

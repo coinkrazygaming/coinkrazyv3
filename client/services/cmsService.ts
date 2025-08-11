@@ -284,7 +284,7 @@ class CMSService {
         body: JSON.stringify(page),
       });
       if (!response.ok) throw new Error("Failed to create page");
-      return await response.json();
+      return await this.safeJsonParse(response);
     } catch (error) {
       console.error("Error creating page:", error);
       // Return mock created page

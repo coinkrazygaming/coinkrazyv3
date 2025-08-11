@@ -145,6 +145,12 @@ export const useAuth = (): UseAuthReturn => {
       if (response.success && response.user) {
         setUser(response.user);
         localStorage.setItem("auth_user", JSON.stringify(response.user));
+
+        // Trigger email verification event in welcome automation
+        welcomeEmailAutomationService.triggerEmailByEvent(
+          response.user.id.toString(),
+          'email_verified'
+        );
       }
 
       return response;

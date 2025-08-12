@@ -238,9 +238,28 @@ class CMSService {
   private async safeJsonParse(response: Response): Promise<any> {
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
+      console.warn("Response is not JSON, content-type:", contentType);
       throw new Error("Response is not JSON");
     }
     return await response.json();
+  }
+
+  // Helper method to create fetch with timeout
+  private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   }
 
   // Pages Management

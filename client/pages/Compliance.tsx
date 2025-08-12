@@ -583,7 +583,7 @@ const Compliance: React.FC = () => {
                   ))}
                 </div>
               )}
-            </div>
+            </CardContent>
           </Card>
         </TabsContent>
 

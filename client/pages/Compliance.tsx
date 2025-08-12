@@ -1,51 +1,79 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Switch } from '../components/ui/switch';
-import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  MapPin, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Switch } from "../components/ui/switch";
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  MapPin,
   Calendar,
   FileText,
   Users,
   Settings,
   BarChart3,
   Download,
-  Flag
-} from 'lucide-react';
-import { complianceService, ComplianceData, SweepstakesRules, ComplianceAlert } from '../services/complianceService';
-import { authService } from '../services/authService';
+  Flag,
+} from "lucide-react";
+import {
+  complianceService,
+  ComplianceData,
+  SweepstakesRules,
+  ComplianceAlert,
+} from "../services/complianceService";
+import { authService } from "../services/authService";
 
 const Compliance: React.FC = () => {
-  const [complianceData, setComplianceData] = useState<ComplianceData | null>(null);
-  const [sweepstakesRules, setSweepstakesRules] = useState<SweepstakesRules[]>([]);
-  const [complianceAlerts, setComplianceAlerts] = useState<ComplianceAlert[]>([]);
+  const [complianceData, setComplianceData] = useState<ComplianceData | null>(
+    null,
+  );
+  const [sweepstakesRules, setSweepstakesRules] = useState<SweepstakesRules[]>(
+    [],
+  );
+  const [complianceAlerts, setComplianceAlerts] = useState<ComplianceAlert[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [ageVerification, setAgeVerification] = useState({
-    birthDate: '',
-    state: 'CA'
+    birthDate: "",
+    state: "CA",
   });
   const [playLimits, setPlayLimits] = useState({
-    dailySpendLimit: '',
-    weeklySpendLimit: '',
-    monthlySpendLimit: '',
-    sessionTimeLimit: '',
-    dailySessionLimit: ''
+    dailySpendLimit: "",
+    weeklySpendLimit: "",
+    monthlySpendLimit: "",
+    sessionTimeLimit: "",
+    dailySessionLimit: "",
   });
   const [reportIssue, setReportIssue] = useState({
-    type: '',
-    description: '',
-    severity: 'medium' as const
+    type: "",
+    description: "",
+    severity: "medium" as const,
   });
 
   const isAdmin = authService.isAdmin();
@@ -60,14 +88,14 @@ const Compliance: React.FC = () => {
       const [compliance, rules, alerts] = await Promise.all([
         complianceService.checkCompliance(),
         complianceService.getSweepstakesRules(),
-        complianceService.getComplianceAlerts()
+        complianceService.getComplianceAlerts(),
       ]);
-      
+
       setComplianceData(compliance);
       setSweepstakesRules(rules);
       setComplianceAlerts(alerts);
     } catch (error) {
-      console.error('Failed to load compliance data:', error);
+      console.error("Failed to load compliance data:", error);
     } finally {
       setLoading(false);
     }
@@ -75,77 +103,108 @@ const Compliance: React.FC = () => {
 
   const handleAgeVerification = async () => {
     if (!ageVerification.birthDate) {
-      alert('Please enter your birth date');
+      alert("Please enter your birth date");
       return;
     }
 
-    const isEligible = await complianceService.verifyAge(ageVerification.birthDate, ageVerification.state);
-    
+    const isEligible = await complianceService.verifyAge(
+      ageVerification.birthDate,
+      ageVerification.state,
+    );
+
     if (isEligible) {
-      alert('Age verification successful! You meet the eligibility requirements.');
+      alert(
+        "Age verification successful! You meet the eligibility requirements.",
+      );
       loadComplianceData();
     } else {
-      alert('Age verification failed. You must be 18+ to participate (19+ in AL/NE).');
+      alert(
+        "Age verification failed. You must be 18+ to participate (19+ in AL/NE).",
+      );
     }
   };
 
   const handleLocationVerification = async () => {
     const location = await complianceService.verifyLocation();
-    
+
     if (location.isRestricted) {
-      alert(`Sorry, sweepstakes are not available in your location (${location.state}, ${location.country}).`);
+      alert(
+        `Sorry, sweepstakes are not available in your location (${location.state}, ${location.country}).`,
+      );
     } else {
-      alert(`Location verified! You are eligible to participate from ${location.state}, ${location.country}.`);
+      alert(
+        `Location verified! You are eligible to participate from ${location.state}, ${location.country}.`,
+      );
       loadComplianceData();
     }
   };
 
   const handleSetPlayLimits = async () => {
     const limits = {
-      dailySpendLimit: playLimits.dailySpendLimit ? parseInt(playLimits.dailySpendLimit) : undefined,
-      weeklySpendLimit: playLimits.weeklySpendLimit ? parseInt(playLimits.weeklySpendLimit) : undefined,
-      monthlySpendLimit: playLimits.monthlySpendLimit ? parseInt(playLimits.monthlySpendLimit) : undefined,
-      sessionTimeLimit: playLimits.sessionTimeLimit ? parseInt(playLimits.sessionTimeLimit) : undefined,
-      dailySessionLimit: playLimits.dailySessionLimit ? parseInt(playLimits.dailySessionLimit) : undefined
+      dailySpendLimit: playLimits.dailySpendLimit
+        ? parseInt(playLimits.dailySpendLimit)
+        : undefined,
+      weeklySpendLimit: playLimits.weeklySpendLimit
+        ? parseInt(playLimits.weeklySpendLimit)
+        : undefined,
+      monthlySpendLimit: playLimits.monthlySpendLimit
+        ? parseInt(playLimits.monthlySpendLimit)
+        : undefined,
+      sessionTimeLimit: playLimits.sessionTimeLimit
+        ? parseInt(playLimits.sessionTimeLimit)
+        : undefined,
+      dailySessionLimit: playLimits.dailySessionLimit
+        ? parseInt(playLimits.dailySessionLimit)
+        : undefined,
     };
 
-    const success = await complianceService.setPlayLimits('current-user', limits);
-    
+    const success = await complianceService.setPlayLimits(
+      "current-user",
+      limits,
+    );
+
     if (success) {
-      alert('Play limits updated successfully!');
+      alert("Play limits updated successfully!");
     } else {
-      alert('Failed to update play limits. Please try again.');
+      alert("Failed to update play limits. Please try again.");
     }
   };
 
   const handleReportIssue = async () => {
     if (!reportIssue.type || !reportIssue.description) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       return;
     }
 
     const success = await complianceService.reportIssue(reportIssue);
-    
+
     if (success) {
-      alert('Issue reported successfully! Our compliance team will review it.');
-      setReportIssue({ type: '', description: '', severity: 'medium' });
+      alert("Issue reported successfully! Our compliance team will review it.");
+      setReportIssue({ type: "", description: "", severity: "medium" });
     } else {
-      alert('Failed to report issue. Please try again.');
+      alert("Failed to report issue. Please try again.");
     }
   };
 
   const handleSelfExclusion = async (duration: string) => {
     const confirmed = window.confirm(
-      `Are you sure you want to self-exclude for ${duration}? This action cannot be undone.`
+      `Are you sure you want to self-exclude for ${duration}? This action cannot be undone.`,
     );
-    
+
     if (confirmed) {
-      const success = await complianceService.requestSelfExclusion('current-user', duration as any);
-      
+      const success = await complianceService.requestSelfExclusion(
+        "current-user",
+        duration as any,
+      );
+
       if (success) {
-        alert(`Self-exclusion request submitted for ${duration}. You will be contacted by our support team.`);
+        alert(
+          `Self-exclusion request submitted for ${duration}. You will be contacted by our support team.`,
+        );
       } else {
-        alert('Failed to submit self-exclusion request. Please contact support directly.');
+        alert(
+          "Failed to submit self-exclusion request. Please contact support directly.",
+        );
       }
     }
   };
@@ -173,9 +232,12 @@ const Compliance: React.FC = () => {
             Legal compliance, rules, and responsible gaming features
           </p>
         </div>
-        
+
         {complianceData && (
-          <Badge variant={complianceData.isEligible ? "success" : "destructive"} className="text-lg p-2">
+          <Badge
+            variant={complianceData.isEligible ? "success" : "destructive"}
+            className="text-lg p-2"
+          >
             {complianceData.isEligible ? "Compliant" : "Restricted"}
           </Badge>
         )}
@@ -193,27 +255,39 @@ const Compliance: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center gap-2">
-                <Badge variant={complianceData.ageVerified ? "success" : "destructive"}>
+                <Badge
+                  variant={
+                    complianceData.ageVerified ? "success" : "destructive"
+                  }
+                >
                   {complianceData.ageVerified ? "Verified" : "Pending"}
                 </Badge>
                 <span>Age Verification</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
-                <Badge variant={complianceData.locationVerified ? "success" : "destructive"}>
+                <Badge
+                  variant={
+                    complianceData.locationVerified ? "success" : "destructive"
+                  }
+                >
                   {complianceData.locationVerified ? "Verified" : "Pending"}
                 </Badge>
                 <span>Location Verification</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
-                <Badge variant={complianceData.termsAccepted ? "success" : "destructive"}>
+                <Badge
+                  variant={
+                    complianceData.termsAccepted ? "success" : "destructive"
+                  }
+                >
                   {complianceData.termsAccepted ? "Accepted" : "Pending"}
                 </Badge>
                 <span>Terms Accepted</span>
               </div>
             </div>
-            
+
             {complianceData.warnings.length > 0 && (
               <Alert className="mt-4">
                 <AlertTriangle className="h-4 w-4" />
@@ -260,7 +334,9 @@ const Compliance: React.FC = () => {
                 </Alert>
 
                 <div>
-                  <h4 className="font-semibold mb-2">Eligibility Requirements:</h4>
+                  <h4 className="font-semibold mb-2">
+                    Eligibility Requirements:
+                  </h4>
                   <ul className="list-disc list-inside space-y-1">
                     {rules.eligibilityRequirements.map((req, index) => (
                       <li key={index}>{req}</li>
@@ -281,9 +357,16 @@ const Compliance: React.FC = () => {
                   <h4 className="font-semibold mb-2">Prize Structure:</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {rules.prizeStructure.map((prize, index) => (
-                      <div key={index} className="flex justify-between border p-2 rounded">
-                        <span>{prize.tier}: {prize.description}</span>
-                        <span className="font-bold">{prize.value} ({prize.quantity}x)</span>
+                      <div
+                        key={index}
+                        className="flex justify-between border p-2 rounded"
+                      >
+                        <span>
+                          {prize.tier}: {prize.description}
+                        </span>
+                        <span className="font-bold">
+                          {prize.value} ({prize.quantity}x)
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -291,7 +374,7 @@ const Compliance: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
                   <div>
-                    <strong>Draw Dates:</strong> {rules.drawDates.join(', ')}
+                    <strong>Draw Dates:</strong> {rules.drawDates.join(", ")}
                   </div>
                   <div>
                     <strong>Odds:</strong> {rules.oddsDisclosure}
@@ -333,21 +416,25 @@ const Compliance: React.FC = () => {
                     id="birthDate"
                     type="date"
                     value={ageVerification.birthDate}
-                    onChange={(e) => setAgeVerification(prev => ({
-                      ...prev,
-                      birthDate: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setAgeVerification((prev) => ({
+                        ...prev,
+                        birthDate: e.target.value,
+                      }))
+                    }
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="state">State</Label>
-                  <Select 
-                    value={ageVerification.state} 
-                    onValueChange={(value) => setAgeVerification(prev => ({
-                      ...prev,
-                      state: value
-                    }))}
+                  <Select
+                    value={ageVerification.state}
+                    onValueChange={(value) =>
+                      setAgeVerification((prev) => ({
+                        ...prev,
+                        state: value,
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -381,14 +468,16 @@ const Compliance: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  We use your IP address to verify that you're located in an eligible jurisdiction.
-                  Sweepstakes are restricted in certain states and countries.
+                  We use your IP address to verify that you're located in an
+                  eligible jurisdiction. Sweepstakes are restricted in certain
+                  states and countries.
                 </p>
 
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    VPN and proxy services may interfere with location verification.
+                    VPN and proxy services may interfere with location
+                    verification.
                   </AlertDescription>
                 </Alert>
 
@@ -421,13 +510,15 @@ const Compliance: React.FC = () => {
                     type="number"
                     placeholder="50"
                     value={playLimits.dailySpendLimit}
-                    onChange={(e) => setPlayLimits(prev => ({
-                      ...prev,
-                      dailySpendLimit: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setPlayLimits((prev) => ({
+                        ...prev,
+                        dailySpendLimit: e.target.value,
+                      }))
+                    }
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="weeklySpend">Weekly Spend Limit ($)</Label>
                   <Input
@@ -435,10 +526,12 @@ const Compliance: React.FC = () => {
                     type="number"
                     placeholder="200"
                     value={playLimits.weeklySpendLimit}
-                    onChange={(e) => setPlayLimits(prev => ({
-                      ...prev,
-                      weeklySpendLimit: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setPlayLimits((prev) => ({
+                        ...prev,
+                        weeklySpendLimit: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -449,24 +542,30 @@ const Compliance: React.FC = () => {
                     type="number"
                     placeholder="500"
                     value={playLimits.monthlySpendLimit}
-                    onChange={(e) => setPlayLimits(prev => ({
-                      ...prev,
-                      monthlySpendLimit: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setPlayLimits((prev) => ({
+                        ...prev,
+                        monthlySpendLimit: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="sessionTime">Session Time Limit (minutes)</Label>
+                  <Label htmlFor="sessionTime">
+                    Session Time Limit (minutes)
+                  </Label>
                   <Input
                     id="sessionTime"
                     type="number"
                     placeholder="120"
                     value={playLimits.sessionTimeLimit}
-                    onChange={(e) => setPlayLimits(prev => ({
-                      ...prev,
-                      sessionTimeLimit: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setPlayLimits((prev) => ({
+                        ...prev,
+                        sessionTimeLimit: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -488,50 +587,50 @@ const Compliance: React.FC = () => {
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Self-exclusion requests cannot be reversed during the exclusion period.
-                  Please consider this decision carefully.
+                  Self-exclusion requests cannot be reversed during the
+                  exclusion period. Please consider this decision carefully.
                 </AlertDescription>
               </Alert>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleSelfExclusion('24h')}
+                <Button
+                  variant="outline"
+                  onClick={() => handleSelfExclusion("24h")}
                   className="text-orange-600 border-orange-600"
                 >
                   24 Hours
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleSelfExclusion('7d')}
+                <Button
+                  variant="outline"
+                  onClick={() => handleSelfExclusion("7d")}
                   className="text-orange-600 border-orange-600"
                 >
                   7 Days
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleSelfExclusion('30d')}
+                <Button
+                  variant="outline"
+                  onClick={() => handleSelfExclusion("30d")}
                   className="text-orange-600 border-orange-600"
                 >
                   30 Days
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleSelfExclusion('6m')}
+                <Button
+                  variant="outline"
+                  onClick={() => handleSelfExclusion("6m")}
                   className="text-red-600 border-red-600"
                 >
                   6 Months
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleSelfExclusion('1y')}
+                <Button
+                  variant="outline"
+                  onClick={() => handleSelfExclusion("1y")}
                   className="text-red-600 border-red-600"
                 >
                   1 Year
                 </Button>
-                <Button 
-                  variant="destructive" 
-                  onClick={() => handleSelfExclusion('permanent')}
+                <Button
+                  variant="destructive"
+                  onClick={() => handleSelfExclusion("permanent")}
                 >
                   Permanent
                 </Button>
@@ -560,7 +659,12 @@ const Compliance: React.FC = () => {
               ) : (
                 <div className="space-y-2">
                   {complianceAlerts.map((alert) => (
-                    <Alert key={alert.id} variant={alert.type === 'error' ? 'destructive' : 'default'}>
+                    <Alert
+                      key={alert.id}
+                      variant={
+                        alert.type === "error" ? "destructive" : "default"
+                      }
+                    >
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
                         <div className="flex justify-between items-start">
@@ -570,11 +674,17 @@ const Compliance: React.FC = () => {
                               {new Date(alert.timestamp).toLocaleString()}
                             </p>
                           </div>
-                          <Badge variant={
-                            alert.severity === 'critical' ? 'destructive' :
-                            alert.severity === 'high' ? 'destructive' :
-                            alert.severity === 'medium' ? 'default' : 'secondary'
-                          }>
+                          <Badge
+                            variant={
+                              alert.severity === "critical"
+                                ? "destructive"
+                                : alert.severity === "high"
+                                  ? "destructive"
+                                  : alert.severity === "medium"
+                                    ? "default"
+                                    : "secondary"
+                            }
+                          >
                             {alert.severity}
                           </Badge>
                         </div>
@@ -602,22 +712,34 @@ const Compliance: React.FC = () => {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="issueType">Issue Type</Label>
-                <Select 
-                  value={reportIssue.type} 
-                  onValueChange={(value) => setReportIssue(prev => ({
-                    ...prev,
-                    type: value
-                  }))}
+                <Select
+                  value={reportIssue.type}
+                  onValueChange={(value) =>
+                    setReportIssue((prev) => ({
+                      ...prev,
+                      type: value,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select issue type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="age-verification">Age Verification</SelectItem>
-                    <SelectItem value="location-restriction">Location Restriction</SelectItem>
-                    <SelectItem value="responsible-gaming">Responsible Gaming</SelectItem>
-                    <SelectItem value="terms-violation">Terms Violation</SelectItem>
-                    <SelectItem value="technical-issue">Technical Issue</SelectItem>
+                    <SelectItem value="age-verification">
+                      Age Verification
+                    </SelectItem>
+                    <SelectItem value="location-restriction">
+                      Location Restriction
+                    </SelectItem>
+                    <SelectItem value="responsible-gaming">
+                      Responsible Gaming
+                    </SelectItem>
+                    <SelectItem value="terms-violation">
+                      Terms Violation
+                    </SelectItem>
+                    <SelectItem value="technical-issue">
+                      Technical Issue
+                    </SelectItem>
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
@@ -625,12 +747,14 @@ const Compliance: React.FC = () => {
 
               <div>
                 <Label htmlFor="severity">Severity</Label>
-                <Select 
-                  value={reportIssue.severity} 
-                  onValueChange={(value) => setReportIssue(prev => ({
-                    ...prev,
-                    severity: value as any
-                  }))}
+                <Select
+                  value={reportIssue.severity}
+                  onValueChange={(value) =>
+                    setReportIssue((prev) => ({
+                      ...prev,
+                      severity: value as any,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -650,10 +774,12 @@ const Compliance: React.FC = () => {
                   id="description"
                   placeholder="Please provide detailed information about the compliance issue..."
                   value={reportIssue.description}
-                  onChange={(e) => setReportIssue(prev => ({
-                    ...prev,
-                    description: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setReportIssue((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   rows={4}
                 />
               </div>
@@ -703,8 +829,12 @@ const Compliance: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">98.5%</div>
-                    <p className="text-sm text-muted-foreground">Overall compliance rate</p>
+                    <div className="text-3xl font-bold text-green-600">
+                      98.5%
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Overall compliance rate
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -719,7 +849,9 @@ const Compliance: React.FC = () => {
                 <CardContent>
                   <div className="text-center">
                     <div className="text-lg font-bold">2 days ago</div>
-                    <p className="text-sm text-muted-foreground">Next audit in 28 days</p>
+                    <p className="text-sm text-muted-foreground">
+                      Next audit in 28 days
+                    </p>
                   </div>
                 </CardContent>
               </Card>

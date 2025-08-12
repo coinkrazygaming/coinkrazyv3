@@ -460,54 +460,87 @@ export default function Admin() {
         {/* Admin Tools Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="flex w-full flex-wrap justify-start gap-1 h-auto p-1">
-            <TabsTrigger value="dashboard" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="dashboard"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <BarChart3 className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Dashboard</span>
               <span className="sm:hidden">Dash</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="users"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Users className="w-4 h-4 mr-1 sm:mr-2" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="games" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="games"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <GamepadIcon className="w-4 h-4 mr-1 sm:mr-2" />
               Games
             </TabsTrigger>
-            <TabsTrigger value="game-management" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="game-management"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Settings className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Game Mgmt</span>
               <span className="lg:hidden">Mgmt</span>
             </TabsTrigger>
-            <TabsTrigger value="transactions" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="transactions"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <CreditCard className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Transactions</span>
               <span className="lg:hidden">Trans</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-manager" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="ai-manager"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Bot className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">AI Manager</span>
               <span className="lg:hidden">AI</span>
             </TabsTrigger>
-            <TabsTrigger value="store" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="store"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Store className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Gold Store</span>
               <span className="lg:hidden">Store</span>
             </TabsTrigger>
-            <TabsTrigger value="bonus" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="bonus"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Gift className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Bonuses</span>
               <span className="lg:hidden">Bonus</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="analytics"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <BarChart3 className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Analytics</span>
               <span className="lg:hidden">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="cms" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="cms"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Layout className="w-4 h-4 mr-1 sm:mr-2" />
               CMS
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="notifications"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Bell className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Notifications</span>
               <span className="lg:hidden">Notif</span>
@@ -520,12 +553,18 @@ export default function Admin() {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="compliance" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="compliance"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Shield className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Compliance</span>
               <span className="lg:hidden">Legal</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex-shrink-0 text-xs sm:text-sm">
+            <TabsTrigger
+              value="settings"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
               <Settings className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden lg:inline">Settings</span>
               <span className="lg:hidden">Config</span>

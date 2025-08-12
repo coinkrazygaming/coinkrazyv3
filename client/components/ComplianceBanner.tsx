@@ -1,40 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, AlertDescription } from './ui/alert';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Shield, AlertTriangle, CheckCircle, X } from 'lucide-react';
-import { complianceService } from '../services/complianceService';
+import React, { useState, useEffect } from "react";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Shield, AlertTriangle, CheckCircle, X } from "lucide-react";
+import { complianceService } from "../services/complianceService";
 
 const ComplianceBanner: React.FC = () => {
   const [showBanner, setShowBanner] = useState(false);
   const [showAgeDialog, setShowAgeDialog] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false);
   const [ageForm, setAgeForm] = useState({
-    birthDate: '',
-    state: 'CA'
+    birthDate: "",
+    state: "CA",
   });
 
   useEffect(() => {
     // Check if user has already verified age
-    const verified = localStorage.getItem('coinkrazy_age_verified');
-    const verificationDate = localStorage.getItem('coinkrazy_age_verification_date');
-    
-    if (verified === 'true' && verificationDate) {
+    const verified = localStorage.getItem("coinkrazy_age_verified");
+    const verificationDate = localStorage.getItem(
+      "coinkrazy_age_verification_date",
+    );
+
+    if (verified === "true" && verificationDate) {
       // Check if verification is still valid (30 days)
       const verifyDate = new Date(verificationDate);
       const now = new Date();
-      const daysDiff = (now.getTime() - verifyDate.getTime()) / (1000 * 3600 * 24);
-      
+      const daysDiff =
+        (now.getTime() - verifyDate.getTime()) / (1000 * 3600 * 24);
+
       if (daysDiff < 30) {
         setAgeVerified(true);
         return;
       }
     }
-    
+
     // Show banner after 2 seconds for new users
     const timer = setTimeout(() => {
       setShowBanner(true);
@@ -45,33 +60,44 @@ const ComplianceBanner: React.FC = () => {
 
   const handleAgeVerification = async () => {
     if (!ageForm.birthDate) {
-      alert('Please enter your birth date');
+      alert("Please enter your birth date");
       return;
     }
 
-    const isEligible = await complianceService.verifyAge(ageForm.birthDate, ageForm.state);
-    
+    const isEligible = await complianceService.verifyAge(
+      ageForm.birthDate,
+      ageForm.state,
+    );
+
     if (isEligible) {
       setAgeVerified(true);
       setShowAgeDialog(false);
       setShowBanner(false);
-      
+
       // Store verification for 30 days
-      localStorage.setItem('coinkrazy_age_verified', 'true');
-      localStorage.setItem('coinkrazy_age_verification_date', new Date().toISOString());
-      
-      alert('Age verification successful! Welcome to CoinKrazy!');
+      localStorage.setItem("coinkrazy_age_verified", "true");
+      localStorage.setItem(
+        "coinkrazy_age_verification_date",
+        new Date().toISOString(),
+      );
+
+      alert("Age verification successful! Welcome to CoinKrazy!");
     } else {
-      alert('You must be 18+ to access this site (19+ in AL/NE). Thank you for visiting.');
+      alert(
+        "You must be 18+ to access this site (19+ in AL/NE). Thank you for visiting.",
+      );
       // Redirect away or disable access
-      window.location.href = 'https://www.google.com';
+      window.location.href = "https://www.google.com";
     }
   };
 
   const dismissBanner = () => {
     setShowBanner(false);
     // Show again in 24 hours if not verified
-    localStorage.setItem('coinkrazy_banner_dismissed', new Date().toISOString());
+    localStorage.setItem(
+      "coinkrazy_banner_dismissed",
+      new Date().toISOString(),
+    );
   };
 
   if (ageVerified || !showBanner) {
@@ -88,21 +114,22 @@ const ComplianceBanner: React.FC = () => {
             <div>
               <span className="font-bold">Age Verification Required:</span>
               <span className="ml-2">
-                You must be 18+ years old to access this sweepstakes site (19+ in AL/NE)
+                You must be 18+ years old to access this sweepstakes site (19+
+                in AL/NE)
               </span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               size="sm"
               onClick={() => setShowAgeDialog(true)}
             >
               Verify Age
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={dismissBanner}
               className="text-white hover:bg-red-800"
@@ -122,10 +149,11 @@ const ComplianceBanner: React.FC = () => {
               Age Verification Required
             </DialogTitle>
             <DialogDescription>
-              To access CoinKrazy sweepstakes, you must verify that you meet the minimum age requirement.
+              To access CoinKrazy sweepstakes, you must verify that you meet the
+              minimum age requirement.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <Alert>
               <AlertTriangle className="h-4 w-4" />
@@ -146,22 +174,26 @@ const ComplianceBanner: React.FC = () => {
                   id="birthDate"
                   type="date"
                   value={ageForm.birthDate}
-                  onChange={(e) => setAgeForm(prev => ({
-                    ...prev,
-                    birthDate: e.target.value
-                  }))}
-                  max={new Date().toISOString().split('T')[0]}
+                  onChange={(e) =>
+                    setAgeForm((prev) => ({
+                      ...prev,
+                      birthDate: e.target.value,
+                    }))
+                  }
+                  max={new Date().toISOString().split("T")[0]}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="state">State of Residence</Label>
-                <Select 
-                  value={ageForm.state} 
-                  onValueChange={(value) => setAgeForm(prev => ({
-                    ...prev,
-                    state: value
-                  }))}
+                <Select
+                  value={ageForm.state}
+                  onValueChange={(value) =>
+                    setAgeForm((prev) => ({
+                      ...prev,
+                      state: value,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -228,8 +260,9 @@ const ComplianceBanner: React.FC = () => {
                 <span className="font-medium">Privacy Protection</span>
               </div>
               <p className="text-muted-foreground">
-                Your personal information is protected and only used for age verification purposes. 
-                We do not store your date of birth after verification.
+                Your personal information is protected and only used for age
+                verification purposes. We do not store your date of birth after
+                verification.
               </p>
             </div>
 
@@ -238,9 +271,11 @@ const ComplianceBanner: React.FC = () => {
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Verify Age
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => window.location.href = 'https://www.google.com'}
+              <Button
+                variant="outline"
+                onClick={() =>
+                  (window.location.href = "https://www.google.com")
+                }
                 className="flex-1"
               >
                 I'm Under 18

@@ -26,9 +26,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import Slots from './Slots';
 import SlotsTournaments from '../components/games/SlotsTournaments';
-import { slotsAnalyticsService } from '@/services/slotsAnalytics';
-import { slotsThemeService, DAILY_CHALLENGES } from '@/services/slotsThemes';
-import { balanceService } from '@/services/balanceService';
+import { slotsAnalyticsService } from '../services/slotsAnalytics';
+import { slotsThemeService, DAILY_CHALLENGES } from '../services/slotsThemes';
+import { balanceService } from '../services/balanceService';
 
 interface QuickStats {
   totalSpins: number;

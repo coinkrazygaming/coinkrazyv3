@@ -245,7 +245,10 @@ class CMSService {
   }
 
   // Helper method to create fetch with timeout
-  private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit = {},
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
 
@@ -424,7 +427,9 @@ class CMSService {
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/templates`);
       if (!response.ok) {
-        console.warn(`Templates API returned ${response.status}, using mock data`);
+        console.warn(
+          `Templates API returned ${response.status}, using mock data`,
+        );
         return this.getMockTemplates();
       }
       return await this.safeJsonParse(response);
@@ -474,9 +479,13 @@ class CMSService {
   // Navigation Management
   async getAllNavigations(): Promise<CMSNavigation[]> {
     try {
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/navigation`);
+      const response = await this.fetchWithTimeout(
+        `${this.baseUrl}/navigation`,
+      );
       if (!response.ok) {
-        console.warn(`Navigation API returned ${response.status}, using mock data`);
+        console.warn(
+          `Navigation API returned ${response.status}, using mock data`,
+        );
         return this.getMockNavigations();
       }
       return await this.safeJsonParse(response);
@@ -509,7 +518,9 @@ class CMSService {
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/redirects`);
       if (!response.ok) {
-        console.warn(`Redirects API returned ${response.status}, using mock data`);
+        console.warn(
+          `Redirects API returned ${response.status}, using mock data`,
+        );
         return this.getMockRedirects();
       }
       return await this.safeJsonParse(response);

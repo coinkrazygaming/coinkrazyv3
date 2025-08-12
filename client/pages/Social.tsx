@@ -366,34 +366,42 @@ export default function Social() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
           <TabsTrigger value="feed">
             <Activity className="h-4 w-4 mr-2" />
-            Feed
+            <span className="hidden sm:inline">Feed</span>
+          </TabsTrigger>
+          <TabsTrigger value="activities">
+            <Zap className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Live</span>
           </TabsTrigger>
           <TabsTrigger value="friends">
             <Users className="h-4 w-4 mr-2" />
-            Friends
+            <span className="hidden sm:inline">Friends</span>
           </TabsTrigger>
           <TabsTrigger value="groups">
             <Globe className="h-4 w-4 mr-2" />
-            Groups
+            <span className="hidden sm:inline">Groups</span>
           </TabsTrigger>
           <TabsTrigger value="challenges">
             <Target className="h-4 w-4 mr-2" />
-            Challenges
+            <span className="hidden sm:inline">Challenges</span>
           </TabsTrigger>
           <TabsTrigger value="tournaments">
             <Crown className="h-4 w-4 mr-2" />
-            Tournaments
+            <span className="hidden sm:inline">Tournaments</span>
+          </TabsTrigger>
+          <TabsTrigger value="achievements">
+            <Trophy className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Achievements</span>
           </TabsTrigger>
           <TabsTrigger value="messages">
             <MessageCircle className="h-4 w-4 mr-2" />
-            Messages
+            <span className="hidden sm:inline">Messages</span>
           </TabsTrigger>
           <TabsTrigger value="profile">
             <Award className="h-4 w-4 mr-2" />
-            Profile
+            <span className="hidden sm:inline">Profile</span>
           </TabsTrigger>
         </TabsList>
 

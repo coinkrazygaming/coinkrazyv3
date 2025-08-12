@@ -953,6 +953,11 @@ export default function Social() {
           </div>
         </TabsContent>
 
+        {/* Achievements Tab */}
+        <TabsContent value="achievements" className="space-y-6">
+          <SocialAchievements />
+        </TabsContent>
+
         {/* Messages Tab */}
         <TabsContent value="messages" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">

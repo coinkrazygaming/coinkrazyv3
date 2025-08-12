@@ -681,6 +681,15 @@ class BankingService {
     paymentDetails: any,
   ) {
     try {
+      if (!this.stripe) {
+        return {
+          status: "failed",
+          transaction_id: null,
+          provider_status: "failed",
+          response: { error: "Stripe not configured" },
+        };
+      }
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount: Math.round(transaction.amount * 100), // Convert to cents
         currency: transaction.currency.toLowerCase(),

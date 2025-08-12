@@ -2,11 +2,15 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import databaseService from "../services/database.js";
 import bankingRoutes from "./banking.js";
+import scratchCardRoutes from "./scratchCards.js";
 
 const router = express.Router();
 
 // Mount banking routes
 router.use("/banking", bankingRoutes);
+
+// Mount scratch card routes
+router.use("/scratch-cards", scratchCardRoutes);
 
 // Authentication endpoints
 router.post("/auth/login", async (req, res) => {

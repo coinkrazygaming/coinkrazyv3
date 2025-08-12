@@ -911,6 +911,11 @@ export default function Admin() {
             <GameManagement />
           </TabsContent>
 
+          {/* Slots Management */}
+          <TabsContent value="slots-management" className="mt-6">
+            <SlotsGameManagement />
+          </TabsContent>
+
           {/* Transactions */}
           <TabsContent value="transactions" className="mt-6">
             <Card>

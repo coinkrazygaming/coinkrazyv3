@@ -982,6 +982,11 @@ export default function Admin() {
             <CmsManagement />
           </TabsContent>
 
+          {/* Compliance */}
+          <TabsContent value="compliance" className="mt-6">
+            <Compliance />
+          </TabsContent>
+
           {/* Settings */}
           <TabsContent value="settings" className="mt-6">
             <AdminSettingsPanel />

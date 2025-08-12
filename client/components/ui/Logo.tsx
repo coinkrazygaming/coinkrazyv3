@@ -37,7 +37,7 @@ const Logo: React.FC<LogoProps> = ({
       >
         <img
           src={logoUrl}
-          alt="CoinKrazy Logo"
+          alt="CoinKrazy Mascot Logo"
           className="w-full h-full object-cover"
           onError={(e) => {
             // Fallback if image fails to load

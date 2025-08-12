@@ -9,7 +9,7 @@ if (typeof window !== "undefined") {
     constructor(...args: any[]) {
       super(...args);
 
-      // Override onerror to prevent getReadyStateText calls
+      // Override onerror to prevent getReadyStateText calls and Event object logging
       const originalOnError = this.onerror;
       this.onerror = (event) => {
         // Only log in development for debugging, suppress in production
@@ -18,9 +18,10 @@ if (typeof window !== "undefined") {
         }
 
         // Don't call getReadyStateText or any unsafe methods
+        // Also don't pass the Event object to prevent [object Event] logging
         if (originalOnError && typeof originalOnError === "function") {
           try {
-            // Safely call original error handler without the problematic event object
+            // Call original error handler without the Event object to prevent logging issues
             originalOnError.call(this);
           } catch (error) {
             // Suppress error logging to prevent [object Event] messages

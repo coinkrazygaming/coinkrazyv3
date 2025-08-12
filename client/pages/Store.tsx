@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import {
   Coins,
   Crown,
@@ -20,21 +21,11 @@ import {
   X,
   Plus,
   Wallet,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
-interface CoinPackage {
-  id: string;
-  name: string;
-  gc: number;
-  sc: number;
-  price: number;
-  originalPrice?: number;
-  popular: boolean;
-  bonus: string;
-  savings?: number;
-  featured?: boolean;
-}
+import { goldStoreService, GoldPackage } from "@/services/goldStoreService";
 
 interface PaymentMethod {
   id: string;
@@ -47,75 +38,18 @@ interface PaymentMethod {
 
 export default function Store() {
   const navigate = useNavigate();
-  const [selectedPackage, setSelectedPackage] = useState<CoinPackage | null>(
-    null,
-  );
+  const { toast } = useToast();
+  
+  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>("card");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("card");
   const [loading, setLoading] = useState(false);
+  const [packagesLoading, setPackagesLoading] = useState(true);
   const [userBalance] = useState({ gc: 125000, sc: 450 });
-
-  const [coinPackages] = useState<CoinPackage[]>([
-    {
-      id: "starter",
-      name: "Starter Pack",
-      gc: 50000,
-      sc: 25,
-      price: 9.99,
-      originalPrice: 12.99,
-      popular: false,
-      bonus: "25 Free SC",
-      savings: 3,
-    },
-    {
-      id: "popular",
-      name: "Popular Pack",
-      gc: 125000,
-      sc: 75,
-      price: 19.99,
-      originalPrice: 29.99,
-      popular: true,
-      bonus: "75 Free SC + VIP",
-      savings: 10,
-      featured: true,
-    },
-    {
-      id: "premium",
-      name: "Premium Pack",
-      gc: 300000,
-      sc: 200,
-      price: 49.99,
-      originalPrice: 69.99,
-      popular: false,
-      bonus: "200 Free SC + 7 Days VIP",
-      savings: 20,
-    },
-    {
-      id: "vip",
-      name: "VIP Mega Pack",
-      gc: 750000,
-      sc: 500,
-      price: 99.99,
-      originalPrice: 139.99,
-      popular: false,
-      bonus: "500 Free SC + 30 Days VIP",
-      savings: 40,
-      featured: true,
-    },
-    {
-      id: "ultimate",
-      name: "Ultimate Pack",
-      gc: 1500000,
-      sc: 1000,
-      price: 199.99,
-      originalPrice: 299.99,
-      popular: false,
-      bonus: "1000 Free SC + 3 Months VIP",
-      savings: 100,
-      featured: true,
-    },
-  ]);
+  
+  // Dynamic package state from database
+  const [packages, setPackages] = useState<GoldPackage[]>([]);
+  const [featuredPackages, setFeaturedPackages] = useState<GoldPackage[]>([]);
 
   const [paymentMethods] = useState<PaymentMethod[]>([
     {
@@ -163,34 +97,54 @@ export default function Store() {
     zipCode: "",
   });
 
+  // Load packages from database
+  useEffect(() => {
+    loadPackages();
+  }, []);
+
+  const loadPackages = async () => {
+    try {
+      setPackagesLoading(true);
+      const packagesData = await goldStoreService.getAllPackages();
+      
+      // Filter active packages
+      const activePackages = packagesData.filter(pkg => pkg.isActive);
+      setPackages(activePackages);
+      
+      // Filter featured packages
+      const featured = activePackages.filter(pkg => pkg.featured);
+      setFeaturedPackages(featured);
+      
+    } catch (error) {
+      console.error("Failed to load packages:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load store packages. Please refresh the page.",
+        variant: "destructive",
+      });
+    } finally {
+      setPackagesLoading(false);
+    }
+  };
+
   const handlePurchase = async () => {
     if (!selectedPackage) return;
 
     setLoading(true);
 
     try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Use the goldStoreService to process the purchase
+      const success = await goldStoreService.purchasePackage(
+        selectedPackage.id,
+        selectedPaymentMethod
+      );
 
-      // In production, this would integrate with:
-      // - Stripe for card payments
-      // - PayPal SDK for PayPal payments
-      // - Apple Pay API for Apple Pay
-      // - Google Pay API for Google Pay
-
-      const paymentResult = {
-        success: true,
-        transactionId: `tx_${Date.now()}`,
-        amount: selectedPackage.price,
-        currency: "USD",
-        package: selectedPackage,
-      };
-
-      if (paymentResult.success) {
-        // Update user balance (in production, this would be done on the backend)
-        alert(
-          `Purchase successful! Added ${selectedPackage.gc.toLocaleString()} GC and ${selectedPackage.sc} SC to your account.`,
-        );
+      if (success) {
+        toast({
+          title: "Purchase Successful! 🎉",
+          description: `Added ${selectedPackage.goldCoins.toLocaleString()} GC and ${selectedPackage.sweepsCoins} SC to your account.`,
+          variant: "default",
+        });
 
         // Close modal and redirect
         setShowPaymentModal(false);
@@ -201,7 +155,11 @@ export default function Store() {
       }
     } catch (error) {
       console.error("Payment error:", error);
-      alert("Payment failed. Please try again.");
+      toast({
+        title: "Payment Failed",
+        description: "Payment failed. Please try again or contact support.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -230,6 +188,163 @@ export default function Store() {
     return v;
   };
 
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "starter": return "🌟";
+      case "standard": return "⚡";
+      case "premium": return "💎";
+      case "elite": return "👑";
+      case "mega": return "🔥";
+      case "ultimate": return "🚀";
+      default: return "🎯";
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "starter": return "from-blue-500/10 to-blue-500/5";
+      case "standard": return "from-green-500/10 to-green-500/5";
+      case "premium": return "from-purple-500/10 to-purple-500/5";
+      case "elite": return "from-orange-500/10 to-orange-500/5";
+      case "mega": return "from-red-500/10 to-red-500/5";
+      case "ultimate": return "from-gray-900/10 to-gray-900/5";
+      default: return "from-casino-blue/10 to-casino-blue/5";
+    }
+  };
+
+  const renderPackageCard = (pkg: GoldPackage, isFeatured: boolean = false) => {
+    const savings = pkg.originalPrice ? pkg.originalPrice - pkg.price : 0;
+    
+    return (
+      <Card
+        key={pkg.id}
+        className={`relative hover:shadow-lg transition-all duration-300 ${
+          pkg.popular ? "border-gold-500 bg-gradient-to-br from-gold/5 to-gold/10" : 
+          `bg-gradient-to-br ${getCategoryColor(pkg.category)}`
+        } ${pkg.design?.animation === "pulse" ? "animate-pulse" : ""}`}
+        style={pkg.design ? {
+          borderColor: pkg.design.borderColor,
+          background: `linear-gradient(${pkg.design.backgroundGradient.direction}, ${pkg.design.backgroundGradient.from}, ${pkg.design.backgroundGradient.to})`,
+        } : undefined}
+      >
+        {/* Featured Badge */}
+        {isFeatured && (
+          <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-red-500 text-white animate-pulse">
+            🔥 HOT DEAL
+          </Badge>
+        )}
+        
+        {/* Popular Badge */}
+        {pkg.popular && !isFeatured && (
+          <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-gold-500 text-black">
+            Most Popular
+          </Badge>
+        )}
+
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-2xl">{pkg.design?.icon || getCategoryIcon(pkg.category)}</span>
+            <CardTitle className="text-lg" style={pkg.design ? { color: pkg.design.textColor } : undefined}>
+              {pkg.name}
+            </CardTitle>
+          </div>
+          
+          <div className="space-y-1">
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-2xl font-bold" style={pkg.design ? { color: pkg.design.accentColor } : undefined}>
+                {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}
+                {pkg.price.toFixed(2)}
+              </span>
+              {pkg.originalPrice && pkg.originalPrice > pkg.price && (
+                <span className="text-sm text-muted-foreground line-through">
+                  {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}
+                  {pkg.originalPrice.toFixed(2)}
+                </span>
+              )}
+            </div>
+            {savings > 0 && (
+              <div className="text-xs text-green-500 font-medium">
+                Save {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}{savings.toFixed(2)}
+              </div>
+            )}
+          </div>
+        </CardHeader>
+
+        <CardContent className="text-center space-y-4" style={pkg.design ? { color: pkg.design.textColor } : undefined}>
+          <p className="text-sm opacity-90">{pkg.description}</p>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-center gap-1">
+              <Coins className="w-4 h-4 text-gold-500" style={pkg.design ? { color: pkg.design.accentColor } : undefined} />
+              <span className="text-lg font-bold text-gold-400">
+                {pkg.goldCoins.toLocaleString()}
+              </span>
+            </div>
+            <div className="text-xs text-muted-foreground">Gold Coins</div>
+
+            {pkg.sweepsCoins > 0 && (
+              <>
+                <div className="flex items-center justify-center gap-1">
+                  <Crown className="w-4 h-4 text-casino-blue" style={pkg.design ? { color: pkg.design.accentColor } : undefined} />
+                  <span className="text-lg font-bold text-casino-blue">
+                    {pkg.sweepsCoins}
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground">Sweeps Coins</div>
+              </>
+            )}
+
+            {pkg.bonus.enabled && (
+              <div className="text-xs text-green-400 font-medium mt-2">
+                <Gift className="w-3 h-3 inline mr-1" />
+                {pkg.bonus.description}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-1 justify-center">
+            {pkg.bestValue && (
+              <Badge variant="outline" className="text-xs">💎 Best Value</Badge>
+            )}
+            {pkg.limitedTime && (
+              <Badge variant="destructive" className="text-xs">⏰ Limited</Badge>
+            )}
+          </div>
+
+          <Button
+            onClick={() => {
+              setSelectedPackage(pkg);
+              setShowPaymentModal(true);
+            }}
+            className={`w-full ${
+              pkg.popular || isFeatured
+                ? "bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black"
+                : ""
+            }`}
+            style={pkg.design?.accentColor ? {
+              backgroundColor: pkg.design.accentColor,
+              color: "#000000",
+            } : undefined}
+          >
+            {isFeatured ? <Star className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+            Purchase
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  if (packagesLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading store packages...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -251,6 +366,15 @@ export default function Store() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadPackages}
+                disabled={packagesLoading}
+              >
+                <RefreshCw className={`w-4 h-4 mr-1 ${packagesLoading ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
               <div className="text-center">
                 <div className="text-xl font-bold text-gold-400">
                   {userBalance.gc.toLocaleString()}
@@ -261,9 +385,7 @@ export default function Store() {
                 <div className="text-xl font-bold text-casino-blue">
                   {userBalance.sc}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Sweeps Coins
-                </div>
+                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
               </div>
             </div>
           </div>
@@ -272,154 +394,37 @@ export default function Store() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Featured Offers */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6">🔥 Limited Time Offers</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {coinPackages
-              .filter((pkg) => pkg.featured)
-              .map((pkg) => (
-                <Card
-                  key={pkg.id}
-                  className="relative border-gold-500 bg-gradient-to-br from-gold/10 to-gold/5 hover:shadow-xl transition-all duration-300"
-                >
-                  <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-red-500 text-white animate-pulse">
-                    🔥 HOT DEAL
-                  </Badge>
-                  <CardHeader className="text-center pt-8">
-                    <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="text-3xl font-bold">${pkg.price}</span>
-                        {pkg.originalPrice && (
-                          <span className="text-lg text-muted-foreground line-through">
-                            ${pkg.originalPrice}
-                          </span>
-                        )}
-                      </div>
-                      {pkg.savings && (
-                        <Badge className="bg-green-500 text-white">
-                          Save ${pkg.savings}!
-                        </Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="text-center space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <Coins className="w-6 h-6 text-gold-500" />
-                        <span className="text-xl font-bold text-gold-400">
-                          {pkg.gc.toLocaleString()}
-                        </span>
-                        <span className="text-muted-foreground">GC</span>
-                      </div>
-                      <div className="flex items-center justify-center gap-2">
-                        <Crown className="w-5 h-5 text-casino-blue" />
-                        <span className="text-lg font-bold text-casino-blue">
-                          {pkg.sc}
-                        </span>
-                        <span className="text-muted-foreground">SC</span>
-                      </div>
-                      <div className="text-sm text-green-400 font-medium">
-                        + {pkg.bonus}
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={() => {
-                        setSelectedPackage(pkg);
-                        setShowPaymentModal(true);
-                      }}
-                      className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-bold"
-                    >
-                      <Star className="w-4 h-4 mr-2" />
-                      Buy Now
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+        {featuredPackages.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-6">🔥 Limited Time Offers</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredPackages.map((pkg) => renderPackageCard(pkg, true))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* All Packages */}
         <div>
           <h2 className="text-2xl font-bold mb-6">All Gold Coin Packages</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {coinPackages.map((pkg) => (
-              <Card
-                key={pkg.id}
-                className={`relative hover:shadow-lg transition-all duration-300 ${
-                  pkg.popular
-                    ? "border-gold-500 bg-gradient-to-br from-gold/5 to-gold/10"
-                    : ""
-                }`}
-              >
-                {pkg.popular && (
-                  <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-gold-500 text-black">
-                    Most Popular
-                  </Badge>
-                )}
-                <CardHeader className="text-center">
-                  <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-2xl font-bold">${pkg.price}</span>
-                      {pkg.originalPrice && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          ${pkg.originalPrice}
-                        </span>
-                      )}
-                    </div>
-                    {pkg.savings && (
-                      <div className="text-xs text-green-500">
-                        Save ${pkg.savings}
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="text-center space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-1">
-                      <Coins className="w-4 h-4 text-gold-500" />
-                      <span className="text-lg font-bold text-gold-400">
-                        {pkg.gc.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Gold Coins
-                    </div>
-
-                    <div className="flex items-center justify-center gap-1">
-                      <Crown className="w-4 h-4 text-casino-blue" />
-                      <span className="text-lg font-bold text-casino-blue">
-                        {pkg.sc}
-                      </span>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Sweeps Coins
-                    </div>
-
-                    <div className="text-xs text-green-400 font-medium">
-                      {pkg.bonus}
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => {
-                      setSelectedPackage(pkg);
-                      setShowPaymentModal(true);
-                    }}
-                    className={`w-full ${
-                      pkg.popular
-                        ? "bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black"
-                        : ""
-                    }`}
-                  >
-                    Purchase
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {packages.length === 0 ? (
+            <Card className="text-center p-8">
+              <CardContent>
+                <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Packages Available</h3>
+                <p className="text-muted-foreground">
+                  Store packages are currently being updated. Please check back soon.
+                </p>
+                <Button onClick={loadPackages} className="mt-4">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh Store
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {packages.map((pkg) => renderPackageCard(pkg))}
+            </div>
+          )}
         </div>
 
         {/* Security & Trust */}
@@ -428,8 +433,7 @@ export default function Store() {
             <Shield className="w-12 h-12 text-green-500 mx-auto mb-4" />
             <h3 className="font-bold mb-2">Secure Payments</h3>
             <p className="text-sm text-muted-foreground">
-              All transactions are encrypted and processed through secure
-              payment gateways
+              All transactions are encrypted and processed through secure payment gateways
             </p>
           </Card>
           <Card className="text-center p-6">
@@ -469,14 +473,19 @@ export default function Store() {
                 <h3 className="font-bold mb-3">Order Summary</h3>
                 <div className="flex items-center justify-between mb-2">
                   <span>{selectedPackage.name}</span>
-                  <span className="font-bold">${selectedPackage.price}</span>
+                  <span className="font-bold">
+                    {selectedPackage.currency === "USD" ? "$" : selectedPackage.currency === "EUR" ? "€" : selectedPackage.currency === "GBP" ? "£" : "C$"}
+                    {selectedPackage.price.toFixed(2)}
+                  </span>
                 </div>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <div>• {selectedPackage.gc.toLocaleString()} Gold Coins</div>
-                  <div>• {selectedPackage.sc} Sweeps Coins</div>
-                  <div className="text-green-400">
-                    • {selectedPackage.bonus}
-                  </div>
+                  <div>• {selectedPackage.goldCoins.toLocaleString()} Gold Coins</div>
+                  {selectedPackage.sweepsCoins > 0 && (
+                    <div>• {selectedPackage.sweepsCoins} Sweeps Coins</div>
+                  )}
+                  {selectedPackage.bonus.enabled && (
+                    <div className="text-green-400">• {selectedPackage.bonus.description}</div>
+                  )}
                 </div>
               </div>
 
@@ -584,13 +593,10 @@ export default function Store() {
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Lock className="w-4 h-4 text-green-500" />
-                  <span className="font-medium text-green-400">
-                    Secure Payment
-                  </span>
+                  <span className="font-medium text-green-400">Secure Payment</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Your payment information is encrypted and secure. We never
-                  store your card details.
+                  Your payment information is encrypted and secure. We never store your card details.
                 </p>
               </div>
 
@@ -602,20 +608,19 @@ export default function Store() {
               >
                 {loading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     Processing...
                   </div>
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Complete Purchase - ${selectedPackage.price}
+                    Complete Purchase - {selectedPackage.currency === "USD" ? "$" : selectedPackage.currency === "EUR" ? "€" : selectedPackage.currency === "GBP" ? "£" : "C$"}{selectedPackage.price.toFixed(2)}
                   </>
                 )}
               </Button>
 
               <p className="text-xs text-center text-muted-foreground">
-                By completing this purchase, you agree to our Terms of Service
-                and confirm you are 18+ years old.
+                By completing this purchase, you agree to our Terms of Service and confirm you are 18+ years old.
               </p>
             </CardContent>
           </Card>

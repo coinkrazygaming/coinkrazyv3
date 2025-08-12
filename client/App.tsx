@@ -102,12 +102,33 @@ class AppErrorBoundary extends React.Component<
   }
 }
 
-// Safe TooltipProvider wrapper
+// Safe TooltipProvider wrapper with React hooks error protection
 const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
+  // Check if React is available and properly initialized
+  if (!React || typeof React.useState !== 'function') {
+    console.log("React hooks not available, rendering children without TooltipProvider");
+    return <>{children}</>;
+  }
+
   try {
+    // Additional check for React context availability
+    if (typeof React.createContext !== 'function' || typeof React.useContext !== 'function') {
+      console.log("React context not available, rendering children without TooltipProvider");
+      return <>{children}</>;
+    }
+
     return <TooltipProvider>{children}</TooltipProvider>;
   } catch (error) {
-    console.log("TooltipProvider error, rendering without it:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Specific handling for useState errors
+    if (errorMessage.includes("Cannot read properties of null") && errorMessage.includes("useState")) {
+      console.log("React hooks context corrupted, rendering without TooltipProvider");
+      return <>{children}</>;
+    }
+
+    // General TooltipProvider error fallback
+    console.log("TooltipProvider error, rendering without it:", errorMessage);
     return <>{children}</>;
   }
 };

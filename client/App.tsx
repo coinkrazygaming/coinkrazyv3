@@ -246,13 +246,21 @@ declare global {
 
 // Check React availability before creating root
 const initializeApp = () => {
-  if (!React || typeof React.useState !== 'function') {
+  // Validate React and React-DOM are properly loaded
+  if (!React || !createRoot || typeof React.useState !== 'function') {
     console.log("React not ready, retrying in 10ms...");
     setTimeout(initializeApp, 10);
     return;
   }
 
+  // Additional validation for React version compatibility
   try {
+    // Test React hooks in a safe way
+    const testElement = React.createElement('div');
+    if (!testElement) {
+      throw new Error("React.createElement not working");
+    }
+
     if (!globalThis.__APP_ROOT__) {
       globalThis.__APP_ROOT__ = createRoot(container);
     }
@@ -260,16 +268,31 @@ const initializeApp = () => {
     globalThis.__APP_ROOT__.render(<App />);
     console.log("App successfully initialized with React context");
   } catch (error) {
-    console.log("App initialization failed:", error);
-    // Retry once after a short delay
-    setTimeout(() => {
-      try {
-        globalThis.__APP_ROOT__ = createRoot(container);
-        globalThis.__APP_ROOT__.render(<App />);
-      } catch (retryError) {
-        console.log("App retry failed, manual refresh may be required:", retryError);
-      }
-    }, 100);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.log("App initialization failed:", errorMessage);
+
+    // Specific handling for React hooks errors
+    if (errorMessage.includes("useState") || errorMessage.includes("Invalid hook call")) {
+      console.log("React hooks error detected during initialization, waiting before retry...");
+      setTimeout(() => {
+        try {
+          globalThis.__APP_ROOT__ = createRoot(container);
+          globalThis.__APP_ROOT__.render(<App />);
+        } catch (retryError) {
+          console.log("App retry failed, React context may be corrupted:", retryError);
+        }
+      }, 200);
+    } else {
+      // Standard retry for other errors
+      setTimeout(() => {
+        try {
+          globalThis.__APP_ROOT__ = createRoot(container);
+          globalThis.__APP_ROOT__.render(<App />);
+        } catch (retryError) {
+          console.log("App retry failed, manual refresh may be required:", retryError);
+        }
+      }, 100);
+    }
   }
 };
 

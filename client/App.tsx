@@ -136,15 +136,23 @@ class AppErrorBoundary extends React.Component<
   }
 }
 
-// Safe TooltipProvider wrapper with React hooks error protection
+// Temporarily disable TooltipProvider to fix React hooks corruption issue
 const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
-  // Check if React is available and properly initialized
-  if (!React || typeof React.useState !== 'function') {
-    console.log("React hooks not available, rendering children without TooltipProvider");
+  // Completely bypass TooltipProvider during development to prevent React hooks errors
+  // This is a temporary fix until React context stability is resolved
+  if (process.env.NODE_ENV === "development") {
+    console.log("Development mode: Rendering without TooltipProvider to prevent hooks errors");
     return <>{children}</>;
   }
 
+  // For production, still attempt to use TooltipProvider with safety checks
   try {
+    // Check if React is available and properly initialized
+    if (!React || typeof React.useState !== 'function') {
+      console.log("React hooks not available, rendering children without TooltipProvider");
+      return <>{children}</>;
+    }
+
     // Additional check for React context availability
     if (typeof React.createContext !== 'function' || typeof React.useContext !== 'function') {
       console.log("React context not available, rendering children without TooltipProvider");
@@ -154,14 +162,6 @@ const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
     return <TooltipProvider>{children}</TooltipProvider>;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-
-    // Specific handling for useState errors
-    if (errorMessage.includes("Cannot read properties of null") && errorMessage.includes("useState")) {
-      console.log("React hooks context corrupted, rendering without TooltipProvider");
-      return <>{children}</>;
-    }
-
-    // General TooltipProvider error fallback
     console.log("TooltipProvider error, rendering without it:", errorMessage);
     return <>{children}</>;
   }

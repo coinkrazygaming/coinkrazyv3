@@ -28,7 +28,7 @@ const Logo: React.FC<LogoProps> = ({
   };
 
   const logoUrl =
-    "https://cdn.builder.io/api/v1/image/assets%2F497c052459974075a12c2be5235ba002%2F6a30c1e315db41ff9762124c4bda0f01?format=webp&width=800";
+    "https://cdn.builder.io/api/v1/image/assets%2F8e9254c13cd54c44b33a8ac478647ca8%2F31c866cb50b34b088143f60f0b70c67b?format=webp&width=800";
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>

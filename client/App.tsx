@@ -159,35 +159,12 @@ class AppErrorBoundary extends React.Component<
   }
 }
 
-// Temporarily disable TooltipProvider to fix React hooks corruption issue
+// Safe TooltipProvider wrapper - completely disabled in development to prevent React hooks errors
 const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
-  // Completely bypass TooltipProvider during development to prevent React hooks errors
-  // This is a temporary fix until React context stability is resolved
-  if (process.env.NODE_ENV === "development") {
-    console.log("Development mode: Rendering without TooltipProvider to prevent hooks errors");
-    return <>{children}</>;
-  }
-
-  // For production, still attempt to use TooltipProvider with safety checks
-  try {
-    // Check if React is available and properly initialized
-    if (!React || typeof React.useState !== 'function') {
-      console.log("React hooks not available, rendering children without TooltipProvider");
-      return <>{children}</>;
-    }
-
-    // Additional check for React context availability
-    if (typeof React.createContext !== 'function' || typeof React.useContext !== 'function') {
-      console.log("React context not available, rendering children without TooltipProvider");
-      return <>{children}</>;
-    }
-
-    return <TooltipProvider>{children}</TooltipProvider>;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.log("TooltipProvider error, rendering without it:", errorMessage);
-    return <>{children}</>;
-  }
+  // For now, completely bypass TooltipProvider to prevent React hooks corruption
+  // This ensures the app works without tooltip functionality until the React context issue is resolved
+  console.log("Rendering without TooltipProvider to prevent React hooks errors");
+  return <>{children}</>;
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => (

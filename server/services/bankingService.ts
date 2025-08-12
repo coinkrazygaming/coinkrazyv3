@@ -197,10 +197,15 @@ class BankingService {
       connectionTimeoutMillis: 2000,
     });
 
-    // Initialize Stripe
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-      apiVersion: "2023-10-16",
-    });
+    // Initialize Stripe (only if API key is provided)
+    if (process.env.STRIPE_SECRET_KEY) {
+      this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: "2023-10-16",
+      });
+    } else {
+      console.warn("STRIPE_SECRET_KEY not provided - Stripe features will be disabled");
+      this.stripe = null as any; // Will be checked before use
+    }
 
     this.encryptionKey =
       process.env.ENCRYPTION_KEY || "default-key-change-in-production";

@@ -395,11 +395,14 @@ class CMSService {
 
   async getAllMedia(): Promise<CMSMedia[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/media`);
-      if (!response.ok) throw new Error("Failed to fetch media");
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/media`);
+      if (!response.ok) {
+        console.warn(`Media API returned ${response.status}, using mock data`);
+        return this.getMockMedia();
+      }
       return await this.safeJsonParse(response);
     } catch (error) {
-      console.error("Error fetching media:", error);
+      console.warn("Error fetching media, using mock data:", error);
       return this.getMockMedia();
     }
   }

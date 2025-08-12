@@ -801,6 +801,23 @@ class SocialService {
     }
   }
 
+  // WebSocket Management
+  disconnect(): void {
+    if (this.ws) {
+      this.ws.close(1000, 'Manual disconnect');
+      this.ws = null;
+    }
+  }
+
+  reconnect(): void {
+    this.disconnect();
+    this.initializeWebSocket();
+  }
+
+  isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
   // Event Listeners
   onActivity(listener: (activity: SocialActivity) => void): () => void {
     this.activityListeners.add(listener);

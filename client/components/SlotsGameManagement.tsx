@@ -1,15 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Switch } from './ui/switch';
-import { Label } from './ui/label';
-import { Alert, AlertDescription } from './ui/alert';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
+import { Alert, AlertDescription } from "./ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import {
   Table,
   TableBody,
@@ -17,7 +30,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table';
+} from "./ui/table";
 import {
   Coins,
   Crown,
@@ -47,9 +60,13 @@ import {
   Info,
   Zap,
   Target,
-  Clock
-} from 'lucide-react';
-import { slotsApiService, SlotGame, SlotProvider } from '../services/slotsApiService';
+  Clock,
+} from "lucide-react";
+import {
+  slotsApiService,
+  SlotGame,
+  SlotProvider,
+} from "../services/slotsApiService";
 
 interface GameStats {
   totalPlays: number;
@@ -74,41 +91,43 @@ export default function SlotsGameManagement() {
   const [providers, setProviders] = useState<SlotProvider[]>([]);
   const [filteredGames, setFilteredGames] = useState<SlotGame[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProvider, setSelectedProvider] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [sortBy, setSortBy] = useState<'name' | 'popularity' | 'rtp' | 'revenue'>('popularity');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<
+    "name" | "popularity" | "rtp" | "revenue"
+  >("popularity");
   const [gameStats, setGameStats] = useState<GameStats>({
     totalPlays: 0,
     totalRevenue: 0,
     averageRTP: 0,
-    mostPopularGame: '',
+    mostPopularGame: "",
     totalPlayers: 0,
     revenueToday: 0,
-    playsToday: 0
+    playsToday: 0,
   });
   const [providerStats, setProviderStats] = useState<ProviderStats[]>([]);
   const [selectedGame, setSelectedGame] = useState<SlotGame | null>(null);
   const [showAddGame, setShowAddGame] = useState(false);
   const [showEditGame, setShowEditGame] = useState(false);
   const [newGame, setNewGame] = useState<Partial<SlotGame>>({
-    name: '',
-    provider: '',
-    theme: '',
+    name: "",
+    provider: "",
+    theme: "",
     rtp: 96.0,
-    volatility: 'medium',
+    volatility: "medium",
     minBet: 0.01,
-    maxBet: 100.00,
+    maxBet: 100.0,
     paylines: 25,
     reels: 5,
     rows: 3,
     features: [],
     category: [],
-    description: '',
+    description: "",
     isJackpot: false,
     isMobile: true,
-    isDesktop: true
+    isDesktop: true,
   });
 
   useEffect(() => {
@@ -117,37 +136,51 @@ export default function SlotsGameManagement() {
 
   useEffect(() => {
     filterGames();
-  }, [games, searchTerm, selectedProvider, selectedCategory, statusFilter, sortBy]);
+  }, [
+    games,
+    searchTerm,
+    selectedProvider,
+    selectedCategory,
+    statusFilter,
+    sortBy,
+  ]);
 
   const loadAllData = async () => {
     setLoading(true);
     try {
       const [gamesData, providersData] = await Promise.all([
         slotsApiService.getAllGames(),
-        slotsApiService.getProviders()
+        slotsApiService.getProviders(),
       ]);
 
       setGames(gamesData);
       setProviders(providersData);
-      
+
       // Calculate stats
       calculateStats(gamesData);
       calculateProviderStats(gamesData, providersData);
-      
-      console.log(`Loaded ${gamesData.length} games from ${providersData.length} providers`);
+
+      console.log(
+        `Loaded ${gamesData.length} games from ${providersData.length} providers`,
+      );
     } catch (error) {
-      console.error('Error loading slots data:', error);
+      console.error("Error loading slots data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const calculateStats = (gamesData: SlotGame[]) => {
-    const totalPlays = gamesData.reduce((sum, game) => sum + (game.popularity * 100), 0);
+    const totalPlays = gamesData.reduce(
+      (sum, game) => sum + game.popularity * 100,
+      0,
+    );
     const totalRevenue = totalPlays * 2.5; // Estimated revenue
-    const averageRTP = gamesData.reduce((sum, game) => sum + game.rtp, 0) / gamesData.length;
-    const mostPopularGame = gamesData.sort((a, b) => b.popularity - a.popularity)[0]?.name || '';
-    
+    const averageRTP =
+      gamesData.reduce((sum, game) => sum + game.rtp, 0) / gamesData.length;
+    const mostPopularGame =
+      gamesData.sort((a, b) => b.popularity - a.popularity)[0]?.name || "";
+
     setGameStats({
       totalPlays: Math.floor(totalPlays),
       totalRevenue: Math.floor(totalRevenue),
@@ -155,27 +188,35 @@ export default function SlotsGameManagement() {
       mostPopularGame,
       totalPlayers: Math.floor(totalPlays / 50),
       revenueToday: Math.floor(totalRevenue * 0.1),
-      playsToday: Math.floor(totalPlays * 0.05)
+      playsToday: Math.floor(totalPlays * 0.05),
     });
   };
 
-  const calculateProviderStats = (gamesData: SlotGame[], providersData: SlotProvider[]) => {
-    const stats = providersData.map(provider => {
-      const providerGames = gamesData.filter(game => 
-        game.provider.toLowerCase().replace(/[^a-z0-9]/g, '-') === provider.id
+  const calculateProviderStats = (
+    gamesData: SlotGame[],
+    providersData: SlotProvider[],
+  ) => {
+    const stats = providersData.map((provider) => {
+      const providerGames = gamesData.filter(
+        (game) =>
+          game.provider.toLowerCase().replace(/[^a-z0-9]/g, "-") ===
+          provider.id,
       );
-      
-      const totalPlays = providerGames.reduce((sum, game) => sum + (game.popularity * 100), 0);
-      
+
+      const totalPlays = providerGames.reduce(
+        (sum, game) => sum + game.popularity * 100,
+        0,
+      );
+
       return {
         name: provider.name,
         gamesCount: providerGames.length,
         totalPlays: Math.floor(totalPlays),
         revenue: Math.floor(totalPlays * 2.5),
-        isActive: provider.isActive
+        isActive: provider.isActive,
       };
     });
-    
+
     setProviderStats(stats.sort((a, b) => b.revenue - a.revenue));
   };
 
@@ -185,36 +226,41 @@ export default function SlotsGameManagement() {
     // Search filter
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(game =>
-        game.name.toLowerCase().includes(search) ||
-        game.provider.toLowerCase().includes(search) ||
-        game.theme.toLowerCase().includes(search)
+      filtered = filtered.filter(
+        (game) =>
+          game.name.toLowerCase().includes(search) ||
+          game.provider.toLowerCase().includes(search) ||
+          game.theme.toLowerCase().includes(search),
       );
     }
 
     // Provider filter
-    if (selectedProvider !== 'all') {
-      filtered = filtered.filter(game => 
-        game.provider.toLowerCase().replace(/[^a-z0-9]/g, '-') === selectedProvider
+    if (selectedProvider !== "all") {
+      filtered = filtered.filter(
+        (game) =>
+          game.provider.toLowerCase().replace(/[^a-z0-9]/g, "-") ===
+          selectedProvider,
       );
     }
 
     // Category filter
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(game => game.category.includes(selectedCategory));
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((game) =>
+        game.category.includes(selectedCategory),
+      );
     }
 
     // Sort
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'name':
+        case "name":
           return a.name.localeCompare(b.name);
-        case 'popularity':
+        case "popularity":
           return b.popularity - a.popularity;
-        case 'rtp':
+        case "rtp":
           return b.rtp - a.rtp;
-        case 'revenue':
-          return (b.popularity * 100) - (a.popularity * 100);
+        case "revenue":
+          return b.popularity * 100 - a.popularity * 100;
         default:
           return 0;
       }
@@ -228,74 +274,79 @@ export default function SlotsGameManagement() {
       // In a real app, this would call an API
       const gameToAdd: SlotGame = {
         id: `game-${Date.now()}`,
-        name: newGame.name || '',
-        provider: newGame.provider || '',
+        name: newGame.name || "",
+        provider: newGame.provider || "",
         category: newGame.category || [],
-        theme: newGame.theme || '',
+        theme: newGame.theme || "",
         rtp: newGame.rtp || 96.0,
-        volatility: newGame.volatility || 'medium',
+        volatility: newGame.volatility || "medium",
         minBet: newGame.minBet || 0.01,
-        maxBet: newGame.maxBet || 100.00,
+        maxBet: newGame.maxBet || 100.0,
         paylines: newGame.paylines || 25,
         reels: newGame.reels || 5,
         rows: newGame.rows || 3,
         features: newGame.features || [],
-        imageUrl: '/games/default-game.jpg',
-        demoUrl: '',
-        realUrl: '',
-        description: newGame.description || '',
+        imageUrl: "/games/default-game.jpg",
+        demoUrl: "",
+        realUrl: "",
+        description: newGame.description || "",
         releaseDate: new Date().toISOString(),
         popularity: 50,
         isJackpot: newGame.isJackpot || false,
         isMobile: newGame.isMobile !== false,
         isDesktop: newGame.isDesktop !== false,
-        gameSize: { width: 800, height: 600 }
+        gameSize: { width: 800, height: 600 },
       };
 
-      setGames(prev => [...prev, gameToAdd]);
+      setGames((prev) => [...prev, gameToAdd]);
       setShowAddGame(false);
       setNewGame({});
-      
-      console.log('Game added successfully');
+
+      console.log("Game added successfully");
     } catch (error) {
-      console.error('Error adding game:', error);
+      console.error("Error adding game:", error);
     }
   };
 
-  const handleUpdateGame = async (gameId: string, updates: Partial<SlotGame>) => {
+  const handleUpdateGame = async (
+    gameId: string,
+    updates: Partial<SlotGame>,
+  ) => {
     try {
-      setGames(prev => prev.map(game => 
-        game.id === gameId ? { ...game, ...updates } : game
-      ));
-      
-      console.log('Game updated successfully');
+      setGames((prev) =>
+        prev.map((game) =>
+          game.id === gameId ? { ...game, ...updates } : game,
+        ),
+      );
+
+      console.log("Game updated successfully");
     } catch (error) {
-      console.error('Error updating game:', error);
+      console.error("Error updating game:", error);
     }
   };
 
   const handleDeleteGame = async (gameId: string) => {
-    if (window.confirm('Are you sure you want to delete this game?')) {
+    if (window.confirm("Are you sure you want to delete this game?")) {
       try {
-        setGames(prev => prev.filter(game => game.id !== gameId));
-        console.log('Game deleted successfully');
+        setGames((prev) => prev.filter((game) => game.id !== gameId));
+        console.log("Game deleted successfully");
       } catch (error) {
-        console.error('Error deleting game:', error);
+        console.error("Error deleting game:", error);
       }
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('en-US').format(num);
+    return new Intl.NumberFormat("en-US").format(num);
   };
 
   if (loading) {
@@ -328,7 +379,9 @@ export default function SlotsGameManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Plays</p>
-                <p className="text-2xl font-bold">{formatNumber(gameStats.totalPlays)}</p>
+                <p className="text-2xl font-bold">
+                  {formatNumber(gameStats.totalPlays)}
+                </p>
               </div>
               <Play className="w-8 h-8 text-green-500" />
             </div>
@@ -340,7 +393,9 @@ export default function SlotsGameManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Revenue</p>
-                <p className="text-2xl font-bold">{formatCurrency(gameStats.totalRevenue)}</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(gameStats.totalRevenue)}
+                </p>
               </div>
               <DollarSign className="w-8 h-8 text-gold-500" />
             </div>
@@ -385,13 +440,16 @@ export default function SlotsGameManagement() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                  <Select
+                    value={selectedProvider}
+                    onValueChange={setSelectedProvider}
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="All Providers" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Providers</SelectItem>
-                      {providers.map(provider => (
+                      {providers.map((provider) => (
                         <SelectItem key={provider.id} value={provider.id}>
                           {provider.name}
                         </SelectItem>
@@ -399,7 +457,10 @@ export default function SlotsGameManagement() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                  <Select
+                    value={sortBy}
+                    onValueChange={(value: any) => setSortBy(value)}
+                  >
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
@@ -430,22 +491,35 @@ export default function SlotsGameManagement() {
                           <Label htmlFor="gameName">Game Name</Label>
                           <Input
                             id="gameName"
-                            value={newGame.name || ''}
-                            onChange={(e) => setNewGame(prev => ({ ...prev, name: e.target.value }))}
+                            value={newGame.name || ""}
+                            onChange={(e) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                name: e.target.value,
+                              }))
+                            }
                           />
                         </div>
                         <div>
                           <Label htmlFor="provider">Provider</Label>
                           <Select
-                            value={newGame.provider || ''}
-                            onValueChange={(value) => setNewGame(prev => ({ ...prev, provider: value }))}
+                            value={newGame.provider || ""}
+                            onValueChange={(value) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                provider: value,
+                              }))
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {providers.map(provider => (
-                                <SelectItem key={provider.id} value={provider.name}>
+                              {providers.map((provider) => (
+                                <SelectItem
+                                  key={provider.id}
+                                  value={provider.name}
+                                >
                                   {provider.name}
                                 </SelectItem>
                               ))}
@@ -456,8 +530,13 @@ export default function SlotsGameManagement() {
                           <Label htmlFor="theme">Theme</Label>
                           <Input
                             id="theme"
-                            value={newGame.theme || ''}
-                            onChange={(e) => setNewGame(prev => ({ ...prev, theme: e.target.value }))}
+                            value={newGame.theme || ""}
+                            onChange={(e) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                theme: e.target.value,
+                              }))
+                            }
                           />
                         </div>
                         <div>
@@ -469,14 +548,24 @@ export default function SlotsGameManagement() {
                             max="99"
                             step="0.01"
                             value={newGame.rtp || 96}
-                            onChange={(e) => setNewGame(prev => ({ ...prev, rtp: parseFloat(e.target.value) }))}
+                            onChange={(e) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                rtp: parseFloat(e.target.value),
+                              }))
+                            }
                           />
                         </div>
                         <div>
                           <Label htmlFor="volatility">Volatility</Label>
                           <Select
-                            value={newGame.volatility || 'medium'}
-                            onValueChange={(value: any) => setNewGame(prev => ({ ...prev, volatility: value }))}
+                            value={newGame.volatility || "medium"}
+                            onValueChange={(value: any) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                volatility: value,
+                              }))
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue />
@@ -496,15 +585,25 @@ export default function SlotsGameManagement() {
                             min="0"
                             max="1024"
                             value={newGame.paylines || 25}
-                            onChange={(e) => setNewGame(prev => ({ ...prev, paylines: parseInt(e.target.value) }))}
+                            onChange={(e) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                paylines: parseInt(e.target.value),
+                              }))
+                            }
                           />
                         </div>
                         <div className="col-span-2">
                           <Label htmlFor="description">Description</Label>
                           <Textarea
                             id="description"
-                            value={newGame.description || ''}
-                            onChange={(e) => setNewGame(prev => ({ ...prev, description: e.target.value }))}
+                            value={newGame.description || ""}
+                            onChange={(e) =>
+                              setNewGame((prev) => ({
+                                ...prev,
+                                description: e.target.value,
+                              }))
+                            }
                           />
                         </div>
                         <div className="col-span-2 flex items-center gap-4">
@@ -512,7 +611,12 @@ export default function SlotsGameManagement() {
                             <Switch
                               id="isJackpot"
                               checked={newGame.isJackpot || false}
-                              onCheckedChange={(checked) => setNewGame(prev => ({ ...prev, isJackpot: checked }))}
+                              onCheckedChange={(checked) =>
+                                setNewGame((prev) => ({
+                                  ...prev,
+                                  isJackpot: checked,
+                                }))
+                              }
                             />
                             <Label htmlFor="isJackpot">Jackpot Game</Label>
                           </div>
@@ -520,19 +624,25 @@ export default function SlotsGameManagement() {
                             <Switch
                               id="isMobile"
                               checked={newGame.isMobile !== false}
-                              onCheckedChange={(checked) => setNewGame(prev => ({ ...prev, isMobile: checked }))}
+                              onCheckedChange={(checked) =>
+                                setNewGame((prev) => ({
+                                  ...prev,
+                                  isMobile: checked,
+                                }))
+                              }
                             />
                             <Label htmlFor="isMobile">Mobile Compatible</Label>
                           </div>
                         </div>
                       </div>
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setShowAddGame(false)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowAddGame(false)}
+                        >
                           Cancel
                         </Button>
-                        <Button onClick={handleAddGame}>
-                          Add Game
-                        </Button>
+                        <Button onClick={handleAddGame}>Add Game</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -570,28 +680,35 @@ export default function SlotsGameManagement() {
                           </div>
                           <div>
                             <div className="font-medium">{game.name}</div>
-                            <div className="text-sm text-muted-foreground">{game.theme}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {game.theme}
+                            </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>{game.provider}</TableCell>
                       <TableCell>
-                        <Badge variant={game.rtp >= 97 ? "default" : "secondary"}>
+                        <Badge
+                          variant={game.rtp >= 97 ? "default" : "secondary"}
+                        >
                           {game.rtp}%
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={
-                            game.volatility === "high" ? "destructive" :
-                            game.volatility === "medium" ? "default" : "secondary"
+                            game.volatility === "high"
+                              ? "destructive"
+                              : game.volatility === "medium"
+                                ? "default"
+                                : "secondary"
                           }
                         >
                           {game.volatility}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {game.paylines === 0 ? 'Cluster' : game.paylines}
+                        {game.paylines === 0 ? "Cluster" : game.paylines}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -618,8 +735,8 @@ export default function SlotsGameManagement() {
                           <Button variant="ghost" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteGame(game.id)}
                           >
@@ -648,18 +765,24 @@ export default function SlotsGameManagement() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-semibold">{provider.name}</h3>
-                        <Badge variant={provider.isActive ? "default" : "secondary"}>
+                        <Badge
+                          variant={provider.isActive ? "default" : "secondary"}
+                        >
                           {provider.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>Games:</span>
-                          <span className="font-medium">{provider.gamesCount}</span>
+                          <span className="font-medium">
+                            {provider.gamesCount}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Total Plays:</span>
-                          <span className="font-medium">{formatNumber(provider.totalPlays)}</span>
+                          <span className="font-medium">
+                            {formatNumber(provider.totalPlays)}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Revenue:</span>
@@ -687,7 +810,9 @@ export default function SlotsGameManagement() {
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span>Plays Today:</span>
-                    <span className="font-bold">{formatNumber(gameStats.playsToday)}</span>
+                    <span className="font-bold">
+                      {formatNumber(gameStats.playsToday)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Revenue Today:</span>
@@ -697,7 +822,9 @@ export default function SlotsGameManagement() {
                   </div>
                   <div className="flex justify-between">
                     <span>Most Popular:</span>
-                    <span className="font-bold">{gameStats.mostPopularGame}</span>
+                    <span className="font-bold">
+                      {gameStats.mostPopularGame}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -713,15 +840,21 @@ export default function SlotsGameManagement() {
                     .sort((a, b) => b.popularity - a.popularity)
                     .slice(0, 5)
                     .map((game, index) => (
-                      <div key={game.id} className="flex items-center justify-between">
+                      <div
+                        key={game.id}
+                        className="flex items-center justify-between"
+                      >
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-mono">#{index + 1}</span>
+                          <span className="text-sm font-mono">
+                            #{index + 1}
+                          </span>
                           <span className="text-sm">{game.name}</span>
                         </div>
-                        <span className="text-sm font-medium">{game.popularity}%</span>
+                        <span className="text-sm font-medium">
+                          {game.popularity}%
+                        </span>
                       </div>
-                    ))
-                  }
+                    ))}
                 </div>
               </CardContent>
             </Card>

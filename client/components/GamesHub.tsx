@@ -351,7 +351,7 @@ export default function GamesHub() {
       {section.popular && !section.featured && (
         <div className="absolute -top-2 -right-2 z-10">
           <Badge className="bg-purple-600 text-white">
-            <Fire className="w-3 h-3 mr-1" />
+            <Flame className="w-3 h-3 mr-1" />
             Popular
           </Badge>
         </div>

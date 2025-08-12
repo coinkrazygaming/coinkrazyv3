@@ -283,9 +283,9 @@ class SocialService {
   private initializeWebSocket() {
     if (typeof window === 'undefined') return;
 
-    // Skip WebSocket in development if no server is available
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Social WebSocket: Skipping connection in development mode');
+    // Skip WebSocket if explicitly disabled or in certain environments
+    if (process.env.NODE_ENV === 'development' || !window.WebSocket) {
+      console.log('Social WebSocket: Using simulated real-time updates');
       this.simulateRealTimeUpdates();
       return;
     }

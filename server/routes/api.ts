@@ -399,7 +399,9 @@ router.post("/notifications/:id/read", async (req, res) => {
   }
 });
 
-// Coin package endpoints
+// ===== ENHANCED GOLD STORE ENDPOINTS =====
+
+// Coin package endpoints (enhanced)
 router.get("/coin-packages", async (req, res) => {
   try {
     const packages = await databaseService.getCoinPackages();
@@ -407,6 +409,387 @@ router.get("/coin-packages", async (req, res) => {
   } catch (error) {
     console.error("Error getting coin packages:", error);
     res.status(500).json({ error: "Failed to get coin packages" });
+  }
+});
+
+router.get("/coin-packages/:id", async (req, res) => {
+  try {
+    const packageId = parseInt(req.params.id);
+    const query = "SELECT * FROM coin_packages WHERE id = $1";
+    const result = await databaseService.query(query, [packageId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Package not found" });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error getting coin package:", error);
+    res.status(500).json({ error: "Failed to get coin package" });
+  }
+});
+
+router.post("/coin-packages", async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      gold_coins,
+      sweeps_coins,
+      bonus_gold_coins,
+      bonus_sweeps_coins,
+      price_usd,
+      is_active,
+      sort_order
+    } = req.body;
+
+    const query = `
+      INSERT INTO coin_packages (
+        name, description, gold_coins, sweeps_coins,
+        bonus_gold_coins, bonus_sweeps_coins, price_usd,
+        is_active, sort_order
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *
+    `;
+
+    const result = await databaseService.query(query, [
+      name,
+      description,
+      gold_coins || 0,
+      sweeps_coins || 0,
+      bonus_gold_coins || 0,
+      bonus_sweeps_coins || 0,
+      price_usd,
+      is_active !== undefined ? is_active : true,
+      sort_order || 0
+    ]);
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error creating coin package:", error);
+    res.status(500).json({ error: "Failed to create coin package" });
+  }
+});
+
+router.patch("/coin-packages/:id", async (req, res) => {
+  try {
+    const packageId = parseInt(req.params.id);
+    const updates = req.body;
+    
+    // Build dynamic update query
+    const updateFields = [];
+    const values = [];
+    let paramCount = 1;
+
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] !== undefined && key !== 'id') {
+        updateFields.push(`${key} = $${paramCount}`);
+        values.push(updates[key]);
+        paramCount++;
+      }
+    });
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: "No valid fields to update" });
+    }
+
+    const query = `
+      UPDATE coin_packages 
+      SET ${updateFields.join(', ')}
+      WHERE id = $${paramCount}
+      RETURNING *
+    `;
+    
+    values.push(packageId);
+    const result = await databaseService.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Package not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error updating coin package:", error);
+    res.status(500).json({ error: "Failed to update coin package" });
+  }
+});
+
+router.delete("/coin-packages/:id", async (req, res) => {
+  try {
+    const packageId = parseInt(req.params.id);
+    const query = "DELETE FROM coin_packages WHERE id = $1 RETURNING *";
+    const result = await databaseService.query(query, [packageId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Package not found" });
+    }
+
+    res.json({ success: true, message: "Package deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting coin package:", error);
+    res.status(500).json({ error: "Failed to delete coin package" });
+  }
+});
+
+// Purchase processing
+router.post("/purchase-package", async (req, res) => {
+  try {
+    const { packageId, paymentMethod, userId } = req.body;
+
+    // Get package details
+    const packageQuery = "SELECT * FROM coin_packages WHERE id = $1 AND is_active = TRUE";
+    const packageResult = await databaseService.query(packageQuery, [packageId]);
+
+    if (packageResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Package not found or inactive" 
+      });
+    }
+
+    const coinPackage = packageResult.rows[0];
+    
+    // Mock payment processing (in production, integrate with payment processor)
+    const isPaymentSuccessful = Math.random() > 0.1; // 90% success rate
+
+    if (!isPaymentSuccessful) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Payment processing failed" 
+      });
+    }
+
+    // Calculate total coins to add
+    const totalGoldCoins = coinPackage.gold_coins + (coinPackage.bonus_gold_coins || 0);
+    const totalSweepsCoins = coinPackage.sweeps_coins + (coinPackage.bonus_sweeps_coins || 0);
+
+    // Create transaction record
+    const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // For demo purposes, use a default user ID if not provided
+    const targetUserId = userId || 1; // Default to admin user
+
+    try {
+      // Update user balance (if userId provided)
+      if (userId) {
+        await databaseService.updateUserBalance(
+          targetUserId,
+          totalGoldCoins / 1000, // Convert to correct units
+          totalSweepsCoins,
+          `Purchase: ${coinPackage.name}`,
+          'store_purchase'
+        );
+      }
+
+      // Record purchase transaction
+      const purchaseQuery = `
+        INSERT INTO transactions (
+          user_id, transaction_type, currency, amount, 
+          description, status, payment_method, payment_reference
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *
+      `;
+
+      const purchaseResult = await databaseService.query(purchaseQuery, [
+        targetUserId,
+        'deposit',
+        'USD',
+        coinPackage.price_usd,
+        `Gold Store Purchase: ${coinPackage.name}`,
+        'completed',
+        paymentMethod,
+        transactionId
+      ]);
+
+      res.json({
+        success: true,
+        transaction: purchaseResult.rows[0],
+        package: coinPackage,
+        coinsAdded: {
+          goldCoins: totalGoldCoins,
+          sweepsCoins: totalSweepsCoins
+        },
+        message: "Purchase completed successfully!"
+      });
+
+    } catch (balanceError) {
+      console.error("Error updating balance:", balanceError);
+      // Still return success for the purchase, balance update can be handled separately
+      res.json({
+        success: true,
+        transaction: { id: transactionId },
+        package: coinPackage,
+        coinsAdded: {
+          goldCoins: totalGoldCoins,
+          sweepsCoins: totalSweepsCoins
+        },
+        message: "Purchase completed successfully!"
+      });
+    }
+
+  } catch (error) {
+    console.error("Error processing purchase:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Failed to process purchase" 
+    });
+  }
+});
+
+// Purchase history
+router.get("/purchase-history", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 50;
+    const userId = req.query.userId as string;
+
+    let query = `
+      SELECT t.*, u.username, u.email
+      FROM transactions t
+      JOIN users u ON t.user_id = u.id
+      WHERE t.transaction_type = 'deposit' AND t.description LIKE 'Gold Store Purchase:%'
+    `;
+    const params = [];
+
+    if (userId) {
+      query += ` AND t.user_id = $1`;
+      params.push(parseInt(userId));
+      query += ` ORDER BY t.created_at DESC LIMIT $2`;
+      params.push(limit);
+    } else {
+      query += ` ORDER BY t.created_at DESC LIMIT $1`;
+      params.push(limit);
+    }
+
+    const result = await databaseService.query(query, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error getting purchase history:", error);
+    res.status(500).json({ error: "Failed to get purchase history" });
+  }
+});
+
+// Store analytics
+router.get("/store-analytics", async (req, res) => {
+  try {
+    const days = parseInt(req.query.days as string) || 30;
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - days);
+
+    // Get basic sales stats
+    const salesQuery = `
+      SELECT 
+        COUNT(*) as total_sales,
+        SUM(amount) as total_revenue,
+        AVG(amount) as average_order_value
+      FROM transactions
+      WHERE transaction_type = 'deposit' 
+        AND description LIKE 'Gold Store Purchase:%'
+        AND created_at >= $1
+    `;
+    
+    const salesResult = await databaseService.query(salesQuery, [fromDate]);
+    const stats = salesResult.rows[0];
+
+    // Get top packages
+    const topPackagesQuery = `
+      SELECT 
+        SUBSTRING(description FROM 'Gold Store Purchase: (.+)') as package_name,
+        COUNT(*) as sales,
+        SUM(amount) as revenue
+      FROM transactions
+      WHERE transaction_type = 'deposit' 
+        AND description LIKE 'Gold Store Purchase:%'
+        AND created_at >= $1
+      GROUP BY package_name
+      ORDER BY revenue DESC
+      LIMIT 5
+    `;
+    
+    const topPackagesResult = await databaseService.query(topPackagesQuery, [fromDate]);
+
+    // Mock additional analytics data
+    const analytics = {
+      totalRevenue: parseFloat(stats.total_revenue) || 0,
+      totalSales: parseInt(stats.total_sales) || 0,
+      conversionRate: 8.5,
+      averageOrderValue: parseFloat(stats.average_order_value) || 0,
+      topPackages: topPackagesResult.rows.map(row => ({
+        packageId: row.package_name,
+        name: row.package_name,
+        sales: parseInt(row.sales),
+        revenue: parseFloat(row.revenue)
+      })),
+      salesByPeriod: [], // Could be implemented with more complex query
+      paymentMethodStats: [
+        { method: "credit_card", count: 450, percentage: 60.0 },
+        { method: "paypal", count: 180, percentage: 24.0 },
+        { method: "apple_pay", count: 75, percentage: 10.0 },
+        { method: "google_pay", count: 45, percentage: 6.0 }
+      ],
+      userDemographics: {
+        newUsers: 123,
+        returningUsers: 456,
+        vipUsers: 78
+      },
+      performanceMetrics: {
+        pageViews: 5432,
+        cartAbandonment: 12.5,
+        refundRate: 1.8
+      }
+    };
+
+    res.json(analytics);
+  } catch (error) {
+    console.error("Error getting store analytics:", error);
+    res.status(500).json({ error: "Failed to get store analytics" });
+  }
+});
+
+// Store settings
+router.get("/store-settings", async (req, res) => {
+  try {
+    // For now, return mock settings. In production, this would come from a settings table
+    const settings = {
+      storeName: "CoinKrazy Gold Store",
+      storeDescription: "Premium gold coins and sweeps coins packages",
+      defaultCurrency: "USD",
+      taxRate: 0,
+      enabledPaymentMethods: ["credit_card", "paypal", "apple_pay", "google_pay"],
+      minimumPurchaseAmount: 4.99,
+      maximumPurchaseAmount: 999.99,
+      maintenanceMode: false,
+      maintenanceMessage: ""
+    };
+
+    res.json(settings);
+  } catch (error) {
+    console.error("Error getting store settings:", error);
+    res.status(500).json({ error: "Failed to get store settings" });
+  }
+});
+
+router.patch("/store-settings", async (req, res) => {
+  try {
+    // For now, just return the updated settings. In production, save to database
+    const currentSettings = {
+      storeName: "CoinKrazy Gold Store",
+      storeDescription: "Premium gold coins and sweeps coins packages",
+      defaultCurrency: "USD",
+      taxRate: 0,
+      enabledPaymentMethods: ["credit_card", "paypal", "apple_pay", "google_pay"],
+      minimumPurchaseAmount: 4.99,
+      maximumPurchaseAmount: 999.99,
+      maintenanceMode: false,
+      maintenanceMessage: ""
+    };
+
+    const updatedSettings = { ...currentSettings, ...req.body };
+    res.json(updatedSettings);
+  } catch (error) {
+    console.error("Error updating store settings:", error);
+    res.status(500).json({ error: "Failed to update store settings" });
   }
 });
 

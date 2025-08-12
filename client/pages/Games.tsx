@@ -256,40 +256,39 @@ export default function Games() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* In-House Slots */}
-            <Card
-              className="group cursor-pointer border-gold-500/20 hover:border-gold-500/50 transition-all duration-300"
-              onClick={playInHouseSlots}
-            >
-              <CardContent className="p-4">
-                <div className="aspect-video bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-lg mb-3 flex items-center justify-center">
-                  <div className="text-center">
-                    <Zap className="w-12 h-12 text-gold-500 mx-auto mb-2" />
-                    <div className="text-lg font-bold text-gold-400">
-                      CoinKrazy
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Original Slots
+            {/* Premium Slots Collection */}
+            <Link to="/slots">
+              <Card className="group cursor-pointer border-gold-500/20 hover:border-gold-500/50 transition-all duration-300">
+                <CardContent className="p-4">
+                  <div className="aspect-video bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-lg mb-3 flex items-center justify-center">
+                    <div className="text-center">
+                      <Zap className="w-12 h-12 text-gold-500 mx-auto mb-2" />
+                      <div className="text-lg font-bold text-gold-400">
+                        25 Premium
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Slot Games
+                      </div>
                     </div>
                   </div>
-                </div>
-                <h3 className="font-bold mb-1">CoinKrazy Slots</h3>
-                <p className="text-xs text-muted-foreground mb-2">
-                  In-House • RTP 96.5%
-                </p>
-                <div className="flex items-center justify-between">
-                  <Badge className="bg-gold-500/20 text-gold-400 border-gold-500/30">
-                    Featured
-                  </Badge>
-                  <Button
-                    size="sm"
-                    className="bg-gold-500 hover:bg-gold-600 text-black"
-                  >
-                    Play
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <h3 className="font-bold mb-1">CoinKrazy Slots</h3>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    25 Games • Real Gameplay • Jackpots
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <Badge className="bg-gold-500/20 text-gold-400 border-gold-500/30">
+                      Featured
+                    </Badge>
+                    <Button
+                      size="sm"
+                      className="bg-gold-500 hover:bg-gold-600 text-black"
+                    >
+                      Play 25 Games
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
 
             {/* Mini Games */}
             <Card

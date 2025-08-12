@@ -23,6 +23,7 @@ import GoldStoreManager from "@/components/GoldStoreManager";
 import BonusManagement from "@/components/BonusManagement";
 import CmsManagement from "@/components/CmsManagement";
 import GameManagement from "@/components/GameManagement";
+import SlotsGameManagement from "@/components/SlotsGameManagement";
 import AdminToolbar from "@/components/AdminToolbar";
 import AdminSettingsPanel from "@/components/AdminSettingsPanel";
 import AdminNotificationCenter from "@/components/AdminNotificationCenter";

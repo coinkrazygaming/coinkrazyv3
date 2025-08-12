@@ -474,11 +474,14 @@ class CMSService {
   // Navigation Management
   async getAllNavigations(): Promise<CMSNavigation[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/navigation`);
-      if (!response.ok) throw new Error("Failed to fetch navigations");
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/navigation`);
+      if (!response.ok) {
+        console.warn(`Navigation API returned ${response.status}, using mock data`);
+        return this.getMockNavigations();
+      }
       return await this.safeJsonParse(response);
     } catch (error) {
-      console.error("Error fetching navigations:", error);
+      console.warn("Error fetching navigations, using mock data:", error);
       return this.getMockNavigations();
     }
   }

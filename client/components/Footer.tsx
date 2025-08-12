@@ -140,9 +140,27 @@ export default function Footer() {
               </a>
             </div>
 
-            <div className="text-sm text-muted-foreground text-center md:text-right max-w-md">
-              No purchase necessary. Must be 18+ years old. Void where
-              prohibited. Play responsibly.
+            <div className="text-sm text-muted-foreground text-center md:text-right max-w-md space-y-2">
+              <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+                <Badge variant="outline" className="border-green-500 text-green-400">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Sweepstakes Legal
+                </Badge>
+                <Badge variant="outline" className="border-blue-500 text-blue-400">
+                  SSL Secured
+                </Badge>
+                <Badge variant="outline" className="border-yellow-500 text-yellow-400">
+                  18+ Only
+                </Badge>
+              </div>
+              <div>
+                <strong>NO PURCHASE NECESSARY TO ENTER OR WIN.</strong> Must be 18+ years old (19+ in AL/NE).
+                Legal residents of US only. Void where prohibited. See official rules for details. Play responsibly.
+              </div>
+              <div className="text-xs">
+                Gold Coins have no cash value. Sweeps Coins can be redeemed for cash prizes.
+                Gambling problem? Call 1-800-GAMBLER.
+              </div>
             </div>
           </div>
         </div>

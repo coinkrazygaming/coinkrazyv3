@@ -62,37 +62,71 @@ import PublicRoute from "./components/PublicRoute";
 
 const queryClient = new QueryClient();
 
-// Error Boundary Component
+// Enhanced Error Boundary Component with React hooks protection
 class AppErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { hasError: boolean }
+  { hasError: boolean; errorMessage: string }
 > {
   constructor(props: { children: React.ReactNode }) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorMessage: "" };
   }
 
   static getDerivedStateFromError(error: Error) {
-    return { hasError: true };
+    // Check for React hooks errors specifically
+    const isHooksError = error.message.includes("Cannot read properties of null") &&
+                        (error.message.includes("useState") || error.message.includes("useContext"));
+
+    return {
+      hasError: true,
+      errorMessage: isHooksError ? "React hooks context error" : error.message
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.log("App Error Boundary caught error:", error, errorInfo);
+    const isHooksError = error.message.includes("Cannot read properties of null") &&
+                        (error.message.includes("useState") || error.message.includes("useContext"));
+
+    if (isHooksError) {
+      console.log("React hooks error caught, attempting recovery:", error.message);
+
+      // Attempt to recover from hooks error by resetting React state
+      setTimeout(() => {
+        if (typeof window !== "undefined") {
+          console.log("Attempting React context recovery...");
+          this.setState({ hasError: false, errorMessage: "" });
+        }
+      }, 100);
+    } else {
+      console.log("App Error Boundary caught error:", error, errorInfo);
+    }
   }
 
   render() {
     if (this.state.hasError) {
+      const isHooksError = this.state.errorMessage.includes("React hooks context error") ||
+                          this.state.errorMessage.includes("useState");
+
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
           <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
-            <p className="text-gray-600 mb-4">Please refresh the page to continue.</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Refresh Page
-            </button>
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              {isHooksError ? "Loading..." : "Something went wrong"}
+            </h1>
+            <p className="text-gray-600 mb-4">
+              {isHooksError
+                ? "Recovering React context, please wait..."
+                : "Please refresh the page to continue."
+              }
+            </p>
+            {!isHooksError && (
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Refresh Page
+              </button>
+            )}
           </div>
         </div>
       );

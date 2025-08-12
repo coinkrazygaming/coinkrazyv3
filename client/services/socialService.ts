@@ -325,7 +325,9 @@ class SocialService {
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.log("Social WebSocket connected successfully");
+        if (process.env.NODE_ENV === "development") {
+          console.log("Social WebSocket connected successfully");
+        }
       };
 
       this.ws.onmessage = (event) => {

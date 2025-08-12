@@ -472,6 +472,11 @@ export default function Games() {
             )}
           </TabsContent>
 
+          {/* Free Slots Tab - Comprehensive iframe aggregator */}
+          <TabsContent value="free-slots" className="mt-6">
+            <FreeSlotGames />
+          </TabsContent>
+
           {/* Other tab contents would filter games by category */}
           <TabsContent value="slots">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

@@ -52,15 +52,58 @@ if (typeof window !== "undefined") {
     }
   });
 
-  // Override console.error to filter WebSocket errors
+  // Override console.error to filter WebSocket errors and Event objects
   const originalConsoleError = console.error;
+  const originalConsoleLog = console.log;
+  const originalConsoleWarn = console.warn;
+
+  // Helper function to safely stringify arguments
+  const safeStringify = (args: any[]) => {
+    return args.map(arg => {
+      if (arg instanceof Event) {
+        return `Event(${arg.type})`;
+      }
+      if (arg && typeof arg === 'object' && arg.toString() === '[object Event]') {
+        return `Event(${arg.type || 'unknown'})`;
+      }
+      return arg;
+    });
+  };
+
   console.error = (...args) => {
     const message = args.join(" ");
-    if (message.includes("getReadyStateText")) {
-      console.log("Suppressed getReadyStateText console error");
+    if (message.includes("getReadyStateText") || message.includes("[object Event]")) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("Suppressed WebSocket/Event error");
+      }
       return;
     }
-    originalConsoleError.apply(console, args);
+    const safeArgs = safeStringify(args);
+    originalConsoleError.apply(console, safeArgs);
+  };
+
+  console.warn = (...args) => {
+    const message = args.join(" ");
+    if (message.includes("[object Event]")) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("Suppressed Event object warning");
+      }
+      return;
+    }
+    const safeArgs = safeStringify(args);
+    originalConsoleWarn.apply(console, safeArgs);
+  };
+
+  console.log = (...args) => {
+    const message = args.join(" ");
+    if (message.includes("Social WebSocket error: [object Event]")) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("Social WebSocket: Connection error handled safely");
+      }
+      return;
+    }
+    const safeArgs = safeStringify(args);
+    originalConsoleLog.apply(console, safeArgs);
   };
 
   console.log("Global WebSocket error protection loaded");

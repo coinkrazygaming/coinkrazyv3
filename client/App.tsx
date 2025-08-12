@@ -23,7 +23,10 @@ if (typeof window !== "undefined") {
   // Additional error event listener for React errors
   window.addEventListener("error", (event) => {
     const errorMessage = event.error?.message || event.message || "";
-    if (errorMessage.includes("useState") || errorMessage.includes("Invalid hook call")) {
+    if (
+      errorMessage.includes("useState") ||
+      errorMessage.includes("Invalid hook call")
+    ) {
       console.log("Caught React hooks error:", errorMessage);
       event.stopPropagation();
       event.preventDefault();
@@ -99,21 +102,28 @@ class AppErrorBoundary extends React.Component<
 
   static getDerivedStateFromError(error: Error) {
     // Check for React hooks errors specifically
-    const isHooksError = error.message.includes("Cannot read properties of null") &&
-                        (error.message.includes("useState") || error.message.includes("useContext"));
+    const isHooksError =
+      error.message.includes("Cannot read properties of null") &&
+      (error.message.includes("useState") ||
+        error.message.includes("useContext"));
 
     return {
       hasError: true,
-      errorMessage: isHooksError ? "React hooks context error" : error.message
+      errorMessage: isHooksError ? "React hooks context error" : error.message,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    const isHooksError = error.message.includes("Cannot read properties of null") &&
-                        (error.message.includes("useState") || error.message.includes("useContext"));
+    const isHooksError =
+      error.message.includes("Cannot read properties of null") &&
+      (error.message.includes("useState") ||
+        error.message.includes("useContext"));
 
     if (isHooksError) {
-      console.log("React hooks error caught, attempting recovery:", error.message);
+      console.log(
+        "React hooks error caught, attempting recovery:",
+        error.message,
+      );
 
       // Attempt to recover from hooks error by resetting React state
       setTimeout(() => {
@@ -129,8 +139,9 @@ class AppErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      const isHooksError = this.state.errorMessage.includes("React hooks context error") ||
-                          this.state.errorMessage.includes("useState");
+      const isHooksError =
+        this.state.errorMessage.includes("React hooks context error") ||
+        this.state.errorMessage.includes("useState");
 
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -141,8 +152,7 @@ class AppErrorBoundary extends React.Component<
             <p className="text-gray-600 mb-4">
               {isHooksError
                 ? "Recovering React context, please wait..."
-                : "Please refresh the page to continue."
-              }
+                : "Please refresh the page to continue."}
             </p>
             {!isHooksError && (
               <button
@@ -165,7 +175,9 @@ class AppErrorBoundary extends React.Component<
 const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
   // For now, completely bypass TooltipProvider to prevent React hooks corruption
   // This ensures the app works without tooltip functionality until the React context issue is resolved
-  console.log("Rendering without TooltipProvider to prevent React hooks errors");
+  console.log(
+    "Rendering without TooltipProvider to prevent React hooks errors",
+  );
   return <>{children}</>;
 };
 
@@ -185,56 +197,59 @@ const App = () => (
     <AppErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeTooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/games" element={<Games />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/store" element={<Store />} />
-              <Route path="/sportsbook" element={<Sportsbook />} />
-              <Route path="/pick-cards" element={<PickCards />} />
-              <Route path="/bingo" element={<Bingo />} />
-              <Route path="/poker" element={<Poker />} />
-              <Route path="/scratch-cards" element={<ScratchCards />} />
-              <Route path="/slots" element={<Slots />} />
-            <Route path="/slots/hub" element={<SlotsHub />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/compliance" element={<Compliance />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/staff" element={<Staff />} />
-              <Route path="/admin-setup" element={<AdminSetup />} />
-              <Route path="/how-to-play" element={<HowToPlay />} />
-              <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/social" element={<Social />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route
-                path="/daily-rewards"
-                element={
-                  <ProtectedRoute>
-                    <DailyRewards />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/games" element={<Games />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/store" element={<Store />} />
+                <Route path="/sportsbook" element={<Sportsbook />} />
+                <Route path="/pick-cards" element={<PickCards />} />
+                <Route path="/bingo" element={<Bingo />} />
+                <Route path="/poker" element={<Poker />} />
+                <Route path="/scratch-cards" element={<ScratchCards />} />
+                <Route path="/slots" element={<Slots />} />
+                <Route path="/slots/hub" element={<SlotsHub />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/compliance" element={<Compliance />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/staff" element={<Staff />} />
+                <Route path="/admin-setup" element={<AdminSetup />} />
+                <Route path="/how-to-play" element={<HowToPlay />} />
+                <Route
+                  path="/sweepstakes-rules"
+                  element={<SweepstakesRules />}
+                />
+                <Route path="/support" element={<Support />} />
+                <Route path="/social" element={<Social />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route
+                  path="/daily-rewards"
+                  element={
+                    <ProtectedRoute>
+                      <DailyRewards />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
         </SafeTooltipProvider>
       </QueryClientProvider>
     </AppErrorBoundary>
@@ -252,7 +267,7 @@ declare global {
 // Check React availability before creating root
 const initializeApp = () => {
   // Validate React and React-DOM are properly loaded
-  if (!React || !createRoot || typeof React.useState !== 'function') {
+  if (!React || !createRoot || typeof React.useState !== "function") {
     console.log("React not ready, retrying in 10ms...");
     setTimeout(initializeApp, 10);
     return;
@@ -261,7 +276,7 @@ const initializeApp = () => {
   // Additional validation for React version compatibility
   try {
     // Test React hooks in a safe way
-    const testElement = React.createElement('div');
+    const testElement = React.createElement("div");
     if (!testElement) {
       throw new Error("React.createElement not working");
     }
@@ -277,14 +292,22 @@ const initializeApp = () => {
     console.log("App initialization failed:", errorMessage);
 
     // Specific handling for React hooks errors
-    if (errorMessage.includes("useState") || errorMessage.includes("Invalid hook call")) {
-      console.log("React hooks error detected during initialization, waiting before retry...");
+    if (
+      errorMessage.includes("useState") ||
+      errorMessage.includes("Invalid hook call")
+    ) {
+      console.log(
+        "React hooks error detected during initialization, waiting before retry...",
+      );
       setTimeout(() => {
         try {
           globalThis.__APP_ROOT__ = createRoot(container);
           globalThis.__APP_ROOT__.render(<App />);
         } catch (retryError) {
-          console.log("App retry failed, React context may be corrupted:", retryError);
+          console.log(
+            "App retry failed, React context may be corrupted:",
+            retryError,
+          );
         }
       }, 200);
     } else {
@@ -294,7 +317,10 @@ const initializeApp = () => {
           globalThis.__APP_ROOT__ = createRoot(container);
           globalThis.__APP_ROOT__.render(<App />);
         } catch (retryError) {
-          console.log("App retry failed, manual refresh may be required:", retryError);
+          console.log(
+            "App retry failed, manual refresh may be required:",
+            retryError,
+          );
         }
       }, 100);
     }
@@ -339,8 +365,10 @@ if (import.meta.hot) {
   import.meta.hot.accept(() => {
     try {
       // Check if React is properly available
-      if (!React || typeof React.useState !== 'function') {
-        console.log("React not available during HMR, forcing context recreation");
+      if (!React || typeof React.useState !== "function") {
+        console.log(
+          "React not available during HMR, forcing context recreation",
+        );
         throw new Error("React context unavailable");
       }
 
@@ -348,12 +376,19 @@ if (import.meta.hot) {
         globalThis.__APP_ROOT__.render(<App />);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       console.log("HMR error, attempting recovery:", errorMessage);
 
       // Enhanced recovery for React hooks errors
-      if (errorMessage.includes("useState") || errorMessage.includes("useContext") || errorMessage.includes("React context")) {
-        console.log("React hooks error detected, performing full context recreation");
+      if (
+        errorMessage.includes("useState") ||
+        errorMessage.includes("useContext") ||
+        errorMessage.includes("React context")
+      ) {
+        console.log(
+          "React hooks error detected, performing full context recreation",
+        );
 
         try {
           // Clear React's internal state and recreate everything
@@ -382,9 +417,11 @@ if (import.meta.hot) {
               window.location.reload();
             }
           }, 50);
-
         } catch (recreationError) {
-          console.log("Context recreation failed, forcing page reload:", recreationError);
+          console.log(
+            "Context recreation failed, forcing page reload:",
+            recreationError,
+          );
           setTimeout(() => window.location.reload(), 100);
         }
       } else {
@@ -394,7 +431,10 @@ if (import.meta.hot) {
           globalThis.__APP_ROOT__ = createRoot(container);
           globalThis.__APP_ROOT__.render(<App />);
         } catch (recoveryError) {
-          console.log("Standard recovery failed, forcing page reload:", recoveryError);
+          console.log(
+            "Standard recovery failed, forcing page reload:",
+            recoveryError,
+          );
           setTimeout(() => window.location.reload(), 100);
         }
       }

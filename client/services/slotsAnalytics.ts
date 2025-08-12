@@ -31,7 +31,7 @@ export interface UserSlotProfile {
   biggestSingleWin: number;
   lifetimeWinnings: number;
   favoriteGameId: string;
-  preferredCurrency: 'GC' | 'SC';
+  preferredCurrency: "GC" | "SC";
   playtime: number; // total time in milliseconds
   achievements: string[];
   badges: string[];
@@ -55,7 +55,7 @@ export interface SlotSession {
   totalWin: number;
   netResult: number;
   biggestWin: number;
-  currency: 'GC' | 'SC';
+  currency: "GC" | "SC";
   bonusRoundsTriggered: number;
   jackpotsWon: number;
   achievements: string[];
@@ -64,7 +64,7 @@ export interface SlotSession {
 
 export interface SlotGameAnalytics {
   gameId: string;
-  period: 'hourly' | 'daily' | 'weekly' | 'monthly';
+  period: "hourly" | "daily" | "weekly" | "monthly";
   timestamp: Date;
   metrics: {
     totalPlayers: number;
@@ -82,11 +82,11 @@ export interface SlotGameAnalytics {
 
 export interface HotColdAnalysis {
   gameId: string;
-  status: 'hot' | 'cold' | 'normal';
+  status: "hot" | "cold" | "normal";
   temperature: number; // -100 to 100
   recentPayouts: number[];
-  payoutTrend: 'increasing' | 'decreasing' | 'stable';
-  recommendation: 'play_now' | 'wait' | 'neutral';
+  payoutTrend: "increasing" | "decreasing" | "stable";
+  recommendation: "play_now" | "wait" | "neutral";
   confidence: number; // 0 to 1
 }
 
@@ -119,14 +119,20 @@ export class SlotsAnalyticsService {
   private generateSampleAnalytics() {
     // Generate sample analytics for demonstration
     const sampleGames = [
-      'coin-krazy-classic', 'golden-fortune', 'neon-nights', 'pirate-treasure',
-      'diamond-deluxe', 'aztec-gold', 'lucky-sevens', 'wild-west-gold'
+      "coin-krazy-classic",
+      "golden-fortune",
+      "neon-nights",
+      "pirate-treasure",
+      "diamond-deluxe",
+      "aztec-gold",
+      "lucky-sevens",
+      "wild-west-gold",
     ];
 
-    sampleGames.forEach(gameId => {
+    sampleGames.forEach((gameId) => {
       const analytics: SlotGameAnalytics = {
         gameId,
-        period: 'daily',
+        period: "daily",
         timestamp: new Date(),
         metrics: {
           totalPlayers: Math.floor(Math.random() * 1000) + 100,
@@ -138,8 +144,8 @@ export class SlotsAnalyticsService {
           popularityScore: Math.random() * 100,
           retentionRate: 0.7 + Math.random() * 0.3, // 70-100%
           newPlayerPercentage: Math.random() * 0.4, // 0-40%
-          conversionRate: Math.random() * 0.15 // 0-15%
-        }
+          conversionRate: Math.random() * 0.15, // 0-15%
+        },
       };
 
       if (!this.analytics.has(gameId)) {
@@ -156,21 +162,34 @@ export class SlotsAnalyticsService {
       if (latest) {
         const rtp = latest.metrics.actualRTP;
         const temperature = (rtp - 96) * 20; // Scale around 96% RTP
-        
-        let status: 'hot' | 'cold' | 'normal' = 'normal';
-        if (temperature > 10) status = 'hot';
-        else if (temperature < -10) status = 'cold';
 
-        const recentPayouts = Array.from({ length: 10 }, () => Math.random() * 1000);
-        
+        let status: "hot" | "cold" | "normal" = "normal";
+        if (temperature > 10) status = "hot";
+        else if (temperature < -10) status = "cold";
+
+        const recentPayouts = Array.from(
+          { length: 10 },
+          () => Math.random() * 1000,
+        );
+
         this.hotColdData.set(gameId, {
           gameId,
           status,
           temperature: Math.max(-100, Math.min(100, temperature)),
           recentPayouts,
-          payoutTrend: temperature > 0 ? 'increasing' : temperature < 0 ? 'decreasing' : 'stable',
-          recommendation: status === 'hot' ? 'play_now' : status === 'cold' ? 'wait' : 'neutral',
-          confidence: 0.7 + Math.random() * 0.3
+          payoutTrend:
+            temperature > 0
+              ? "increasing"
+              : temperature < 0
+                ? "decreasing"
+                : "stable",
+          recommendation:
+            status === "hot"
+              ? "play_now"
+              : status === "cold"
+                ? "wait"
+                : "neutral",
+          confidence: 0.7 + Math.random() * 0.3,
         });
       }
     });
@@ -178,9 +197,12 @@ export class SlotsAnalyticsService {
 
   private startAnalyticsCollection() {
     // Update analytics every 5 minutes
-    setInterval(() => {
-      this.updateHotColdAnalysis();
-    }, 5 * 60 * 1000);
+    setInterval(
+      () => {
+        this.updateHotColdAnalysis();
+      },
+      5 * 60 * 1000,
+    );
   }
 
   // User Profile Management
@@ -191,14 +213,14 @@ export class SlotsAnalyticsService {
         level: 1,
         experience: 0,
         experienceToNext: 1000,
-        title: 'Novice Spinner',
+        title: "Novice Spinner",
         totalSpins: 0,
         totalWins: 0,
         totalWinAmount: 0,
         biggestSingleWin: 0,
         lifetimeWinnings: 0,
-        favoriteGameId: '',
-        preferredCurrency: 'GC',
+        favoriteGameId: "",
+        preferredCurrency: "GC",
         playtime: 0,
         achievements: [],
         badges: [],
@@ -208,7 +230,7 @@ export class SlotsAnalyticsService {
         averageBet: 0,
         highestMultiplier: 0,
         jackpotsWon: 0,
-        gamesUnlocked: []
+        gamesUnlocked: [],
       };
       this.userProfiles.set(userId, profile);
     }
@@ -222,19 +244,30 @@ export class SlotsAnalyticsService {
   }
 
   private calculateLevel(profile: UserSlotProfile) {
-    const expRequired = [0, 1000, 2500, 5000, 10000, 20000, 35000, 55000, 80000, 120000];
-    
+    const expRequired = [
+      0, 1000, 2500, 5000, 10000, 20000, 35000, 55000, 80000, 120000,
+    ];
+
     for (let level = expRequired.length - 1; level >= 0; level--) {
       if (profile.experience >= expRequired[level]) {
         profile.level = level + 1;
-        profile.experienceToNext = level < expRequired.length - 1 ? 
-          expRequired[level + 1] - profile.experience : 0;
-        
+        profile.experienceToNext =
+          level < expRequired.length - 1
+            ? expRequired[level + 1] - profile.experience
+            : 0;
+
         // Update title based on level
         const titles = [
-          'Novice Spinner', 'Casual Player', 'Regular Spinner', 'Experienced Player',
-          'Skilled Spinner', 'Expert Player', 'Master Spinner', 'Slot Veteran',
-          'Legendary Player', 'Grand Master'
+          "Novice Spinner",
+          "Casual Player",
+          "Regular Spinner",
+          "Experienced Player",
+          "Skilled Spinner",
+          "Expert Player",
+          "Master Spinner",
+          "Slot Veteran",
+          "Legendary Player",
+          "Grand Master",
         ];
         profile.title = titles[Math.min(level, titles.length - 1)];
         break;
@@ -247,12 +280,12 @@ export class SlotsAnalyticsService {
     if (!this.gameStats.has(userId)) {
       this.gameStats.set(userId, new Map());
     }
-    
+
     const userStats = this.gameStats.get(userId)!;
     if (!userStats.has(gameId)) {
       const stats: SlotGameStats = {
         gameId,
-        gameName: '', // Will be set when first accessed
+        gameName: "", // Will be set when first accessed
         totalSpins: 0,
         totalWins: 0,
         totalWinAmount: 0,
@@ -268,36 +301,39 @@ export class SlotsAnalyticsService {
         freeSpinsWon: 0,
         currentStreak: 0,
         longestWinStreak: 0,
-        longestLossStreak: 0
+        longestLossStreak: 0,
       };
       userStats.set(gameId, stats);
     }
-    
+
     return userStats.get(gameId)!;
   }
 
   updateGameStats(userId: string, gameId: string, spinResult: any) {
     const stats = this.getGameStats(userId, gameId);
     const profile = this.getUserProfile(userId);
-    
+
     stats.totalSpins++;
     stats.lastPlayed = new Date();
-    
+
     if (spinResult.totalWin > 0) {
       stats.totalWins++;
       stats.totalWinAmount += spinResult.totalWin;
       stats.biggestWin = Math.max(stats.biggestWin, spinResult.totalWin);
       stats.currentStreak++;
-      stats.longestWinStreak = Math.max(stats.longestWinStreak, stats.currentStreak);
-      
+      stats.longestWinStreak = Math.max(
+        stats.longestWinStreak,
+        stats.currentStreak,
+      );
+
       if (spinResult.isJackpot) {
         stats.jackpotsWon++;
       }
-      
+
       if (spinResult.bonusTriggered) {
         stats.bonusRoundsTriggered++;
       }
-      
+
       if (spinResult.freeSpinsAwarded > 0) {
         stats.freeSpinsWon += spinResult.freeSpinsAwarded;
       }
@@ -309,23 +345,27 @@ export class SlotsAnalyticsService {
       }
       stats.currentStreak = 0;
     }
-    
+
     // Calculate derived stats
     stats.winRate = stats.totalWins / stats.totalSpins;
-    stats.averageWin = stats.totalWins > 0 ? stats.totalWinAmount / stats.totalWins : 0;
-    
+    stats.averageWin =
+      stats.totalWins > 0 ? stats.totalWinAmount / stats.totalWins : 0;
+
     // Update user profile
     profile.totalSpins++;
     profile.lastActive = new Date();
     profile.experience += 10; // Base XP per spin
-    
+
     if (spinResult.totalWin > 0) {
       profile.totalWins++;
       profile.totalWinAmount += spinResult.totalWin;
-      profile.biggestSingleWin = Math.max(profile.biggestSingleWin, spinResult.totalWin);
+      profile.biggestSingleWin = Math.max(
+        profile.biggestSingleWin,
+        spinResult.totalWin,
+      );
       profile.experience += Math.floor(spinResult.totalWin / 100); // Bonus XP for wins
     }
-    
+
     this.calculateLevel(profile);
   }
 
@@ -342,13 +382,13 @@ export class SlotsAnalyticsService {
       totalWin: 0,
       netResult: 0,
       biggestWin: 0,
-      currency: 'GC',
+      currency: "GC",
       bonusRoundsTriggered: 0,
       jackpotsWon: 0,
       achievements: [],
-      avgSpinTime: 0
+      avgSpinTime: 0,
     };
-    
+
     this.sessions.set(sessionId, session);
     return sessionId;
   }
@@ -357,8 +397,11 @@ export class SlotsAnalyticsService {
     const session = this.sessions.get(sessionId);
     if (session) {
       session.endTime = new Date();
-      session.avgSpinTime = session.totalSpins > 0 ? 
-        (session.endTime.getTime() - session.startTime.getTime()) / session.totalSpins : 0;
+      session.avgSpinTime =
+        session.totalSpins > 0
+          ? (session.endTime.getTime() - session.startTime.getTime()) /
+            session.totalSpins
+          : 0;
     }
     return session || null;
   }
@@ -370,12 +413,15 @@ export class SlotsAnalyticsService {
       session.totalBet += spinResult.betAmount || 0;
       session.totalWin += spinResult.totalWin || 0;
       session.netResult = session.totalWin - session.totalBet;
-      session.biggestWin = Math.max(session.biggestWin, spinResult.totalWin || 0);
-      
+      session.biggestWin = Math.max(
+        session.biggestWin,
+        spinResult.totalWin || 0,
+      );
+
       if (spinResult.isJackpot) {
         session.jackpotsWon++;
       }
-      
+
       if (spinResult.bonusTriggered) {
         session.bonusRoundsTriggered++;
       }
@@ -383,8 +429,11 @@ export class SlotsAnalyticsService {
   }
 
   // Analytics and Insights
-  getGameAnalytics(gameId: string, period: 'daily' | 'weekly' | 'monthly' = 'daily'): SlotGameAnalytics[] {
-    return this.analytics.get(gameId)?.filter(a => a.period === period) || [];
+  getGameAnalytics(
+    gameId: string,
+    period: "daily" | "weekly" | "monthly" = "daily",
+  ): SlotGameAnalytics[] {
+    return this.analytics.get(gameId)?.filter((a) => a.period === period) || [];
   }
 
   getHotColdAnalysis(gameId: string): HotColdAnalysis | null {
@@ -395,75 +444,86 @@ export class SlotsAnalyticsService {
     return Array.from(this.hotColdData.values());
   }
 
-  getTopPerformingGames(limit: number = 10): { gameId: string; score: number }[] {
+  getTopPerformingGames(
+    limit: number = 10,
+  ): { gameId: string; score: number }[] {
     const scores: { gameId: string; score: number }[] = [];
-    
+
     this.analytics.forEach((analyticsArray, gameId) => {
       const latest = analyticsArray[analyticsArray.length - 1];
       if (latest) {
         // Calculate performance score based on multiple metrics
-        const score = (
+        const score =
           latest.metrics.popularityScore * 0.3 +
           latest.metrics.retentionRate * 100 * 0.3 +
           latest.metrics.actualRTP * 0.2 +
-          (latest.metrics.avgSessionLength / 1800) * 100 * 0.2
-        );
+          (latest.metrics.avgSessionLength / 1800) * 100 * 0.2;
         scores.push({ gameId, score });
       }
     });
-    
+
     return scores.sort((a, b) => b.score - a.score).slice(0, limit);
   }
 
   getPersonalizedRecommendations(userId: string): string[] {
     const profile = this.getUserProfile(userId);
     const userStats = this.gameStats.get(userId) || new Map();
-    
+
     const recommendations: string[] = [];
-    
+
     // Recommend based on favorite games
     const favoriteGames = Array.from(userStats.entries())
       .filter(([_, stats]) => stats.favoriteStatus)
       .map(([gameId, _]) => gameId);
-    
+
     // Recommend hot games
     const hotGames = this.getAllHotColdAnalysis()
-      .filter(analysis => analysis.status === 'hot')
-      .map(analysis => analysis.gameId);
-    
+      .filter((analysis) => analysis.status === "hot")
+      .map((analysis) => analysis.gameId);
+
     // Combine recommendations (removing duplicates)
     const combined = [...new Set([...favoriteGames, ...hotGames])];
-    
+
     return combined.slice(0, 5); // Top 5 recommendations
   }
 
   // Leaderboards
-  getWinLeaderboard(period: 'daily' | 'weekly' | 'monthly' = 'daily', limit: number = 10) {
-    const leaderboard: { userId: string; totalWins: number; winAmount: number }[] = [];
-    
+  getWinLeaderboard(
+    period: "daily" | "weekly" | "monthly" = "daily",
+    limit: number = 10,
+  ) {
+    const leaderboard: {
+      userId: string;
+      totalWins: number;
+      winAmount: number;
+    }[] = [];
+
     this.userProfiles.forEach((profile, userId) => {
       leaderboard.push({
         userId,
         totalWins: profile.totalWins,
-        winAmount: profile.totalWinAmount
+        winAmount: profile.totalWinAmount,
       });
     });
-    
+
     return leaderboard
       .sort((a, b) => b.winAmount - a.winAmount)
       .slice(0, limit);
   }
 
-  getSpinLeaderboard(period: 'daily' | 'weekly' | 'monthly' = 'daily', limit: number = 10) {
+  getSpinLeaderboard(
+    period: "daily" | "weekly" | "monthly" = "daily",
+    limit: number = 10,
+  ) {
     const leaderboard: { userId: string; totalSpins: number }[] = [];
-    
+
     this.userProfiles.forEach((profile, userId) => {
       leaderboard.push({
         userId,
-        totalSpins: profile.totalSpins
+        totalSpins: profile.totalSpins,
       });
     });
-    
+
     return leaderboard
       .sort((a, b) => b.totalSpins - a.totalSpins)
       .slice(0, limit);

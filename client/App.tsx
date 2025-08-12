@@ -54,6 +54,7 @@ import Footer from "./components/Footer";
 import AIAssistant from "./components/AIAssistant";
 import TickerDisplay from "./components/TickerDisplay";
 import ComplianceBanner from "./components/ComplianceBanner";
+import ReactErrorRecovery from "./components/ReactErrorRecovery";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Register from "./pages/Register";

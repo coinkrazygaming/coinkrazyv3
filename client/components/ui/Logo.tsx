@@ -47,7 +47,7 @@ const Logo: React.FC<LogoProps> = ({
             if (parent) {
               parent.innerHTML = `
                 <div class="w-full h-full bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
-                  <span class="text-black font-bold text-lg">🪙</span>
+                  <span class="text-black font-bold text-lg">😎</span>
                 </div>
               `;
             }

@@ -422,11 +422,14 @@ class CMSService {
   // Templates Management
   async getAllTemplates(): Promise<CMSTemplate[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/templates`);
-      if (!response.ok) throw new Error("Failed to fetch templates");
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/templates`);
+      if (!response.ok) {
+        console.warn(`Templates API returned ${response.status}, using mock data`);
+        return this.getMockTemplates();
+      }
       return await this.safeJsonParse(response);
     } catch (error) {
-      console.error("Error fetching templates:", error);
+      console.warn("Error fetching templates, using mock data:", error);
       return this.getMockTemplates();
     }
   }

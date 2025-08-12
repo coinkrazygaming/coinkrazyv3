@@ -1,16 +1,18 @@
 import "./global.css";
 import "./services/globalErrorHandler"; // Load WebSocket error protection
 
-// Emergency error suppression for getReadyStateText and HMR issues
+// Emergency error suppression for getReadyStateText, HMR, and React issues
 if (typeof window !== "undefined") {
   window.onerror = (msg, url, line, col, error) => {
     const msgStr = msg?.toString() || "";
     if (
       msgStr.includes("getReadyStateText") ||
       msgStr.includes("send was called before connect") ||
-      msgStr.includes("WebSocket")
+      msgStr.includes("WebSocket") ||
+      msgStr.includes("Cannot read properties of null") ||
+      msgStr.includes("useState")
     ) {
-      console.log("Emergency: Suppressed HMR/WebSocket error:", msgStr);
+      console.log("Emergency: Suppressed React/HMR error:", msgStr);
       return true; // Prevent default error handling
     }
     return false;

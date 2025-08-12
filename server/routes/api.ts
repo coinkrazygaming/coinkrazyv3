@@ -1,8 +1,12 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import databaseService from "../services/database.js";
+import bankingRoutes from "./banking.js";
 
 const router = express.Router();
+
+// Mount banking routes
+router.use("/banking", bankingRoutes);
 
 // Authentication endpoints
 router.post("/auth/login", async (req, res) => {

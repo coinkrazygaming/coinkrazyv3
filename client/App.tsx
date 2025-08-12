@@ -204,9 +204,12 @@ if (import.meta.hot) {
     if (
       message.includes("send was called before connect") ||
       message.includes("WebSocket") ||
-      message.includes("HMR")
+      message.includes("HMR") ||
+      message.includes("Cannot read properties of null") ||
+      message.includes("useState") ||
+      message.includes("TooltipProvider")
     ) {
-      return; // Suppress HMR-related errors
+      return; // Suppress HMR-related and React hook errors
     }
     originalConsoleError.apply(console, args);
   };

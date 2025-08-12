@@ -36,7 +36,7 @@ import {
   Play,
   Eye,
   Zap,
-  Fire,
+  Flame,
   Sparkles,
   RefreshCw,
   Filter,

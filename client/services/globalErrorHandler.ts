@@ -97,7 +97,8 @@ if (typeof window !== "undefined") {
 
   console.log = (...args) => {
     const message = args.join(" ");
-    if (message.includes("Social WebSocket error: [object Event]")) {
+    if (message.includes("Social WebSocket error: [object Event]") ||
+        message.includes("Social WebSocket error") && message.includes("[object Event]")) {
       if (process.env.NODE_ENV === "development") {
         console.log("Social WebSocket: Connection error handled safely");
       }

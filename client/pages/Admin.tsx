@@ -994,6 +994,11 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
+          {/* Banking Administration */}
+          <TabsContent value="banking" className="mt-6">
+            <BankingAdmin />
+          </TabsContent>
+
           {/* Enhanced Notifications */}
           <TabsContent value="notifications" className="mt-6">
             <AdminNotificationCenter

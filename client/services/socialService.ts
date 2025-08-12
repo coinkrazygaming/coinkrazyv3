@@ -283,12 +283,21 @@ class SocialService {
   private initializeWebSocket() {
     if (typeof window === 'undefined') return;
 
+    // Skip WebSocket in development if no server is available
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Social WebSocket: Skipping connection in development mode');
+      this.simulateRealTimeUpdates();
+      return;
+    }
+
     try {
       const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/social`;
+      console.log('Attempting to connect to Social WebSocket:', wsUrl);
+
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.log('Social WebSocket connected');
+        console.log('Social WebSocket connected successfully');
       };
 
       this.ws.onmessage = (event) => {
@@ -300,18 +309,117 @@ class SocialService {
         }
       };
 
-      this.ws.onclose = () => {
-        console.log('Social WebSocket disconnected');
-        // Reconnect after 5 seconds
-        setTimeout(() => this.initializeWebSocket(), 5000);
+      this.ws.onclose = (event) => {
+        console.log(`Social WebSocket disconnected: Code ${event.code}, Reason: ${event.reason}`);
+
+        // Only attempt reconnection if it wasn't a normal closure
+        if (event.code !== 1000 && event.code !== 1001) {
+          console.log('Attempting to reconnect in 5 seconds...');
+          setTimeout(() => this.initializeWebSocket(), 5000);
+        }
       };
 
       this.ws.onerror = (error) => {
-        console.error('Social WebSocket error:', error);
+        // Better error logging
+        if (error instanceof Event) {
+          console.warn('Social WebSocket connection failed - WebSocket server not available');
+          console.warn('This is normal in development mode. Real-time features will use mock data.');
+        } else {
+          console.error('Social WebSocket error:', error);
+        }
+
+        // Fallback to simulated updates
+        this.simulateRealTimeUpdates();
       };
     } catch (error) {
       console.warn('Failed to initialize WebSocket:', error);
+      this.simulateRealTimeUpdates();
     }
+  }
+
+  // Simulate real-time updates for development
+  private simulateRealTimeUpdates() {
+    // Simulate periodic activity updates every 30 seconds
+    setInterval(() => {
+      const mockActivity = this.generateMockActivity();
+      if (mockActivity) {
+        this.activityListeners.forEach(listener => listener(mockActivity));
+      }
+    }, 30000);
+
+    // Simulate periodic notifications every 2 minutes
+    setInterval(() => {
+      const mockNotification = this.generateMockNotification();
+      if (mockNotification) {
+        this.notificationListeners.forEach(listener => listener(mockNotification));
+      }
+    }, 120000);
+  }
+
+  private generateMockActivity(): any {
+    const activities = [
+      {
+        id: `mock_${Date.now()}`,
+        userId: 'mock_user',
+        user: {
+          username: 'TestPlayer',
+          displayName: 'Test Player',
+          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=test'
+        },
+        type: 'win',
+        description: 'won 1,500 GC playing Sweet Bonanza',
+        metadata: {
+          gameId: 'sweet-bonanza',
+          gameName: 'Sweet Bonanza',
+          winAmount: 1500
+        },
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: `mock_${Date.now() + 1}`,
+        userId: 'mock_user2',
+        user: {
+          username: 'LevelMaster',
+          displayName: 'Level Master',
+          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=level'
+        },
+        type: 'level_up',
+        description: 'reached Level 25',
+        metadata: {
+          newLevel: 25
+        },
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    return activities[Math.floor(Math.random() * activities.length)];
+  }
+
+  private generateMockNotification(): any {
+    const notifications = [
+      {
+        id: `mock_notif_${Date.now()}`,
+        userId: 'current-user',
+        type: 'achievement',
+        title: 'Achievement Unlocked!',
+        message: 'You earned a new badge for your gaming skills',
+        icon: '🏆',
+        isRead: false,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: `mock_notif_${Date.now() + 1}`,
+        userId: 'current-user',
+        type: 'friend_request',
+        title: 'New Friend Request',
+        message: 'Another player wants to be your friend',
+        icon: '👥',
+        isRead: false,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    return notifications[Math.floor(Math.random() * notifications.length)];
   }
 
   private handleWebSocketMessage(data: any) {

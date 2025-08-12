@@ -518,6 +518,14 @@ export default function Admin() {
               <span className="lg:hidden">Bank</span>
             </TabsTrigger>
             <TabsTrigger
+              value="scratch-cards"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
+              <Gift className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden lg:inline">Scratch Cards</span>
+              <span className="lg:hidden">Scratch</span>
+            </TabsTrigger>
+            <TabsTrigger
               value="ai-manager"
               className="flex-shrink-0 text-xs sm:text-sm"
             >

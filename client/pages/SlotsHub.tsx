@@ -285,7 +285,7 @@ export default function SlotsHub() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Fire className="w-5 h-5 text-red-500" />
+                  <Flame className="w-5 h-5 text-red-500" />
                   Hot Games Right Now
                 </CardTitle>
                 <Link to="/slots">

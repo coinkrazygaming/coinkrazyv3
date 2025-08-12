@@ -12,16 +12,21 @@ if (typeof window !== "undefined") {
       // Override onerror to prevent getReadyStateText calls
       const originalOnError = this.onerror;
       this.onerror = (event) => {
-        console.log(
-          "WebSocket error intercepted - preventing unsafe method calls",
-        );
+        // Only log in development for debugging, suppress in production
+        if (process.env.NODE_ENV === "development") {
+          console.log("WebSocket error intercepted - preventing unsafe method calls");
+        }
+
         // Don't call getReadyStateText or any unsafe methods
         if (originalOnError && typeof originalOnError === "function") {
           try {
-            // Safely call original error handler without context
-            originalOnError.call(null, event);
+            // Safely call original error handler without the problematic event object
+            originalOnError.call(this);
           } catch (error) {
-            console.log("Prevented WebSocket error handler crash:", error);
+            // Suppress error logging to prevent [object Event] messages
+            if (process.env.NODE_ENV === "development") {
+              console.log("Prevented WebSocket error handler crash");
+            }
           }
         }
       };

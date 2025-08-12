@@ -538,6 +538,11 @@ export default function Social() {
           </div>
         </TabsContent>
 
+        {/* Live Activities Tab */}
+        <TabsContent value="activities" className="space-y-6">
+          <SocialActivitiesFeed />
+        </TabsContent>
+
         {/* Friends Tab */}
         <TabsContent value="friends" className="space-y-6">
           {/* Friend Requests */}

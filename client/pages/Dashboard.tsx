@@ -48,6 +48,7 @@ import {
   UserBalance,
   BalanceTransaction,
 } from "@/services/balanceService";
+import SocialHubWidget from "@/components/SocialHubWidget";
 import { bonusService } from "@/services/bonusService";
 
 export default function Dashboard() {

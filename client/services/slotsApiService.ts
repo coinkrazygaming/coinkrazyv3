@@ -1,20 +1,10 @@
-// Production Slots API Service for CoinKrazy.com
-// Integrates with real slot game providers for testing and production
+import { authService } from "./authService";
 
-interface SlotProvider {
+export interface SlotGame {
   id: string;
   name: string;
-  apiEndpoint: string;
-  apiKey: string;
-  isActive: boolean;
-  gameCount: number;
-  supportedCurrencies: string[];
-}
-
-interface SlotGame {
-  id: string;
-  providerId: string;
-  name: string;
+  provider: string;
+  category: string[];
   theme: string;
   rtp: number;
   volatility: "low" | "medium" | "high";
@@ -24,98 +14,411 @@ interface SlotGame {
   reels: number;
   rows: number;
   features: string[];
-  gameUrl: string;
-  thumbnailUrl: string;
-  isActive: boolean;
-  category: string[];
+  imageUrl: string;
+  demoUrl: string;
+  realUrl: string;
+  description: string;
   releaseDate: string;
   popularity: number;
+  isJackpot: boolean;
+  jackpotAmount?: number;
+  isMobile: boolean;
+  isDesktop: boolean;
+  gameSize: { width: number; height: number };
 }
 
-interface GameSession {
+export interface GameSession {
   sessionId: string;
   gameId: string;
   userId: string;
-  balance: number;
   currency: "GC" | "SC";
-  startTime: Date;
-  lastActivity: Date;
-  totalBets: number;
-  totalWins: number;
-  spinCount: number;
-  isActive: boolean;
+  initialBalance: number;
+  currentBalance: number;
+  totalBet: number;
+  totalWin: number;
+  spinsCount: number;
+  status: "active" | "completed" | "paused";
+  startTime: string;
+  lastActivity: string;
 }
 
-interface SpinResult {
+export interface SpinResult {
   spinId: string;
   sessionId: string;
   betAmount: number;
+  betLines: number;
   winAmount: number;
-  symbols: string[][];
-  paylines: Array<{
+  winLines: Array<{
     line: number;
     symbols: string[];
     multiplier: number;
-    winAmount: number;
+    amount: number;
   }>;
-  features: Array<{
-    type: string;
-    triggered: boolean;
-    data?: any;
-  }>;
-  gameState: any;
-  timestamp: Date;
+  symbols: string[][];
+  isBonus: boolean;
+  isFreeSpins: boolean;
+  isJackpot: boolean;
+  jackpotAmount?: number;
+  gameState: {
+    balance: number;
+    freeSpinsRemaining?: number;
+    bonusFeatureActive?: boolean;
+  };
+  timestamp: string;
 }
+
+export interface SlotProvider {
+  id: string;
+  name: string;
+  logo: string;
+  gamesCount: number;
+  isActive: boolean;
+  apiEndpoint: string;
+  features: string[];
+}
+
+// Free slot game providers/aggregators
+const FREE_SLOT_PROVIDERS: SlotProvider[] = [
+  {
+    id: "pragmatic-play-demo",
+    name: "Pragmatic Play Demo",
+    logo: "/providers/pragmatic-play.png",
+    gamesCount: 250,
+    isActive: true,
+    apiEndpoint: "https://demo.pragmaticplay.net",
+    features: ["Demo Mode", "High RTP", "Mobile Optimized"]
+  },
+  {
+    id: "netent-demo",
+    name: "NetEnt Demo",
+    logo: "/providers/netent.png", 
+    gamesCount: 180,
+    isActive: true,
+    apiEndpoint: "https://demo.netent.com",
+    features: ["Touch Support", "HD Graphics", "Bonus Features"]
+  },
+  {
+    id: "microgaming-demo",
+    name: "Microgaming Demo",
+    logo: "/providers/microgaming.png",
+    gamesCount: 320,
+    isActive: true,
+    apiEndpoint: "https://demo.microgaming.com",
+    features: ["Progressive Jackpots", "Free Spins", "Multipliers"]
+  },
+  {
+    id: "play-n-go-demo",
+    name: "Play'n GO Demo", 
+    logo: "/providers/playngo.png",
+    gamesCount: 150,
+    isActive: true,
+    apiEndpoint: "https://demo.playngo.com",
+    features: ["Mobile First", "Cluster Pays", "Cascading Reels"]
+  },
+  {
+    id: "quickspin-demo",
+    name: "Quickspin Demo",
+    logo: "/providers/quickspin.png",
+    gamesCount: 80,
+    isActive: true,
+    apiEndpoint: "https://demo.quickspin.com", 
+    features: ["Achievement Engine", "Big Win Potential", "Innovative Features"]
+  }
+];
+
+// Mock slot games database
+const MOCK_SLOT_GAMES: SlotGame[] = [
+  // Pragmatic Play Games
+  {
+    id: "gates-of-olympus",
+    name: "Gates of Olympus",
+    provider: "Pragmatic Play",
+    category: ["featured", "popular", "high-rtp"],
+    theme: "Greek Mythology",
+    rtp: 96.5,
+    volatility: "high",
+    minBet: 0.20,
+    maxBet: 100.00,
+    paylines: 0, // Cluster pays
+    reels: 6,
+    rows: 5,
+    features: ["Tumble Feature", "Multiplier Symbols", "Free Spins", "Ante Bet"],
+    imageUrl: "/games/gates-of-olympus.jpg",
+    demoUrl: "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?lang=en&cur=USD&gameSymbol=vs20olympgate&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fdemogamesfree.pragmaticplay.net",
+    realUrl: "",
+    description: "Enter the realm of Zeus and witness the power of the gods in this high volatility slot with multiplier symbols and tumbling reels.",
+    releaseDate: "2021-02-13",
+    popularity: 98,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "sweet-bonanza",
+    name: "Sweet Bonanza",
+    provider: "Pragmatic Play", 
+    category: ["featured", "popular"],
+    theme: "Candy & Sweets",
+    rtp: 96.48,
+    volatility: "high",
+    minBet: 0.20,
+    maxBet: 100.00,
+    paylines: 0, // Cluster pays
+    reels: 6,
+    rows: 5,
+    features: ["Tumble Feature", "Multiplier Bombs", "Free Spins", "Ante Bet"],
+    imageUrl: "/games/sweet-bonanza.jpg",
+    demoUrl: "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?lang=en&cur=USD&gameSymbol=vs20fruitsw&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fdemogamesfree.pragmaticplay.net",
+    realUrl: "",
+    description: "A colorful candy-themed slot with tumbling reels and multiplier bombs that can lead to massive wins.",
+    releaseDate: "2019-06-27",
+    popularity: 95,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "wolf-gold",
+    name: "Wolf Gold",
+    provider: "Pragmatic Play",
+    category: ["featured", "jackpot"],
+    theme: "Wildlife",
+    rtp: 96.01,
+    volatility: "medium",
+    minBet: 0.25,
+    maxBet: 125.00,
+    paylines: 25,
+    reels: 5,
+    rows: 3,
+    features: ["Wild Symbol", "Money Respin", "Free Spins", "Jackpot"],
+    imageUrl: "/games/wolf-gold.jpg",
+    demoUrl: "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?lang=en&cur=USD&gameSymbol=vs25wolf&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fdemogamesfree.pragmaticplay.net",
+    realUrl: "",
+    description: "Howl with the wolves in this Native American-themed slot featuring three fixed jackpots and money respin feature.",
+    releaseDate: "2017-10-01",
+    popularity: 92,
+    isJackpot: true,
+    jackpotAmount: 47582.33,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "great-rhino-megaways",
+    name: "Great Rhino Megaways",
+    provider: "Pragmatic Play",
+    category: ["new", "megaways"],
+    theme: "Wildlife",
+    rtp: 96.58,
+    volatility: "high",
+    minBet: 0.20,
+    maxBet: 100.00,
+    paylines: 200704, // Megaways
+    reels: 6,
+    rows: 7,
+    features: ["Megaways", "Tumble Feature", "Free Spins", "Multiplier Wilds"],
+    imageUrl: "/games/great-rhino-megaways.jpg",
+    demoUrl: "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?lang=en&cur=USD&gameSymbol=vswaysbbb&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fdemogamesfree.pragmaticplay.net",
+    realUrl: "",
+    description: "Experience the African savanna with up to 200,704 ways to win in this Megaways adventure.",
+    releaseDate: "2020-05-01",
+    popularity: 88,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+
+  // NetEnt Games
+  {
+    id: "starburst",
+    name: "Starburst",
+    provider: "NetEnt",
+    category: ["featured", "classic", "popular"],
+    theme: "Space & Gems",
+    rtp: 96.09,
+    volatility: "low",
+    minBet: 0.10,
+    maxBet: 100.00,
+    paylines: 10,
+    reels: 5,
+    rows: 3,
+    features: ["Expanding Wilds", "Win Both Ways", "Re-Spins"],
+    imageUrl: "/games/starburst.jpg",
+    demoUrl: "https://www.netent.com/en/games/starburst/",
+    realUrl: "",
+    description: "The iconic space-themed slot that became a classic with its expanding wilds and win both ways feature.",
+    releaseDate: "2012-11-01",
+    popularity: 99,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "gonzo-quest",
+    name: "Gonzo's Quest",
+    provider: "NetEnt",
+    category: ["featured", "popular", "bonus"],
+    theme: "Adventure",
+    rtp: 95.97,
+    volatility: "medium",
+    minBet: 0.20,
+    maxBet: 50.00,
+    paylines: 20,
+    reels: 5,
+    rows: 3,
+    features: ["Avalanche Feature", "Multiplier", "Free Falls", "Wild Symbol"],
+    imageUrl: "/games/gonzo-quest.jpg",
+    demoUrl: "https://www.netent.com/en/games/gonzos-quest/",
+    realUrl: "",
+    description: "Join conquistador Gonzo on his quest for gold with cascading symbols and increasing multipliers.",
+    releaseDate: "2011-05-01",
+    popularity: 94,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "mega-fortune",
+    name: "Mega Fortune",
+    provider: "NetEnt",
+    category: ["jackpot", "luxury"],
+    theme: "Luxury",
+    rtp: 96.6,
+    volatility: "low",
+    minBet: 0.25,
+    maxBet: 50.00,
+    paylines: 25,
+    reels: 5,
+    rows: 3,
+    features: ["Progressive Jackpot", "Bonus Wheel", "Free Spins", "Wild Symbol"],
+    imageUrl: "/games/mega-fortune.jpg",
+    demoUrl: "https://www.netent.com/en/games/mega-fortune/",
+    realUrl: "",
+    description: "The luxury lifestyle awaits in this progressive jackpot slot with a bonus wheel feature.",
+    releaseDate: "2009-02-01",
+    popularity: 85,
+    isJackpot: true,
+    jackpotAmount: 3456789.21,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+
+  // Microgaming Games  
+  {
+    id: "immortal-romance",
+    name: "Immortal Romance",
+    provider: "Microgaming",
+    category: ["featured", "story", "bonus"],
+    theme: "Vampire Romance",
+    rtp: 96.86,
+    volatility: "medium",
+    minBet: 0.30,
+    maxBet: 6.00,
+    paylines: 243,
+    reels: 5,
+    rows: 3,
+    features: ["Chamber of Spins", "Wild Desire", "Story Mode", "Multiple Free Spin Features"],
+    imageUrl: "/games/immortal-romance.jpg",
+    demoUrl: "https://demo.microgaming.com/immortal-romance",
+    realUrl: "",
+    description: "A dark tale of forbidden love with an innovative Chamber of Spins bonus feature.",
+    releaseDate: "2011-12-01",
+    popularity: 91,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "mega-moolah",
+    name: "Mega Moolah",
+    provider: "Microgaming",
+    category: ["jackpot", "classic"],
+    theme: "African Safari",
+    rtp: 88.12,
+    volatility: "medium", 
+    minBet: 0.25,
+    maxBet: 6.25,
+    paylines: 25,
+    reels: 5,
+    rows: 3,
+    features: ["Progressive Jackpot", "Jackpot Wheel", "Free Spins", "Wild Symbol"],
+    imageUrl: "/games/mega-moolah.jpg",
+    demoUrl: "https://demo.microgaming.com/mega-moolah",
+    realUrl: "",
+    description: "The legendary progressive jackpot slot that has created more millionaires than any other game.",
+    releaseDate: "2006-11-01",
+    popularity: 96,
+    isJackpot: true,
+    jackpotAmount: 8765432.10,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+
+  // Play'n GO Games
+  {
+    id: "book-of-dead",
+    name: "Book of Dead",
+    provider: "Play'n GO",
+    category: ["featured", "popular", "bonus"],
+    theme: "Ancient Egypt",
+    rtp: 96.21,
+    volatility: "high",
+    minBet: 0.01,
+    maxBet: 100.00,
+    paylines: 10,
+    reels: 5,
+    rows: 3,
+    features: ["Expanding Symbol", "Free Spins", "Gamble Feature", "Scatter Symbol"],
+    imageUrl: "/games/book-of-dead.jpg",
+    demoUrl: "https://demo.playngo.com/book-of-dead",
+    realUrl: "",
+    description: "Explore ancient Egyptian tombs with Rich Wilde in this high volatility adventure slot.",
+    releaseDate: "2016-01-01",
+    popularity: 93,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  },
+  {
+    id: "reactoonz",
+    name: "Reactoonz",
+    provider: "Play'n GO",
+    category: ["cluster", "bonus"],
+    theme: "Aliens & Space",
+    rtp: 96.51,
+    volatility: "high",
+    minBet: 0.20,
+    maxBet: 100.00,
+    paylines: 0, // Cluster pays
+    reels: 7,
+    rows: 7,
+    features: ["Cluster Pays", "Quantum Features", "Gargantoon", "Energy Collection"],
+    imageUrl: "/games/reactoonz.jpg",
+    demoUrl: "https://demo.playngo.com/reactoonz",
+    realUrl: "",
+    description: "Meet the cute alien Reactoonz in this cluster pays slot with cascading wins and quantum features.",
+    releaseDate: "2017-10-01",
+    popularity: 87,
+    isJackpot: false,
+    isMobile: true,
+    isDesktop: true,
+    gameSize: { width: 800, height: 600 }
+  }
+];
 
 class SlotsApiService {
   private static instance: SlotsApiService;
-  private readonly providers: SlotProvider[] = [
-    {
-      id: "pragmatic-play",
-      name: "Pragmatic Play",
-      apiEndpoint: "https://api.pragmaticplay.net/gaming",
-      apiKey: import.meta.env.VITE_PRAGMATIC_API_KEY || "production-api-key",
-      isActive: true,
-      gameCount: 200,
-      supportedCurrencies: ["GC", "SC", "USD"],
-    },
-    {
-      id: "netent",
-      name: "NetEnt",
-      apiEndpoint: "https://api.netent.com/games",
-      apiKey: import.meta.env.VITE_NETENT_API_KEY || "production-api-key",
-      isActive: true,
-      gameCount: 150,
-      supportedCurrencies: ["GC", "SC", "USD"],
-    },
-    {
-      id: "playtech",
-      name: "Playtech",
-      apiEndpoint: "https://api.playtech.com/gaming",
-      apiKey: import.meta.env.VITE_PLAYTECH_API_KEY || "production-api-key",
-      isActive: true,
-      gameCount: 180,
-      supportedCurrencies: ["GC", "SC", "USD"],
-    },
-    {
-      id: "microgaming",
-      name: "Microgaming",
-      apiEndpoint: "https://api.microgaming.com/slots",
-      apiKey: import.meta.env.VITE_MICROGAMING_API_KEY || "production-api-key",
-      isActive: true,
-      gameCount: 300,
-      supportedCurrencies: ["GC", "SC", "USD"],
-    },
-    {
-      id: "evolution",
-      name: "Evolution Gaming",
-      apiEndpoint: "https://api.evolutiongaming.com/live",
-      apiKey: import.meta.env.VITE_EVOLUTION_API_KEY || "production-api-key",
-      isActive: true,
-      gameCount: 50,
-      supportedCurrencies: ["GC", "SC", "USD"],
-    },
-  ];
+  private baseUrl = '/api/slots';
+  private activeSessions: Map<string, GameSession> = new Map();
 
   static getInstance(): SlotsApiService {
     if (!SlotsApiService.instance) {
@@ -124,488 +427,360 @@ class SlotsApiService {
     return SlotsApiService.instance;
   }
 
-  /**
-   * Get all available slot games from providers
-   */
+  // Helper method for fetch with timeout
+  private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
+  }
+
+  // Get all available slot games
   async getAllGames(): Promise<SlotGame[]> {
     try {
-      const allGames: SlotGame[] = [];
-
-      for (const provider of this.providers.filter((p) => p.isActive)) {
-        try {
-          const games = await this.getProviderGames(provider);
-          allGames.push(...games);
-        } catch (error) {
-          console.warn(`Failed to load games from ${provider.name}:`, error);
-          // Continue with other providers
-        }
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/games`);
+      
+      if (!response.ok) {
+        console.warn(`Slots API returned ${response.status}, using mock data`);
+        return this.getMockGames();
       }
 
-      // If no external games loaded, return cached games
-      if (allGames.length === 0) {
-        return this.getCachedSlotGames();
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.warn('Slots API response is not JSON, using mock data');
+        return this.getMockGames();
       }
 
-      return allGames.sort((a, b) => b.popularity - a.popularity);
+      const games = await response.json();
+      return Array.isArray(games) ? games : this.getMockGames();
     } catch (error) {
-      console.error("Error loading slot games:", error);
-      return this.getCachedSlotGames();
+      console.warn('Error fetching slot games, using mock data:', error);
+      return this.getMockGames();
     }
   }
 
-  /**
-   * Get games from a specific provider
-   */
-  async getProviderGames(provider: SlotProvider): Promise<SlotGame[]> {
+  // Get games by provider
+  async getGamesByProvider(providerId: string): Promise<SlotGame[]> {
     try {
-      // Attempt to fetch from backend API
-      const response = await fetch(`/api/slots/provider/${provider.id}`);
-      if (response.ok) {
-        return await response.json();
-      }
-
-      // Use cached games for provider
-      console.log(`Using cached games from ${provider.name}`);
-      return this.getCachedGamesForProvider(provider.id);
+      const allGames = await this.getAllGames();
+      return allGames.filter(game => 
+        game.provider.toLowerCase().replace(/[^a-z0-9]/g, '-') === providerId
+      );
     } catch (error) {
-      console.error(`Error loading games from ${provider.name}:`, error);
-      return this.getCachedGamesForProvider(provider.id);
+      console.warn('Error fetching games by provider:', error);
+      return [];
     }
   }
 
-  /**
-   * Create a new game session
-   */
+  // Get featured games
+  async getFeaturedGames(): Promise<SlotGame[]> {
+    try {
+      const allGames = await this.getAllGames();
+      return allGames
+        .filter(game => game.category.includes('featured'))
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 12);
+    } catch (error) {
+      console.warn('Error fetching featured games:', error);
+      return [];
+    }
+  }
+
+  // Get popular games
+  async getPopularGames(): Promise<SlotGame[]> {
+    try {
+      const allGames = await this.getAllGames();
+      return allGames
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 20);
+    } catch (error) {
+      console.warn('Error fetching popular games:', error);
+      return [];
+    }
+  }
+
+  // Get new games
+  async getNewGames(): Promise<SlotGame[]> {
+    try {
+      const allGames = await this.getAllGames();
+      return allGames
+        .filter(game => {
+          const releaseDate = new Date(game.releaseDate);
+          const monthsAgo = new Date();
+          monthsAgo.setMonth(monthsAgo.getMonth() - 6);
+          return releaseDate > monthsAgo;
+        })
+        .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime())
+        .slice(0, 15);
+    } catch (error) {
+      console.warn('Error fetching new games:', error);
+      return [];
+    }
+  }
+
+  // Get jackpot games
+  async getJackpotGames(): Promise<SlotGame[]> {
+    try {
+      const allGames = await this.getAllGames();
+      return allGames
+        .filter(game => game.isJackpot)
+        .sort((a, b) => (b.jackpotAmount || 0) - (a.jackpotAmount || 0));
+    } catch (error) {
+      console.warn('Error fetching jackpot games:', error);
+      return [];
+    }
+  }
+
+  // Get game details
+  async getGameDetails(gameId: string): Promise<SlotGame | null> {
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/games/${gameId}`);
+      
+      if (!response.ok) {
+        console.warn(`Game details API returned ${response.status}, using mock data`);
+        return this.getMockGames().find(game => game.id === gameId) || null;
+      }
+
+      const game = await response.json();
+      return game;
+    } catch (error) {
+      console.warn('Error fetching game details, using mock data:', error);
+      return this.getMockGames().find(game => game.id === gameId) || null;
+    }
+  }
+
+  // Create game session
   async createGameSession(
     gameId: string,
     userId: string,
     currency: "GC" | "SC",
-    initialBalance: number,
+    initialBalance: number
   ): Promise<GameSession> {
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const session: GameSession = {
+      sessionId,
+      gameId,
+      userId,
+      currency,
+      initialBalance,
+      currentBalance: initialBalance,
+      totalBet: 0,
+      totalWin: 0,
+      spinsCount: 0,
+      status: "active",
+      startTime: new Date().toISOString(),
+      lastActivity: new Date().toISOString()
+    };
+
     try {
-      const sessionId = `session_${Date.now()}_${userId}_${gameId}`;
-
-      const session: GameSession = {
-        sessionId,
-        gameId,
-        userId,
-        balance: initialBalance,
-        currency,
-        startTime: new Date(),
-        lastActivity: new Date(),
-        totalBets: 0,
-        totalWins: 0,
-        spinCount: 0,
-        isActive: true,
-      };
-
-      // In production: await fetch('/api/slots/session', { method: 'POST', ... });
-      console.log("Created game session:", session);
-
-      return session;
-    } catch (error) {
-      console.error("Error creating game session:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Perform a spin
-   */
-  async performSpin(
-    sessionId: string,
-    betAmount: number,
-    betLines: number = 25,
-  ): Promise<SpinResult> {
-    try {
-      // In production: await fetch('/api/slots/spin', { method: 'POST', ... });
-
-      // Generate demo spin result
-      const symbols = this.generateRandomSymbols();
-      const { winAmount, paylines } = this.calculateWin(
-        symbols,
-        betAmount,
-        betLines,
-      );
-
-      const spinResult: SpinResult = {
-        spinId: `spin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        sessionId,
-        betAmount,
-        winAmount,
-        symbols,
-        paylines,
-        features: this.checkForFeatures(symbols),
-        gameState: {
-          balance: 10000 - betAmount + winAmount, // Calculated from user's actual balance
-          totalBets: betAmount,
-          totalWins: winAmount,
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        timestamp: new Date(),
-      };
+        body: JSON.stringify(session)
+      });
 
-      console.log("Spin result:", spinResult);
-      return spinResult;
+      if (response.ok) {
+        const createdSession = await response.json();
+        this.activeSessions.set(sessionId, createdSession);
+        return createdSession;
+      }
     } catch (error) {
-      console.error("Error performing spin:", error);
-      throw error;
+      console.warn('Error creating session on server, using local session:', error);
     }
+
+    // Fallback to local session
+    this.activeSessions.set(sessionId, session);
+    return session;
   }
 
-  /**
-   * Get game launch URL for iframe embedding
-   */
+  // Get game launch URL
   async getGameLaunchUrl(
     gameId: string,
     sessionId: string,
-    currency: "GC" | "SC" = "GC",
+    currency: "GC" | "SC"
   ): Promise<string> {
     try {
-      const game = await this.getGameById(gameId);
-      if (!game) {
-        throw new Error("Game not found");
+      const game = await this.getGameDetails(gameId);
+      if (!game) throw new Error('Game not found');
+
+      // For demo mode, return the demo URL with session parameters
+      if (currency === "GC" || !game.realUrl) {
+        const demoUrl = new URL(game.demoUrl);
+        demoUrl.searchParams.set('sessionId', sessionId);
+        demoUrl.searchParams.set('currency', currency);
+        demoUrl.searchParams.set('mode', 'demo');
+        return demoUrl.toString();
       }
 
-      // In production, this would generate a secure launch URL with the provider
-      const baseUrl = game.gameUrl;
-      const params = new URLSearchParams({
-        sessionId,
-        currency,
-        mode: currency === "SC" ? "real" : "practice",
-        language: "en",
-        returnUrl: window.location.origin + "/games",
+      // For real money mode, construct real play URL
+      const realUrl = new URL(game.realUrl || game.demoUrl);
+      realUrl.searchParams.set('sessionId', sessionId);
+      realUrl.searchParams.set('currency', currency);
+      realUrl.searchParams.set('mode', 'real');
+      return realUrl.toString();
+    } catch (error) {
+      console.warn('Error getting game launch URL:', error);
+      // Fallback URL for testing
+      return `https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?lang=en&cur=USD&gameSymbol=vs20olympgate&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&sessionId=${sessionId}&currency=${currency}`;
+    }
+  }
+
+  // Perform spin
+  async performSpin(
+    sessionId: string,
+    betAmount: number,
+    betLines: number
+  ): Promise<SpinResult> {
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/spin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          sessionId,
+          betAmount,
+          betLines
+        })
       });
 
-      return `${baseUrl}?${params.toString()}`;
-    } catch (error) {
-      console.error("Error getting game launch URL:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get detailed game information
-   */
-  async getGameById(gameId: string): Promise<SlotGame | null> {
-    try {
-      const allGames = await this.getAllGames();
-      return allGames.find((game) => game.id === gameId) || null;
-    } catch (error) {
-      console.error("Error getting game by ID:", error);
-      return null;
-    }
-  }
-
-  /**
-   * Get games by category
-   */
-  async getGamesByCategory(category: string): Promise<SlotGame[]> {
-    try {
-      const allGames = await this.getAllGames();
-      return allGames.filter((game) =>
-        game.category.includes(category.toLowerCase()),
-      );
-    } catch (error) {
-      console.error("Error getting games by category:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Search games
-   */
-  async searchGames(query: string): Promise<SlotGame[]> {
-    try {
-      const allGames = await this.getAllGames();
-      const lowerQuery = query.toLowerCase();
-
-      return allGames.filter(
-        (game) =>
-          game.name.toLowerCase().includes(lowerQuery) ||
-          game.theme.toLowerCase().includes(lowerQuery) ||
-          game.features.some((feature) =>
-            feature.toLowerCase().includes(lowerQuery),
-          ),
-      );
-    } catch (error) {
-      console.error("Error searching games:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Generate random slot symbols for demo spins
-   */
-  private generateRandomSymbols(): string[][] {
-    const symbols = [
-      "🍒",
-      "🍋",
-      "🍊",
-      "🍇",
-      "⭐",
-      "💎",
-      "🔔",
-      "💰",
-      "🪙",
-      "👑",
-    ];
-    const reels = 5;
-    const rows = 3;
-
-    const result: string[][] = [];
-
-    for (let reel = 0; reel < reels; reel++) {
-      result[reel] = [];
-      for (let row = 0; row < rows; row++) {
-        result[reel][row] = symbols[Math.floor(Math.random() * symbols.length)];
+      if (response.ok) {
+        return await response.json();
       }
+    } catch (error) {
+      console.warn('Error performing spin on server, simulating locally:', error);
     }
+
+    // Fallback to simulated spin
+    return this.simulateSpin(sessionId, betAmount, betLines);
+  }
+
+  // Get providers
+  async getProviders(): Promise<SlotProvider[]> {
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/providers`);
+      
+      if (!response.ok) {
+        console.warn('Providers API failed, using mock data');
+        return FREE_SLOT_PROVIDERS;
+      }
+
+      const providers = await response.json();
+      return Array.isArray(providers) ? providers : FREE_SLOT_PROVIDERS;
+    } catch (error) {
+      console.warn('Error fetching providers, using mock data:', error);
+      return FREE_SLOT_PROVIDERS;
+    }
+  }
+
+  // Get session details
+  async getSession(sessionId: string): Promise<GameSession | null> {
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/sessions/${sessionId}`);
+      
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.warn('Error fetching session:', error);
+    }
+
+    return this.activeSessions.get(sessionId) || null;
+  }
+
+  // End game session
+  async endSession(sessionId: string): Promise<boolean> {
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/sessions/${sessionId}/end`, {
+        method: 'POST'
+      });
+
+      if (response.ok) {
+        this.activeSessions.delete(sessionId);
+        return true;
+      }
+    } catch (error) {
+      console.warn('Error ending session on server:', error);
+    }
+
+    // Local cleanup
+    this.activeSessions.delete(sessionId);
+    return true;
+  }
+
+  // Private methods
+  private getMockGames(): SlotGame[] {
+    return MOCK_SLOT_GAMES;
+  }
+
+  private simulateSpin(sessionId: string, betAmount: number, betLines: number): SpinResult {
+    const session = this.activeSessions.get(sessionId);
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    // Simple RNG for demo purposes
+    const isWin = Math.random() < 0.3; // 30% win rate
+    const winMultiplier = isWin ? Math.random() * 50 + 1 : 0;
+    const winAmount = isWin ? betAmount * winMultiplier : 0;
+    const newBalance = session.currentBalance - betAmount + winAmount;
+
+    // Update session
+    session.currentBalance = Math.max(0, newBalance);
+    session.totalBet += betAmount;
+    session.totalWin += winAmount;
+    session.spinsCount += 1;
+    session.lastActivity = new Date().toISOString();
+
+    // Generate random symbols
+    const symbols = Array(5).fill(null).map(() =>
+      Array(3).fill(null).map(() => 
+        ['🍒', '🍋', '🔔', '⭐', '💎', '👑'][Math.floor(Math.random() * 6)]
+      )
+    );
+
+    const result: SpinResult = {
+      spinId: `spin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      sessionId,
+      betAmount,
+      betLines,
+      winAmount,
+      winLines: isWin ? [{
+        line: Math.floor(Math.random() * betLines) + 1,
+        symbols: symbols[0],
+        multiplier: winMultiplier,
+        amount: winAmount
+      }] : [],
+      symbols,
+      isBonus: Math.random() < 0.05, // 5% bonus chance
+      isFreeSpins: Math.random() < 0.03, // 3% free spins chance
+      isJackpot: Math.random() < 0.001, // 0.1% jackpot chance
+      gameState: {
+        balance: session.currentBalance,
+        freeSpinsRemaining: 0,
+        bonusFeatureActive: false
+      },
+      timestamp: new Date().toISOString()
+    };
 
     return result;
-  }
-
-  /**
-   * Calculate win amount and paylines
-   */
-  private calculateWin(
-    symbols: string[][],
-    betAmount: number,
-    betLines: number,
-  ): { winAmount: number; paylines: any[] } {
-    const paylines: any[] = [];
-    let totalWin = 0;
-
-    // Simple payline calculation (left to right)
-    for (let line = 0; line < Math.min(betLines, 3); line++) {
-      const lineSymbols = symbols.map((reel) => reel[line]);
-      const firstSymbol = lineSymbols[0];
-
-      let consecutiveCount = 1;
-      for (let i = 1; i < lineSymbols.length; i++) {
-        if (lineSymbols[i] === firstSymbol) {
-          consecutiveCount++;
-        } else {
-          break;
-        }
-      }
-
-      if (consecutiveCount >= 3) {
-        const multiplier = this.getSymbolMultiplier(
-          firstSymbol,
-          consecutiveCount,
-        );
-        const lineWin = (betAmount / betLines) * multiplier;
-
-        paylines.push({
-          line: line + 1,
-          symbols: lineSymbols.slice(0, consecutiveCount),
-          multiplier,
-          winAmount: lineWin,
-        });
-
-        totalWin += lineWin;
-      }
-    }
-
-    return { winAmount: totalWin, paylines };
-  }
-
-  /**
-   * Get symbol payout multiplier
-   */
-  private getSymbolMultiplier(symbol: string, count: number): number {
-    const multipliers: { [key: string]: number[] } = {
-      "👑": [0, 0, 50, 200, 1000], // Crown - highest paying
-      "💎": [0, 0, 25, 100, 500], // Diamond
-      "💰": [0, 0, 20, 75, 300], // Money bag
-      "🪙": [0, 0, 15, 50, 200], // Coin
-      "⭐": [0, 0, 10, 40, 150], // Star
-      "🔔": [0, 0, 8, 30, 100], // Bell
-      "🍇": [0, 0, 5, 20, 75], // Grapes
-      "🍊": [0, 0, 4, 15, 50], // Orange
-      "🍋": [0, 0, 3, 10, 35], // Lemon
-      "🍒": [0, 0, 2, 8, 25], // Cherry - lowest paying
-    };
-
-    return multipliers[symbol]?.[count] || 0;
-  }
-
-  /**
-   * Check for special features
-   */
-  private checkForFeatures(symbols: string[][]): any[] {
-    const features: any[] = [];
-
-    // Check for scatter symbols (stars)
-    const scatterCount = symbols
-      .flat()
-      .filter((symbol) => symbol === "⭐").length;
-    if (scatterCount >= 3) {
-      features.push({
-        type: "free_spins",
-        triggered: true,
-        data: { spins: scatterCount * 5, multiplier: 2 },
-      });
-    }
-
-    // Check for wild symbols (crowns)
-    const wildCount = symbols.flat().filter((symbol) => symbol === "👑").length;
-    if (wildCount >= 1) {
-      features.push({
-        type: "wild",
-        triggered: true,
-        data: { count: wildCount },
-      });
-    }
-
-    return features;
-  }
-
-  /**
-   * Cached slot games for reliable service availability
-   */
-  private getCachedSlotGames(): SlotGame[] {
-    return [
-      {
-        id: "coinkrazy-spinner",
-        providerId: "coinkrazy",
-        name: "CoinKrazy Spinner",
-        theme: "Classic Gold",
-        rtp: 96.8,
-        volatility: "medium",
-        minBet: 0.01,
-        maxBet: 100,
-        paylines: 25,
-        reels: 5,
-        rows: 3,
-        features: ["Wild", "Scatter", "Free Spins", "Progressive Jackpot"],
-        gameUrl: "/games/coinkrazy-spinner",
-        thumbnailUrl: "/images/slots/coinkrazy-spinner.jpg",
-        isActive: true,
-        category: ["featured", "classic", "progressive"],
-        releaseDate: "2024-01-01",
-        popularity: 95,
-      },
-      {
-        id: "lucky-scratch-gold",
-        providerId: "coinkrazy",
-        name: "Lucky Scratch Gold",
-        theme: "Scratch Cards",
-        rtp: 97.2,
-        volatility: "low",
-        minBet: 0.05,
-        maxBet: 25,
-        paylines: 1,
-        reels: 1,
-        rows: 1,
-        features: ["Instant Win", "Multipliers", "Bonus Scratches"],
-        gameUrl: "/games/lucky-scratch-gold",
-        thumbnailUrl: "/images/slots/lucky-scratch-gold.jpg",
-        isActive: true,
-        category: ["featured", "scratch", "instant"],
-        releaseDate: "2024-02-01",
-        popularity: 88,
-      },
-      {
-        id: "josey-duck-adventure",
-        providerId: "coinkrazy",
-        name: "Josey Duck Adventure",
-        theme: "Duck Adventure",
-        rtp: 96.5,
-        volatility: "high",
-        minBet: 0.02,
-        maxBet: 50,
-        paylines: 20,
-        reels: 5,
-        rows: 4,
-        features: ["Duck Hunt Bonus", "Pond Multiplier", "Free Spins"],
-        gameUrl: "/games/josey-duck-adventure",
-        thumbnailUrl: "/images/slots/josey-duck.jpg",
-        isActive: true,
-        category: ["featured", "adventure", "bonus"],
-        releaseDate: "2024-03-01",
-        popularity: 92,
-      },
-    ];
-  }
-
-  /**
-   * Get cached games for a specific provider
-   */
-  private getCachedGamesForProvider(providerId: string): SlotGame[] {
-    const providerGames: { [key: string]: SlotGame[] } = {
-      "pragmatic-play": [
-        {
-          id: "sweet-bonanza",
-          providerId: "pragmatic-play",
-          name: "Sweet Bonanza",
-          theme: "Candy",
-          rtp: 96.48,
-          volatility: "high",
-          minBet: 0.2,
-          maxBet: 100,
-          paylines: 0, // Cluster pays
-          reels: 6,
-          rows: 5,
-          features: ["Cluster Pays", "Free Spins", "Multipliers", "Tumble"],
-          gameUrl:
-            "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20fruitsw",
-          thumbnailUrl: "/images/slots/sweet-bonanza.jpg",
-          isActive: true,
-          category: ["popular", "cluster", "high-volatility"],
-          releaseDate: "2019-06-27",
-          popularity: 98,
-        },
-        {
-          id: "gates-of-olympus",
-          providerId: "pragmatic-play",
-          name: "Gates of Olympus",
-          theme: "Greek Mythology",
-          rtp: 96.5,
-          volatility: "high",
-          minBet: 0.2,
-          maxBet: 100,
-          paylines: 0, // Cluster pays
-          reels: 6,
-          rows: 5,
-          features: ["Cluster Pays", "Free Spins", "Multipliers", "Divine"],
-          gameUrl:
-            "https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympus",
-          thumbnailUrl: "/images/slots/gates-of-olympus.jpg",
-          isActive: true,
-          category: ["popular", "mythology", "high-volatility"],
-          releaseDate: "2021-02-13",
-          popularity: 97,
-        },
-      ],
-      netent: [
-        {
-          id: "starburst",
-          providerId: "netent",
-          name: "Starburst",
-          theme: "Space Gems",
-          rtp: 96.09,
-          volatility: "low",
-          minBet: 0.1,
-          maxBet: 100,
-          paylines: 10,
-          reels: 5,
-          rows: 3,
-          features: ["Wild", "Re-Spins", "Both Ways Pay"],
-          gameUrl: "https://www.netent.com/games/starburst",
-          thumbnailUrl: "/images/slots/starburst.jpg",
-          isActive: true,
-          category: ["classic", "low-volatility", "popular"],
-          releaseDate: "2012-11-14",
-          popularity: 94,
-        },
-      ],
-    };
-
-    return providerGames[providerId] || [];
   }
 }
 
 export const slotsApiService = SlotsApiService.getInstance();
 export default slotsApiService;
-export type { SlotGame, GameSession, SpinResult, SlotProvider };

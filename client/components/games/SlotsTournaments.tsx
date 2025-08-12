@@ -164,7 +164,7 @@ export default function SlotsTournaments() {
             Daily Challenges
           </TabsTrigger>
           <TabsTrigger value="hot-games">
-            <Fire className="w-4 h-4 mr-2" />
+            <Flame className="w-4 h-4 mr-2" />
             Hot Games
           </TabsTrigger>
         </TabsList>

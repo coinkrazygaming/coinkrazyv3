@@ -203,7 +203,9 @@ class BankingService {
         apiVersion: "2023-10-16",
       });
     } else {
-      console.warn("STRIPE_SECRET_KEY not provided - Stripe features will be disabled");
+      console.warn(
+        "STRIPE_SECRET_KEY not provided - Stripe features will be disabled",
+      );
       this.stripe = null as any; // Will be checked before use
     }
 

@@ -1,9 +1,9 @@
 import express from "express";
 import { bankingService } from "../services/bankingService.js";
 import { authenticateToken, requireAdmin } from "../middleware/auth.js";
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import databaseService from '../services/database.js';
+import { readFileSync } from "fs";
+import { join } from "path";
+import databaseService from "../services/database.js";
 
 const router = express.Router();
 
@@ -13,11 +13,18 @@ const router = express.Router();
 router.post("/init", requireAdmin, async (req, res) => {
   try {
     // Read and execute banking schema
-    const schemaPath = join(process.cwd(), 'server', 'database', 'banking-schema.sql');
-    const schema = readFileSync(schemaPath, 'utf8');
+    const schemaPath = join(
+      process.cwd(),
+      "server",
+      "database",
+      "banking-schema.sql",
+    );
+    const schema = readFileSync(schemaPath, "utf8");
 
     // Split by semicolon and execute each statement
-    const statements = schema.split(';').filter(stmt => stmt.trim().length > 0);
+    const statements = schema
+      .split(";")
+      .filter((stmt) => stmt.trim().length > 0);
 
     for (const statement of statements) {
       await databaseService.query(statement);

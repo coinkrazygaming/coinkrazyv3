@@ -437,11 +437,14 @@ class CMSService {
   // Forms Management
   async getAllForms(): Promise<CMSForm[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/forms`);
-      if (!response.ok) throw new Error("Failed to fetch forms");
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/forms`);
+      if (!response.ok) {
+        console.warn(`Forms API returned ${response.status}, using mock data`);
+        return this.getMockForms();
+      }
       return await this.safeJsonParse(response);
     } catch (error) {
-      console.error("Error fetching forms:", error);
+      console.warn("Error fetching forms, using mock data:", error);
       return this.getMockForms();
     }
   }

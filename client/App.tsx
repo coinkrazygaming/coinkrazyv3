@@ -180,61 +180,63 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
 );
 
 const App = () => (
-  <AppErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <SafeTooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/sportsbook" element={<Sportsbook />} />
-            <Route path="/pick-cards" element={<PickCards />} />
-            <Route path="/bingo" element={<Bingo />} />
-            <Route path="/poker" element={<Poker />} />
-            <Route path="/scratch-cards" element={<ScratchCards />} />
-            <Route path="/slots" element={<Slots />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/compliance" element={<Compliance />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/admin-setup" element={<AdminSetup />} />
-            <Route path="/how-to-play" element={<HowToPlay />} />
-            <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/social" element={<Social />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route
-              path="/daily-rewards"
-              element={
-                <ProtectedRoute>
-                  <DailyRewards />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-      </SafeTooltipProvider>
-    </QueryClientProvider>
-  </AppErrorBoundary>
+  <ReactErrorRecovery>
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <SafeTooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/store" element={<Store />} />
+              <Route path="/sportsbook" element={<Sportsbook />} />
+              <Route path="/pick-cards" element={<PickCards />} />
+              <Route path="/bingo" element={<Bingo />} />
+              <Route path="/poker" element={<Poker />} />
+              <Route path="/scratch-cards" element={<ScratchCards />} />
+              <Route path="/slots" element={<Slots />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/compliance" element={<Compliance />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/staff" element={<Staff />} />
+              <Route path="/admin-setup" element={<AdminSetup />} />
+              <Route path="/how-to-play" element={<HowToPlay />} />
+              <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/social" element={<Social />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route
+                path="/daily-rewards"
+                element={
+                  <ProtectedRoute>
+                    <DailyRewards />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+        </SafeTooltipProvider>
+      </QueryClientProvider>
+    </AppErrorBoundary>
+  </ReactErrorRecovery>
 );
 
 // Ensure root is only created once with React availability check

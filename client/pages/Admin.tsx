@@ -459,7 +459,7 @@ export default function Admin() {
 
         {/* Admin Tools Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-12">
+          <TabsList className="grid w-full grid-cols-13">
             <TabsTrigger value="dashboard">
               <BarChart3 className="w-4 h-4 mr-2" />
               Dashboard
@@ -511,6 +511,10 @@ export default function Admin() {
                   {unreadCount}
                 </Badge>
               )}
+            </TabsTrigger>
+            <TabsTrigger value="compliance">
+              <Shield className="w-4 h-4 mr-2" />
+              Compliance
             </TabsTrigger>
             <TabsTrigger value="settings">
               <Settings className="w-4 h-4 mr-2" />

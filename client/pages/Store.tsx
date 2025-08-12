@@ -39,14 +39,17 @@ interface PaymentMethod {
 export default function Store() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(null);
+
+  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(
+    null,
+  );
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("card");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("card");
   const [loading, setLoading] = useState(false);
   const [packagesLoading, setPackagesLoading] = useState(true);
   const [userBalance] = useState({ gc: 125000, sc: 450 });
-  
+
   // Dynamic package state from database
   const [packages, setPackages] = useState<GoldPackage[]>([]);
   const [featuredPackages, setFeaturedPackages] = useState<GoldPackage[]>([]);
@@ -106,15 +109,14 @@ export default function Store() {
     try {
       setPackagesLoading(true);
       const packagesData = await goldStoreService.getAllPackages();
-      
+
       // Filter active packages
-      const activePackages = packagesData.filter(pkg => pkg.isActive);
+      const activePackages = packagesData.filter((pkg) => pkg.isActive);
       setPackages(activePackages);
-      
+
       // Filter featured packages
-      const featured = activePackages.filter(pkg => pkg.featured);
+      const featured = activePackages.filter((pkg) => pkg.featured);
       setFeaturedPackages(featured);
-      
     } catch (error) {
       console.error("Failed to load packages:", error);
       toast({
@@ -136,7 +138,7 @@ export default function Store() {
       // Use the goldStoreService to process the purchase
       const success = await goldStoreService.purchasePackage(
         selectedPackage.id,
-        selectedPaymentMethod
+        selectedPaymentMethod,
       );
 
       if (success) {
@@ -190,42 +192,61 @@ export default function Store() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case "starter": return "🌟";
-      case "standard": return "⚡";
-      case "premium": return "💎";
-      case "elite": return "👑";
-      case "mega": return "🔥";
-      case "ultimate": return "🚀";
-      default: return "🎯";
+      case "starter":
+        return "🌟";
+      case "standard":
+        return "⚡";
+      case "premium":
+        return "💎";
+      case "elite":
+        return "👑";
+      case "mega":
+        return "🔥";
+      case "ultimate":
+        return "🚀";
+      default:
+        return "🎯";
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "starter": return "from-blue-500/10 to-blue-500/5";
-      case "standard": return "from-green-500/10 to-green-500/5";
-      case "premium": return "from-purple-500/10 to-purple-500/5";
-      case "elite": return "from-orange-500/10 to-orange-500/5";
-      case "mega": return "from-red-500/10 to-red-500/5";
-      case "ultimate": return "from-gray-900/10 to-gray-900/5";
-      default: return "from-casino-blue/10 to-casino-blue/5";
+      case "starter":
+        return "from-blue-500/10 to-blue-500/5";
+      case "standard":
+        return "from-green-500/10 to-green-500/5";
+      case "premium":
+        return "from-purple-500/10 to-purple-500/5";
+      case "elite":
+        return "from-orange-500/10 to-orange-500/5";
+      case "mega":
+        return "from-red-500/10 to-red-500/5";
+      case "ultimate":
+        return "from-gray-900/10 to-gray-900/5";
+      default:
+        return "from-casino-blue/10 to-casino-blue/5";
     }
   };
 
   const renderPackageCard = (pkg: GoldPackage, isFeatured: boolean = false) => {
     const savings = pkg.originalPrice ? pkg.originalPrice - pkg.price : 0;
-    
+
     return (
       <Card
         key={pkg.id}
         className={`relative hover:shadow-lg transition-all duration-300 ${
-          pkg.popular ? "border-gold-500 bg-gradient-to-br from-gold/5 to-gold/10" : 
-          `bg-gradient-to-br ${getCategoryColor(pkg.category)}`
+          pkg.popular
+            ? "border-gold-500 bg-gradient-to-br from-gold/5 to-gold/10"
+            : `bg-gradient-to-br ${getCategoryColor(pkg.category)}`
         } ${pkg.design?.animation === "pulse" ? "animate-pulse" : ""}`}
-        style={pkg.design ? {
-          borderColor: pkg.design.borderColor,
-          background: `linear-gradient(${pkg.design.backgroundGradient.direction}, ${pkg.design.backgroundGradient.from}, ${pkg.design.backgroundGradient.to})`,
-        } : undefined}
+        style={
+          pkg.design
+            ? {
+                borderColor: pkg.design.borderColor,
+                background: `linear-gradient(${pkg.design.backgroundGradient.direction}, ${pkg.design.backgroundGradient.from}, ${pkg.design.backgroundGradient.to})`,
+              }
+            : undefined
+        }
       >
         {/* Featured Badge */}
         {isFeatured && (
@@ -233,7 +254,7 @@ export default function Store() {
             🔥 HOT DEAL
           </Badge>
         )}
-        
+
         {/* Popular Badge */}
         {pkg.popular && !isFeatured && (
           <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-gold-500 text-black">
@@ -243,39 +264,77 @@ export default function Store() {
 
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-2xl">{pkg.design?.icon || getCategoryIcon(pkg.category)}</span>
-            <CardTitle className="text-lg" style={pkg.design ? { color: pkg.design.textColor } : undefined}>
+            <span className="text-2xl">
+              {pkg.design?.icon || getCategoryIcon(pkg.category)}
+            </span>
+            <CardTitle
+              className="text-lg"
+              style={pkg.design ? { color: pkg.design.textColor } : undefined}
+            >
               {pkg.name}
             </CardTitle>
           </div>
-          
+
           <div className="space-y-1">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-2xl font-bold" style={pkg.design ? { color: pkg.design.accentColor } : undefined}>
-                {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}
+              <span
+                className="text-2xl font-bold"
+                style={
+                  pkg.design ? { color: pkg.design.accentColor } : undefined
+                }
+              >
+                {pkg.currency === "USD"
+                  ? "$"
+                  : pkg.currency === "EUR"
+                    ? "€"
+                    : pkg.currency === "GBP"
+                      ? "£"
+                      : "C$"}
                 {pkg.price.toFixed(2)}
               </span>
               {pkg.originalPrice && pkg.originalPrice > pkg.price && (
                 <span className="text-sm text-muted-foreground line-through">
-                  {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}
+                  {pkg.currency === "USD"
+                    ? "$"
+                    : pkg.currency === "EUR"
+                      ? "€"
+                      : pkg.currency === "GBP"
+                        ? "£"
+                        : "C$"}
                   {pkg.originalPrice.toFixed(2)}
                 </span>
               )}
             </div>
             {savings > 0 && (
               <div className="text-xs text-green-500 font-medium">
-                Save {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}{savings.toFixed(2)}
+                Save{" "}
+                {pkg.currency === "USD"
+                  ? "$"
+                  : pkg.currency === "EUR"
+                    ? "€"
+                    : pkg.currency === "GBP"
+                      ? "£"
+                      : "C$"}
+                {savings.toFixed(2)}
               </div>
             )}
           </div>
         </CardHeader>
 
-        <CardContent className="text-center space-y-4" style={pkg.design ? { color: pkg.design.textColor } : undefined}>
+        <CardContent
+          className="text-center space-y-4"
+          style={pkg.design ? { color: pkg.design.textColor } : undefined}
+        >
           <p className="text-sm opacity-90">{pkg.description}</p>
-          
+
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-1">
-              <Coins className="w-4 h-4 text-gold-500" style={pkg.design ? { color: pkg.design.accentColor } : undefined} />
+              <Coins
+                className="w-4 h-4 text-gold-500"
+                style={
+                  pkg.design ? { color: pkg.design.accentColor } : undefined
+                }
+              />
               <span className="text-lg font-bold text-gold-400">
                 {pkg.goldCoins.toLocaleString()}
               </span>
@@ -285,12 +344,19 @@ export default function Store() {
             {pkg.sweepsCoins > 0 && (
               <>
                 <div className="flex items-center justify-center gap-1">
-                  <Crown className="w-4 h-4 text-casino-blue" style={pkg.design ? { color: pkg.design.accentColor } : undefined} />
+                  <Crown
+                    className="w-4 h-4 text-casino-blue"
+                    style={
+                      pkg.design ? { color: pkg.design.accentColor } : undefined
+                    }
+                  />
                   <span className="text-lg font-bold text-casino-blue">
                     {pkg.sweepsCoins}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">Sweeps Coins</div>
+                <div className="text-xs text-muted-foreground">
+                  Sweeps Coins
+                </div>
               </>
             )}
 
@@ -304,10 +370,14 @@ export default function Store() {
 
           <div className="flex flex-wrap gap-1 justify-center">
             {pkg.bestValue && (
-              <Badge variant="outline" className="text-xs">💎 Best Value</Badge>
+              <Badge variant="outline" className="text-xs">
+                💎 Best Value
+              </Badge>
             )}
             {pkg.limitedTime && (
-              <Badge variant="destructive" className="text-xs">⏰ Limited</Badge>
+              <Badge variant="destructive" className="text-xs">
+                ⏰ Limited
+              </Badge>
             )}
           </div>
 
@@ -321,12 +391,20 @@ export default function Store() {
                 ? "bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black"
                 : ""
             }`}
-            style={pkg.design?.accentColor ? {
-              backgroundColor: pkg.design.accentColor,
-              color: "#000000",
-            } : undefined}
+            style={
+              pkg.design?.accentColor
+                ? {
+                    backgroundColor: pkg.design.accentColor,
+                    color: "#000000",
+                  }
+                : undefined
+            }
           >
-            {isFeatured ? <Star className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+            {isFeatured ? (
+              <Star className="w-4 h-4 mr-2" />
+            ) : (
+              <Plus className="w-4 h-4 mr-2" />
+            )}
             Purchase
           </Button>
         </CardContent>
@@ -372,7 +450,9 @@ export default function Store() {
                 onClick={loadPackages}
                 disabled={packagesLoading}
               >
-                <RefreshCw className={`w-4 h-4 mr-1 ${packagesLoading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`w-4 h-4 mr-1 ${packagesLoading ? "animate-spin" : ""}`}
+                />
                 Refresh
               </Button>
               <div className="text-center">
@@ -385,7 +465,9 @@ export default function Store() {
                 <div className="text-xl font-bold text-casino-blue">
                   {userBalance.sc}
                 </div>
-                <div className="text-sm text-muted-foreground">Sweeps Coins</div>
+                <div className="text-sm text-muted-foreground">
+                  Sweeps Coins
+                </div>
               </div>
             </div>
           </div>
@@ -410,9 +492,12 @@ export default function Store() {
             <Card className="text-center p-8">
               <CardContent>
                 <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Packages Available</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No Packages Available
+                </h3>
                 <p className="text-muted-foreground">
-                  Store packages are currently being updated. Please check back soon.
+                  Store packages are currently being updated. Please check back
+                  soon.
                 </p>
                 <Button onClick={loadPackages} className="mt-4">
                   <RefreshCw className="w-4 h-4 mr-2" />
@@ -433,7 +518,8 @@ export default function Store() {
             <Shield className="w-12 h-12 text-green-500 mx-auto mb-4" />
             <h3 className="font-bold mb-2">Secure Payments</h3>
             <p className="text-sm text-muted-foreground">
-              All transactions are encrypted and processed through secure payment gateways
+              All transactions are encrypted and processed through secure
+              payment gateways
             </p>
           </Card>
           <Card className="text-center p-6">
@@ -474,17 +560,27 @@ export default function Store() {
                 <div className="flex items-center justify-between mb-2">
                   <span>{selectedPackage.name}</span>
                   <span className="font-bold">
-                    {selectedPackage.currency === "USD" ? "$" : selectedPackage.currency === "EUR" ? "€" : selectedPackage.currency === "GBP" ? "£" : "C$"}
+                    {selectedPackage.currency === "USD"
+                      ? "$"
+                      : selectedPackage.currency === "EUR"
+                        ? "€"
+                        : selectedPackage.currency === "GBP"
+                          ? "£"
+                          : "C$"}
                     {selectedPackage.price.toFixed(2)}
                   </span>
                 </div>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <div>• {selectedPackage.goldCoins.toLocaleString()} Gold Coins</div>
+                  <div>
+                    • {selectedPackage.goldCoins.toLocaleString()} Gold Coins
+                  </div>
                   {selectedPackage.sweepsCoins > 0 && (
                     <div>• {selectedPackage.sweepsCoins} Sweeps Coins</div>
                   )}
                   {selectedPackage.bonus.enabled && (
-                    <div className="text-green-400">• {selectedPackage.bonus.description}</div>
+                    <div className="text-green-400">
+                      • {selectedPackage.bonus.description}
+                    </div>
                   )}
                 </div>
               </div>
@@ -593,10 +689,13 @@ export default function Store() {
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Lock className="w-4 h-4 text-green-500" />
-                  <span className="font-medium text-green-400">Secure Payment</span>
+                  <span className="font-medium text-green-400">
+                    Secure Payment
+                  </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Your payment information is encrypted and secure. We never store your card details.
+                  Your payment information is encrypted and secure. We never
+                  store your card details.
                 </p>
               </div>
 
@@ -614,13 +713,22 @@ export default function Store() {
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Complete Purchase - {selectedPackage.currency === "USD" ? "$" : selectedPackage.currency === "EUR" ? "€" : selectedPackage.currency === "GBP" ? "£" : "C$"}{selectedPackage.price.toFixed(2)}
+                    Complete Purchase -{" "}
+                    {selectedPackage.currency === "USD"
+                      ? "$"
+                      : selectedPackage.currency === "EUR"
+                        ? "€"
+                        : selectedPackage.currency === "GBP"
+                          ? "£"
+                          : "C$"}
+                    {selectedPackage.price.toFixed(2)}
                   </>
                 )}
               </Button>
 
               <p className="text-xs text-center text-muted-foreground">
-                By completing this purchase, you agree to our Terms of Service and confirm you are 18+ years old.
+                By completing this purchase, you agree to our Terms of Service
+                and confirm you are 18+ years old.
               </p>
             </CardContent>
           </Card>

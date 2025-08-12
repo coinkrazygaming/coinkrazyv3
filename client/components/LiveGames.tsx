@@ -86,20 +86,20 @@ import {
   Plus,
   Minus,
   X,
-  RotateCcw
+  RotateCcw,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { 
-  liveGamesService, 
-  LiveGame, 
-  LiveDealer, 
+import {
+  liveGamesService,
+  LiveGame,
+  LiveDealer,
   LiveGameTournament,
   LiveChatMessage,
   LiveGameType,
   LiveGameStatus,
   LiveGamePromotion,
   CameraAngle,
-  StreamQuality
+  StreamQuality,
 } from "@/services/liveGamesService";
 
 export default function LiveGames() {
@@ -109,18 +109,25 @@ export default function LiveGames() {
   const [tournaments, setTournaments] = useState<LiveGameTournament[]>([]);
   const [promotions, setPromotions] = useState<LiveGamePromotion[]>([]);
   const [selectedGame, setSelectedGame] = useState<LiveGame | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<LiveGameType | 'all'>('all');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'featured' | 'vip' | 'new' | 'popular'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGameType, setSelectedGameType] = useState<
+    LiveGameType | "all"
+  >("all");
+  const [selectedCategory, setSelectedCategory] = useState<
+    "all" | "featured" | "vip" | "new" | "popular"
+  >("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showGameDialog, setShowGameDialog] = useState(false);
   const [showDealerDialog, setShowDealerDialog] = useState(false);
   const [showTournamentDialog, setShowTournamentDialog] = useState(false);
   const [selectedDealer, setSelectedDealer] = useState<LiveDealer | null>(null);
-  const [selectedTournament, setSelectedTournament] = useState<LiveGameTournament | null>(null);
+  const [selectedTournament, setSelectedTournament] =
+    useState<LiveGameTournament | null>(null);
   const [chatMessages, setChatMessages] = useState<LiveChatMessage[]>([]);
-  const [newChatMessage, setNewChatMessage] = useState('');
-  const [currentCamera, setCurrentCamera] = useState<string>('main');
-  const [streamQuality, setStreamQuality] = useState<StreamQuality | null>(null);
+  const [newChatMessage, setNewChatMessage] = useState("");
+  const [currentCamera, setCurrentCamera] = useState<string>("main");
+  const [streamQuality, setStreamQuality] = useState<StreamQuality | null>(
+    null,
+  );
   const [isStreamFullscreen, setIsStreamFullscreen] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -159,9 +166,9 @@ export default function LiveGames() {
     updateIntervalRef.current = setInterval(() => {
       const updatedGames = liveGamesService.getLiveGames();
       setLiveGames(updatedGames);
-      
+
       if (selectedGame) {
-        const updatedGame = updatedGames.find(g => g.id === selectedGame.id);
+        const updatedGame = updatedGames.find((g) => g.id === selectedGame.id);
         if (updatedGame) {
           setSelectedGame(updatedGame);
           const history = liveGamesService.getChatHistory(updatedGame.id);
@@ -175,28 +182,43 @@ export default function LiveGames() {
     let filtered = liveGames;
 
     // Filter by game type
-    if (selectedGameType !== 'all') {
-      filtered = filtered.filter(game => game.type === selectedGameType);
+    if (selectedGameType !== "all") {
+      filtered = filtered.filter((game) => game.type === selectedGameType);
     }
 
     // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(game => game.category === selectedCategory);
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((game) => game.category === selectedCategory);
     }
 
     // Filter by search
     if (searchQuery) {
-      filtered = filtered.filter(game =>
-        game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        game.dealer.name.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (game) =>
+          game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          game.dealer.name.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
     return filtered.sort((a, b) => {
       // Sort by: featured > vip > popular > others, then by player count
-      const aScore = a.category === 'featured' ? 4 : a.category === 'vip' ? 3 : a.category === 'popular' ? 2 : 1;
-      const bScore = b.category === 'featured' ? 4 : b.category === 'vip' ? 3 : b.category === 'popular' ? 2 : 1;
-      
+      const aScore =
+        a.category === "featured"
+          ? 4
+          : a.category === "vip"
+            ? 3
+            : a.category === "popular"
+              ? 2
+              : 1;
+      const bScore =
+        b.category === "featured"
+          ? 4
+          : b.category === "vip"
+            ? 3
+            : b.category === "popular"
+              ? 2
+              : 1;
+
       if (aScore !== bScore) return bScore - aScore;
       return b.players.length - a.players.length;
     });
@@ -209,20 +231,20 @@ export default function LiveGames() {
       if (result.success) {
         setSelectedGame(game);
         setShowGameDialog(true);
-        
+
         // Initialize stream quality
         if (game.quality.length > 0) {
           setStreamQuality(game.quality[0]);
         }
-        
+
         // Load chat history
         const history = liveGamesService.getChatHistory(game.id);
         setChatMessages(history);
       } else {
-        console.error('Failed to join game:', result.error);
+        console.error("Failed to join game:", result.error);
       }
     } catch (error) {
-      console.error('Error joining game:', error);
+      console.error("Error joining game:", error);
     } finally {
       setIsJoiningGame(false);
     }
@@ -245,18 +267,22 @@ export default function LiveGames() {
         playerId: user.id,
         amount,
         type: betType,
-        options
+        options,
       });
     } catch (error) {
-      console.error('Error placing bet:', error);
+      console.error("Error placing bet:", error);
     }
   };
 
   const sendChatMessage = () => {
     if (!newChatMessage.trim() || !selectedGame || !user) return;
 
-    liveGamesService.sendChatMessage(selectedGame.id, newChatMessage, user.username);
-    setNewChatMessage('');
+    liveGamesService.sendChatMessage(
+      selectedGame.id,
+      newChatMessage,
+      user.username,
+    );
+    setNewChatMessage("");
   };
 
   const switchCamera = (cameraId: string) => {
@@ -279,7 +305,7 @@ export default function LiveGames() {
     try {
       await liveGamesService.tipDealer(selectedGame.id, amount);
     } catch (error) {
-      console.error('Error tipping dealer:', error);
+      console.error("Error tipping dealer:", error);
     }
   };
 
@@ -292,31 +318,47 @@ export default function LiveGames() {
 
   const getGameTypeIcon = (type: LiveGameType) => {
     switch (type) {
-      case 'live-blackjack': return <Target className="w-5 h-5" />;
-      case 'live-roulette': return <Target className="w-5 h-5" />;
-      case 'live-baccarat': return <Crown className="w-5 h-5" />;
-      case 'live-poker': return <Target className="w-5 h-5" />;
-      case 'live-craps': return <Target className="w-5 h-5" />;
-      case 'live-wheel': return <Target className="w-5 h-5" />;
-      default: return <Gamepad2 className="w-5 h-5" />;
+      case "live-blackjack":
+        return <Target className="w-5 h-5" />;
+      case "live-roulette":
+        return <Target className="w-5 h-5" />;
+      case "live-baccarat":
+        return <Crown className="w-5 h-5" />;
+      case "live-poker":
+        return <Target className="w-5 h-5" />;
+      case "live-craps":
+        return <Target className="w-5 h-5" />;
+      case "live-wheel":
+        return <Target className="w-5 h-5" />;
+      default:
+        return <Gamepad2 className="w-5 h-5" />;
     }
   };
 
   const getStatusBadgeVariant = (status: LiveGameStatus) => {
     switch (status) {
-      case 'active': return 'default';
-      case 'break': return 'secondary';
-      case 'maintenance': return 'destructive';
-      case 'offline': return 'outline';
-      default: return 'outline';
+      case "active":
+        return "default";
+      case "break":
+        return "secondary";
+      case "maintenance":
+        return "destructive";
+      case "offline":
+        return "outline";
+      default:
+        return "outline";
     }
   };
 
   const LiveGameCard = ({ game }: { game: LiveGame }) => (
-    <Card className={`hover:shadow-xl transition-all duration-300 cursor-pointer ${
-      game.isVIP ? 'border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10' : ''
-    } ${game.category === 'featured' ? 'border-purple-500/50 bg-purple-500/5' : ''}`}>
-      {game.category === 'featured' && (
+    <Card
+      className={`hover:shadow-xl transition-all duration-300 cursor-pointer ${
+        game.isVIP
+          ? "border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10"
+          : ""
+      } ${game.category === "featured" ? "border-purple-500/50 bg-purple-500/5" : ""}`}
+    >
+      {game.category === "featured" && (
         <div className="absolute -top-2 -right-2">
           <Badge className="bg-purple-600 text-white">
             <Star className="w-3 h-3 mr-1" />
@@ -324,7 +366,7 @@ export default function LiveGames() {
           </Badge>
         </div>
       )}
-      
+
       {game.isVIP && (
         <div className="absolute -top-2 -left-2">
           <Badge className="bg-gold-500 text-black">
@@ -341,17 +383,19 @@ export default function LiveGames() {
             <div>
               <CardTitle className="text-lg">{game.name}</CardTitle>
               <p className="text-sm text-muted-foreground">
-                {game.type.replace('live-', '').replace('-', ' ').toUpperCase()}
+                {game.type.replace("live-", "").replace("-", " ").toUpperCase()}
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Badge variant={getStatusBadgeVariant(game.status)}>
-              {game.status === 'active' && <Radio className="w-3 h-3 mr-1 animate-pulse" />}
+              {game.status === "active" && (
+                <Radio className="w-3 h-3 mr-1 animate-pulse" />
+              )}
               {game.status.toUpperCase()}
             </Badge>
-            {game.status === 'active' && (
+            {game.status === "active" && (
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 <span className="text-xs text-red-500 font-medium">LIVE</span>
@@ -380,7 +424,7 @@ export default function LiveGames() {
               </div>
             </div>
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -420,14 +464,14 @@ export default function LiveGames() {
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">Stream Quality</div>
             <Badge variant="outline" className="text-xs">
-              {game.quality[0]?.label || 'HD'}
+              {game.quality[0]?.label || "HD"}
             </Badge>
           </div>
-          
+
           <div className="flex flex-wrap gap-1">
-            {game.features.slice(0, 4).map(feature => (
+            {game.features.slice(0, 4).map((feature) => (
               <Badge key={feature} variant="outline" className="text-xs">
-                {feature.replace('-', ' ')}
+                {feature.replace("-", " ")}
               </Badge>
             ))}
             {game.features.length > 4 && (
@@ -446,14 +490,21 @@ export default function LiveGames() {
               {game.players.length}/{game.maxPlayers}
             </span>
           </div>
-          <Progress value={(game.players.length / game.maxPlayers) * 100} className="h-2" />
+          <Progress
+            value={(game.players.length / game.maxPlayers) * 100}
+            className="h-2"
+          />
         </div>
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <Button 
+          <Button
             onClick={() => joinGame(game)}
-            disabled={isJoiningGame || game.players.length >= game.maxPlayers || game.status !== 'active'}
+            disabled={
+              isJoiningGame ||
+              game.players.length >= game.maxPlayers ||
+              game.status !== "active"
+            }
             className="flex-1"
           >
             {isJoiningGame ? (
@@ -468,11 +519,11 @@ export default function LiveGames() {
               </>
             )}
           </Button>
-          
+
           <Button variant="outline" size="sm">
             <Eye className="w-4 h-4" />
           </Button>
-          
+
           <Button variant="outline" size="sm">
             <Bookmark className="w-4 h-4" />
           </Button>
@@ -497,7 +548,7 @@ export default function LiveGames() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -507,7 +558,7 @@ export default function LiveGames() {
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             {/* Video Stream */}
             <div className="relative bg-black rounded-lg overflow-hidden">
@@ -516,11 +567,13 @@ export default function LiveGames() {
                   <Tv className="w-16 h-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">Live Video Stream</p>
                   <p className="text-sm opacity-75">
-                    {game.streamUrl ? 'Connected to live stream' : 'Connecting...'}
+                    {game.streamUrl
+                      ? "Connected to live stream"
+                      : "Connecting..."}
                   </p>
                 </div>
               </div>
-              
+
               {/* Stream Controls Overlay */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -529,41 +582,58 @@ export default function LiveGames() {
                     variant="secondary"
                     onClick={() => setAudioEnabled(!audioEnabled)}
                   >
-                    {audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                    {audioEnabled ? (
+                      <Volume2 className="w-4 h-4" />
+                    ) : (
+                      <VolumeX className="w-4 h-4" />
+                    )}
                   </Button>
-                  
+
                   <Button
                     size="sm"
                     variant="secondary"
                     onClick={() => setVideoEnabled(!videoEnabled)}
                   >
-                    {videoEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
+                    {videoEnabled ? (
+                      <Video className="w-4 h-4" />
+                    ) : (
+                      <VideoOff className="w-4 h-4" />
+                    )}
                   </Button>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                  <Select value={streamQuality?.label || ''} onValueChange={(value) => {
-                    const quality = game.quality.find(q => q.label === value);
-                    if (quality) changeStreamQuality(quality);
-                  }}>
+                  <Select
+                    value={streamQuality?.label || ""}
+                    onValueChange={(value) => {
+                      const quality = game.quality.find(
+                        (q) => q.label === value,
+                      );
+                      if (quality) changeStreamQuality(quality);
+                    }}
+                  >
                     <SelectTrigger className="w-20 h-8">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {game.quality.map(quality => (
+                      {game.quality.map((quality) => (
                         <SelectItem key={quality.label} value={quality.label}>
                           {quality.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  
+
                   <Button
                     size="sm"
                     variant="secondary"
                     onClick={() => setIsStreamFullscreen(!isStreamFullscreen)}
                   >
-                    {isStreamFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                    {isStreamFullscreen ? (
+                      <Minimize className="w-4 h-4" />
+                    ) : (
+                      <Maximize className="w-4 h-4" />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -571,10 +641,10 @@ export default function LiveGames() {
 
             {/* Camera Angles */}
             <div className="flex gap-2 overflow-x-auto">
-              {game.table.cameraAngles.map(angle => (
+              {game.table.cameraAngles.map((angle) => (
                 <Button
                   key={angle.id}
-                  variant={currentCamera === angle.id ? 'default' : 'outline'}
+                  variant={currentCamera === angle.id ? "default" : "outline"}
                   size="sm"
                   onClick={() => switchCamera(angle.id)}
                   className="whitespace-nowrap"
@@ -588,29 +658,32 @@ export default function LiveGames() {
             {/* Game Interface */}
             <div className="border-t pt-4">
               <div className="text-center py-8">
-                <div className="text-4xl mb-4">{getGameTypeIcon(game.type)}</div>
+                <div className="text-4xl mb-4">
+                  {getGameTypeIcon(game.type)}
+                </div>
                 <h3 className="text-xl font-bold mb-2">Live Game Interface</h3>
                 <p className="text-muted-foreground mb-4">
-                  Interactive betting interface for {game.type.replace('live-', '')}
+                  Interactive betting interface for{" "}
+                  {game.type.replace("live-", "")}
                 </p>
-                
+
                 <div className="flex gap-4 justify-center">
-                  <Button 
-                    onClick={() => placeBet('main', 10)}
+                  <Button
+                    onClick={() => placeBet("main", 10)}
                     className="bg-green-600 hover:bg-green-700"
                   >
                     <Coins className="w-4 h-4 mr-2" />
                     Bet $10
                   </Button>
-                  <Button 
-                    onClick={() => placeBet('main', 25)}
+                  <Button
+                    onClick={() => placeBet("main", 25)}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
                     <Coins className="w-4 h-4 mr-2" />
                     Bet $25
                   </Button>
-                  <Button 
-                    onClick={() => placeBet('main', 50)}
+                  <Button
+                    onClick={() => placeBet("main", 50)}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
                     <Coins className="w-4 h-4 mr-2" />
@@ -635,14 +708,18 @@ export default function LiveGames() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-2">
-              <Button variant="destructive" onClick={leaveGame} className="flex-1">
+              <Button
+                variant="destructive"
+                onClick={leaveGame}
+                className="flex-1"
+              >
                 Leave Game
               </Button>
               <Button variant="outline" size="sm">
                 <Settings className="w-4 h-4" />
               </Button>
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Audio</span>
@@ -651,10 +728,14 @@ export default function LiveGames() {
                   size="sm"
                   onClick={() => setAudioEnabled(!audioEnabled)}
                 >
-                  {audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  {audioEnabled ? (
+                    <Volume2 className="w-4 h-4" />
+                  ) : (
+                    <VolumeX className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm">Chat</span>
                 <Button
@@ -662,7 +743,11 @@ export default function LiveGames() {
                   size="sm"
                   onClick={() => setChatEnabled(!chatEnabled)}
                 >
-                  {chatEnabled ? <MessageCircle className="w-4 h-4" /> : <MessageCircle className="w-4 h-4 opacity-50" />}
+                  {chatEnabled ? (
+                    <MessageCircle className="w-4 h-4" />
+                  ) : (
+                    <MessageCircle className="w-4 h-4 opacity-50" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -679,7 +764,7 @@ export default function LiveGames() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-2">
-              {[1, 5, 10].map(amount => (
+              {[1, 5, 10].map((amount) => (
                 <Button
                   key={amount}
                   variant="outline"
@@ -705,15 +790,20 @@ export default function LiveGames() {
             <CardContent className="space-y-4">
               <ScrollArea className="h-48" ref={chatScrollRef}>
                 <div className="space-y-2">
-                  {chatMessages.map(message => (
+                  {chatMessages.map((message) => (
                     <div key={message.id} className="text-sm">
                       <div className="flex items-start gap-2">
-                        <div className={`font-bold ${
-                          message.type === 'dealer' ? 'text-purple-500' :
-                          message.type === 'system' ? 'text-blue-500' :
-                          message.type === 'moderator' ? 'text-green-500' :
-                          'text-foreground'
-                        }`}>
+                        <div
+                          className={`font-bold ${
+                            message.type === "dealer"
+                              ? "text-purple-500"
+                              : message.type === "system"
+                                ? "text-blue-500"
+                                : message.type === "moderator"
+                                  ? "text-green-500"
+                                  : "text-foreground"
+                          }`}
+                        >
                           {message.username}:
                         </div>
                         <div className="flex-1">{message.message}</div>
@@ -731,7 +821,7 @@ export default function LiveGames() {
                   placeholder="Type a message..."
                   value={newChatMessage}
                   onChange={(e) => setNewChatMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                  onKeyPress={(e) => e.key === "Enter" && sendChatMessage()}
                   className="flex-1"
                 />
                 <Button size="sm" onClick={sendChatMessage}>
@@ -752,18 +842,27 @@ export default function LiveGames() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {game.players.slice(0, 8).map(player => (
-                <div key={player.id} className="flex items-center justify-between text-sm">
+              {game.players.slice(0, 8).map((player) => (
+                <div
+                  key={player.id}
+                  className="flex items-center justify-between text-sm"
+                >
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
                       {player.username[0]}
                     </div>
                     <span className="font-medium">{player.username}</span>
-                    {player.isVIP && <Crown className="w-3 h-3 text-gold-500" />}
-                    {!player.isConnected && <div className="w-2 h-2 bg-red-500 rounded-full" />}
+                    {player.isVIP && (
+                      <Crown className="w-3 h-3 text-gold-500" />
+                    )}
+                    {!player.isConnected && (
+                      <div className="w-2 h-2 bg-red-500 rounded-full" />
+                    )}
                   </div>
                   <div className="text-right">
-                    <div className="font-bold">${player.chipCount.toLocaleString()}</div>
+                    <div className="font-bold">
+                      ${player.chipCount.toLocaleString()}
+                    </div>
                     {player.currentBet > 0 && (
                       <div className="text-xs text-muted-foreground">
                         Bet: ${player.currentBet}
@@ -797,19 +896,21 @@ export default function LiveGames() {
                 Real dealers, live streaming, and authentic casino atmosphere
               </p>
             </div>
-            
+
             <div className="flex gap-6 text-center">
               <div>
                 <div className="text-2xl font-bold text-purple-400">
-                  {liveGames.filter(g => g.status === 'active').length}
+                  {liveGames.filter((g) => g.status === "active").length}
                 </div>
                 <div className="text-sm text-muted-foreground">Live Games</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-pink-400">
-                  {dealers.filter(d => d.isOnline).length}
+                  {dealers.filter((d) => d.isOnline).length}
                 </div>
-                <div className="text-sm text-muted-foreground">Dealers Online</div>
+                <div className="text-sm text-muted-foreground">
+                  Dealers Online
+                </div>
               </div>
             </div>
           </div>
@@ -835,7 +936,12 @@ export default function LiveGames() {
 
             {/* Filters */}
             <div className="flex gap-2">
-              <Select value={selectedGameType} onValueChange={(value) => setSelectedGameType(value as LiveGameType | 'all')}>
+              <Select
+                value={selectedGameType}
+                onValueChange={(value) =>
+                  setSelectedGameType(value as LiveGameType | "all")
+                }
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Game Type" />
                 </SelectTrigger>
@@ -849,7 +955,10 @@ export default function LiveGames() {
                 </SelectContent>
               </Select>
 
-              <Select value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as any)}>
+              <Select
+                value={selectedCategory}
+                onValueChange={(value) => setSelectedCategory(value as any)}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
@@ -871,7 +980,10 @@ export default function LiveGames() {
       </Card>
 
       {/* Category Tabs */}
-      <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as any)}>
+      <Tabs
+        value={selectedCategory}
+        onValueChange={(value) => setSelectedCategory(value as any)}
+      >
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="all" className="flex items-center gap-2">
             <Gamepad2 className="w-4 h-4" />
@@ -898,7 +1010,7 @@ export default function LiveGames() {
         <TabsContent value={selectedCategory} className="space-y-6">
           {/* Live Games Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {getFilteredGames().map(game => (
+            {getFilteredGames().map((game) => (
               <LiveGameCard key={game.id} game={game} />
             ))}
           </div>
@@ -909,7 +1021,8 @@ export default function LiveGames() {
                 <Tv className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">No Live Games Found</h3>
                 <p className="text-muted-foreground">
-                  No games match your current filters. Try adjusting your search criteria.
+                  No games match your current filters. Try adjusting your search
+                  criteria.
                 </p>
               </CardContent>
             </Card>
@@ -923,12 +1036,10 @@ export default function LiveGames() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedGame && getGameTypeIcon(selectedGame.type)}
-              {selectedGame?.name || 'Live Game'}
+              {selectedGame?.name || "Live Game"}
             </DialogTitle>
           </DialogHeader>
-          {selectedGame && (
-            <LiveGameInterface game={selectedGame} />
-          )}
+          {selectedGame && <LiveGameInterface game={selectedGame} />}
         </DialogContent>
       </Dialog>
 
@@ -946,19 +1057,27 @@ export default function LiveGames() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">{selectedDealer.name}</h3>
-                  <p className="text-muted-foreground">Professional Live Dealer</p>
+                  <p className="text-muted-foreground">
+                    Professional Live Dealer
+                  </p>
                   <div className="flex items-center gap-4 mt-2">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-gold-500" />
-                      <span className="font-medium">{selectedDealer.rating}</span>
+                      <span className="font-medium">
+                        {selectedDealer.rating}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Award className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm">{selectedDealer.experience} years</span>
+                      <span className="text-sm">
+                        {selectedDealer.experience} years
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4 text-green-500" />
-                      <span className="text-sm">{selectedDealer.stats.playerFavorites} favorites</span>
+                      <span className="text-sm">
+                        {selectedDealer.stats.playerFavorites} favorites
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -970,24 +1089,36 @@ export default function LiveGames() {
                   <div className="font-medium">{selectedDealer.language}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Specialties</div>
+                  <div className="text-sm text-muted-foreground">
+                    Specialties
+                  </div>
                   <div className="flex flex-wrap gap-1">
-                    {selectedDealer.specialties.map(specialty => (
-                      <Badge key={specialty} variant="outline" className="text-xs">
-                        {specialty.replace('live-', '')}
+                    {selectedDealer.specialties.map((specialty) => (
+                      <Badge
+                        key={specialty}
+                        variant="outline"
+                        className="text-xs"
+                      >
+                        {specialty.replace("live-", "")}
                       </Badge>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Shift Hours</div>
+                  <div className="text-sm text-muted-foreground">
+                    Shift Hours
+                  </div>
                   <div className="font-medium">
                     {selectedDealer.shift.start} - {selectedDealer.shift.end}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Games Dealt</div>
-                  <div className="font-medium">{selectedDealer.stats.gamesDealt.toLocaleString()}</div>
+                  <div className="text-sm text-muted-foreground">
+                    Games Dealt
+                  </div>
+                  <div className="font-medium">
+                    {selectedDealer.stats.gamesDealt.toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>

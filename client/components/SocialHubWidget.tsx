@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
+import { Link } from "react-router-dom";
 import {
   Users,
   MessageCircle,
@@ -24,10 +24,16 @@ import {
   CheckCircle,
   Coins,
   Award,
-  Flame
-} from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { socialService, SocialPost, SocialUser, SocialNotification, SocialActivity } from '../services/socialService';
+  Flame,
+} from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import {
+  socialService,
+  SocialPost,
+  SocialUser,
+  SocialNotification,
+  SocialActivity,
+} from "../services/socialService";
 
 interface SocialStats {
   friends: number;
@@ -51,7 +57,7 @@ export default function SocialHubWidget() {
     activeChallenges: 0,
     todayWins: 0,
     level: 1,
-    socialScore: 0
+    socialScore: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +69,7 @@ export default function SocialHubWidget() {
 
   const loadSocialData = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       const [
@@ -71,31 +77,34 @@ export default function SocialHubWidget() {
         friendsData,
         notificationsData,
         userProfile,
-        challengesData
+        challengesData,
       ] = await Promise.all([
         socialService.getSocialFeed(1, 5), // Get latest 5 posts
         socialService.getFriends(),
         socialService.getNotifications(),
         socialService.getUserProfile(user.id),
-        socialService.getChallenges()
+        socialService.getChallenges(),
       ]);
 
       setRecentPosts(feedData);
-      setOnlineFriends(friendsData.filter(friend => friend.isOnline).slice(0, 8));
-      setNotifications(notificationsData.filter(n => !n.isRead));
+      setOnlineFriends(
+        friendsData.filter((friend) => friend.isOnline).slice(0, 8),
+      );
+      setNotifications(notificationsData.filter((n) => !n.isRead));
 
       // Calculate social stats
       setSocialStats({
         friends: friendsData.length,
         unreadMessages: 0, // Would need to implement message counting
-        unreadNotifications: notificationsData.filter(n => !n.isRead).length,
-        activeChallenges: challengesData.filter(c => c.status === 'active').length,
+        unreadNotifications: notificationsData.filter((n) => !n.isRead).length,
+        activeChallenges: challengesData.filter((c) => c.status === "active")
+          .length,
         todayWins: 12, // Mock data
         level: userProfile?.level || 1,
-        socialScore: userProfile?.socialScore || 0
+        socialScore: userProfile?.socialScore || 0,
       });
     } catch (error) {
-      console.error('Error loading social data:', error);
+      console.error("Error loading social data:", error);
     } finally {
       setLoading(false);
     }
@@ -104,9 +113,11 @@ export default function SocialHubWidget() {
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
     const time = new Date(timestamp);
-    const diffInMinutes = Math.floor((now.getTime() - time.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'now';
+    const diffInMinutes = Math.floor(
+      (now.getTime() - time.getTime()) / (1000 * 60),
+    );
+
+    if (diffInMinutes < 1) return "now";
     if (diffInMinutes < 60) return `${diffInMinutes}m`;
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours}h`;
@@ -173,22 +184,24 @@ export default function SocialHubWidget() {
               <div className="text-lg font-bold">{socialStats.friends}</div>
               <div className="text-xs text-muted-foreground">Friends</div>
             </div>
-            
+
             <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
               <Trophy className="h-6 w-6 text-green-500 mx-auto mb-2" />
               <div className="text-lg font-bold">{socialStats.level}</div>
               <div className="text-xs text-muted-foreground">Level</div>
             </div>
-            
+
             <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
               <Star className="h-6 w-6 text-purple-500 mx-auto mb-2" />
               <div className="text-lg font-bold">{socialStats.socialScore}</div>
               <div className="text-xs text-muted-foreground">Social Score</div>
             </div>
-            
+
             <div className="text-center p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
               <Target className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-              <div className="text-lg font-bold">{socialStats.activeChallenges}</div>
+              <div className="text-lg font-bold">
+                {socialStats.activeChallenges}
+              </div>
               <div className="text-xs text-muted-foreground">Challenges</div>
             </div>
           </div>
@@ -243,11 +256,16 @@ export default function SocialHubWidget() {
           <CardContent>
             <ScrollArea className="h-32">
               <div className="space-y-2">
-                {notifications.slice(0, 3).map(notification => (
-                  <div key={notification.id} className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                {notifications.slice(0, 3).map((notification) => (
+                  <div
+                    key={notification.id}
+                    className="flex items-start gap-3 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg"
+                  >
                     <span className="text-lg">{notification.icon}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{notification.title}</p>
+                      <p className="text-sm font-medium">
+                        {notification.title}
+                      </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {notification.message}
                       </p>
@@ -289,17 +307,21 @@ export default function SocialHubWidget() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {onlineFriends.slice(0, 5).map(friend => (
+              {onlineFriends.slice(0, 5).map((friend) => (
                 <div key={friend.id} className="flex items-center gap-3">
                   <div className="relative">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={friend.avatar} />
-                      <AvatarFallback>{friend.displayName.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {friend.displayName.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{friend.displayName}</p>
+                    <p className="text-sm font-medium truncate">
+                      {friend.displayName}
+                    </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Trophy className="h-3 w-3" />
                       Level {friend.level}
@@ -337,16 +359,20 @@ export default function SocialHubWidget() {
         <CardContent>
           <ScrollArea className="h-48">
             <div className="space-y-3">
-              {recentPosts.slice(0, 3).map(post => (
+              {recentPosts.slice(0, 3).map((post) => (
                 <div key={post.id} className="border rounded-lg p-3">
                   <div className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={post.author.avatar} />
-                      <AvatarFallback>{post.author.displayName.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {post.author.displayName.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium">{post.author.displayName}</p>
+                        <p className="text-sm font-medium">
+                          {post.author.displayName}
+                        </p>
                         <Badge variant="outline" className="text-xs">
                           Level {post.author.level}
                         </Badge>
@@ -357,17 +383,19 @@ export default function SocialHubWidget() {
                       <p className="text-sm text-muted-foreground line-clamp-2">
                         {post.content}
                       </p>
-                      
+
                       {/* Post Metadata */}
-                      {post.metadata && post.type === 'win' && post.metadata.winAmount && (
-                        <div className="mt-2">
-                          <Badge className="bg-green-500 text-xs">
-                            <Coins className="h-3 w-3 mr-1" />
-                            +{post.metadata.winAmount.toLocaleString()} GC
-                          </Badge>
-                        </div>
-                      )}
-                      
+                      {post.metadata &&
+                        post.type === "win" &&
+                        post.metadata.winAmount && (
+                          <div className="mt-2">
+                            <Badge className="bg-green-500 text-xs">
+                              <Coins className="h-3 w-3 mr-1" />+
+                              {post.metadata.winAmount.toLocaleString()} GC
+                            </Badge>
+                          </div>
+                        )}
+
                       <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Heart className="h-3 w-3" />
@@ -411,7 +439,7 @@ export default function SocialHubWidget() {
               </div>
               <Badge className="bg-green-500">{socialStats.todayWins}</Badge>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Flame className="h-4 w-4 text-orange-500" />
@@ -419,7 +447,7 @@ export default function SocialHubWidget() {
               </div>
               <Badge className="bg-orange-500">7</Badge>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Star className="h-4 w-4 text-blue-500" />
@@ -428,10 +456,14 @@ export default function SocialHubWidget() {
               <Badge className="bg-blue-500">+1,250</Badge>
             </div>
           </div>
-          
+
           <div className="mt-4">
             <Link to="/social?tab=achievements">
-              <Button variant="outline" size="sm" className="w-full border-gold-500 text-gold-600 hover:bg-gold-50">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full border-gold-500 text-gold-600 hover:bg-gold-50"
+              >
                 <Award className="h-4 w-4 mr-2" />
                 View All Achievements
               </Button>

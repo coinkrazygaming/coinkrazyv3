@@ -64,30 +64,42 @@ import {
   Gamepad2,
   MessageCircle,
   Share2,
-  Bookmark
+  Bookmark,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { pokerService, PokerTournament, PokerTournamentPlayer, PokerBlindLevel, PokerPayout } from "@/services/pokerService";
+import {
+  pokerService,
+  PokerTournament,
+  PokerTournamentPlayer,
+  PokerBlindLevel,
+  PokerPayout,
+} from "@/services/pokerService";
 
 export default function PokerTournaments() {
   const { user } = useAuth();
   const [tournaments, setTournaments] = useState<PokerTournament[]>([]);
-  const [selectedTournament, setSelectedTournament] = useState<PokerTournament | null>(null);
-  const [registeredTournaments, setRegisteredTournaments] = useState<Set<string>>(new Set());
-  const [currentView, setCurrentView] = useState<'all' | 'registered' | 'live' | 'completed'>('all');
-  const [filterType, setFilterType] = useState<string>('all');
-  const [filterBuyIn, setFilterBuyIn] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTournament, setSelectedTournament] =
+    useState<PokerTournament | null>(null);
+  const [registeredTournaments, setRegisteredTournaments] = useState<
+    Set<string>
+  >(new Set());
+  const [currentView, setCurrentView] = useState<
+    "all" | "registered" | "live" | "completed"
+  >("all");
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterBuyIn, setFilterBuyIn] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showRegistrationDialog, setShowRegistrationDialog] = useState(false);
   const [showStructureDialog, setShowStructureDialog] = useState(false);
-  const [selectedForRegistration, setSelectedForRegistration] = useState<PokerTournament | null>(null);
+  const [selectedForRegistration, setSelectedForRegistration] =
+    useState<PokerTournament | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     loadTournaments();
     startRealTimeUpdates();
-    
+
     return () => {
       if (updateIntervalRef.current) {
         clearInterval(updateIntervalRef.current);
@@ -100,7 +112,7 @@ export default function PokerTournaments() {
       const tournamentData = pokerService.getTournaments();
       setTournaments(tournamentData);
     } catch (error) {
-      console.error('Failed to load tournaments:', error);
+      console.error("Failed to load tournaments:", error);
     }
   };
 
@@ -122,13 +134,15 @@ export default function PokerTournaments() {
     setIsRegistering(true);
     try {
       pokerService.registerForTournament(selectedForRegistration.id);
-      setRegisteredTournaments(prev => new Set([...prev, selectedForRegistration.id]));
+      setRegisteredTournaments(
+        (prev) => new Set([...prev, selectedForRegistration.id]),
+      );
       setShowRegistrationDialog(false);
-      
+
       // Update tournament data
       await loadTournaments();
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Registration failed:", error);
     } finally {
       setIsRegistering(false);
     }
@@ -137,14 +151,14 @@ export default function PokerTournaments() {
   const handleUnregisterTournament = async (tournamentId: string) => {
     try {
       pokerService.unregisterFromTournament(tournamentId);
-      setRegisteredTournaments(prev => {
+      setRegisteredTournaments((prev) => {
         const updated = new Set(prev);
         updated.delete(tournamentId);
         return updated;
       });
       await loadTournaments();
     } catch (error) {
-      console.error('Unregistration failed:', error);
+      console.error("Unregistration failed:", error);
     }
   };
 
@@ -153,32 +167,32 @@ export default function PokerTournaments() {
 
     // Filter by view
     switch (currentView) {
-      case 'registered':
-        filtered = filtered.filter(t => registeredTournaments.has(t.id));
+      case "registered":
+        filtered = filtered.filter((t) => registeredTournaments.has(t.id));
         break;
-      case 'live':
-        filtered = filtered.filter(t => t.status === 'active');
+      case "live":
+        filtered = filtered.filter((t) => t.status === "active");
         break;
-      case 'completed':
-        filtered = filtered.filter(t => t.status === 'finished');
+      case "completed":
+        filtered = filtered.filter((t) => t.status === "finished");
         break;
     }
 
     // Filter by type
-    if (filterType !== 'all') {
-      filtered = filtered.filter(t => t.type === filterType);
+    if (filterType !== "all") {
+      filtered = filtered.filter((t) => t.type === filterType);
     }
 
     // Filter by buy-in
-    if (filterBuyIn !== 'all') {
+    if (filterBuyIn !== "all") {
       const ranges = {
-        'low': { min: 0, max: 50 },
-        'mid': { min: 51, max: 500 },
-        'high': { min: 501, max: Infinity }
+        low: { min: 0, max: 50 },
+        mid: { min: 51, max: 500 },
+        high: { min: 501, max: Infinity },
       };
       const range = ranges[filterBuyIn as keyof typeof ranges];
       if (range) {
-        filtered = filtered.filter(t => {
+        filtered = filtered.filter((t) => {
           const totalBuyIn = t.buyIn.gc + t.buyIn.sc;
           return totalBuyIn >= range.min && totalBuyIn <= range.max;
         });
@@ -187,18 +201,26 @@ export default function PokerTournaments() {
 
     // Filter by search query
     if (searchQuery) {
-      filtered = filtered.filter(t =>
-        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.description.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (t) =>
+          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.description.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
     return filtered.sort((a, b) => {
       // Sort by status priority, then by start time
-      const statusPriority = { 'registering': 3, 'active': 2, 'scheduled': 1, 'finished': 0 };
-      const aPriority = statusPriority[a.status as keyof typeof statusPriority] || 0;
-      const bPriority = statusPriority[b.status as keyof typeof statusPriority] || 0;
-      
+      const statusPriority = {
+        registering: 3,
+        active: 2,
+        scheduled: 1,
+        finished: 0,
+      };
+      const aPriority =
+        statusPriority[a.status as keyof typeof statusPriority] || 0;
+      const bPriority =
+        statusPriority[b.status as keyof typeof statusPriority] || 0;
+
       if (aPriority !== bPriority) return bPriority - aPriority;
       return a.startTime.getTime() - b.startTime.getTime();
     });
@@ -214,12 +236,12 @@ export default function PokerTournaments() {
   const formatTimeUntil = (date: Date) => {
     const now = new Date();
     const diff = date.getTime() - now.getTime();
-    
-    if (diff <= 0) return 'Started';
-    
+
+    if (diff <= 0) return "Started";
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 24) {
       const days = Math.floor(hours / 24);
       return `${days}d ${hours % 24}h`;
@@ -230,35 +252,51 @@ export default function PokerTournaments() {
     }
   };
 
-  const getStatusBadgeVariant = (status: PokerTournament['status']) => {
+  const getStatusBadgeVariant = (status: PokerTournament["status"]) => {
     switch (status) {
-      case 'registering': return 'default';
-      case 'active': return 'destructive';
-      case 'scheduled': return 'secondary';
-      case 'finished': return 'outline';
-      default: return 'outline';
+      case "registering":
+        return "default";
+      case "active":
+        return "destructive";
+      case "scheduled":
+        return "secondary";
+      case "finished":
+        return "outline";
+      default:
+        return "outline";
     }
   };
 
-  const getStatusIcon = (status: PokerTournament['status']) => {
+  const getStatusIcon = (status: PokerTournament["status"]) => {
     switch (status) {
-      case 'registering': return <UserPlus className="w-3 h-3" />;
-      case 'active': return <Play className="w-3 h-3" />;
-      case 'scheduled': return <Clock className="w-3 h-3" />;
-      case 'finished': return <CheckCircle className="w-3 h-3" />;
-      default: return <AlertCircle className="w-3 h-3" />;
+      case "registering":
+        return <UserPlus className="w-3 h-3" />;
+      case "active":
+        return <Play className="w-3 h-3" />;
+      case "scheduled":
+        return <Clock className="w-3 h-3" />;
+      case "finished":
+        return <CheckCircle className="w-3 h-3" />;
+      default:
+        return <AlertCircle className="w-3 h-3" />;
     }
   };
 
   const TournamentCard = ({ tournament }: { tournament: PokerTournament }) => {
     const isRegistered = registeredTournaments.has(tournament.id);
-    const canRegister = tournament.status === 'registering' || tournament.status === 'scheduled';
-    const registrationProgress = (tournament.currentPlayers / tournament.maxPlayers) * 100;
+    const canRegister =
+      tournament.status === "registering" || tournament.status === "scheduled";
+    const registrationProgress =
+      (tournament.currentPlayers / tournament.maxPlayers) * 100;
 
     return (
-      <Card className={`hover:shadow-lg transition-all duration-300 ${
-        tournament.isVIP ? 'border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10' : ''
-      } ${isRegistered ? 'ring-2 ring-blue-500/50' : ''}`}>
+      <Card
+        className={`hover:shadow-lg transition-all duration-300 ${
+          tournament.isVIP
+            ? "border-gold-500/50 bg-gradient-to-br from-gold/5 to-gold/10"
+            : ""
+        } ${isRegistered ? "ring-2 ring-blue-500/50" : ""}`}
+      >
         {tournament.isVIP && (
           <div className="absolute -top-2 -right-2">
             <Badge className="bg-gold-500 text-black">
@@ -267,7 +305,7 @@ export default function PokerTournaments() {
             </Badge>
           </div>
         )}
-        
+
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -283,18 +321,22 @@ export default function PokerTournaments() {
               <p className="text-sm text-muted-foreground mb-3">
                 {tournament.description}
               </p>
-              
+
               <div className="flex items-center gap-4 text-sm">
-                <Badge variant={getStatusBadgeVariant(tournament.status)} className="flex items-center gap-1">
+                <Badge
+                  variant={getStatusBadgeVariant(tournament.status)}
+                  className="flex items-center gap-1"
+                >
                   {getStatusIcon(tournament.status)}
-                  {tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
+                  {tournament.status.charAt(0).toUpperCase() +
+                    tournament.status.slice(1)}
                 </Badge>
-                
+
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <Users className="w-3 h-3" />
                   {tournament.currentPlayers}/{tournament.maxPlayers}
                 </div>
-                
+
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <Clock className="w-3 h-3" />
                   {formatTimeUntil(tournament.startTime)}
@@ -311,32 +353,34 @@ export default function PokerTournaments() {
               <div className="text-muted-foreground">Buy-in</div>
               <div className="font-bold">
                 {tournament.buyIn.gc > 0 && `${tournament.buyIn.gc} GC`}
-                {tournament.buyIn.gc > 0 && tournament.buyIn.sc > 0 && ' + '}
+                {tournament.buyIn.gc > 0 && tournament.buyIn.sc > 0 && " + "}
                 {tournament.buyIn.sc > 0 && `${tournament.buyIn.sc} SC`}
-                {tournament.buyIn.fee > 0 && ` + ${formatCurrency(tournament.buyIn.fee)} fee`}
+                {tournament.buyIn.fee > 0 &&
+                  ` + ${formatCurrency(tournament.buyIn.fee)} fee`}
               </div>
             </div>
             <div>
               <div className="text-muted-foreground">Prize Pool</div>
               <div className="font-bold text-gold-400">
-                {tournament.guaranteedPrize ? 
-                  `${formatCurrency(Math.max(tournament.currentPrizePool, tournament.guaranteedPrize))} GTD` :
-                  formatCurrency(tournament.currentPrizePool)
-                }
+                {tournament.guaranteedPrize
+                  ? `${formatCurrency(Math.max(tournament.currentPrizePool, tournament.guaranteedPrize))} GTD`
+                  : formatCurrency(tournament.currentPrizePool)}
               </div>
             </div>
             <div>
               <div className="text-muted-foreground">Type</div>
               <div className="font-medium">
-                {tournament.type.split('-').map(word => 
-                  word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ')}
+                {tournament.type
+                  .split("-")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
               </div>
             </div>
             <div>
               <div className="text-muted-foreground">Format</div>
               <div className="font-medium">
-                {tournament.format.charAt(0).toUpperCase() + tournament.format.slice(1)}
+                {tournament.format.charAt(0).toUpperCase() +
+                  tournament.format.slice(1)}
               </div>
             </div>
           </div>
@@ -355,7 +399,7 @@ export default function PokerTournaments() {
           {/* Action Buttons */}
           <div className="flex gap-2">
             {canRegister && !isRegistered && (
-              <Button 
+              <Button
                 onClick={() => handleRegisterTournament(tournament)}
                 className="flex-1"
                 disabled={tournament.currentPlayers >= tournament.maxPlayers}
@@ -364,9 +408,9 @@ export default function PokerTournaments() {
                 Register
               </Button>
             )}
-            
+
             {isRegistered && canRegister && (
-              <Button 
+              <Button
                 variant="outline"
                 onClick={() => handleUnregisterTournament(tournament.id)}
                 className="flex-1"
@@ -376,7 +420,7 @@ export default function PokerTournaments() {
               </Button>
             )}
 
-            <Button 
+            <Button
               variant="outline"
               onClick={() => setSelectedTournament(tournament)}
               size="sm"
@@ -385,7 +429,7 @@ export default function PokerTournaments() {
               Details
             </Button>
 
-            <Button 
+            <Button
               variant="outline"
               onClick={() => {
                 setSelectedTournament(tournament);
@@ -402,7 +446,11 @@ export default function PokerTournaments() {
     );
   };
 
-  const TournamentDetails = ({ tournament }: { tournament: PokerTournament }) => (
+  const TournamentDetails = ({
+    tournament,
+  }: {
+    tournament: PokerTournament;
+  }) => (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -419,11 +467,15 @@ export default function PokerTournaments() {
           </h3>
           <p className="text-muted-foreground">{tournament.description}</p>
         </div>
-        
-        <Badge variant={getStatusBadgeVariant(tournament.status)} className="text-lg p-2">
+
+        <Badge
+          variant={getStatusBadgeVariant(tournament.status)}
+          className="text-lg p-2"
+        >
           {getStatusIcon(tournament.status)}
           <span className="ml-2">
-            {tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
+            {tournament.status.charAt(0).toUpperCase() +
+              tournament.status.slice(1)}
           </span>
         </Badge>
       </div>
@@ -436,7 +488,7 @@ export default function PokerTournaments() {
             <div className="text-sm text-muted-foreground">Buy-in</div>
             <div className="font-bold">
               {tournament.buyIn.gc > 0 && `${tournament.buyIn.gc} GC`}
-              {tournament.buyIn.gc > 0 && tournament.buyIn.sc > 0 && ' + '}
+              {tournament.buyIn.gc > 0 && tournament.buyIn.sc > 0 && " + "}
               {tournament.buyIn.sc > 0 && `${tournament.buyIn.sc} SC`}
             </div>
             {tournament.buyIn.fee > 0 && (
@@ -452,10 +504,14 @@ export default function PokerTournaments() {
             <Trophy className="w-8 h-8 text-gold-500 mx-auto mb-2" />
             <div className="text-sm text-muted-foreground">Prize Pool</div>
             <div className="font-bold text-gold-400">
-              {tournament.guaranteedPrize ? 
-                formatCurrency(Math.max(tournament.currentPrizePool, tournament.guaranteedPrize)) :
-                formatCurrency(tournament.currentPrizePool)
-              }
+              {tournament.guaranteedPrize
+                ? formatCurrency(
+                    Math.max(
+                      tournament.currentPrizePool,
+                      tournament.guaranteedPrize,
+                    ),
+                  )
+                : formatCurrency(tournament.currentPrizePool)}
             </div>
             {tournament.guaranteedPrize && (
               <div className="text-sm text-muted-foreground">Guaranteed</div>
@@ -470,9 +526,9 @@ export default function PokerTournaments() {
             <div className="font-bold">
               {tournament.currentPlayers}/{tournament.maxPlayers}
             </div>
-            <Progress 
-              value={(tournament.currentPlayers / tournament.maxPlayers) * 100} 
-              className="h-2 mt-2" 
+            <Progress
+              value={(tournament.currentPlayers / tournament.maxPlayers) * 100}
+              className="h-2 mt-2"
             />
           </CardContent>
         </Card>
@@ -507,10 +563,12 @@ export default function PokerTournaments() {
                 <span className="font-medium">Registration Opens</span>
               </div>
               <span className="text-muted-foreground">
-                {new Date(tournament.startTime.getTime() - 3600000).toLocaleString()}
+                {new Date(
+                  tournament.startTime.getTime() - 3600000,
+                ).toLocaleString()}
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-2">
                 <XCircle className="w-4 h-4 text-orange-500" />
@@ -520,7 +578,7 @@ export default function PokerTournaments() {
                 {tournament.registrationEnd.toLocaleString()}
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-2">
                 <Play className="w-4 h-4 text-green-500" />
@@ -557,13 +615,16 @@ export default function PokerTournaments() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {tournament.payoutStructure.slice(0, 10).map((payout, index) => (
-              <div 
+              <div
                 key={index}
                 className={`flex items-center justify-between p-3 rounded-lg ${
-                  index === 0 ? 'bg-gold-500/10 border border-gold-500/20' :
-                  index === 1 ? 'bg-gray-500/10 border border-gray-500/20' :
-                  index === 2 ? 'bg-orange-500/10 border border-orange-500/20' :
-                  'bg-muted'
+                  index === 0
+                    ? "bg-gold-500/10 border border-gold-500/20"
+                    : index === 1
+                      ? "bg-gray-500/10 border border-gray-500/20"
+                      : index === 2
+                        ? "bg-orange-500/10 border border-orange-500/20"
+                        : "bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -571,10 +632,13 @@ export default function PokerTournaments() {
                   {index === 1 && <Award className="w-4 h-4 text-gray-500" />}
                   {index === 2 && <Award className="w-4 h-4 text-orange-500" />}
                   <span className="font-medium">
-                    {payout.position === 1 ? '1st Place' : 
-                     payout.position === 2 ? '2nd Place' :
-                     payout.position === 3 ? '3rd Place' :
-                     `${payout.position}th Place`}
+                    {payout.position === 1
+                      ? "1st Place"
+                      : payout.position === 2
+                        ? "2nd Place"
+                        : payout.position === 3
+                          ? "3rd Place"
+                          : `${payout.position}th Place`}
                   </span>
                 </div>
                 <div className="text-right">
@@ -610,22 +674,28 @@ export default function PokerTournaments() {
         </TableHeader>
         <TableBody>
           {tournament.blindStructure.map((level, index) => (
-            <TableRow 
+            <TableRow
               key={index}
-              className={tournament.currentLevel === level.level ? 'bg-blue-500/10' : ''}
+              className={
+                tournament.currentLevel === level.level ? "bg-blue-500/10" : ""
+              }
             >
               <TableCell className="font-medium">
                 {level.level}
                 {tournament.currentLevel === level.level && (
-                  <Badge variant="outline" className="ml-2">Current</Badge>
+                  <Badge variant="outline" className="ml-2">
+                    Current
+                  </Badge>
                 )}
               </TableCell>
               <TableCell>{formatCurrency(level.smallBlind)}</TableCell>
               <TableCell>{formatCurrency(level.bigBlind)}</TableCell>
-              <TableCell>{level.ante ? formatCurrency(level.ante) : '-'}</TableCell>
+              <TableCell>
+                {level.ante ? formatCurrency(level.ante) : "-"}
+              </TableCell>
               <TableCell>{level.duration} min</TableCell>
               <TableCell>
-                {level.breakAfter ? `${level.breakDuration || 5} min` : '-'}
+                {level.breakAfter ? `${level.breakDuration || 5} min` : "-"}
               </TableCell>
             </TableRow>
           ))}
@@ -649,13 +719,14 @@ export default function PokerTournaments() {
                 <Badge className="bg-purple-600 text-white">Live Events</Badge>
               </CardTitle>
               <p className="text-muted-foreground mt-2">
-                Compete in world-class poker tournaments with guaranteed prize pools and exciting formats
+                Compete in world-class poker tournaments with guaranteed prize
+                pools and exciting formats
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-400">
-                {tournaments.filter(t => t.status === 'active').length}
+                {tournaments.filter((t) => t.status === "active").length}
               </div>
               <div className="text-sm text-muted-foreground">Live Now</div>
             </div>
@@ -716,7 +787,10 @@ export default function PokerTournaments() {
       </Card>
 
       {/* Tournament Views */}
-      <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as any)}>
+      <Tabs
+        value={currentView}
+        onValueChange={(value) => setCurrentView(value as any)}
+      >
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all" className="flex items-center gap-2">
             <Gamepad2 className="w-4 h-4" />
@@ -739,7 +813,7 @@ export default function PokerTournaments() {
         <TabsContent value={currentView} className="space-y-6">
           {/* Tournament Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {getFilteredTournaments().map(tournament => (
+            {getFilteredTournaments().map((tournament) => (
               <TournamentCard key={tournament.id} tournament={tournament} />
             ))}
           </div>
@@ -750,10 +824,13 @@ export default function PokerTournaments() {
                 <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">No Tournaments Found</h3>
                 <p className="text-muted-foreground">
-                  {currentView === 'all' ? 'No tournaments match your current filters.' :
-                   currentView === 'registered' ? 'You haven\'t registered for any tournaments yet.' :
-                   currentView === 'live' ? 'No tournaments are currently running.' :
-                   'No completed tournaments found.'}
+                  {currentView === "all"
+                    ? "No tournaments match your current filters."
+                    : currentView === "registered"
+                      ? "You haven't registered for any tournaments yet."
+                      : currentView === "live"
+                        ? "No tournaments are currently running."
+                        : "No completed tournaments found."}
                 </p>
               </CardContent>
             </Card>
@@ -762,7 +839,10 @@ export default function PokerTournaments() {
       </Tabs>
 
       {/* Tournament Details Dialog */}
-      <Dialog open={!!selectedTournament} onOpenChange={() => setSelectedTournament(null)}>
+      <Dialog
+        open={!!selectedTournament}
+        onOpenChange={() => setSelectedTournament(null)}
+      >
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Tournament Details</DialogTitle>
@@ -774,15 +854,19 @@ export default function PokerTournaments() {
       </Dialog>
 
       {/* Registration Dialog */}
-      <Dialog open={showRegistrationDialog} onOpenChange={setShowRegistrationDialog}>
+      <Dialog
+        open={showRegistrationDialog}
+        onOpenChange={setShowRegistrationDialog}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Tournament Registration</DialogTitle>
             <DialogDescription>
-              You are about to register for this tournament. Please review the details below.
+              You are about to register for this tournament. Please review the
+              details below.
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedForRegistration && (
             <div className="space-y-4">
               <div className="p-4 bg-muted rounded-lg">
@@ -796,10 +880,15 @@ export default function PokerTournaments() {
                 <div>
                   <div className="text-muted-foreground">Buy-in</div>
                   <div className="font-bold">
-                    {selectedForRegistration.buyIn.gc > 0 && `${selectedForRegistration.buyIn.gc} GC`}
-                    {selectedForRegistration.buyIn.gc > 0 && selectedForRegistration.buyIn.sc > 0 && ' + '}
-                    {selectedForRegistration.buyIn.sc > 0 && `${selectedForRegistration.buyIn.sc} SC`}
-                    {selectedForRegistration.buyIn.fee > 0 && ` + ${formatCurrency(selectedForRegistration.buyIn.fee)} fee`}
+                    {selectedForRegistration.buyIn.gc > 0 &&
+                      `${selectedForRegistration.buyIn.gc} GC`}
+                    {selectedForRegistration.buyIn.gc > 0 &&
+                      selectedForRegistration.buyIn.sc > 0 &&
+                      " + "}
+                    {selectedForRegistration.buyIn.sc > 0 &&
+                      `${selectedForRegistration.buyIn.sc} SC`}
+                    {selectedForRegistration.buyIn.fee > 0 &&
+                      ` + ${formatCurrency(selectedForRegistration.buyIn.fee)} fee`}
                   </div>
                 </div>
                 <div>
@@ -811,18 +900,21 @@ export default function PokerTournaments() {
               </div>
 
               <div className="text-sm text-muted-foreground">
-                By registering, you agree to the tournament rules and terms of service.
-                Your buy-in will be deducted from your account balance.
+                By registering, you agree to the tournament rules and terms of
+                service. Your buy-in will be deducted from your account balance.
               </div>
             </div>
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRegistrationDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowRegistrationDialog(false)}
+            >
               Cancel
             </Button>
             <Button onClick={confirmRegistration} disabled={isRegistering}>
-              {isRegistering ? 'Registering...' : 'Confirm Registration'}
+              {isRegistering ? "Registering..." : "Confirm Registration"}
             </Button>
           </DialogFooter>
         </DialogContent>

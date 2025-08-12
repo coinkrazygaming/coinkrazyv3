@@ -198,8 +198,12 @@ export default function GoldStoreManager() {
   // Dialog states
   const [packageDialogOpen, setPackageDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(null);
-  const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(
+    null,
+  );
+  const [previewMode, setPreviewMode] = useState<
+    "desktop" | "tablet" | "mobile"
+  >("desktop");
 
   // Form state
   const [packageForm, setPackageForm] = useState<PackageFormData>({
@@ -306,7 +310,10 @@ export default function GoldStoreManager() {
     }
   };
 
-  const handleUpdatePackage = async (id: string, updates: Partial<GoldPackage>) => {
+  const handleUpdatePackage = async (
+    id: string,
+    updates: Partial<GoldPackage>,
+  ) => {
     try {
       const updatedPackage = await goldStoreService.updatePackage(id, updates);
       setPackages((prev) =>
@@ -1501,7 +1508,10 @@ export default function GoldStoreManager() {
                     onClick={
                       selectedPackage
                         ? () => {
-                            handleUpdatePackage(selectedPackage.id, packageForm);
+                            handleUpdatePackage(
+                              selectedPackage.id,
+                              packageForm,
+                            );
                             setPackageDialogOpen(false);
                           }
                         : handleCreatePackage
@@ -1523,7 +1533,9 @@ export default function GoldStoreManager() {
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-lg flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${getCategoryColor(pkg.category)}`} />
+                        <div
+                          className={`w-3 h-3 rounded-full ${getCategoryColor(pkg.category)}`}
+                        />
                         {pkg.name}
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-2">
@@ -1553,14 +1565,16 @@ export default function GoldStoreManager() {
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDuplicatePackage(pkg.id)}>
+                        <DropdownMenuItem
+                          onClick={() => handleDuplicatePackage(pkg.id)}
+                        >
                           <Copy className="w-4 h-4 mr-2" />
                           Duplicate
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
                               onSelect={(e) => e.preventDefault()}
                             >
@@ -1570,9 +1584,12 @@ export default function GoldStoreManager() {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Package</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Delete Package
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{pkg.name}"? This action cannot be undone.
+                                Are you sure you want to delete "{pkg.name}"?
+                                This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -1595,7 +1612,7 @@ export default function GoldStoreManager() {
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {pkg.description}
                     </p>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="text-center">
                         <div className="text-lg font-bold text-gold-400">
@@ -1608,15 +1625,25 @@ export default function GoldStoreManager() {
                           <div className="text-lg font-bold text-casino-blue">
                             {pkg.sweepsCoins}
                           </div>
-                          <div className="text-xs text-muted-foreground">SC</div>
+                          <div className="text-xs text-muted-foreground">
+                            SC
+                          </div>
                         </div>
                       )}
                       <div className="text-center">
                         <div className="text-lg font-bold">
-                          {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}
+                          {pkg.currency === "USD"
+                            ? "$"
+                            : pkg.currency === "EUR"
+                              ? "€"
+                              : pkg.currency === "GBP"
+                                ? "£"
+                                : "C$"}
                           {pkg.price.toFixed(2)}
                         </div>
-                        <div className="text-xs text-muted-foreground">Price</div>
+                        <div className="text-xs text-muted-foreground">
+                          Price
+                        </div>
                       </div>
                     </div>
 
@@ -1625,13 +1652,17 @@ export default function GoldStoreManager() {
                         <div className="text-sm font-medium">
                           {pkg.analytics.views}
                         </div>
-                        <div className="text-xs text-muted-foreground">Views</div>
+                        <div className="text-xs text-muted-foreground">
+                          Views
+                        </div>
                       </div>
                       <div>
                         <div className="text-sm font-medium">
                           {pkg.analytics.purchases}
                         </div>
-                        <div className="text-xs text-muted-foreground">Sales</div>
+                        <div className="text-xs text-muted-foreground">
+                          Sales
+                        </div>
                       </div>
                       <div>
                         <div className="text-sm font-medium">
@@ -1650,14 +1681,18 @@ export default function GoldStoreManager() {
             <Card className="text-center p-8">
               <CardContent>
                 <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No packages found</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No packages found
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   No packages match your current search and filter criteria.
                 </p>
-                <Button onClick={() => {
-                  setSearchTerm("");
-                  setFilterCategory("all");
-                }}>
+                <Button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setFilterCategory("all");
+                  }}
+                >
                   Clear Filters
                 </Button>
               </CardContent>
@@ -1674,7 +1709,9 @@ export default function GoldStoreManager() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Total Revenue</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Revenue
+                        </p>
                         <p className="text-2xl font-bold">
                           ${analytics.totalRevenue.toLocaleString()}
                         </p>
@@ -1688,7 +1725,9 @@ export default function GoldStoreManager() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Total Sales</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Sales
+                        </p>
                         <p className="text-2xl font-bold">
                           {analytics.totalSales.toLocaleString()}
                         </p>
@@ -1702,7 +1741,9 @@ export default function GoldStoreManager() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Conversion Rate</p>
+                        <p className="text-sm text-muted-foreground">
+                          Conversion Rate
+                        </p>
                         <p className="text-2xl font-bold">
                           {analytics.conversionRate.toFixed(1)}%
                         </p>
@@ -1716,7 +1757,9 @@ export default function GoldStoreManager() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Avg Order Value</p>
+                        <p className="text-sm text-muted-foreground">
+                          Avg Order Value
+                        </p>
                         <p className="text-2xl font-bold">
                           ${analytics.averageOrderValue.toFixed(2)}
                         </p>
@@ -1735,7 +1778,10 @@ export default function GoldStoreManager() {
                   <CardContent>
                     <div className="space-y-4">
                       {analytics.topPackages.map((pkg, index) => (
-                        <div key={pkg.packageId} className="flex items-center justify-between">
+                        <div
+                          key={pkg.packageId}
+                          className="flex items-center justify-between"
+                        >
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-gold-500/10 flex items-center justify-center text-sm font-bold">
                               {index + 1}
@@ -1748,7 +1794,9 @@ export default function GoldStoreManager() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-bold">${pkg.revenue.toLocaleString()}</p>
+                            <p className="font-bold">
+                              ${pkg.revenue.toLocaleString()}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -1765,8 +1813,12 @@ export default function GoldStoreManager() {
                       {analytics.paymentMethodStats.map((method) => (
                         <div key={method.method} className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="capitalize">{method.method.replace('_', ' ')}</span>
-                            <span className="font-medium">{method.percentage.toFixed(1)}%</span>
+                            <span className="capitalize">
+                              {method.method.replace("_", " ")}
+                            </span>
+                            <span className="font-medium">
+                              {method.percentage.toFixed(1)}%
+                            </span>
                           </div>
                           <Progress value={method.percentage} className="h-2" />
                         </div>
@@ -1780,7 +1832,9 @@ export default function GoldStoreManager() {
             <div className="text-center py-8">
               <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No Analytics Data</h3>
-              <p className="text-muted-foreground">Analytics data will appear here once available.</p>
+              <p className="text-muted-foreground">
+                Analytics data will appear here once available.
+              </p>
             </div>
           )}
         </TabsContent>
@@ -1807,17 +1861,25 @@ export default function GoldStoreManager() {
                     </thead>
                     <tbody>
                       {purchaseHistory.slice(0, 10).map((purchase) => (
-                        <tr key={purchase.id} className="border-b border-border/50 hover:bg-muted/50">
+                        <tr
+                          key={purchase.id}
+                          className="border-b border-border/50 hover:bg-muted/50"
+                        >
                           <td className="p-2">
                             <div>
-                              <div className="font-medium">{purchase.userId}</div>
+                              <div className="font-medium">
+                                {purchase.userId}
+                              </div>
                             </div>
                           </td>
                           <td className="p-2">
                             <div>
-                              <div className="font-medium">{purchase.packageName}</div>
+                              <div className="font-medium">
+                                {purchase.packageName}
+                              </div>
                               <div className="text-sm text-muted-foreground">
-                                {purchase.goldCoins.toLocaleString()} GC + {purchase.sweepsCoins} SC
+                                {purchase.goldCoins.toLocaleString()} GC +{" "}
+                                {purchase.sweepsCoins} SC
                               </div>
                             </div>
                           </td>
@@ -1825,20 +1887,25 @@ export default function GoldStoreManager() {
                             ${purchase.price.toFixed(2)} {purchase.currency}
                           </td>
                           <td className="p-2 capitalize">
-                            {purchase.paymentMethod.replace('_', ' ')}
+                            {purchase.paymentMethod.replace("_", " ")}
                           </td>
                           <td className="p-2">
-                            <Badge 
+                            <Badge
                               variant={
-                                purchase.paymentStatus === "completed" ? "default" :
-                                purchase.paymentStatus === "pending" ? "secondary" : "destructive"
+                                purchase.paymentStatus === "completed"
+                                  ? "default"
+                                  : purchase.paymentStatus === "pending"
+                                    ? "secondary"
+                                    : "destructive"
                               }
                             >
                               {purchase.paymentStatus}
                             </Badge>
                           </td>
                           <td className="p-2 text-sm">
-                            {new Date(purchase.purchaseDate).toLocaleDateString()}
+                            {new Date(
+                              purchase.purchaseDate,
+                            ).toLocaleDateString()}
                           </td>
                         </tr>
                       ))}
@@ -1848,8 +1915,13 @@ export default function GoldStoreManager() {
               ) : (
                 <div className="text-center py-8">
                   <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Purchases Yet</h3>
-                  <p className="text-muted-foreground">Purchase history will appear here once customers start buying packages.</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No Purchases Yet
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Purchase history will appear here once customers start
+                    buying packages.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -1871,24 +1943,32 @@ export default function GoldStoreManager() {
                       id="store-name"
                       value={settings.storeName}
                       onChange={(e) =>
-                        setSettings((prev) => prev ? {
-                          ...prev,
-                          storeName: e.target.value,
-                        } : prev)
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                storeName: e.target.value,
+                              }
+                            : prev,
+                        )
                       }
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="store-description">Description</Label>
                     <Textarea
                       id="store-description"
                       value={settings.storeDescription}
                       onChange={(e) =>
-                        setSettings((prev) => prev ? {
-                          ...prev,
-                          storeDescription: e.target.value,
-                        } : prev)
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                storeDescription: e.target.value,
+                              }
+                            : prev,
+                        )
                       }
                       rows={3}
                     />
@@ -1899,10 +1979,14 @@ export default function GoldStoreManager() {
                     <Select
                       value={settings.defaultCurrency}
                       onValueChange={(value) =>
-                        setSettings((prev) => prev ? {
-                          ...prev,
-                          defaultCurrency: value as any,
-                        } : prev)
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                defaultCurrency: value as any,
+                              }
+                            : prev,
+                        )
                       }
                     >
                       <SelectTrigger>
@@ -1933,14 +2017,19 @@ export default function GoldStoreManager() {
                         step="0.01"
                         value={settings.minimumPurchaseAmount}
                         onChange={(e) =>
-                          setSettings((prev) => prev ? {
-                            ...prev,
-                            minimumPurchaseAmount: parseFloat(e.target.value) || 0,
-                          } : prev)
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  minimumPurchaseAmount:
+                                    parseFloat(e.target.value) || 0,
+                                }
+                              : prev,
+                          )
                         }
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="max-purchase">Maximum Purchase</Label>
                       <Input
@@ -1949,10 +2038,15 @@ export default function GoldStoreManager() {
                         step="0.01"
                         value={settings.maximumPurchaseAmount}
                         onChange={(e) =>
-                          setSettings((prev) => prev ? {
-                            ...prev,
-                            maximumPurchaseAmount: parseFloat(e.target.value) || 0,
-                          } : prev)
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  maximumPurchaseAmount:
+                                    parseFloat(e.target.value) || 0,
+                                }
+                              : prev,
+                          )
                         }
                       />
                     </div>
@@ -1964,25 +2058,35 @@ export default function GoldStoreManager() {
                       id="maintenance-mode"
                       checked={settings.maintenanceMode}
                       onCheckedChange={(checked) =>
-                        setSettings((prev) => prev ? {
-                          ...prev,
-                          maintenanceMode: checked,
-                        } : prev)
+                        setSettings((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                maintenanceMode: checked,
+                              }
+                            : prev,
+                        )
                       }
                     />
                   </div>
 
                   {settings.maintenanceMode && (
                     <div className="space-y-2">
-                      <Label htmlFor="maintenance-message">Maintenance Message</Label>
+                      <Label htmlFor="maintenance-message">
+                        Maintenance Message
+                      </Label>
                       <Textarea
                         id="maintenance-message"
                         value={settings.maintenanceMessage}
                         onChange={(e) =>
-                          setSettings((prev) => prev ? {
-                            ...prev,
-                            maintenanceMessage: e.target.value,
-                          } : prev)
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  maintenanceMessage: e.target.value,
+                                }
+                              : prev,
+                          )
                         }
                         placeholder="The store is temporarily under maintenance..."
                         rows={2}
@@ -1995,22 +2099,27 @@ export default function GoldStoreManager() {
           )}
 
           <div className="flex justify-end">
-            <Button onClick={() => {
-              if (settings) {
-                goldStoreService.updateStoreSettings(settings).then(() => {
-                  toast({
-                    title: "Success",
-                    description: "Store settings updated successfully.",
-                  });
-                }).catch(() => {
-                  toast({
-                    title: "Error",
-                    description: "Failed to update store settings.",
-                    variant: "destructive",
-                  });
-                });
-              }
-            }}>
+            <Button
+              onClick={() => {
+                if (settings) {
+                  goldStoreService
+                    .updateStoreSettings(settings)
+                    .then(() => {
+                      toast({
+                        title: "Success",
+                        description: "Store settings updated successfully.",
+                      });
+                    })
+                    .catch(() => {
+                      toast({
+                        title: "Error",
+                        description: "Failed to update store settings.",
+                        variant: "destructive",
+                      });
+                    });
+                }
+              }}
+            >
               <Save className="w-4 h-4 mr-2" />
               Save Settings
             </Button>

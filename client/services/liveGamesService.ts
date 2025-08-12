@@ -22,7 +22,7 @@ export interface LiveGame {
   statistics: LiveGameStats;
   isVIP: boolean;
   thumbnail?: string;
-  category: 'featured' | 'new' | 'popular' | 'vip' | 'standard';
+  category: "featured" | "new" | "popular" | "vip" | "standard";
 }
 
 export interface LiveDealer {
@@ -50,7 +50,7 @@ export interface LiveTable {
   name: string;
   design: string;
   cameraAngles: CameraAngle[];
-  lighting: 'bright' | 'ambient' | 'dramatic';
+  lighting: "bright" | "ambient" | "dramatic";
   background: string;
   seatConfiguration: SeatPosition[];
 }
@@ -88,7 +88,7 @@ export interface LiveBet {
   type: string;
   options: any; // Bet-specific options
   timestamp: Date;
-  status: 'pending' | 'won' | 'lost' | 'void';
+  status: "pending" | "won" | "lost" | "void";
   payout?: number;
 }
 
@@ -117,7 +117,7 @@ export interface CameraAngle {
   id: string;
   name: string;
   description: string;
-  position: 'overhead' | 'side' | 'close-up' | 'wide' | 'cards' | 'wheel';
+  position: "overhead" | "side" | "close-up" | "wide" | "cards" | "wheel";
   isDefault: boolean;
 }
 
@@ -141,7 +141,7 @@ export interface LiveChatMessage {
   username: string;
   message: string;
   timestamp: Date;
-  type: 'player' | 'dealer' | 'system' | 'moderator';
+  type: "player" | "dealer" | "system" | "moderator";
   isPrivate?: boolean;
   targetPlayer?: string;
   emoji?: boolean;
@@ -152,7 +152,7 @@ export interface LiveGameTournament {
   id: string;
   name: string;
   gameType: LiveGameType;
-  status: 'upcoming' | 'registration' | 'active' | 'finished';
+  status: "upcoming" | "registration" | "active" | "finished";
   startTime: Date;
   endTime: Date;
   buyIn: number;
@@ -189,7 +189,7 @@ export interface LiveGamePromotion {
   title: string;
   description: string;
   gameTypes: LiveGameType[];
-  type: 'cashback' | 'bonus' | 'free_spins' | 'multiplier' | 'insurance';
+  type: "cashback" | "bonus" | "free_spins" | "multiplier" | "insurance";
   value: number;
   validUntil: Date;
   minBet: number;
@@ -199,11 +199,37 @@ export interface LiveGamePromotion {
 }
 
 // Enums
-export type LiveGameType = 'live-blackjack' | 'live-roulette' | 'live-baccarat' | 'live-poker' | 'live-craps' | 'live-sic-bo' | 'live-dragon-tiger' | 'live-andar-bahar' | 'live-teen-patti' | 'live-wheel' | 'live-lottery';
+export type LiveGameType =
+  | "live-blackjack"
+  | "live-roulette"
+  | "live-baccarat"
+  | "live-poker"
+  | "live-craps"
+  | "live-sic-bo"
+  | "live-dragon-tiger"
+  | "live-andar-bahar"
+  | "live-teen-patti"
+  | "live-wheel"
+  | "live-lottery";
 
-export type LiveGameStatus = 'preparing' | 'active' | 'break' | 'maintenance' | 'offline';
+export type LiveGameStatus =
+  | "preparing"
+  | "active"
+  | "break"
+  | "maintenance"
+  | "offline";
 
-export type LiveGameFeature = 'multi-camera' | 'side-bets' | 'statistics' | 'chat' | 'tips' | 'replay' | 'multi-table' | 'mobile-optimized' | 'hd-streaming' | '4k-streaming';
+export type LiveGameFeature =
+  | "multi-camera"
+  | "side-bets"
+  | "statistics"
+  | "chat"
+  | "tips"
+  | "replay"
+  | "multi-table"
+  | "mobile-optimized"
+  | "hd-streaming"
+  | "4k-streaming";
 
 class LiveGamesService {
   private socket: Socket | null = null;
@@ -225,7 +251,7 @@ class LiveGamesService {
   }
 
   private initializeService() {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       this.loadMockData();
       this.simulateRealTimeUpdates();
     } else {
@@ -234,19 +260,25 @@ class LiveGamesService {
   }
 
   private initializeWebSocket() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
-      this.socket = io(process.env.VITE_WEBSOCKET_URL || 'ws://localhost:3001', {
-        path: '/live-games',
-        transports: ['websocket', 'polling'],
-        timeout: 20000,
-        retries: 3,
-      });
+      this.socket = io(
+        process.env.VITE_WEBSOCKET_URL || "ws://localhost:3001",
+        {
+          path: "/live-games",
+          transports: ["websocket", "polling"],
+          timeout: 20000,
+          retries: 3,
+        },
+      );
 
       this.setupSocketListeners();
     } catch (error) {
-      console.warn('Live Games WebSocket initialization failed, using mock data:', error);
+      console.warn(
+        "Live Games WebSocket initialization failed, using mock data:",
+        error,
+      );
       this.loadMockData();
       this.simulateRealTimeUpdates();
     }
@@ -255,83 +287,103 @@ class LiveGamesService {
   private setupSocketListeners() {
     if (!this.socket) return;
 
-    this.socket.on('connect', () => {
-      console.log('Live Games service connected');
+    this.socket.on("connect", () => {
+      console.log("Live Games service connected");
       this.reconnectAttempts = 0;
     });
 
-    this.socket.on('disconnect', () => {
-      console.log('Live Games service disconnected');
+    this.socket.on("disconnect", () => {
+      console.log("Live Games service disconnected");
       this.handleReconnection();
     });
 
-    this.socket.on('game_update', (game: LiveGame) => {
+    this.socket.on("game_update", (game: LiveGame) => {
       this.liveGames.set(game.id, game);
     });
 
-    this.socket.on('dealer_update', (dealer: LiveDealer) => {
+    this.socket.on("dealer_update", (dealer: LiveDealer) => {
       this.dealers.set(dealer.id, dealer);
     });
 
-    this.socket.on('round_start', (data: { gameId: string; round: LiveGameRound }) => {
-      const game = this.liveGames.get(data.gameId);
-      if (game) {
-        game.currentRound = data.round;
-      }
-    });
+    this.socket.on(
+      "round_start",
+      (data: { gameId: string; round: LiveGameRound }) => {
+        const game = this.liveGames.get(data.gameId);
+        if (game) {
+          game.currentRound = data.round;
+        }
+      },
+    );
 
-    this.socket.on('round_end', (data: { gameId: string; result: LiveGameResult }) => {
-      const game = this.liveGames.get(data.gameId);
-      if (game) {
-        game.gameHistory.unshift(data.result);
-        game.gameHistory = game.gameHistory.slice(0, 50);
-        game.currentRound = undefined;
-      }
-    });
+    this.socket.on(
+      "round_end",
+      (data: { gameId: string; result: LiveGameResult }) => {
+        const game = this.liveGames.get(data.gameId);
+        if (game) {
+          game.gameHistory.unshift(data.result);
+          game.gameHistory = game.gameHistory.slice(0, 50);
+          game.currentRound = undefined;
+        }
+      },
+    );
 
-    this.socket.on('bet_placed', (data: { gameId: string; bet: LiveBet }) => {
+    this.socket.on("bet_placed", (data: { gameId: string; bet: LiveBet }) => {
       const game = this.liveGames.get(data.gameId);
       if (game && game.currentRound) {
         game.currentRound.bets.push(data.bet);
       }
     });
 
-    this.socket.on('chat_message', (message: LiveChatMessage) => {
+    this.socket.on("chat_message", (message: LiveChatMessage) => {
       const history = this.chatHistory.get(message.gameId) || [];
       history.push(message);
       this.chatHistory.set(message.gameId, history.slice(-200));
     });
 
-    this.socket.on('player_joined', (data: { gameId: string; player: LivePlayer }) => {
-      const game = this.liveGames.get(data.gameId);
-      if (game) {
-        const existingPlayerIndex = game.players.findIndex(p => p.id === data.player.id);
-        if (existingPlayerIndex !== -1) {
-          game.players[existingPlayerIndex] = data.player;
-        } else {
-          game.players.push(data.player);
+    this.socket.on(
+      "player_joined",
+      (data: { gameId: string; player: LivePlayer }) => {
+        const game = this.liveGames.get(data.gameId);
+        if (game) {
+          const existingPlayerIndex = game.players.findIndex(
+            (p) => p.id === data.player.id,
+          );
+          if (existingPlayerIndex !== -1) {
+            game.players[existingPlayerIndex] = data.player;
+          } else {
+            game.players.push(data.player);
+          }
         }
-      }
-    });
+      },
+    );
 
-    this.socket.on('player_left', (data: { gameId: string; playerId: string }) => {
-      const game = this.liveGames.get(data.gameId);
-      if (game) {
-        game.players = game.players.filter(p => p.id !== data.playerId);
-      }
-    });
+    this.socket.on(
+      "player_left",
+      (data: { gameId: string; playerId: string }) => {
+        const game = this.liveGames.get(data.gameId);
+        if (game) {
+          game.players = game.players.filter((p) => p.id !== data.playerId);
+        }
+      },
+    );
 
-    this.socket.on('stream_quality_changed', (data: { gameId: string; quality: StreamQuality }) => {
-      if (data.gameId === this.currentGameId) {
-        this.streamQuality = data.quality;
-      }
-    });
+    this.socket.on(
+      "stream_quality_changed",
+      (data: { gameId: string; quality: StreamQuality }) => {
+        if (data.gameId === this.currentGameId) {
+          this.streamQuality = data.quality;
+        }
+      },
+    );
 
-    this.socket.on('dealer_action', (data: { gameId: string; action: string; timestamp: Date }) => {
-      // Handle dealer actions like dealing cards, spinning wheel, etc.
-    });
+    this.socket.on(
+      "dealer_action",
+      (data: { gameId: string; action: string; timestamp: Date }) => {
+        // Handle dealer actions like dealing cards, spinning wheel, etc.
+      },
+    );
 
-    this.socket.on('tournament_update', (tournament: LiveGameTournament) => {
+    this.socket.on("tournament_update", (tournament: LiveGameTournament) => {
       this.tournaments.set(tournament.id, tournament);
     });
   }
@@ -339,12 +391,19 @@ class LiveGamesService {
   private handleReconnection() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      setTimeout(() => {
-        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-        this.initializeWebSocket();
-      }, Math.pow(2, this.reconnectAttempts) * 1000);
+      setTimeout(
+        () => {
+          console.log(
+            `Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
+          );
+          this.initializeWebSocket();
+        },
+        Math.pow(2, this.reconnectAttempts) * 1000,
+      );
     } else {
-      console.warn('Max reconnection attempts reached, switching to offline mode');
+      console.warn(
+        "Max reconnection attempts reached, switching to offline mode",
+      );
       this.loadMockData();
       this.simulateRealTimeUpdates();
     }
@@ -354,104 +413,128 @@ class LiveGamesService {
     // Load mock dealers
     const mockDealers: LiveDealer[] = [
       {
-        id: 'dealer-sarah',
-        name: 'Sarah Williams',
-        avatar: '/avatars/dealer-sarah.jpg',
-        language: 'English',
+        id: "dealer-sarah",
+        name: "Sarah Williams",
+        avatar: "/avatars/dealer-sarah.jpg",
+        language: "English",
         rating: 4.9,
         experience: 5,
-        specialties: ['live-blackjack', 'live-poker'],
+        specialties: ["live-blackjack", "live-poker"],
         isOnline: true,
-        shift: { start: '14:00', end: '22:00' },
+        shift: { start: "14:00", end: "22:00" },
         stats: {
           gamesDealt: 2847,
           averageRating: 4.9,
-          playerFavorites: 156
-        }
+          playerFavorites: 156,
+        },
       },
       {
-        id: 'dealer-marco',
-        name: 'Marco Rodriguez',
-        avatar: '/avatars/dealer-marco.jpg',
-        language: 'Spanish',
+        id: "dealer-marco",
+        name: "Marco Rodriguez",
+        avatar: "/avatars/dealer-marco.jpg",
+        language: "Spanish",
         rating: 4.8,
         experience: 7,
-        specialties: ['live-roulette', 'live-baccarat'],
+        specialties: ["live-roulette", "live-baccarat"],
         isOnline: true,
-        shift: { start: '18:00', end: '02:00' },
+        shift: { start: "18:00", end: "02:00" },
         stats: {
           gamesDealt: 3421,
           averageRating: 4.8,
-          playerFavorites: 203
-        }
+          playerFavorites: 203,
+        },
       },
       {
-        id: 'dealer-yuki',
-        name: 'Yuki Tanaka',
-        avatar: '/avatars/dealer-yuki.jpg',
-        language: 'Japanese',
+        id: "dealer-yuki",
+        name: "Yuki Tanaka",
+        avatar: "/avatars/dealer-yuki.jpg",
+        language: "Japanese",
         rating: 4.9,
         experience: 4,
-        specialties: ['live-baccarat', 'live-sic-bo'],
+        specialties: ["live-baccarat", "live-sic-bo"],
         isOnline: true,
-        shift: { start: '22:00', end: '06:00' },
+        shift: { start: "22:00", end: "06:00" },
         stats: {
           gamesDealt: 1876,
           averageRating: 4.9,
-          playerFavorites: 134
-        }
-      }
+          playerFavorites: 134,
+        },
+      },
     ];
 
-    mockDealers.forEach(dealer => this.dealers.set(dealer.id, dealer));
+    mockDealers.forEach((dealer) => this.dealers.set(dealer.id, dealer));
 
     // Load mock live games
     const mockGames: LiveGame[] = [
       {
-        id: 'live-blackjack-vip-1',
-        name: 'VIP Blackjack - Table 1',
-        type: 'live-blackjack',
-        status: 'active',
+        id: "live-blackjack-vip-1",
+        name: "VIP Blackjack - Table 1",
+        type: "live-blackjack",
+        status: "active",
         dealer: mockDealers[0],
         table: {
-          id: 'table-vip-1',
-          name: 'VIP Gold Table',
-          design: 'luxury-gold',
+          id: "table-vip-1",
+          name: "VIP Gold Table",
+          design: "luxury-gold",
           cameraAngles: [
-            { id: 'main', name: 'Main View', description: 'Standard table view', position: 'wide', isDefault: true },
-            { id: 'cards', name: 'Cards Close-up', description: 'Close view of cards', position: 'close-up', isDefault: false },
-            { id: 'dealer', name: 'Dealer View', description: 'Focus on dealer', position: 'side', isDefault: false }
+            {
+              id: "main",
+              name: "Main View",
+              description: "Standard table view",
+              position: "wide",
+              isDefault: true,
+            },
+            {
+              id: "cards",
+              name: "Cards Close-up",
+              description: "Close view of cards",
+              position: "close-up",
+              isDefault: false,
+            },
+            {
+              id: "dealer",
+              name: "Dealer View",
+              description: "Focus on dealer",
+              position: "side",
+              isDefault: false,
+            },
           ],
-          lighting: 'dramatic',
-          background: 'luxury-casino',
+          lighting: "dramatic",
+          background: "luxury-casino",
           seatConfiguration: Array.from({ length: 7 }, (_, i) => ({
             seatNumber: i + 1,
             position: { x: i * 100 + 50, y: 300 },
             isAvailable: i > 4,
-            isVIP: true
-          }))
+            isVIP: true,
+          })),
         },
         players: this.generateMockPlayers(5),
         maxPlayers: 7,
         minBet: 100,
         maxBet: 10000,
-        streamUrl: 'https://stream.example.com/live-blackjack-vip-1',
+        streamUrl: "https://stream.example.com/live-blackjack-vip-1",
         chatEnabled: true,
         quality: [
-          { resolution: '1920x1080', bitrate: 8000, fps: 60, label: 'HD' },
-          { resolution: '1280x720', bitrate: 4000, fps: 30, label: 'Standard' },
-          { resolution: '854x480', bitrate: 2000, fps: 30, label: 'Mobile' }
+          { resolution: "1920x1080", bitrate: 8000, fps: 60, label: "HD" },
+          { resolution: "1280x720", bitrate: 4000, fps: 30, label: "Standard" },
+          { resolution: "854x480", bitrate: 2000, fps: 30, label: "Mobile" },
         ],
-        language: 'English',
-        features: ['multi-camera', 'side-bets', 'statistics', 'chat', 'hd-streaming'],
-        gameHistory: this.generateMockGameHistory('live-blackjack-vip-1', 20),
+        language: "English",
+        features: [
+          "multi-camera",
+          "side-bets",
+          "statistics",
+          "chat",
+          "hd-streaming",
+        ],
+        gameHistory: this.generateMockGameHistory("live-blackjack-vip-1", 20),
         currentRound: {
-          id: 'round-' + Date.now(),
+          id: "round-" + Date.now(),
           roundNumber: 1247,
           startTime: new Date(),
-          phase: 'betting',
+          phase: "betting",
           gameData: {},
-          bets: []
+          bets: [],
         },
         statistics: {
           totalRounds: 1246,
@@ -459,56 +542,77 @@ class LiveGamesService {
           totalPayout: 456789,
           averageRoundTime: 120,
           playerRetention: 87.3,
-          popularBetTypes: { 'main': 4567, 'insurance': 234, 'side-bet': 890 },
-          recentResults: []
+          popularBetTypes: { main: 4567, insurance: 234, "side-bet": 890 },
+          recentResults: [],
         },
         isVIP: true,
-        category: 'vip'
+        category: "vip",
       },
       {
-        id: 'live-roulette-euro-1',
-        name: 'European Roulette - Classic',
-        type: 'live-roulette',
-        status: 'active',
+        id: "live-roulette-euro-1",
+        name: "European Roulette - Classic",
+        type: "live-roulette",
+        status: "active",
         dealer: mockDealers[1],
         table: {
-          id: 'table-euro-1',
-          name: 'European Classic',
-          design: 'classic-green',
+          id: "table-euro-1",
+          name: "European Classic",
+          design: "classic-green",
           cameraAngles: [
-            { id: 'wheel', name: 'Wheel View', description: 'Focus on roulette wheel', position: 'overhead', isDefault: true },
-            { id: 'table', name: 'Table View', description: 'Betting table view', position: 'wide', isDefault: false },
-            { id: 'dealer', name: 'Dealer View', description: 'Focus on dealer', position: 'side', isDefault: false }
+            {
+              id: "wheel",
+              name: "Wheel View",
+              description: "Focus on roulette wheel",
+              position: "overhead",
+              isDefault: true,
+            },
+            {
+              id: "table",
+              name: "Table View",
+              description: "Betting table view",
+              position: "wide",
+              isDefault: false,
+            },
+            {
+              id: "dealer",
+              name: "Dealer View",
+              description: "Focus on dealer",
+              position: "side",
+              isDefault: false,
+            },
           ],
-          lighting: 'bright',
-          background: 'classic-casino',
+          lighting: "bright",
+          background: "classic-casino",
           seatConfiguration: Array.from({ length: 12 }, (_, i) => ({
             seatNumber: i + 1,
-            position: { x: (i % 4) * 100 + 50, y: Math.floor(i / 4) * 100 + 50 },
+            position: {
+              x: (i % 4) * 100 + 50,
+              y: Math.floor(i / 4) * 100 + 50,
+            },
             isAvailable: i > 7,
-            isVIP: false
-          }))
+            isVIP: false,
+          })),
         },
         players: this.generateMockPlayers(8),
         maxPlayers: 12,
         minBet: 10,
         maxBet: 5000,
-        streamUrl: 'https://stream.example.com/live-roulette-euro-1',
+        streamUrl: "https://stream.example.com/live-roulette-euro-1",
         chatEnabled: true,
         quality: [
-          { resolution: '1920x1080', bitrate: 6000, fps: 30, label: 'HD' },
-          { resolution: '1280x720', bitrate: 3000, fps: 30, label: 'Standard' }
+          { resolution: "1920x1080", bitrate: 6000, fps: 30, label: "HD" },
+          { resolution: "1280x720", bitrate: 3000, fps: 30, label: "Standard" },
         ],
-        language: 'English',
-        features: ['multi-camera', 'statistics', 'chat', 'replay'],
-        gameHistory: this.generateMockGameHistory('live-roulette-euro-1', 15),
+        language: "English",
+        features: ["multi-camera", "statistics", "chat", "replay"],
+        gameHistory: this.generateMockGameHistory("live-roulette-euro-1", 15),
         currentRound: {
-          id: 'round-' + Date.now(),
+          id: "round-" + Date.now(),
           roundNumber: 892,
           startTime: new Date(),
-          phase: 'spinning',
+          phase: "spinning",
           gameData: { lastNumber: 17, recentNumbers: [17, 23, 8, 34, 15] },
-          bets: []
+          bets: [],
         },
         statistics: {
           totalRounds: 891,
@@ -516,56 +620,84 @@ class LiveGamesService {
           totalPayout: 234567,
           averageRoundTime: 90,
           playerRetention: 82.1,
-          popularBetTypes: { 'straight': 1234, 'red-black': 2890, 'odd-even': 1554 },
-          recentResults: [17, 23, 8, 34, 15, 29, 7, 22, 18, 31]
+          popularBetTypes: {
+            straight: 1234,
+            "red-black": 2890,
+            "odd-even": 1554,
+          },
+          recentResults: [17, 23, 8, 34, 15, 29, 7, 22, 18, 31],
         },
         isVIP: false,
-        category: 'featured'
+        category: "featured",
       },
       {
-        id: 'live-baccarat-vip-1',
-        name: 'VIP Baccarat - Dragon',
-        type: 'live-baccarat',
-        status: 'active',
+        id: "live-baccarat-vip-1",
+        name: "VIP Baccarat - Dragon",
+        type: "live-baccarat",
+        status: "active",
         dealer: mockDealers[2],
         table: {
-          id: 'table-baccarat-vip',
-          name: 'Dragon VIP Table',
-          design: 'oriental-dragon',
+          id: "table-baccarat-vip",
+          name: "Dragon VIP Table",
+          design: "oriental-dragon",
           cameraAngles: [
-            { id: 'main', name: 'Main View', description: 'Full table view', position: 'wide', isDefault: true },
-            { id: 'cards', name: 'Cards View', description: 'Close-up of cards', position: 'close-up', isDefault: false },
-            { id: 'squeeze', name: 'Card Squeeze', description: 'Dramatic card reveal', position: 'cards', isDefault: false }
+            {
+              id: "main",
+              name: "Main View",
+              description: "Full table view",
+              position: "wide",
+              isDefault: true,
+            },
+            {
+              id: "cards",
+              name: "Cards View",
+              description: "Close-up of cards",
+              position: "close-up",
+              isDefault: false,
+            },
+            {
+              id: "squeeze",
+              name: "Card Squeeze",
+              description: "Dramatic card reveal",
+              position: "cards",
+              isDefault: false,
+            },
           ],
-          lighting: 'ambient',
-          background: 'oriental-luxury',
+          lighting: "ambient",
+          background: "oriental-luxury",
           seatConfiguration: Array.from({ length: 8 }, (_, i) => ({
             seatNumber: i + 1,
             position: { x: i * 100 + 50, y: 200 },
             isAvailable: i > 5,
-            isVIP: true
-          }))
+            isVIP: true,
+          })),
         },
         players: this.generateMockPlayers(6),
         maxPlayers: 8,
         minBet: 250,
         maxBet: 25000,
-        streamUrl: 'https://stream.example.com/live-baccarat-vip-1',
+        streamUrl: "https://stream.example.com/live-baccarat-vip-1",
         chatEnabled: true,
         quality: [
-          { resolution: '3840x2160', bitrate: 15000, fps: 60, label: '4K' },
-          { resolution: '1920x1080', bitrate: 8000, fps: 60, label: 'HD' }
+          { resolution: "3840x2160", bitrate: 15000, fps: 60, label: "4K" },
+          { resolution: "1920x1080", bitrate: 8000, fps: 60, label: "HD" },
         ],
-        language: 'Japanese',
-        features: ['multi-camera', 'side-bets', 'statistics', 'chat', '4k-streaming'],
-        gameHistory: this.generateMockGameHistory('live-baccarat-vip-1', 25),
+        language: "Japanese",
+        features: [
+          "multi-camera",
+          "side-bets",
+          "statistics",
+          "chat",
+          "4k-streaming",
+        ],
+        gameHistory: this.generateMockGameHistory("live-baccarat-vip-1", 25),
         currentRound: {
-          id: 'round-' + Date.now(),
+          id: "round-" + Date.now(),
           roundNumber: 534,
           startTime: new Date(),
-          phase: 'dealing',
+          phase: "dealing",
           gameData: { playerScore: 5, bankerScore: 6 },
-          bets: []
+          bets: [],
         },
         statistics: {
           totalRounds: 533,
@@ -573,49 +705,64 @@ class LiveGamesService {
           totalPayout: 567890,
           averageRoundTime: 180,
           playerRetention: 91.7,
-          popularBetTypes: { 'player': 1456, 'banker': 1678, 'tie': 287 },
-          recentResults: []
+          popularBetTypes: { player: 1456, banker: 1678, tie: 287 },
+          recentResults: [],
         },
         isVIP: true,
-        category: 'vip'
+        category: "vip",
       },
       {
-        id: 'live-wheel-fortune',
-        name: 'Wheel of Fortune - Mega',
-        type: 'live-wheel',
-        status: 'active',
+        id: "live-wheel-fortune",
+        name: "Wheel of Fortune - Mega",
+        type: "live-wheel",
+        status: "active",
         dealer: mockDealers[0],
         table: {
-          id: 'table-wheel-1',
-          name: 'Mega Fortune Wheel',
-          design: 'colorful-neon',
+          id: "table-wheel-1",
+          name: "Mega Fortune Wheel",
+          design: "colorful-neon",
           cameraAngles: [
-            { id: 'wheel', name: 'Wheel View', description: 'Giant wheel close-up', position: 'overhead', isDefault: true },
-            { id: 'host', name: 'Host View', description: 'Focus on game host', position: 'side', isDefault: false }
+            {
+              id: "wheel",
+              name: "Wheel View",
+              description: "Giant wheel close-up",
+              position: "overhead",
+              isDefault: true,
+            },
+            {
+              id: "host",
+              name: "Host View",
+              description: "Focus on game host",
+              position: "side",
+              isDefault: false,
+            },
           ],
-          lighting: 'dramatic',
-          background: 'game-show',
-          seatConfiguration: []
+          lighting: "dramatic",
+          background: "game-show",
+          seatConfiguration: [],
         },
         players: this.generateMockPlayers(24),
         maxPlayers: 50,
         minBet: 5,
         maxBet: 1000,
-        streamUrl: 'https://stream.example.com/live-wheel-fortune',
+        streamUrl: "https://stream.example.com/live-wheel-fortune",
         chatEnabled: true,
         quality: [
-          { resolution: '1920x1080', bitrate: 6000, fps: 30, label: 'HD' }
+          { resolution: "1920x1080", bitrate: 6000, fps: 30, label: "HD" },
         ],
-        language: 'English',
-        features: ['statistics', 'chat', 'mobile-optimized'],
-        gameHistory: this.generateMockGameHistory('live-wheel-fortune', 30),
+        language: "English",
+        features: ["statistics", "chat", "mobile-optimized"],
+        gameHistory: this.generateMockGameHistory("live-wheel-fortune", 30),
         currentRound: {
-          id: 'round-' + Date.now(),
+          id: "round-" + Date.now(),
           roundNumber: 267,
           startTime: new Date(),
-          phase: 'betting',
-          gameData: { segments: [1, 2, 5, 10, 20, 40], multipliers: ['2x', '5x', '10x'] },
-          bets: []
+          phase: "betting",
+          gameData: {
+            segments: [1, 2, 5, 10, 20, 40],
+            multipliers: ["2x", "5x", "10x"],
+          },
+          bets: [],
         },
         statistics: {
           totalRounds: 266,
@@ -623,23 +770,23 @@ class LiveGamesService {
           totalPayout: 345678,
           averageRoundTime: 60,
           playerRetention: 76.8,
-          popularBetTypes: { '1': 5678, '2': 3456, '5': 2134, '10': 1088 },
-          recentResults: []
+          popularBetTypes: { "1": 5678, "2": 3456, "5": 2134, "10": 1088 },
+          recentResults: [],
         },
         isVIP: false,
-        category: 'popular'
-      }
+        category: "popular",
+      },
     ];
 
-    mockGames.forEach(game => this.liveGames.set(game.id, game));
+    mockGames.forEach((game) => this.liveGames.set(game.id, game));
 
     // Load mock tournaments
     const mockTournaments: LiveGameTournament[] = [
       {
-        id: 'live-blackjack-tournament',
-        name: 'Live Blackjack Championship',
-        gameType: 'live-blackjack',
-        status: 'registration',
+        id: "live-blackjack-tournament",
+        name: "Live Blackjack Championship",
+        gameType: "live-blackjack",
+        status: "registration",
         startTime: new Date(Date.now() + 3600000), // 1 hour
         endTime: new Date(Date.now() + 7200000), // 2 hours
         buyIn: 500,
@@ -648,51 +795,68 @@ class LiveGamesService {
         currentParticipants: 47,
         rounds: [],
         leaderboard: [],
-        rules: 'Standard blackjack rules. Tournament format with elimination rounds.',
-        dealer: mockDealers[0]
-      }
+        rules:
+          "Standard blackjack rules. Tournament format with elimination rounds.",
+        dealer: mockDealers[0],
+      },
     ];
 
-    mockTournaments.forEach(tournament => this.tournaments.set(tournament.id, tournament));
+    mockTournaments.forEach((tournament) =>
+      this.tournaments.set(tournament.id, tournament),
+    );
 
     // Load mock promotions
     this.promotions = [
       {
-        id: 'live-games-welcome',
-        title: 'Live Games Welcome Bonus',
-        description: 'Get 25% cashback on your first live game session',
-        gameTypes: ['live-blackjack', 'live-roulette', 'live-baccarat'],
-        type: 'cashback',
+        id: "live-games-welcome",
+        title: "Live Games Welcome Bonus",
+        description: "Get 25% cashback on your first live game session",
+        gameTypes: ["live-blackjack", "live-roulette", "live-baccarat"],
+        type: "cashback",
         value: 0.25,
         validUntil: new Date(Date.now() + 604800000), // 1 week
         minBet: 25,
         maxBenefit: 250,
-        isActive: true
+        isActive: true,
       },
       {
-        id: 'vip-live-bonus',
-        title: 'VIP Live Games Multiplier',
-        description: 'VIP players get 2x rewards on all live games',
-        gameTypes: ['live-blackjack', 'live-roulette', 'live-baccarat', 'live-poker'],
-        type: 'multiplier',
+        id: "vip-live-bonus",
+        title: "VIP Live Games Multiplier",
+        description: "VIP players get 2x rewards on all live games",
+        gameTypes: [
+          "live-blackjack",
+          "live-roulette",
+          "live-baccarat",
+          "live-poker",
+        ],
+        type: "multiplier",
         value: 2.0,
         validUntil: new Date(Date.now() + 2592000000), // 30 days
         minBet: 100,
         maxBenefit: 5000,
         isActive: true,
-        gameIds: ['live-blackjack-vip-1', 'live-baccarat-vip-1']
-      }
+        gameIds: ["live-blackjack-vip-1", "live-baccarat-vip-1"],
+      },
     ];
 
     // Generate mock chat history
-    mockGames.forEach(game => {
+    mockGames.forEach((game) => {
       this.chatHistory.set(game.id, this.generateMockChatHistory(game.id, 20));
     });
   }
 
   private generateMockPlayers(count: number): LivePlayer[] {
     const players: LivePlayer[] = [];
-    const names = ['BlackjackPro', 'RouletteKing', 'BaccaratQueen', 'HighRoller', 'LuckyPlayer', 'CardShark', 'WheelMaster', 'VegasVet'];
+    const names = [
+      "BlackjackPro",
+      "RouletteKing",
+      "BaccaratQueen",
+      "HighRoller",
+      "LuckyPlayer",
+      "CardShark",
+      "WheelMaster",
+      "VegasVet",
+    ];
 
     for (let i = 0; i < count; i++) {
       players.push({
@@ -703,17 +867,23 @@ class LiveGamesService {
         currentBet: Math.floor(Math.random() * 1000) + 25,
         isActive: Math.random() > 0.3,
         isConnected: Math.random() > 0.1,
-        timeToAct: Math.random() > 0.7 ? Math.floor(Math.random() * 30) + 5 : undefined,
+        timeToAct:
+          Math.random() > 0.7 ? Math.floor(Math.random() * 30) + 5 : undefined,
         isVIP: Math.random() > 0.7,
-        countryCode: ['US', 'UK', 'CA', 'AU', 'DE', 'JP'][Math.floor(Math.random() * 6)],
-        joinedAt: new Date(Date.now() - Math.random() * 7200000) // Within last 2 hours
+        countryCode: ["US", "UK", "CA", "AU", "DE", "JP"][
+          Math.floor(Math.random() * 6)
+        ],
+        joinedAt: new Date(Date.now() - Math.random() * 7200000), // Within last 2 hours
       });
     }
 
     return players;
   }
 
-  private generateMockGameHistory(gameId: string, count: number): LiveGameResult[] {
+  private generateMockGameHistory(
+    gameId: string,
+    count: number,
+  ): LiveGameResult[] {
     const results: LiveGameResult[] = [];
 
     for (let i = 0; i < count; i++) {
@@ -725,7 +895,7 @@ class LiveGamesService {
         outcome: this.generateMockOutcome(gameId),
         winningBets: [`bet-${i}-1`, `bet-${i}-2`],
         totalPayout: Math.floor(Math.random() * 10000) + 500,
-        dealerActions: ['deal', 'hit', 'stand']
+        dealerActions: ["deal", "hit", "stand"],
       });
     }
 
@@ -733,49 +903,52 @@ class LiveGamesService {
   }
 
   private generateMockOutcome(gameId: string): any {
-    if (gameId.includes('blackjack')) {
+    if (gameId.includes("blackjack")) {
       return {
-        dealerHand: ['AS', 'KH'],
+        dealerHand: ["AS", "KH"],
         dealerTotal: 21,
         playerResults: [
-          { hand: ['10C', '9D'], total: 19, result: 'lose' },
-          { hand: ['AH', 'QS'], total: 21, result: 'blackjack' }
-        ]
+          { hand: ["10C", "9D"], total: 19, result: "lose" },
+          { hand: ["AH", "QS"], total: 21, result: "blackjack" },
+        ],
       };
-    } else if (gameId.includes('roulette')) {
+    } else if (gameId.includes("roulette")) {
       return {
         number: Math.floor(Math.random() * 37),
-        color: Math.random() > 0.5 ? 'red' : 'black',
-        odd: Math.random() > 0.5
+        color: Math.random() > 0.5 ? "red" : "black",
+        odd: Math.random() > 0.5,
       };
-    } else if (gameId.includes('baccarat')) {
+    } else if (gameId.includes("baccarat")) {
       return {
         playerScore: Math.floor(Math.random() * 10),
         bankerScore: Math.floor(Math.random() * 10),
-        winner: ['player', 'banker', 'tie'][Math.floor(Math.random() * 3)]
+        winner: ["player", "banker", "tie"][Math.floor(Math.random() * 3)],
       };
-    } else if (gameId.includes('wheel')) {
+    } else if (gameId.includes("wheel")) {
       return {
         segment: [1, 2, 5, 10, 20, 40][Math.floor(Math.random() * 6)],
-        multiplier: ['1x', '2x', '5x', '10x'][Math.floor(Math.random() * 4)]
+        multiplier: ["1x", "2x", "5x", "10x"][Math.floor(Math.random() * 4)],
       };
     }
     return {};
   }
 
-  private generateMockChatHistory(gameId: string, count: number): LiveChatMessage[] {
+  private generateMockChatHistory(
+    gameId: string,
+    count: number,
+  ): LiveChatMessage[] {
     const messages: LiveChatMessage[] = [];
     const sampleMessages = [
-      'Good luck everyone!',
-      'Hit me dealer!',
-      'Let it ride!',
-      'Great game!',
-      'Nice win!',
-      'Dealer has been hot today',
-      'Going all in this round',
-      'Chat from mobile is working great',
-      'Love this table',
-      'See you all tomorrow!'
+      "Good luck everyone!",
+      "Hit me dealer!",
+      "Let it ride!",
+      "Great game!",
+      "Nice win!",
+      "Dealer has been hot today",
+      "Going all in this round",
+      "Chat from mobile is working great",
+      "Love this table",
+      "See you all tomorrow!",
     ];
 
     for (let i = 0; i < count; i++) {
@@ -783,10 +956,11 @@ class LiveGamesService {
         id: `msg-${gameId}-${i}`,
         gameId,
         username: `Player${Math.floor(Math.random() * 100)}`,
-        message: sampleMessages[Math.floor(Math.random() * sampleMessages.length)],
+        message:
+          sampleMessages[Math.floor(Math.random() * sampleMessages.length)],
         timestamp: new Date(Date.now() - i * 30000), // 30 seconds apart
-        type: Math.random() > 0.9 ? 'dealer' : 'player',
-        emoji: Math.random() > 0.8
+        type: Math.random() > 0.9 ? "dealer" : "player",
+        emoji: Math.random() > 0.8,
       });
     }
 
@@ -796,16 +970,16 @@ class LiveGamesService {
   private simulateRealTimeUpdates() {
     setInterval(() => {
       // Simulate game round progression
-      this.liveGames.forEach(game => {
-        if (game.status === 'active' && game.currentRound) {
+      this.liveGames.forEach((game) => {
+        if (game.status === "active" && game.currentRound) {
           // Simulate phase changes
           if (Math.random() > 0.85) {
-            const phases = ['betting', 'dealing', 'playing', 'complete'];
+            const phases = ["betting", "dealing", "playing", "complete"];
             const currentPhaseIndex = phases.indexOf(game.currentRound.phase);
             const nextPhase = phases[(currentPhaseIndex + 1) % phases.length];
             game.currentRound.phase = nextPhase;
 
-            if (nextPhase === 'complete') {
+            if (nextPhase === "complete") {
               // End round and start new one
               const result = {
                 id: `result-${Date.now()}`,
@@ -814,7 +988,7 @@ class LiveGamesService {
                 timestamp: new Date(),
                 outcome: this.generateMockOutcome(game.id),
                 winningBets: [],
-                totalPayout: Math.floor(Math.random() * 5000) + 100
+                totalPayout: Math.floor(Math.random() * 5000) + 100,
               };
 
               game.gameHistory.unshift(result);
@@ -822,12 +996,12 @@ class LiveGamesService {
 
               // Start new round
               game.currentRound = {
-                id: 'round-' + Date.now(),
+                id: "round-" + Date.now(),
                 roundNumber: game.currentRound.roundNumber + 1,
                 startTime: new Date(),
-                phase: 'betting',
+                phase: "betting",
                 gameData: {},
-                bets: []
+                bets: [],
               };
             }
           }
@@ -843,12 +1017,15 @@ class LiveGamesService {
             game.players.push(newPlayer);
           } else if (changeCount < 0 && game.players.length > 0) {
             // Remove player
-            game.players.splice(Math.floor(Math.random() * game.players.length), 1);
+            game.players.splice(
+              Math.floor(Math.random() * game.players.length),
+              1,
+            );
           }
         }
 
         // Update player chip counts
-        game.players.forEach(player => {
+        game.players.forEach((player) => {
           if (Math.random() > 0.95) {
             const change = Math.floor(Math.random() * 1000) - 500;
             player.chipCount = Math.max(0, player.chipCount + change);
@@ -862,7 +1039,7 @@ class LiveGamesService {
       }
 
       // Update dealer stats
-      this.dealers.forEach(dealer => {
+      this.dealers.forEach((dealer) => {
         if (Math.random() > 0.98) {
           dealer.stats.gamesDealt += 1;
         }
@@ -879,23 +1056,24 @@ class LiveGamesService {
     if (!game) return;
 
     const messages = [
-      'Good luck!',
-      'Nice hand!',
-      'Great spin!',
-      'Dealer is on fire!',
-      'Let\'s go!',
-      'Big win incoming!',
-      'Love this table',
-      'Feeling lucky today',
-      'GG everyone',
-      'See you next round!'
+      "Good luck!",
+      "Nice hand!",
+      "Great spin!",
+      "Dealer is on fire!",
+      "Let's go!",
+      "Big win incoming!",
+      "Love this table",
+      "Feeling lucky today",
+      "GG everyone",
+      "See you next round!",
     ];
 
     const isDealer = Math.random() > 0.85;
-    const username = isDealer ? game.dealer.name : 
-                    game.players.length > 0 ? 
-                    game.players[Math.floor(Math.random() * game.players.length)].username :
-                    'Anonymous';
+    const username = isDealer
+      ? game.dealer.name
+      : game.players.length > 0
+        ? game.players[Math.floor(Math.random() * game.players.length)].username
+        : "Anonymous";
 
     const message: LiveChatMessage = {
       id: `msg_${Date.now()}_${Math.random()}`,
@@ -903,8 +1081,8 @@ class LiveGamesService {
       username,
       message: messages[Math.floor(Math.random() * messages.length)],
       timestamp: new Date(),
-      type: isDealer ? 'dealer' : 'player',
-      emoji: Math.random() > 0.8
+      type: isDealer ? "dealer" : "player",
+      emoji: Math.random() > 0.8,
     };
 
     const history = this.chatHistory.get(randomGameId) || [];
@@ -925,30 +1103,44 @@ class LiveGamesService {
 
     if (filters) {
       if (filters.type) {
-        games = games.filter(g => g.type === filters.type);
+        games = games.filter((g) => g.type === filters.type);
       }
       if (filters.status) {
-        games = games.filter(g => g.status === filters.status);
+        games = games.filter((g) => g.status === filters.status);
       }
       if (filters.isVIP !== undefined) {
-        games = games.filter(g => g.isVIP === filters.isVIP);
+        games = games.filter((g) => g.isVIP === filters.isVIP);
       }
       if (filters.category) {
-        games = games.filter(g => g.category === filters.category);
+        games = games.filter((g) => g.category === filters.category);
       }
       if (filters.minBet !== undefined) {
-        games = games.filter(g => g.minBet >= filters.minBet!);
+        games = games.filter((g) => g.minBet >= filters.minBet!);
       }
       if (filters.maxBet !== undefined) {
-        games = games.filter(g => g.maxBet <= filters.maxBet!);
+        games = games.filter((g) => g.maxBet <= filters.maxBet!);
       }
     }
 
     return games.sort((a, b) => {
       // Sort by: featured > vip > popular > others, then by player count
-      const aScore = a.category === 'featured' ? 4 : a.category === 'vip' ? 3 : a.category === 'popular' ? 2 : 1;
-      const bScore = b.category === 'featured' ? 4 : b.category === 'vip' ? 3 : b.category === 'popular' ? 2 : 1;
-      
+      const aScore =
+        a.category === "featured"
+          ? 4
+          : a.category === "vip"
+            ? 3
+            : a.category === "popular"
+              ? 2
+              : 1;
+      const bScore =
+        b.category === "featured"
+          ? 4
+          : b.category === "vip"
+            ? 3
+            : b.category === "popular"
+              ? 2
+              : 1;
+
       if (aScore !== bScore) return bScore - aScore;
       return b.players.length - a.players.length;
     });
@@ -971,7 +1163,9 @@ class LiveGamesService {
   }
 
   public getPromotions(): LiveGamePromotion[] {
-    return this.promotions.filter(p => p.isActive && p.validUntil > new Date());
+    return this.promotions.filter(
+      (p) => p.isActive && p.validUntil > new Date(),
+    );
   }
 
   public getChatHistory(gameId: string): LiveChatMessage[] {
@@ -979,25 +1173,30 @@ class LiveGamesService {
   }
 
   public getCurrentGame(): LiveGame | null {
-    return this.currentGameId ? this.liveGames.get(this.currentGameId) || null : null;
+    return this.currentGameId
+      ? this.liveGames.get(this.currentGameId) || null
+      : null;
   }
 
-  public joinGame(gameId: string, seatNumber?: number): Promise<{ success: boolean; error?: string }> {
+  public joinGame(
+    gameId: string,
+    seatNumber?: number,
+  ): Promise<{ success: boolean; error?: string }> {
     return new Promise((resolve) => {
       if (this.socket && this.socket.connected) {
-        this.socket.emit('join_game', { gameId, seatNumber });
+        this.socket.emit("join_game", { gameId, seatNumber });
         this.currentGameId = gameId;
         resolve({ success: true });
       } else {
         // Simulate join in development
         const game = this.liveGames.get(gameId);
         if (!game) {
-          resolve({ success: false, error: 'Game not found' });
+          resolve({ success: false, error: "Game not found" });
           return;
         }
 
         if (game.players.length >= game.maxPlayers) {
-          resolve({ success: false, error: 'Game is full' });
+          resolve({ success: false, error: "Game is full" });
           return;
         }
 
@@ -1009,15 +1208,18 @@ class LiveGamesService {
 
   public leaveGame(): void {
     if (this.socket && this.socket.connected && this.currentGameId) {
-      this.socket.emit('leave_game', { gameId: this.currentGameId });
+      this.socket.emit("leave_game", { gameId: this.currentGameId });
     }
     this.currentGameId = null;
   }
 
-  public placeBet(gameId: string, bet: Omit<LiveBet, 'id' | 'timestamp' | 'status'>): Promise<{ success: boolean; betId?: string; error?: string }> {
+  public placeBet(
+    gameId: string,
+    bet: Omit<LiveBet, "id" | "timestamp" | "status">,
+  ): Promise<{ success: boolean; betId?: string; error?: string }> {
     return new Promise((resolve) => {
       if (this.socket && this.socket.connected) {
-        this.socket.emit('place_bet', { gameId, bet });
+        this.socket.emit("place_bet", { gameId, bet });
         resolve({ success: true, betId: `bet_${Date.now()}` });
       } else {
         // Simulate bet placement in development
@@ -1026,7 +1228,7 @@ class LiveGamesService {
           ...bet,
           id: betId,
           timestamp: new Date(),
-          status: 'pending'
+          status: "pending",
         };
 
         const game = this.liveGames.get(gameId);
@@ -1039,11 +1241,15 @@ class LiveGamesService {
     });
   }
 
-  public sendChatMessage(gameId: string, message: string, username: string): void {
+  public sendChatMessage(
+    gameId: string,
+    message: string,
+    username: string,
+  ): void {
     if (!this.chatEnabled) return;
 
     if (this.socket && this.socket.connected) {
-      this.socket.emit('chat_message', { gameId, message, username });
+      this.socket.emit("chat_message", { gameId, message, username });
     } else {
       // Add locally in development
       const chatMessage: LiveChatMessage = {
@@ -1052,7 +1258,7 @@ class LiveGamesService {
         username,
         message,
         timestamp: new Date(),
-        type: 'player'
+        type: "player",
       };
 
       const history = this.chatHistory.get(gameId) || [];
@@ -1063,14 +1269,14 @@ class LiveGamesService {
 
   public switchCamera(gameId: string, cameraId: string): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('switch_camera', { gameId, cameraId });
+      this.socket.emit("switch_camera", { gameId, cameraId });
     }
     this.currentCameraAngle = cameraId;
   }
 
   public changeStreamQuality(gameId: string, quality: StreamQuality): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('change_quality', { gameId, quality });
+      this.socket.emit("change_quality", { gameId, quality });
     }
     this.streamQuality = quality;
   }
@@ -1099,10 +1305,13 @@ class LiveGamesService {
     return this.chatEnabled;
   }
 
-  public tipDealer(gameId: string, amount: number): Promise<{ success: boolean; error?: string }> {
+  public tipDealer(
+    gameId: string,
+    amount: number,
+  ): Promise<{ success: boolean; error?: string }> {
     return new Promise((resolve) => {
       if (this.socket && this.socket.connected) {
-        this.socket.emit('tip_dealer', { gameId, amount });
+        this.socket.emit("tip_dealer", { gameId, amount });
         resolve({ success: true });
       } else {
         // Simulate tip in development
@@ -1110,10 +1319,10 @@ class LiveGamesService {
           const chatMessage: LiveChatMessage = {
             id: `tip_${Date.now()}`,
             gameId,
-            username: 'System',
+            username: "System",
             message: `Anonymous player tipped the dealer $${amount}!`,
             timestamp: new Date(),
-            type: 'system'
+            type: "system",
           };
 
           const history = this.chatHistory.get(gameId) || [];
@@ -1126,21 +1335,23 @@ class LiveGamesService {
     });
   }
 
-  public registerForTournament(tournamentId: string): Promise<{ success: boolean; error?: string }> {
+  public registerForTournament(
+    tournamentId: string,
+  ): Promise<{ success: boolean; error?: string }> {
     return new Promise((resolve) => {
       if (this.socket && this.socket.connected) {
-        this.socket.emit('register_tournament', { tournamentId });
+        this.socket.emit("register_tournament", { tournamentId });
         resolve({ success: true });
       } else {
         // Simulate registration in development
         const tournament = this.tournaments.get(tournamentId);
         if (!tournament) {
-          resolve({ success: false, error: 'Tournament not found' });
+          resolve({ success: false, error: "Tournament not found" });
           return;
         }
 
         if (tournament.currentParticipants >= tournament.maxParticipants) {
-          resolve({ success: false, error: 'Tournament is full' });
+          resolve({ success: false, error: "Tournament is full" });
           return;
         }
 

@@ -417,11 +417,11 @@ router.get("/coin-packages/:id", async (req, res) => {
     const packageId = parseInt(req.params.id);
     const query = "SELECT * FROM coin_packages WHERE id = $1";
     const result = await databaseService.query(query, [packageId]);
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Package not found" });
     }
-    
+
     res.json(result.rows[0]);
   } catch (error) {
     console.error("Error getting coin package:", error);
@@ -440,7 +440,7 @@ router.post("/coin-packages", async (req, res) => {
       bonus_sweeps_coins,
       price_usd,
       is_active,
-      sort_order
+      sort_order,
     } = req.body;
 
     const query = `
@@ -462,7 +462,7 @@ router.post("/coin-packages", async (req, res) => {
       bonus_sweeps_coins || 0,
       price_usd,
       is_active !== undefined ? is_active : true,
-      sort_order || 0
+      sort_order || 0,
     ]);
 
     res.status(201).json(result.rows[0]);
@@ -476,14 +476,14 @@ router.patch("/coin-packages/:id", async (req, res) => {
   try {
     const packageId = parseInt(req.params.id);
     const updates = req.body;
-    
+
     // Build dynamic update query
     const updateFields = [];
     const values = [];
     let paramCount = 1;
 
     Object.keys(updates).forEach((key) => {
-      if (updates[key] !== undefined && key !== 'id') {
+      if (updates[key] !== undefined && key !== "id") {
         updateFields.push(`${key} = $${paramCount}`);
         values.push(updates[key]);
         paramCount++;
@@ -496,11 +496,11 @@ router.patch("/coin-packages/:id", async (req, res) => {
 
     const query = `
       UPDATE coin_packages 
-      SET ${updateFields.join(', ')}
+      SET ${updateFields.join(", ")}
       WHERE id = $${paramCount}
       RETURNING *
     `;
-    
+
     values.push(packageId);
     const result = await databaseService.query(query, values);
 
@@ -538,35 +538,40 @@ router.post("/purchase-package", async (req, res) => {
     const { packageId, paymentMethod, userId } = req.body;
 
     // Get package details
-    const packageQuery = "SELECT * FROM coin_packages WHERE id = $1 AND is_active = TRUE";
-    const packageResult = await databaseService.query(packageQuery, [packageId]);
+    const packageQuery =
+      "SELECT * FROM coin_packages WHERE id = $1 AND is_active = TRUE";
+    const packageResult = await databaseService.query(packageQuery, [
+      packageId,
+    ]);
 
     if (packageResult.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        error: "Package not found or inactive" 
+      return res.status(404).json({
+        success: false,
+        error: "Package not found or inactive",
       });
     }
 
     const coinPackage = packageResult.rows[0];
-    
+
     // Mock payment processing (in production, integrate with payment processor)
     const isPaymentSuccessful = Math.random() > 0.1; // 90% success rate
 
     if (!isPaymentSuccessful) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Payment processing failed" 
+      return res.status(400).json({
+        success: false,
+        error: "Payment processing failed",
       });
     }
 
     // Calculate total coins to add
-    const totalGoldCoins = coinPackage.gold_coins + (coinPackage.bonus_gold_coins || 0);
-    const totalSweepsCoins = coinPackage.sweeps_coins + (coinPackage.bonus_sweeps_coins || 0);
+    const totalGoldCoins =
+      coinPackage.gold_coins + (coinPackage.bonus_gold_coins || 0);
+    const totalSweepsCoins =
+      coinPackage.sweeps_coins + (coinPackage.bonus_sweeps_coins || 0);
 
     // Create transaction record
     const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // For demo purposes, use a default user ID if not provided
     const targetUserId = userId || 1; // Default to admin user
 
@@ -578,7 +583,7 @@ router.post("/purchase-package", async (req, res) => {
           totalGoldCoins / 1000, // Convert to correct units
           totalSweepsCoins,
           `Purchase: ${coinPackage.name}`,
-          'store_purchase'
+          "store_purchase",
         );
       }
 
@@ -594,13 +599,13 @@ router.post("/purchase-package", async (req, res) => {
 
       const purchaseResult = await databaseService.query(purchaseQuery, [
         targetUserId,
-        'deposit',
-        'USD',
+        "deposit",
+        "USD",
         coinPackage.price_usd,
         `Gold Store Purchase: ${coinPackage.name}`,
-        'completed',
+        "completed",
         paymentMethod,
-        transactionId
+        transactionId,
       ]);
 
       res.json({
@@ -609,11 +614,10 @@ router.post("/purchase-package", async (req, res) => {
         package: coinPackage,
         coinsAdded: {
           goldCoins: totalGoldCoins,
-          sweepsCoins: totalSweepsCoins
+          sweepsCoins: totalSweepsCoins,
         },
-        message: "Purchase completed successfully!"
+        message: "Purchase completed successfully!",
       });
-
     } catch (balanceError) {
       console.error("Error updating balance:", balanceError);
       // Still return success for the purchase, balance update can be handled separately
@@ -623,17 +627,16 @@ router.post("/purchase-package", async (req, res) => {
         package: coinPackage,
         coinsAdded: {
           goldCoins: totalGoldCoins,
-          sweepsCoins: totalSweepsCoins
+          sweepsCoins: totalSweepsCoins,
         },
-        message: "Purchase completed successfully!"
+        message: "Purchase completed successfully!",
       });
     }
-
   } catch (error) {
     console.error("Error processing purchase:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to process purchase" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to process purchase",
     });
   }
 });
@@ -688,7 +691,7 @@ router.get("/store-analytics", async (req, res) => {
         AND description LIKE 'Gold Store Purchase:%'
         AND created_at >= $1
     `;
-    
+
     const salesResult = await databaseService.query(salesQuery, [fromDate]);
     const stats = salesResult.rows[0];
 
@@ -706,8 +709,10 @@ router.get("/store-analytics", async (req, res) => {
       ORDER BY revenue DESC
       LIMIT 5
     `;
-    
-    const topPackagesResult = await databaseService.query(topPackagesQuery, [fromDate]);
+
+    const topPackagesResult = await databaseService.query(topPackagesQuery, [
+      fromDate,
+    ]);
 
     // Mock additional analytics data
     const analytics = {
@@ -715,29 +720,29 @@ router.get("/store-analytics", async (req, res) => {
       totalSales: parseInt(stats.total_sales) || 0,
       conversionRate: 8.5,
       averageOrderValue: parseFloat(stats.average_order_value) || 0,
-      topPackages: topPackagesResult.rows.map(row => ({
+      topPackages: topPackagesResult.rows.map((row) => ({
         packageId: row.package_name,
         name: row.package_name,
         sales: parseInt(row.sales),
-        revenue: parseFloat(row.revenue)
+        revenue: parseFloat(row.revenue),
       })),
       salesByPeriod: [], // Could be implemented with more complex query
       paymentMethodStats: [
         { method: "credit_card", count: 450, percentage: 60.0 },
         { method: "paypal", count: 180, percentage: 24.0 },
         { method: "apple_pay", count: 75, percentage: 10.0 },
-        { method: "google_pay", count: 45, percentage: 6.0 }
+        { method: "google_pay", count: 45, percentage: 6.0 },
       ],
       userDemographics: {
         newUsers: 123,
         returningUsers: 456,
-        vipUsers: 78
+        vipUsers: 78,
       },
       performanceMetrics: {
         pageViews: 5432,
         cartAbandonment: 12.5,
-        refundRate: 1.8
-      }
+        refundRate: 1.8,
+      },
     };
 
     res.json(analytics);
@@ -756,11 +761,16 @@ router.get("/store-settings", async (req, res) => {
       storeDescription: "Premium gold coins and sweeps coins packages",
       defaultCurrency: "USD",
       taxRate: 0,
-      enabledPaymentMethods: ["credit_card", "paypal", "apple_pay", "google_pay"],
+      enabledPaymentMethods: [
+        "credit_card",
+        "paypal",
+        "apple_pay",
+        "google_pay",
+      ],
       minimumPurchaseAmount: 4.99,
       maximumPurchaseAmount: 999.99,
       maintenanceMode: false,
-      maintenanceMessage: ""
+      maintenanceMessage: "",
     };
 
     res.json(settings);
@@ -778,11 +788,16 @@ router.patch("/store-settings", async (req, res) => {
       storeDescription: "Premium gold coins and sweeps coins packages",
       defaultCurrency: "USD",
       taxRate: 0,
-      enabledPaymentMethods: ["credit_card", "paypal", "apple_pay", "google_pay"],
+      enabledPaymentMethods: [
+        "credit_card",
+        "paypal",
+        "apple_pay",
+        "google_pay",
+      ],
       minimumPurchaseAmount: 4.99,
       maximumPurchaseAmount: 999.99,
       maintenanceMode: false,
-      maintenanceMessage: ""
+      maintenanceMessage: "",
     };
 
     const updatedSettings = { ...currentSettings, ...req.body };

@@ -1,15 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { ScrollArea } from '../components/ui/scroll-area';
-import { Separator } from '../components/ui/separator';
-import { Alert, AlertDescription } from '../components/ui/alert';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Separator } from "../components/ui/separator";
+import { Alert, AlertDescription } from "../components/ui/alert";
 import {
   Users,
   MessageCircle,
@@ -51,47 +68,60 @@ import {
   Unlock,
   Info,
   Edit,
-  MoreVertical
-} from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { socialService, SocialPost, SocialUser, FriendRequest, SocialGroup, SocialChallenge, SocialTournament, DirectMessage, SocialNotification, SocialBadge } from '../services/socialService';
-import SocialActivitiesFeed from '../components/SocialActivitiesFeed';
-import SocialAchievements from '../components/SocialAchievements';
+  MoreVertical,
+} from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import {
+  socialService,
+  SocialPost,
+  SocialUser,
+  FriendRequest,
+  SocialGroup,
+  SocialChallenge,
+  SocialTournament,
+  DirectMessage,
+  SocialNotification,
+  SocialBadge,
+} from "../services/socialService";
+import SocialActivitiesFeed from "../components/SocialActivitiesFeed";
+import SocialAchievements from "../components/SocialAchievements";
 
 export default function Social() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState("feed");
   const [loading, setLoading] = useState(true);
-  
+
   // Feed State
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [newPost, setNewPost] = useState('');
-  const [postType, setPostType] = useState<SocialPost['type']>('text');
-  
+  const [newPost, setNewPost] = useState("");
+  const [postType, setPostType] = useState<SocialPost["type"]>("text");
+
   // Friends State
   const [friends, setFriends] = useState<SocialUser[]>([]);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-  const [searchUsers, setSearchUsers] = useState('');
-  
+  const [searchUsers, setSearchUsers] = useState("");
+
   // Groups State
   const [groups, setGroups] = useState<SocialGroup[]>([]);
-  const [searchGroups, setSearchGroups] = useState('');
-  
+  const [searchGroups, setSearchGroups] = useState("");
+
   // Challenges State
   const [challenges, setChallenges] = useState<SocialChallenge[]>([]);
-  
+
   // Tournaments State
   const [tournaments, setTournaments] = useState<SocialTournament[]>([]);
-  
+
   // Messages State
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<
+    string | null
+  >(null);
   const [messages, setMessages] = useState<DirectMessage[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  
+  const [newMessage, setNewMessage] = useState("");
+
   // Notifications State
   const [notifications, setNotifications] = useState<SocialNotification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  
+
   // Profile State
   const [userProfile, setUserProfile] = useState<SocialUser | null>(null);
   const [userBadges, setUserBadges] = useState<SocialBadge[]>([]);
@@ -102,7 +132,7 @@ export default function Social() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'messages' && selectedConversation) {
+    if (activeTab === "messages" && selectedConversation) {
       loadMessages(selectedConversation);
     }
   }, [activeTab, selectedConversation]);
@@ -120,7 +150,7 @@ export default function Social() {
         notificationsData,
         profileData,
         badgesData,
-        leaderboardData
+        leaderboardData,
       ] = await Promise.all([
         socialService.getSocialFeed(),
         socialService.getFriends(),
@@ -131,7 +161,7 @@ export default function Social() {
         socialService.getNotifications(),
         user ? socialService.getUserProfile(user.id) : null,
         socialService.getUserBadges(),
-        socialService.getLeaderboard()
+        socialService.getLeaderboard(),
       ]);
 
       setPosts(feedData);
@@ -145,7 +175,7 @@ export default function Social() {
       setUserBadges(badgesData);
       setLeaderboard(leaderboardData);
     } catch (error) {
-      console.error('Error loading social data:', error);
+      console.error("Error loading social data:", error);
     } finally {
       setLoading(false);
     }
@@ -156,7 +186,7 @@ export default function Social() {
       const messagesData = await socialService.getDirectMessages(userId);
       setMessages(messagesData);
     } catch (error) {
-      console.error('Error loading messages:', error);
+      console.error("Error loading messages:", error);
     }
   };
 
@@ -166,14 +196,14 @@ export default function Social() {
     try {
       const success = await socialService.createPost(newPost, postType);
       if (success) {
-        setNewPost('');
-        setPostType('text');
+        setNewPost("");
+        setPostType("text");
         // Reload feed
         const feedData = await socialService.getSocialFeed();
         setPosts(feedData);
       }
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error("Error creating post:", error);
     }
   };
 
@@ -181,13 +211,19 @@ export default function Social() {
     try {
       await socialService.likePost(postId);
       // Update local state
-      setPosts(prev => prev.map(post => 
-        post.id === postId 
-          ? { ...post, hasLiked: !post.hasLiked, likes: post.hasLiked ? post.likes - 1 : post.likes + 1 }
-          : post
-      ));
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                hasLiked: !post.hasLiked,
+                likes: post.hasLiked ? post.likes - 1 : post.likes + 1,
+              }
+            : post,
+        ),
+      );
     } catch (error) {
-      console.error('Error liking post:', error);
+      console.error("Error liking post:", error);
     }
   };
 
@@ -195,13 +231,16 @@ export default function Social() {
     if (!newMessage.trim() || !selectedConversation) return;
 
     try {
-      const success = await socialService.sendDirectMessage(selectedConversation, newMessage);
+      const success = await socialService.sendDirectMessage(
+        selectedConversation,
+        newMessage,
+      );
       if (success) {
-        setNewMessage('');
+        setNewMessage("");
         loadMessages(selectedConversation);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     }
   };
 
@@ -214,7 +253,7 @@ export default function Social() {
         setChallenges(challengesData);
       }
     } catch (error) {
-      console.error('Error joining challenge:', error);
+      console.error("Error joining challenge:", error);
     }
   };
 
@@ -227,33 +266,38 @@ export default function Social() {
         setGroups(groupsData);
       }
     } catch (error) {
-      console.error('Error joining group:', error);
+      console.error("Error joining group:", error);
     }
   };
 
   const handleFriendRequest = async (userId: string, accept: boolean) => {
     try {
-      const success = await socialService.respondToFriendRequest(userId, accept);
+      const success = await socialService.respondToFriendRequest(
+        userId,
+        accept,
+      );
       if (success) {
         // Reload friend requests and friends
         const [requestsData, friendsData] = await Promise.all([
           socialService.getFriendRequests(),
-          socialService.getFriends()
+          socialService.getFriends(),
         ]);
         setFriendRequests(requestsData);
         setFriends(friendsData);
       }
     } catch (error) {
-      console.error('Error responding to friend request:', error);
+      console.error("Error responding to friend request:", error);
     }
   };
 
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
     const time = new Date(timestamp);
-    const diffInHours = Math.floor((now.getTime() - time.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
+    const diffInHours = Math.floor(
+      (now.getTime() - time.getTime()) / (1000 * 60 * 60),
+    );
+
+    if (diffInHours < 1) return "Just now";
     if (diffInHours < 24) return `${diffInHours}h ago`;
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 7) return `${diffInDays}d ago`;
@@ -262,20 +306,29 @@ export default function Social() {
 
   const getBadgeIcon = (rarity: string) => {
     switch (rarity) {
-      case 'legendary': return '👑';
-      case 'epic': return '💎';
-      case 'rare': return '⭐';
-      default: return '🏅';
+      case "legendary":
+        return "👑";
+      case "epic":
+        return "💎";
+      case "rare":
+        return "⭐";
+      default:
+        return "🏅";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-500';
-      case 'completed': return 'text-blue-500';
-      case 'expired': return 'text-gray-500';
-      case 'registration': return 'text-yellow-500';
-      default: return 'text-gray-500';
+      case "active":
+        return "text-green-500";
+      case "completed":
+        return "text-blue-500";
+      case "expired":
+        return "text-gray-500";
+      case "registration":
+        return "text-yellow-500";
+      default:
+        return "text-gray-500";
     }
   };
 
@@ -303,16 +356,16 @@ export default function Social() {
             Connect, compete, and celebrate with the CoinKrazy community
           </p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           {/* Notifications */}
           <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="relative">
                 <Bell className="h-4 w-4" />
-                {notifications.filter(n => !n.isRead).length > 0 && (
+                {notifications.filter((n) => !n.isRead).length > 0 && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 text-xs p-0 flex items-center justify-center bg-red-500">
-                    {notifications.filter(n => !n.isRead).length}
+                    {notifications.filter((n) => !n.isRead).length}
                   </Badge>
                 )}
               </Button>
@@ -323,13 +376,18 @@ export default function Social() {
               </DialogHeader>
               <ScrollArea className="h-96">
                 <div className="space-y-2">
-                  {notifications.map(notification => (
-                    <div key={notification.id} className={`p-3 rounded-lg border ${!notification.isRead ? 'bg-blue-50' : ''}`}>
+                  {notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-3 rounded-lg border ${!notification.isRead ? "bg-blue-50" : ""}`}
+                    >
                       <div className="flex items-start gap-3">
                         <span className="text-2xl">{notification.icon}</span>
                         <div className="flex-1">
                           <h4 className="font-medium">{notification.title}</h4>
-                          <p className="text-sm text-muted-foreground">{notification.message}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {notification.message}
+                          </p>
                           <p className="text-xs text-muted-foreground mt-1">
                             {formatTimeAgo(notification.createdAt)}
                           </p>
@@ -350,14 +408,18 @@ export default function Social() {
             <div className="flex items-center gap-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-3">
               <Avatar>
                 <AvatarImage src={userProfile.avatar} />
-                <AvatarFallback>{userProfile.displayName.charAt(0)}</AvatarFallback>
+                <AvatarFallback>
+                  {userProfile.displayName.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium">{userProfile.displayName}</p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Trophy className="h-3 w-3" />
                   Level {userProfile.level}
-                  <Badge variant="secondary">{userProfile.socialScore} pts</Badge>
+                  <Badge variant="secondary">
+                    {userProfile.socialScore} pts
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -444,7 +506,7 @@ export default function Social() {
 
           {/* Posts Feed */}
           <div className="space-y-4">
-            {posts.map(post => (
+            {posts.map((post) => (
               <Card key={post.id} className="overflow-hidden">
                 <CardContent className="p-6">
                   {/* Post Header */}
@@ -452,13 +514,17 @@ export default function Social() {
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarImage src={post.author.avatar} />
-                        <AvatarFallback>{post.author.displayName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>
+                          {post.author.displayName.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium">{post.author.displayName}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <span>@{post.author.username}</span>
-                          <Badge variant="outline">Level {post.author.level}</Badge>
+                          <Badge variant="outline">
+                            Level {post.author.level}
+                          </Badge>
                           <span>•</span>
                           <span>{formatTimeAgo(post.createdAt)}</span>
                         </div>
@@ -472,11 +538,11 @@ export default function Social() {
                   {/* Post Content */}
                   <div className="mb-4">
                     <p className="text-lg mb-2">{post.content}</p>
-                    
+
                     {/* Post Metadata */}
                     {post.metadata && (
                       <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg p-4 mt-3">
-                        {post.type === 'win' && post.metadata.winAmount && (
+                        {post.type === "win" && post.metadata.winAmount && (
                           <div className="flex items-center gap-2">
                             <Coins className="h-5 w-5 text-gold-500" />
                             <span className="font-bold text-gold-500">
@@ -487,16 +553,20 @@ export default function Social() {
                             </span>
                           </div>
                         )}
-                        {post.type === 'achievement' && (
+                        {post.type === "achievement" && (
                           <div className="flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-yellow-500" />
-                            <span className="font-bold">Achievement Unlocked!</span>
+                            <span className="font-bold">
+                              Achievement Unlocked!
+                            </span>
                           </div>
                         )}
-                        {post.type === 'milestone' && (
+                        {post.type === "milestone" && (
                           <div className="flex items-center gap-2">
                             <Star className="h-5 w-5 text-blue-500" />
-                            <span className="font-bold">Milestone Reached!</span>
+                            <span className="font-bold">
+                              Milestone Reached!
+                            </span>
                           </div>
                         )}
                       </div>
@@ -510,9 +580,11 @@ export default function Social() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleLikePost(post.id)}
-                        className={post.hasLiked ? 'text-red-500' : ''}
+                        className={post.hasLiked ? "text-red-500" : ""}
                       >
-                        <Heart className={`h-4 w-4 mr-2 ${post.hasLiked ? 'fill-current' : ''}`} />
+                        <Heart
+                          className={`h-4 w-4 mr-2 ${post.hasLiked ? "fill-current" : ""}`}
+                        />
                         {post.likes}
                       </Button>
                       <Button variant="ghost" size="sm">
@@ -525,8 +597,12 @@ export default function Social() {
                       </Button>
                     </div>
                     <div className="flex items-center gap-1">
-                      {post.tags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                      {post.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           #{tag}
                         </Badge>
                       ))}
@@ -556,18 +632,30 @@ export default function Social() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {friendRequests.map(request => (
-                    <div key={request.id} className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  {friendRequests.map((request) => (
+                    <div
+                      key={request.id}
+                      className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-950 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <Avatar>
                           <AvatarImage src={request.fromUser.avatar} />
-                          <AvatarFallback>{request.fromUser.displayName.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>
+                            {request.fromUser.displayName.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{request.fromUser.displayName}</p>
-                          <p className="text-sm text-muted-foreground">@{request.fromUser.username} • Level {request.fromUser.level}</p>
+                          <p className="font-medium">
+                            {request.fromUser.displayName}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            @{request.fromUser.username} • Level{" "}
+                            {request.fromUser.level}
+                          </p>
                           {request.message && (
-                            <p className="text-sm mt-1 italic">"{request.message}"</p>
+                            <p className="text-sm mt-1 italic">
+                              "{request.message}"
+                            </p>
                           )}
                         </div>
                       </div>
@@ -623,13 +711,15 @@ export default function Social() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {friends.map(friend => (
+                {friends.map((friend) => (
                   <Card key={friend.id} className="p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="relative">
                         <Avatar>
                           <AvatarImage src={friend.avatar} />
-                          <AvatarFallback>{friend.displayName.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>
+                            {friend.displayName.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         {friend.isOnline && (
                           <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
@@ -637,7 +727,9 @@ export default function Social() {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium">{friend.displayName}</p>
-                        <p className="text-sm text-muted-foreground">@{friend.username}</p>
+                        <p className="text-sm text-muted-foreground">
+                          @{friend.username}
+                        </p>
                       </div>
                     </div>
                     <div className="space-y-2 text-sm">
@@ -647,12 +739,20 @@ export default function Social() {
                       </div>
                       <div className="flex justify-between">
                         <span>Wins:</span>
-                        <span className="font-medium">{friend.stats.totalWins}</span>
+                        <span className="font-medium">
+                          {friend.stats.totalWins}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Status:</span>
-                        <span className={friend.isOnline ? 'text-green-500' : 'text-muted-foreground'}>
-                          {friend.isOnline ? 'Online' : 'Offline'}
+                        <span
+                          className={
+                            friend.isOnline
+                              ? "text-green-500"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {friend.isOnline ? "Online" : "Offline"}
                         </span>
                       </div>
                     </div>
@@ -702,11 +802,15 @@ export default function Social() {
 
           {/* Groups Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {groups.map(group => (
+            {groups.map((group) => (
               <Card key={group.id} className="overflow-hidden">
                 <div className="h-32 bg-gradient-to-r from-purple-500 to-blue-500 relative">
                   {group.banner && (
-                    <img src={group.banner} alt={group.name} className="w-full h-full object-cover" />
+                    <img
+                      src={group.banner}
+                      alt={group.name}
+                      className="w-full h-full object-cover"
+                    />
                   )}
                   <div className="absolute bottom-2 left-2 flex items-center gap-2">
                     <Avatar className="border-2 border-white">
@@ -723,13 +827,17 @@ export default function Social() {
                 <CardContent className="p-4">
                   <div className="mb-3">
                     <h3 className="font-bold text-lg">{group.name}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{group.description}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {group.description}
+                    </p>
                   </div>
-                  
+
                   <div className="space-y-2 text-sm mb-4">
                     <div className="flex justify-between">
                       <span>Members:</span>
-                      <span className="font-medium">{group.memberCount.toLocaleString()}</span>
+                      <span className="font-medium">
+                        {group.memberCount.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Category:</span>
@@ -737,24 +845,28 @@ export default function Social() {
                     </div>
                     <div className="flex justify-between">
                       <span>Posts:</span>
-                      <span className="font-medium">{group.stats.totalPosts}</span>
+                      <span className="font-medium">
+                        {group.stats.totalPosts}
+                      </span>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap gap-1 mb-4">
-                    {group.tags.slice(0, 3).map(tag => (
+                    {group.tags.slice(0, 3).map((tag) => (
                       <Badge key={tag} variant="secondary" className="text-xs">
                         #{tag}
                       </Badge>
                     ))}
                   </div>
 
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     onClick={() => handleJoinGroup(group.id)}
                     disabled={group.requirements.inviteOnly}
                   >
-                    {group.requirements.inviteOnly ? 'Invite Only' : 'Join Group'}
+                    {group.requirements.inviteOnly
+                      ? "Invite Only"
+                      : "Join Group"}
                   </Button>
                 </CardContent>
               </Card>
@@ -765,7 +877,7 @@ export default function Social() {
         {/* Challenges Tab */}
         <TabsContent value="challenges" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {challenges.map(challenge => (
+            {challenges.map((challenge) => (
               <Card key={challenge.id} className="overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-orange-500/10 to-red-500/10">
                   <div className="flex items-center justify-between">
@@ -791,21 +903,38 @@ export default function Social() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Participants:</span>
-                      <span className="font-medium">{challenge.participants}</span>
+                      <span className="font-medium">
+                        {challenge.participants}
+                      </span>
                     </div>
-                    
+
                     {/* Challenge Requirements */}
                     <div className="bg-muted/50 rounded-lg p-3">
-                      <h4 className="font-medium text-sm mb-2">Requirements:</h4>
+                      <h4 className="font-medium text-sm mb-2">
+                        Requirements:
+                      </h4>
                       <div className="space-y-1 text-sm">
                         {challenge.requirements.targetWins && (
-                          <div>• Win {challenge.requirements.targetWins} games</div>
+                          <div>
+                            • Win {challenge.requirements.targetWins} games
+                          </div>
                         )}
                         {challenge.requirements.targetAmount && (
-                          <div>• Earn {challenge.requirements.targetAmount.toLocaleString()} GC</div>
+                          <div>
+                            • Earn{" "}
+                            {challenge.requirements.targetAmount.toLocaleString()}{" "}
+                            GC
+                          </div>
                         )}
                         {challenge.requirements.timeLimit && (
-                          <div>• Complete within {Math.floor(challenge.requirements.timeLimit / (1000 * 60 * 60))} hours</div>
+                          <div>
+                            • Complete within{" "}
+                            {Math.floor(
+                              challenge.requirements.timeLimit /
+                                (1000 * 60 * 60),
+                            )}{" "}
+                            hours
+                          </div>
                         )}
                       </div>
                     </div>
@@ -842,16 +971,26 @@ export default function Social() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Ends: {new Date(challenge.endDate).toLocaleDateString()}</span>
-                      <span>{Math.floor((new Date(challenge.endDate).getTime() - Date.now()) / (1000 * 60 * 60))}h left</span>
+                      <span>
+                        Ends: {new Date(challenge.endDate).toLocaleDateString()}
+                      </span>
+                      <span>
+                        {Math.floor(
+                          (new Date(challenge.endDate).getTime() - Date.now()) /
+                            (1000 * 60 * 60),
+                        )}
+                        h left
+                      </span>
                     </div>
 
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       onClick={() => handleJoinChallenge(challenge.id)}
-                      disabled={challenge.status !== 'active'}
+                      disabled={challenge.status !== "active"}
                     >
-                      {challenge.status === 'active' ? 'Join Challenge' : 'Challenge Ended'}
+                      {challenge.status === "active"
+                        ? "Join Challenge"
+                        : "Challenge Ended"}
                     </Button>
                   </div>
                 </CardContent>
@@ -863,7 +1002,7 @@ export default function Social() {
         {/* Tournaments Tab */}
         <TabsContent value="tournaments" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {tournaments.map(tournament => (
+            {tournaments.map((tournament) => (
               <Card key={tournament.id} className="overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-purple-500/10 to-gold-500/10">
                   <div className="flex items-center justify-between">
@@ -890,19 +1029,23 @@ export default function Social() {
                     <div className="flex justify-between text-sm">
                       <span>Participants:</span>
                       <span className="font-medium">
-                        {tournament.currentParticipants}/{tournament.maxParticipants}
+                        {tournament.currentParticipants}/
+                        {tournament.maxParticipants}
                       </span>
                     </div>
-                    
+
                     {/* Entry Fee */}
                     <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3">
                       <h4 className="font-medium text-sm mb-2">Entry Fee:</h4>
                       <div className="text-sm">
-                        {tournament.entryFee.type === 'free' ? (
-                          <span className="text-green-600 font-medium">FREE</span>
+                        {tournament.entryFee.type === "free" ? (
+                          <span className="text-green-600 font-medium">
+                            FREE
+                          </span>
                         ) : (
                           <span className="font-medium">
-                            {tournament.entryFee.amount} {tournament.entryFee.type}
+                            {tournament.entryFee.amount}{" "}
+                            {tournament.entryFee.type}
                           </span>
                         )}
                       </div>
@@ -926,25 +1069,42 @@ export default function Social() {
                         )}
                         {tournament.prizePool.special && (
                           <div className="text-xs text-muted-foreground">
-                            + {tournament.prizePool.special.join(', ')}
+                            + {tournament.prizePool.special.join(", ")}
                           </div>
                         )}
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Starts: {new Date(tournament.startDate).toLocaleDateString()}</span>
-                      <span>Duration: {Math.floor((new Date(tournament.endDate).getTime() - new Date(tournament.startDate).getTime()) / (1000 * 60 * 60))}h</span>
+                      <span>
+                        Starts:{" "}
+                        {new Date(tournament.startDate).toLocaleDateString()}
+                      </span>
+                      <span>
+                        Duration:{" "}
+                        {Math.floor(
+                          (new Date(tournament.endDate).getTime() -
+                            new Date(tournament.startDate).getTime()) /
+                            (1000 * 60 * 60),
+                        )}
+                        h
+                      </span>
                     </div>
 
-                    <Button 
-                      className="w-full" 
-                      disabled={tournament.status !== 'registration' || tournament.currentParticipants >= tournament.maxParticipants}
-                    >
-                      {tournament.status === 'registration' ? 
-                        (tournament.currentParticipants >= tournament.maxParticipants ? 'Full' : 'Register') : 
-                        'Registration Closed'
+                    <Button
+                      className="w-full"
+                      disabled={
+                        tournament.status !== "registration" ||
+                        tournament.currentParticipants >=
+                          tournament.maxParticipants
                       }
+                    >
+                      {tournament.status === "registration"
+                        ? tournament.currentParticipants >=
+                          tournament.maxParticipants
+                          ? "Full"
+                          : "Register"
+                        : "Registration Closed"}
                     </Button>
                   </div>
                 </CardContent>
@@ -972,27 +1132,33 @@ export default function Social() {
               <CardContent className="p-0">
                 <ScrollArea className="h-[500px]">
                   <div className="space-y-1 p-4">
-                    {friends.map(friend => (
+                    {friends.map((friend) => (
                       <div
                         key={friend.id}
                         className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-muted ${
-                          selectedConversation === friend.id ? 'bg-blue-50 dark:bg-blue-950' : ''
+                          selectedConversation === friend.id
+                            ? "bg-blue-50 dark:bg-blue-950"
+                            : ""
                         }`}
                         onClick={() => setSelectedConversation(friend.id)}
                       >
                         <div className="relative">
                           <Avatar>
                             <AvatarImage src={friend.avatar} />
-                            <AvatarFallback>{friend.displayName.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>
+                              {friend.displayName.charAt(0)}
+                            </AvatarFallback>
                           </Avatar>
                           {friend.isOnline && (
                             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{friend.displayName}</p>
+                          <p className="font-medium truncate">
+                            {friend.displayName}
+                          </p>
                           <p className="text-sm text-muted-foreground truncate">
-                            {friend.isOnline ? 'Online' : 'Offline'}
+                            {friend.isOnline ? "Online" : "Offline"}
                           </p>
                         </div>
                       </div>
@@ -1009,17 +1175,21 @@ export default function Social() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       {(() => {
-                        const friend = friends.find(f => f.id === selectedConversation);
+                        const friend = friends.find(
+                          (f) => f.id === selectedConversation,
+                        );
                         return friend ? (
                           <>
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={friend.avatar} />
-                              <AvatarFallback>{friend.displayName.charAt(0)}</AvatarFallback>
+                              <AvatarFallback>
+                                {friend.displayName.charAt(0)}
+                              </AvatarFallback>
                             </Avatar>
                             <div>
                               <p className="text-base">{friend.displayName}</p>
                               <p className="text-sm font-normal text-muted-foreground">
-                                {friend.isOnline ? 'Online' : 'Offline'}
+                                {friend.isOnline ? "Online" : "Offline"}
                               </p>
                             </div>
                           </>
@@ -1031,24 +1201,24 @@ export default function Social() {
                     {/* Messages */}
                     <ScrollArea className="flex-1 pr-4">
                       <div className="space-y-4">
-                        {messages.map(message => (
+                        {messages.map((message) => (
                           <div
                             key={message.id}
-                            className={`flex ${message.fromUserId === user?.id ? 'justify-end' : 'justify-start'}`}
+                            className={`flex ${message.fromUserId === user?.id ? "justify-end" : "justify-start"}`}
                           >
                             <div
                               className={`max-w-[70%] rounded-lg px-3 py-2 ${
                                 message.fromUserId === user?.id
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-muted'
+                                  ? "bg-blue-500 text-white"
+                                  : "bg-muted"
                               }`}
                             >
                               <p>{message.content}</p>
                               <p
                                 className={`text-xs mt-1 ${
                                   message.fromUserId === user?.id
-                                    ? 'text-blue-100'
-                                    : 'text-muted-foreground'
+                                    ? "text-blue-100"
+                                    : "text-muted-foreground"
                                 }`}
                               >
                                 {formatTimeAgo(message.createdAt)}
@@ -1065,10 +1235,15 @@ export default function Social() {
                         placeholder="Type a message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && handleSendMessage()
+                        }
                         className="flex-1"
                       />
-                      <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={!newMessage.trim()}
+                      >
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
@@ -1097,14 +1272,24 @@ export default function Social() {
                   <div className="flex items-end gap-6 mb-6">
                     <Avatar className="h-24 w-24 border-4 border-white">
                       <AvatarImage src={userProfile.avatar} />
-                      <AvatarFallback className="text-2xl">{userProfile.displayName.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="text-2xl">
+                        {userProfile.displayName.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h2 className="text-2xl font-bold">{userProfile.displayName}</h2>
-                      <p className="text-muted-foreground">@{userProfile.username}</p>
+                      <h2 className="text-2xl font-bold">
+                        {userProfile.displayName}
+                      </h2>
+                      <p className="text-muted-foreground">
+                        @{userProfile.username}
+                      </p>
                       <div className="flex items-center gap-4 mt-2">
-                        <Badge className="bg-blue-500">Level {userProfile.level}</Badge>
-                        <Badge variant="outline">{userProfile.socialScore} Social Score</Badge>
+                        <Badge className="bg-blue-500">
+                          Level {userProfile.level}
+                        </Badge>
+                        <Badge variant="outline">
+                          {userProfile.socialScore} Social Score
+                        </Badge>
                         <Badge variant="outline">
                           <MapPin className="h-3 w-3 mr-1" />
                           {userProfile.country}
@@ -1126,20 +1311,36 @@ export default function Social() {
                   {/* Stats Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-500">{userProfile.stats.totalWins}</div>
-                      <div className="text-sm text-muted-foreground">Total Wins</div>
+                      <div className="text-2xl font-bold text-green-500">
+                        {userProfile.stats.totalWins}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Total Wins
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold">{userProfile.stats.totalGamesPlayed}</div>
-                      <div className="text-sm text-muted-foreground">Games Played</div>
+                      <div className="text-2xl font-bold">
+                        {userProfile.stats.totalGamesPlayed}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Games Played
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-gold-500">${userProfile.stats.totalEarnings}</div>
-                      <div className="text-sm text-muted-foreground">Total Earnings</div>
+                      <div className="text-2xl font-bold text-gold-500">
+                        ${userProfile.stats.totalEarnings}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Total Earnings
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-500">#{userProfile.stats.rank}</div>
-                      <div className="text-sm text-muted-foreground">Global Rank</div>
+                      <div className="text-2xl font-bold text-purple-500">
+                        #{userProfile.stats.rank}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Global Rank
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -1150,25 +1351,32 @@ export default function Social() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="h-5 w-5" />
-                    Achievements & Badges ({userBadges.filter(b => b.unlockedAt).length})
+                    Achievements & Badges (
+                    {userBadges.filter((b) => b.unlockedAt).length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {userBadges.map(badge => (
-                      <div 
-                        key={badge.id} 
+                    {userBadges.map((badge) => (
+                      <div
+                        key={badge.id}
                         className={`p-4 rounded-lg border ${
-                          badge.unlockedAt ? 'bg-gradient-to-r from-gold-500/10 to-yellow-500/10' : 'bg-muted/50 opacity-50'
+                          badge.unlockedAt
+                            ? "bg-gradient-to-r from-gold-500/10 to-yellow-500/10"
+                            : "bg-muted/50 opacity-50"
                         }`}
                       >
                         <div className="flex items-center gap-3 mb-2">
                           <div className="text-2xl">{badge.icon}</div>
                           <div className="flex-1">
                             <h4 className="font-medium">{badge.name}</h4>
-                            <p className="text-sm text-muted-foreground">{badge.description}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {badge.description}
+                            </p>
                           </div>
-                          <div className="text-2xl">{getBadgeIcon(badge.rarity)}</div>
+                          <div className="text-2xl">
+                            {getBadgeIcon(badge.rarity)}
+                          </div>
                         </div>
                         <div className="flex items-center justify-between text-xs">
                           <Badge variant="outline">{badge.rarity}</Badge>
@@ -1179,7 +1387,9 @@ export default function Social() {
                               {badge.progress.current}/{badge.progress.required}
                             </span>
                           ) : (
-                            <span className="text-muted-foreground">Locked</span>
+                            <span className="text-muted-foreground">
+                              Locked
+                            </span>
                           )}
                         </div>
                       </div>
@@ -1199,21 +1409,32 @@ export default function Social() {
                 <CardContent>
                   <div className="space-y-3">
                     {leaderboard.slice(0, 10).map((player, index) => (
-                      <div key={player.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
+                      <div
+                        key={player.id}
+                        className="flex items-center gap-4 p-3 rounded-lg bg-muted/50"
+                      >
                         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-gold-500 to-yellow-500 text-white font-bold">
                           {index + 1}
                         </div>
                         <Avatar>
                           <AvatarImage src={player.avatar} />
-                          <AvatarFallback>{player.displayName.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>
+                            {player.displayName.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <p className="font-medium">{player.displayName}</p>
-                          <p className="text-sm text-muted-foreground">Level {player.level}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Level {player.level}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-green-500">{player.stats.totalWins} wins</p>
-                          <p className="text-sm text-muted-foreground">{player.socialScore} pts</p>
+                          <p className="font-bold text-green-500">
+                            {player.stats.totalWins} wins
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {player.socialScore} pts
+                          </p>
                         </div>
                       </div>
                     ))}

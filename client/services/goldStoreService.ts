@@ -213,12 +213,13 @@ class GoldStoreService {
   // Convert database package to frontend format
   private convertDatabasePackage(dbPkg: DatabasePackage): GoldPackage {
     const totalGoldCoins = dbPkg.gold_coins + (dbPkg.bonus_gold_coins || 0);
-    const totalSweepsCoins = dbPkg.sweeps_coins + (dbPkg.bonus_sweeps_coins || 0);
-    
+    const totalSweepsCoins =
+      dbPkg.sweeps_coins + (dbPkg.bonus_sweeps_coins || 0);
+
     // Determine category based on price
     let category: GoldPackage["category"] = "starter";
     let tier: GoldPackage["tier"] = 1;
-    
+
     if (dbPkg.price_usd >= 50) {
       category = "ultimate";
       tier = 6;
@@ -235,13 +236,13 @@ class GoldStoreService {
       category = "standard";
       tier = 2;
     }
-    
+
     // Determine if popular (middle-tier packages)
     const isPopular = tier === 3 || tier === 4;
-    
+
     // Determine if featured (highest value packages)
     const isFeatured = tier >= 5;
-    
+
     // Create bonus description
     let bonusDescription = "";
     if (dbPkg.bonus_gold_coins && dbPkg.bonus_sweeps_coins) {
@@ -265,7 +266,7 @@ class GoldStoreService {
       bestValue: tier === 4, // Elite packages are "best value"
       limitedTime: false,
       bonus: {
-        enabled: (dbPkg.bonus_gold_coins > 0 || dbPkg.bonus_sweeps_coins > 0),
+        enabled: dbPkg.bonus_gold_coins > 0 || dbPkg.bonus_sweeps_coins > 0,
         type: "fixed",
         value: dbPkg.bonus_gold_coins || dbPkg.bonus_sweeps_coins,
         description: bonusDescription,
@@ -299,7 +300,11 @@ class GoldStoreService {
     const designs = {
       starter: {
         backgroundColor: "#3B82F6",
-        backgroundGradient: { from: "#3B82F6", to: "#1D4ED8", direction: "to-br" as const },
+        backgroundGradient: {
+          from: "#3B82F6",
+          to: "#1D4ED8",
+          direction: "to-br" as const,
+        },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#1D4ED8",
@@ -309,7 +314,11 @@ class GoldStoreService {
       },
       standard: {
         backgroundColor: "#10B981",
-        backgroundGradient: { from: "#10B981", to: "#047857", direction: "to-br" as const },
+        backgroundGradient: {
+          from: "#10B981",
+          to: "#047857",
+          direction: "to-br" as const,
+        },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#047857",
@@ -319,7 +328,11 @@ class GoldStoreService {
       },
       premium: {
         backgroundColor: "#8B5CF6",
-        backgroundGradient: { from: "#8B5CF6", to: "#7C3AED", direction: "to-br" as const },
+        backgroundGradient: {
+          from: "#8B5CF6",
+          to: "#7C3AED",
+          direction: "to-br" as const,
+        },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#7C3AED",
@@ -329,7 +342,11 @@ class GoldStoreService {
       },
       elite: {
         backgroundColor: "#F59E0B",
-        backgroundGradient: { from: "#F59E0B", to: "#D97706", direction: "to-br" as const },
+        backgroundGradient: {
+          from: "#F59E0B",
+          to: "#D97706",
+          direction: "to-br" as const,
+        },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#D97706",
@@ -339,7 +356,11 @@ class GoldStoreService {
       },
       mega: {
         backgroundColor: "#EF4444",
-        backgroundGradient: { from: "#EF4444", to: "#DC2626", direction: "to-br" as const },
+        backgroundGradient: {
+          from: "#EF4444",
+          to: "#DC2626",
+          direction: "to-br" as const,
+        },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#DC2626",
@@ -349,7 +370,11 @@ class GoldStoreService {
       },
       ultimate: {
         backgroundColor: "#1F2937",
-        backgroundGradient: { from: "#1F2937", to: "#111827", direction: "to-br" as const },
+        backgroundGradient: {
+          from: "#1F2937",
+          to: "#111827",
+          direction: "to-br" as const,
+        },
         textColor: "#FFFFFF",
         accentColor: "#FCD34D",
         borderColor: "#111827",
@@ -367,9 +392,9 @@ class GoldStoreService {
     try {
       const response = await fetch(`${this.baseUrl}/coin-packages`);
       if (!response.ok) throw new Error("Failed to fetch packages");
-      
+
       const dbPackages: DatabasePackage[] = await response.json();
-      return dbPackages.map(pkg => this.convertDatabasePackage(pkg));
+      return dbPackages.map((pkg) => this.convertDatabasePackage(pkg));
     } catch (error) {
       console.error("Error fetching packages:", error);
       // Return mock data for development
@@ -381,7 +406,7 @@ class GoldStoreService {
     try {
       const response = await fetch(`${this.baseUrl}/coin-packages/${id}`);
       if (!response.ok) throw new Error("Failed to fetch package");
-      
+
       const dbPackage: DatabasePackage = await response.json();
       return this.convertDatabasePackage(dbPackage);
     } catch (error) {
@@ -392,7 +417,10 @@ class GoldStoreService {
   }
 
   async createPackage(
-    packageData: Omit<GoldPackage, "id" | "createdAt" | "updatedAt" | "analytics">,
+    packageData: Omit<
+      GoldPackage,
+      "id" | "createdAt" | "updatedAt" | "analytics"
+    >,
   ): Promise<GoldPackage> {
     try {
       // Convert to database format
@@ -401,7 +429,9 @@ class GoldStoreService {
         description: packageData.description,
         gold_coins: packageData.goldCoins,
         sweeps_coins: packageData.sweepsCoins,
-        bonus_gold_coins: packageData.bonus.enabled ? packageData.bonus.value : 0,
+        bonus_gold_coins: packageData.bonus.enabled
+          ? packageData.bonus.value
+          : 0,
         bonus_sweeps_coins: 0, // Could be extracted from bonus if needed
         price_usd: packageData.price,
         is_active: packageData.isActive,
@@ -451,7 +481,8 @@ class GoldStoreService {
       if (updates.goldCoins) dbUpdates.gold_coins = updates.goldCoins;
       if (updates.sweepsCoins) dbUpdates.sweeps_coins = updates.sweepsCoins;
       if (updates.price) dbUpdates.price_usd = updates.price;
-      if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+      if (updates.isActive !== undefined)
+        dbUpdates.is_active = updates.isActive;
       if (updates.tier) dbUpdates.sort_order = updates.tier;
 
       const response = await fetch(`${this.baseUrl}/coin-packages/${id}`, {
@@ -530,16 +561,18 @@ class GoldStoreService {
       return result.success || false;
     } catch (error) {
       console.error("Error purchasing package:", error);
-      
+
       // Mock successful purchase for development
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       return Math.random() > 0.1; // 90% success rate for testing
     }
   }
 
   async getPurchaseHistory(limit: number = 50): Promise<PurchaseHistory[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/purchase-history?limit=${limit}`);
+      const response = await fetch(
+        `${this.baseUrl}/purchase-history?limit=${limit}`,
+      );
       if (!response.ok) throw new Error("Failed to fetch purchase history");
 
       return await response.json();
@@ -552,7 +585,9 @@ class GoldStoreService {
   // Analytics
   async getStoreAnalytics(days: number = 30): Promise<StoreAnalytics> {
     try {
-      const response = await fetch(`${this.baseUrl}/store-analytics?days=${days}`);
+      const response = await fetch(
+        `${this.baseUrl}/store-analytics?days=${days}`,
+      );
       if (!response.ok) throw new Error("Failed to fetch analytics");
 
       return await response.json();
@@ -601,7 +636,8 @@ class GoldStoreService {
       {
         id: "1",
         name: "Starter Pack",
-        description: "Perfect for new players to get started with some extra gold coins",
+        description:
+          "Perfect for new players to get started with some extra gold coins",
         goldCoins: 125000, // 100K + 25K bonus
         sweepsCoins: 10, // 0 + 10 bonus
         price: 4.99,
@@ -863,10 +899,16 @@ class GoldStoreService {
   private getDefaultSettings(): StoreSettings {
     return {
       storeName: "CoinKrazy Gold Store",
-      storeDescription: "Premium gold coins and sweeps coins packages for the ultimate gaming experience",
+      storeDescription:
+        "Premium gold coins and sweeps coins packages for the ultimate gaming experience",
       defaultCurrency: "USD",
       taxRate: 0,
-      enabledPaymentMethods: ["credit_card", "paypal", "apple_pay", "google_pay"],
+      enabledPaymentMethods: [
+        "credit_card",
+        "paypal",
+        "apple_pay",
+        "google_pay",
+      ],
       minimumPurchaseAmount: 4.99,
       maximumPurchaseAmount: 999.99,
       purchaseLimits: {
@@ -898,7 +940,8 @@ class GoldStoreService {
       },
       seoSettings: {
         metaTitle: "CoinKrazy Gold Store - Premium Casino Coins",
-        metaDescription: "Buy premium gold coins and sweeps coins for the ultimate casino gaming experience at CoinKrazy",
+        metaDescription:
+          "Buy premium gold coins and sweeps coins for the ultimate casino gaming experience at CoinKrazy",
         keywords: [
           "gold coins",
           "sweeps coins",

@@ -97,6 +97,7 @@ export default function Footer() {
                 "Privacy Policy",
                 "Responsible Gaming",
                 "Sweepstakes Rules",
+                "Compliance",
               ].map((item) => (
                 <Link
                   key={item}

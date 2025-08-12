@@ -403,8 +403,9 @@ export default function Games() {
 
         {/* Game Categories */}
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7">
             <TabsTrigger value="all">All Games</TabsTrigger>
+            <TabsTrigger value="free-slots">Free Slots</TabsTrigger>
             <TabsTrigger value="slots">Slots</TabsTrigger>
             <TabsTrigger value="table">Table</TabsTrigger>
             <TabsTrigger value="live">Live</TabsTrigger>

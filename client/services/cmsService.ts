@@ -507,11 +507,14 @@ class CMSService {
   // Redirects Management
   async getAllRedirects(): Promise<CMSRedirect[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/redirects`);
-      if (!response.ok) throw new Error("Failed to fetch redirects");
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/redirects`);
+      if (!response.ok) {
+        console.warn(`Redirects API returned ${response.status}, using mock data`);
+        return this.getMockRedirects();
+      }
       return await this.safeJsonParse(response);
     } catch (error) {
-      console.error("Error fetching redirects:", error);
+      console.warn("Error fetching redirects, using mock data:", error);
       return this.getMockRedirects();
     }
   }

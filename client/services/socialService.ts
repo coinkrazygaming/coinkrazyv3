@@ -320,12 +320,11 @@ class SocialService {
       };
 
       this.ws.onerror = (error) => {
-        // Better error logging
-        if (error instanceof Event) {
-          console.warn('Social WebSocket connection failed - WebSocket server not available');
-          console.warn('This is normal in development mode. Real-time features will use mock data.');
+        // Better error logging - suppress in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Social WebSocket: Server not available, using simulated updates');
         } else {
-          console.error('Social WebSocket error:', error);
+          console.warn('Social WebSocket connection failed - WebSocket server not available');
         }
 
         // Fallback to simulated updates

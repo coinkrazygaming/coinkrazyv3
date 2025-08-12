@@ -318,7 +318,9 @@ class SocialService {
 
     try {
       const wsUrl = `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws/social`;
-      console.log("Attempting to connect to Social WebSocket:", wsUrl);
+      if (process.env.NODE_ENV === "development") {
+        console.log("Attempting to connect to Social WebSocket:", wsUrl);
+      }
 
       this.ws = new WebSocket(wsUrl);
 

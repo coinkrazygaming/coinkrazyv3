@@ -17,7 +17,7 @@ import {
   Play,
   BarChart3,
   Calendar,
-  Fire,
+  Flame,
   Award,
   Timer,
   ArrowRight

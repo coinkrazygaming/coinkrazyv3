@@ -55,6 +55,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { socialService, SocialPost, SocialUser, FriendRequest, SocialGroup, SocialChallenge, SocialTournament, DirectMessage, SocialNotification, SocialBadge } from '../services/socialService';
+import SocialActivitiesFeed from '../components/SocialActivitiesFeed';
+import SocialAchievements from '../components/SocialAchievements';
 
 export default function Social() {
   const { user } = useAuth();

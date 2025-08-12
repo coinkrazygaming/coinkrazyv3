@@ -33,7 +33,7 @@ import {
   Eye,
   UserPlus,
   Wallet,
-  BanknotesIcon,
+  Banknote,
   CreditCardIcon,
   TrendingDown,
 } from "lucide-react";

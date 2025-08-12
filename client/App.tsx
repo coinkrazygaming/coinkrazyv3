@@ -52,6 +52,7 @@ import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
 import DailyRewards from "./pages/DailyRewards";
 import Profile from "./pages/Profile";
+import ScratchCards from "./pages/ScratchCards";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 

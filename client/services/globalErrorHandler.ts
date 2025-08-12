@@ -79,6 +79,16 @@ if (typeof window !== "undefined") {
       }
       return;
     }
+
+    // Suppress React hooks context errors during HMR
+    if (message.includes("Cannot read properties of null") &&
+        (message.includes("useState") || message.includes("useContext") || message.includes("TooltipProvider"))) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("Suppressed React hooks context error during HMR");
+      }
+      return;
+    }
+
     const safeArgs = safeStringify(args);
     originalConsoleError.apply(console, safeArgs);
   };

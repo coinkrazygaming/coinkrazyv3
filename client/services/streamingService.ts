@@ -1,1047 +1,935 @@
-import { io, Socket } from "socket.io-client";
+import { io, Socket } from 'socket.io-client';
 
-// Streaming Types
-export interface LiveStream {
-  id: string;
-  title: string;
-  description: string;
-  streamUrl: string;
-  thumbnailUrl?: string;
-  status: StreamStatus;
-  startTime: Date;
-  endTime?: Date;
-  viewerCount: number;
-  maxViewers: number;
-  streamer: Streamer;
-  game: StreamGame;
-  quality: StreamQuality[];
-  currentQuality: StreamQuality;
-  chat: LiveChat;
-  features: StreamFeature[];
-  settings: StreamSettings;
-  statistics: StreamStatistics;
-  isRecording: boolean;
-  recordingUrl?: string;
-  category: StreamCategory;
-  tags: string[];
-  language: string;
-  isVIP: boolean;
-  isFeatured: boolean;
-}
-
-export interface Streamer {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar: string;
-  title: string;
-  isVerified: boolean;
-  isOnline: boolean;
-  followers: number;
-  totalStreams: number;
-  totalHours: number;
-  averageViewers: number;
-  specialties: string[];
-  socialLinks: SocialLink[];
-  schedule: StreamSchedule[];
-}
-
-export interface StreamGame {
-  id: string;
-  name: string;
-  type: 'poker' | 'blackjack' | 'roulette' | 'baccarat' | 'bingo' | 'sports' | 'tournament';
-  tableId?: string;
-  tournamentId?: string;
-  gameState?: any;
-  isLive: boolean;
-}
-
+// Types and interfaces
 export interface StreamQuality {
   id: string;
   label: string;
   resolution: string;
   bitrate: number;
-  fps: number;
-  bandwidth: number;
-}
-
-export interface LiveChat {
-  id: string;
-  streamId: string;
-  messages: ChatMessage[];
-  moderators: string[];
-  settings: ChatSettings;
-  statistics: ChatStatistics;
-  emoticons: Emoticon[];
-  commands: ChatCommand[];
+  frameRate: number;
 }
 
 export interface ChatMessage {
   id: string;
-  chatId: string;
   userId: string;
   username: string;
-  displayName: string;
+  avatar?: string;
   message: string;
-  timestamp: Date;
-  type: ChatMessageType;
-  badges: UserBadge[];
-  emoticons: MessageEmoticon[];
-  mentions: string[];
-  isDeleted: boolean;
-  isModerated: boolean;
+  timestamp: number;
+  type: 'message' | 'system' | 'tip' | 'announcement';
+  badges?: string[];
   color?: string;
-  replyTo?: string;
+  reply?: {
+    messageId: string;
+    username: string;
+    message: string;
+  };
+  emoticons?: Array<{
+    name: string;
+    url: string;
+    position: [number, number];
+  }>;
 }
 
-export interface ChatSettings {
-  slowMode: boolean;
-  slowModeDelay: number; // seconds
-  subscriberOnly: boolean;
-  followersOnly: boolean;
-  followersOnlyDuration: number; // minutes
-  uniqueChat: boolean;
-  emotesOnly: boolean;
-  maxMessageLength: number;
-  blockedWords: string[];
-  allowedDomains: string[];
-  autoModeration: boolean;
+export interface StreamSource {
+  id: string;
+  name: string;
+  url: string;
+  type: 'main' | 'table' | 'wheel' | 'cards' | 'dealer';
+  quality: StreamQuality[];
+  isActive: boolean;
+  viewers: number;
 }
 
-export interface ChatStatistics {
-  totalMessages: number;
-  messagesPerMinute: number;
-  uniqueChatters: number;
-  topChatters: TopChatter[];
-  mostUsedEmotes: EmoteUsage[];
-  peakActivity: Date;
-}
-
-export interface TopChatter {
-  userId: string;
+export interface Moderator {
+  id: string;
   username: string;
-  messageCount: number;
-  isSubscriber: boolean;
+  level: 'moderator' | 'admin' | 'super_admin';
+  permissions: ModeratorPermissions;
 }
 
-export interface EmoteUsage {
-  emoteId: string;
-  emoteName: string;
-  usage: number;
+export interface ModeratorPermissions {
+  mute: boolean;
+  ban: boolean;
+  delete: boolean;
+  timeout: boolean;
+  announce: boolean;
+  moderateEmoticons: boolean;
+  viewUserDetails: boolean;
+}
+
+export interface UserBadge {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  requirement: string;
+  isRare?: boolean;
 }
 
 export interface Emoticon {
   id: string;
   name: string;
   url: string;
-  category: 'global' | 'channel' | 'subscriber' | 'vip';
+  category: 'basic' | 'premium' | 'vip' | 'seasonal';
   isAnimated: boolean;
-  isLocked: boolean;
-  requiredBadge?: string;
-}
-
-export interface MessageEmoticon {
-  emoteId: string;
-  emoteName: string;
-  positions: number[][];
-}
-
-export interface UserBadge {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  color?: string;
-  priority: number;
-}
-
-export interface ChatCommand {
-  command: string;
-  description: string;
-  permission: 'everyone' | 'subscribers' | 'vip' | 'moderators' | 'broadcaster';
-  cooldown: number; // seconds
-  isEnabled: boolean;
-}
-
-export interface StreamFeature {
-  id: string;
-  name: string;
-  description: string;
-  isEnabled: boolean;
-  settings?: any;
-}
-
-export interface StreamSettings {
-  allowRecording: boolean;
-  allowClips: boolean;
-  chatDelay: number; // seconds
-  videoDelay: number; // seconds
-  autoHost: boolean;
-  autoQuality: boolean;
-  dvr: boolean;
-  dvrDuration: number; // minutes
-  notifications: NotificationSettings;
-  privacy: PrivacySettings;
-}
-
-export interface NotificationSettings {
-  newFollower: boolean;
-  donation: boolean;
-  subscription: boolean;
-  raid: boolean;
-  host: boolean;
-  soundEnabled: boolean;
-  soundVolume: number;
-}
-
-export interface PrivacySettings {
-  showViewerCount: boolean;
-  allowWhispers: boolean;
-  blockAnonymous: boolean;
-  ageRestricted: boolean;
-}
-
-export interface StreamStatistics {
-  totalViews: number;
-  peakViewers: number;
-  averageViewTime: number; // seconds
-  chatEngagement: number; // percentage
-  followersGained: number;
-  subscribersGained: number;
-  donations: number;
-  clips: number;
-  highlights: number;
-}
-
-export interface SocialLink {
-  platform: string;
-  url: string;
-  isVerified: boolean;
-}
-
-export interface StreamSchedule {
-  dayOfWeek: number; // 0-6, Sunday = 0
-  startTime: string; // HH:MM format
-  endTime: string; // HH:MM format
-  game?: string;
-  title?: string;
-  isActive: boolean;
-}
-
-export interface StreamClip {
-  id: string;
-  streamId: string;
-  title: string;
-  url: string;
-  thumbnailUrl: string;
-  duration: number; // seconds
-  startTime: number; // seconds from stream start
-  createdBy: string;
-  createdAt: Date;
-  views: number;
-  likes: number;
-  isHighlight: boolean;
+  cost?: number; // SC cost for premium emoticons
 }
 
 export interface StreamNotification {
   id: string;
-  type: NotificationType;
-  userId: string;
-  username: string;
+  type: 'stream_start' | 'stream_end' | 'viewer_milestone' | 'big_win' | 'dealer_change';
+  title: string;
   message: string;
-  amount?: number;
-  timestamp: Date;
-  isRead: boolean;
-  metadata?: any;
+  timestamp: number;
+  priority: 'low' | 'medium' | 'high';
+  gameId?: string;
+  dealerId?: string;
+  userId?: string;
 }
 
-export interface ChatModerationAction {
-  id: string;
-  chatId: string;
-  moderatorId: string;
-  moderatorName: string;
-  targetUserId: string;
-  targetUsername: string;
-  action: ModerationActionType;
-  reason?: string;
-  duration?: number; // seconds
-  timestamp: Date;
+export interface StreamSettings {
+  autoQuality: boolean;
+  preferredQuality: string;
+  soundEnabled: boolean;
+  chatEnabled: boolean;
+  notificationsEnabled: boolean;
+  fullscreenMode: boolean;
+  pictureInPicture: boolean;
+  lowLatencyMode: boolean;
 }
 
-export interface StreamRaid {
+export interface StreamStats {
+  streamId: string;
+  viewers: {
+    current: number;
+    peak: number;
+    total: number;
+  };
+  quality: {
+    current: StreamQuality;
+    switches: number;
+    buffering: number;
+    errors: number;
+  };
+  chat: {
+    messages: number;
+    activeUsers: number;
+    moderationActions: number;
+  };
+  performance: {
+    latency: number;
+    bitrate: number;
+    fps: number;
+    droppedFrames: number;
+  };
+}
+
+export interface TipAlert {
   id: string;
-  fromStreamId: string;
-  fromStreamer: string;
-  toStreamId: string;
-  toStreamer: string;
-  viewerCount: number;
-  timestamp: Date;
+  fromUser: string;
+  toDealer: string;
+  amount: number;
   message?: string;
+  timestamp: number;
+  isVisible: boolean;
+  duration: number;
 }
 
-// Enums
-export type StreamStatus = 'offline' | 'starting' | 'live' | 'paused' | 'ending' | 'ended';
+// Chat filter and moderation
+export interface ChatFilter {
+  id: string;
+  type: 'word' | 'regex' | 'spam' | 'caps' | 'links';
+  pattern: string;
+  action: 'warn' | 'mute' | 'ban' | 'delete';
+  severity: 'low' | 'medium' | 'high';
+  isActive: boolean;
+}
 
-export type StreamCategory = 'poker' | 'casino' | 'bingo' | 'sports' | 'tournament' | 'variety' | 'educational';
+export interface ModerationAction {
+  id: string;
+  moderatorId: string;
+  userId: string;
+  action: 'mute' | 'unmute' | 'ban' | 'unban' | 'timeout' | 'delete' | 'warn';
+  reason: string;
+  duration?: number; // in minutes
+  timestamp: number;
+  isActive: boolean;
+}
 
-export type ChatMessageType = 'normal' | 'system' | 'moderator' | 'subscriber' | 'donation' | 'follow' | 'raid' | 'host';
-
-export type NotificationType = 'follow' | 'subscribe' | 'donation' | 'raid' | 'host' | 'clip' | 'highlight';
-
-export type ModerationActionType = 'timeout' | 'ban' | 'unban' | 'delete' | 'warn' | 'slow' | 'clear';
+export interface UserStatus {
+  id: string;
+  username: string;
+  status: 'active' | 'muted' | 'banned' | 'timeout';
+  permissions: {
+    canChat: boolean;
+    canTip: boolean;
+    canUseEmoticons: boolean;
+  };
+  violations: number;
+  lastActivity: number;
+  timeoutUntil?: number;
+}
 
 class StreamingService {
   private socket: Socket | null = null;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private streams: Map<string, LiveStream> = new Map();
-  private chats: Map<string, LiveChat> = new Map();
-  private currentStream: LiveStream | null = null;
-  private currentQuality: StreamQuality | null = null;
-  private isViewerModerator = false;
-  private isViewerVIP = false;
-  private blockedUsers: Set<string> = new Set();
-  private mutedUsers: Set<string> = new Set();
-  private playerVolume = 100;
-  private isFullscreen = false;
-  private isDVREnabled = false;
-  private dvrPosition = 0;
+  private streams: Map<string, StreamSource> = new Map();
+  private chatMessages: Map<string, ChatMessage[]> = new Map();
+  private moderators: Map<string, Moderator> = new Map();
+  private userBadges: Map<string, UserBadge[]> = new Map();
+  private emoticons: Map<string, Emoticon> = new Map();
+  private chatFilters: Map<string, ChatFilter> = new Map();
+  private userStatuses: Map<string, UserStatus> = new Map();
+  private streamSettings: StreamSettings = {
+    autoQuality: true,
+    preferredQuality: 'auto',
+    soundEnabled: true,
+    chatEnabled: true,
+    notificationsEnabled: true,
+    fullscreenMode: false,
+    pictureInPicture: false,
+    lowLatencyMode: false
+  };
 
   constructor() {
     this.initializeService();
+    this.setupMockData();
   }
 
-  private initializeService() {
-    if (process.env.NODE_ENV === 'development') {
-      this.loadMockData();
-      this.simulateRealTimeUpdates();
-    } else {
-      this.initializeWebSocket();
-    }
-  }
-
-  private initializeWebSocket() {
-    if (typeof window === 'undefined') return;
-
+  private initializeService(): void {
+    // Initialize Socket.IO connection for real-time features
     try {
-      this.socket = io(process.env.VITE_WEBSOCKET_URL || 'ws://localhost:3001', {
-        path: '/streaming',
+      this.socket = io('/streaming', {
         transports: ['websocket', 'polling'],
-        timeout: 20000,
-        retries: 3,
+        autoConnect: false,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
       });
 
       this.setupSocketListeners();
     } catch (error) {
-      console.warn('Streaming WebSocket initialization failed, using mock data:', error);
-      this.loadMockData();
-      this.simulateRealTimeUpdates();
+      console.warn('StreamingService: Socket.IO connection failed, using mock data');
     }
   }
 
-  private setupSocketListeners() {
+  private setupSocketListeners(): void {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Streaming service connected');
-      this.reconnectAttempts = 0;
+      console.log('StreamingService: Connected to streaming server');
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Streaming service disconnected');
-      this.handleReconnection();
+      console.log('StreamingService: Disconnected from streaming server');
     });
 
-    this.socket.on('stream_update', (stream: LiveStream) => {
-      this.streams.set(stream.id, stream);
-      if (this.currentStream && this.currentStream.id === stream.id) {
-        this.currentStream = stream;
-      }
-    });
-
-    this.socket.on('viewer_count_update', (data: { streamId: string; count: number }) => {
-      const stream = this.streams.get(data.streamId);
-      if (stream) {
-        stream.viewerCount = data.count;
-      }
+    this.socket.on('stream_update', (data: Partial<StreamSource>) => {
+      this.handleStreamUpdate(data);
     });
 
     this.socket.on('chat_message', (message: ChatMessage) => {
-      const chat = this.chats.get(message.chatId);
-      if (chat) {
-        if (!this.blockedUsers.has(message.userId) && !this.mutedUsers.has(message.userId)) {
-          chat.messages.push(message);
-          chat.messages = chat.messages.slice(-500); // Keep last 500 messages
-          chat.statistics.totalMessages++;
-          chat.statistics.messagesPerMinute = this.calculateMessagesPerMinute(chat);
-        }
-      }
+      this.handleChatMessage(message);
     });
 
-    this.socket.on('chat_deleted', (data: { chatId: string; messageId: string }) => {
-      const chat = this.chats.get(data.chatId);
-      if (chat) {
-        const message = chat.messages.find(m => m.id === data.messageId);
-        if (message) {
-          message.isDeleted = true;
-          message.message = '[Message deleted]';
-        }
-      }
+    this.socket.on('user_joined', (data: { streamId: string; username: string }) => {
+      this.handleUserJoined(data);
     });
 
-    this.socket.on('user_timeout', (data: { chatId: string; userId: string; duration: number }) => {
-      // Handle user timeout
-      console.log(`User ${data.userId} timed out for ${data.duration} seconds`);
+    this.socket.on('user_left', (data: { streamId: string; username: string }) => {
+      this.handleUserLeft(data);
     });
 
-    this.socket.on('user_ban', (data: { chatId: string; userId: string }) => {
-      this.blockedUsers.add(data.userId);
+    this.socket.on('moderation_action', (action: ModerationAction) => {
+      this.handleModerationAction(action);
+    });
+
+    this.socket.on('tip_alert', (alert: TipAlert) => {
+      this.handleTipAlert(alert);
     });
 
     this.socket.on('stream_notification', (notification: StreamNotification) => {
-      // Handle stream notifications (follows, donations, etc.)
-      console.log('Stream notification:', notification);
-    });
-
-    this.socket.on('stream_raid', (raid: StreamRaid) => {
-      // Handle incoming raid
-      console.log(`Raid from ${raid.fromStreamer} with ${raid.viewerCount} viewers!`);
-    });
-
-    this.socket.on('quality_change', (data: { streamId: string; quality: StreamQuality }) => {
-      if (this.currentStream && this.currentStream.id === data.streamId) {
-        this.currentQuality = data.quality;
-      }
+      this.handleStreamNotification(notification);
     });
   }
 
-  private handleReconnection() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      setTimeout(() => {
-        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-        this.initializeWebSocket();
-      }, Math.pow(2, this.reconnectAttempts) * 1000);
-    } else {
-      console.warn('Max reconnection attempts reached, switching to offline mode');
-      this.loadMockData();
-      this.simulateRealTimeUpdates();
-    }
-  }
+  private setupMockData(): void {
+    // Mock stream qualities
+    const qualities: StreamQuality[] = [
+      { id: 'auto', label: 'Auto', resolution: 'auto', bitrate: 0, frameRate: 0 },
+      { id: '1080p', label: '1080p60', resolution: '1920x1080', bitrate: 6000, frameRate: 60 },
+      { id: '720p', label: '720p60', resolution: '1280x720', bitrate: 3500, frameRate: 60 },
+      { id: '480p', label: '480p30', resolution: '854x480', bitrate: 1500, frameRate: 30 },
+      { id: '360p', label: '360p30', resolution: '640x360', bitrate: 800, frameRate: 30 }
+    ];
 
-  private loadMockData() {
-    // Load mock streams
-    const mockStreams: LiveStream[] = [
+    // Mock stream sources
+    const mockStreams: StreamSource[] = [
       {
-        id: 'poker-pro-stream',
-        title: 'High Stakes Poker Tournament - Final Table!',
-        description: 'Watch the final table of our biggest poker tournament with $100K guaranteed!',
-        streamUrl: 'https://stream.example.com/poker-pro',
-        thumbnailUrl: '/thumbnails/poker-final-table.jpg',
-        status: 'live',
-        startTime: new Date(Date.now() - 7200000), // 2 hours ago
-        viewerCount: 1247,
-        maxViewers: 1850,
-        streamer: {
-          id: 'poker-pro',
-          username: 'PokerProDealer',
-          displayName: 'Professional Poker Dealer',
-          avatar: '/avatars/poker-dealer.jpg',
-          title: 'Tournament Director',
-          isVerified: true,
-          isOnline: true,
-          followers: 15623,
-          totalStreams: 456,
-          totalHours: 2847,
-          averageViewers: 890,
-          specialties: ['Tournament Poker', 'High Stakes', 'Live Commentary'],
-          socialLinks: [
-            { platform: 'twitter', url: 'https://twitter.com/pokerpro', isVerified: true }
-          ],
-          schedule: [
-            { dayOfWeek: 0, startTime: '19:00', endTime: '23:00', game: 'Tournament Poker', isActive: true },
-            { dayOfWeek: 3, startTime: '20:00', endTime: '00:00', game: 'Cash Games', isActive: true }
-          ]
-        },
-        game: {
-          id: 'sunday-major-final',
-          name: 'Sunday Major Championship - Final Table',
-          type: 'tournament',
-          tournamentId: 'sunday-major',
-          isLive: true
-        },
-        quality: [
-          { id: 'hd', label: 'HD', resolution: '1920x1080', bitrate: 6000, fps: 60, bandwidth: 8000 },
-          { id: 'sd', label: 'SD', resolution: '1280x720', bitrate: 3000, fps: 30, bandwidth: 4000 },
-          { id: 'mobile', label: 'Mobile', resolution: '854x480', bitrate: 1500, fps: 30, bandwidth: 2000 }
-        ],
-        currentQuality: { id: 'hd', label: 'HD', resolution: '1920x1080', bitrate: 6000, fps: 60, bandwidth: 8000 },
-        chat: this.generateMockChat('poker-pro-stream'),
-        features: [
-          { id: 'multi-camera', name: 'Multi-Camera View', description: 'Switch between different camera angles', isEnabled: true },
-          { id: 'player-cards', name: 'Player Card Reveal', description: 'See hole cards when players are eliminated', isEnabled: true },
-          { id: 'pot-tracker', name: 'Live Pot Tracker', description: 'Real-time pot size and betting action', isEnabled: true },
-          { id: 'statistics', name: 'Live Statistics', description: 'Player stats and tournament info', isEnabled: true }
-        ],
-        settings: {
-          allowRecording: true,
-          allowClips: true,
-          chatDelay: 0,
-          videoDelay: 15,
-          autoHost: true,
-          autoQuality: false,
-          dvr: true,
-          dvrDuration: 240,
-          notifications: {
-            newFollower: true,
-            donation: true,
-            subscription: true,
-            raid: true,
-            host: true,
-            soundEnabled: true,
-            soundVolume: 80
-          },
-          privacy: {
-            showViewerCount: true,
-            allowWhispers: true,
-            blockAnonymous: false,
-            ageRestricted: false
-          }
-        },
-        statistics: {
-          totalViews: 45623,
-          peakViewers: 1850,
-          averageViewTime: 1847,
-          chatEngagement: 67.5,
-          followersGained: 234,
-          subscribersGained: 89,
-          donations: 15,
-          clips: 67,
-          highlights: 12
-        },
-        isRecording: true,
-        recordingUrl: '/recordings/poker-pro-stream-2024-01-15.mp4',
-        category: 'tournament',
-        tags: ['Poker', 'Tournament', 'High Stakes', 'Final Table', 'Live'],
-        language: 'English',
-        isVIP: false,
-        isFeatured: true
+        id: 'blackjack_main',
+        name: 'Blackjack Table 1',
+        url: 'https://stream.example.com/blackjack/main',
+        type: 'main',
+        quality: qualities,
+        isActive: true,
+        viewers: 247
       },
       {
-        id: 'blackjack-master',
-        title: 'Blackjack Strategy Masterclass',
-        description: 'Learn advanced blackjack strategies while watching live gameplay',
-        streamUrl: 'https://stream.example.com/blackjack-master',
-        status: 'live',
-        startTime: new Date(Date.now() - 3600000), // 1 hour ago
-        viewerCount: 456,
-        maxViewers: 567,
-        streamer: {
-          id: 'blackjack-master',
-          username: 'BlackjackMaster21',
-          displayName: 'Blackjack Strategy Expert',
-          avatar: '/avatars/blackjack-expert.jpg',
-          title: 'Card Counting Professional',
-          isVerified: true,
-          isOnline: true,
-          followers: 8934,
-          totalStreams: 234,
-          totalHours: 1456,
-          averageViewers: 423,
-          specialties: ['Blackjack Strategy', 'Card Counting', 'Educational Content'],
-          socialLinks: [],
-          schedule: []
-        },
-        game: {
-          id: 'blackjack-vip-table',
-          name: 'VIP Blackjack Table',
-          type: 'blackjack',
-          tableId: 'blackjack-vip',
-          isLive: true
-        },
-        quality: [
-          { id: 'hd', label: 'HD', resolution: '1920x1080', bitrate: 4000, fps: 30, bandwidth: 5000 },
-          { id: 'sd', label: 'SD', resolution: '1280x720', bitrate: 2000, fps: 30, bandwidth: 3000 }
-        ],
-        currentQuality: { id: 'hd', label: 'HD', resolution: '1920x1080', bitrate: 4000, fps: 30, bandwidth: 5000 },
-        chat: this.generateMockChat('blackjack-master'),
-        features: [
-          { id: 'basic-strategy', name: 'Basic Strategy Overlay', description: 'Shows optimal play decisions', isEnabled: true },
-          { id: 'count-tracker', name: 'Count Tracker', description: 'Live running count display', isEnabled: true },
-          { id: 'educational', name: 'Educational Mode', description: 'Learning-focused features', isEnabled: true }
-        ],
-        settings: {
-          allowRecording: true,
-          allowClips: true,
-          chatDelay: 5,
-          videoDelay: 10,
-          autoHost: false,
-          autoQuality: true,
-          dvr: false,
-          dvrDuration: 60,
-          notifications: {
-            newFollower: true,
-            donation: false,
-            subscription: false,
-            raid: true,
-            host: true,
-            soundEnabled: false,
-            soundVolume: 0
-          },
-          privacy: {
-            showViewerCount: true,
-            allowWhispers: false,
-            blockAnonymous: true,
-            ageRestricted: false
-          }
-        },
-        statistics: {
-          totalViews: 12456,
-          peakViewers: 567,
-          averageViewTime: 2134,
-          chatEngagement: 34.2,
-          followersGained: 67,
-          subscribersGained: 0,
-          donations: 0,
-          clips: 23,
-          highlights: 5
-        },
-        isRecording: false,
-        category: 'educational',
-        tags: ['Blackjack', 'Strategy', 'Educational', 'Live'],
-        language: 'English',
-        isVIP: false,
-        isFeatured: false
+        id: 'roulette_wheel',
+        name: 'Roulette Wheel',
+        url: 'https://stream.example.com/roulette/wheel',
+        type: 'wheel',
+        quality: qualities,
+        isActive: true,
+        viewers: 189
+      },
+      {
+        id: 'baccarat_cards',
+        name: 'Baccarat Cards View',
+        url: 'https://stream.example.com/baccarat/cards',
+        type: 'cards',
+        quality: qualities,
+        isActive: true,
+        viewers: 156
+      },
+      {
+        id: 'dealer_cam',
+        name: 'Dealer Camera',
+        url: 'https://stream.example.com/dealer/main',
+        type: 'dealer',
+        quality: qualities,
+        isActive: true,
+        viewers: 312
       }
     ];
 
     mockStreams.forEach(stream => {
       this.streams.set(stream.id, stream);
-      this.chats.set(stream.id, stream.chat);
+      this.chatMessages.set(stream.id, []);
     });
-  }
 
-  private generateMockChat(streamId: string): LiveChat {
-    const mockMessages: ChatMessage[] = [
+    // Mock emoticons
+    const mockEmoticons: Emoticon[] = [
+      { id: 'smile', name: ':smile:', url: '/emoticons/smile.png', category: 'basic', isAnimated: false },
+      { id: 'laugh', name: ':laugh:', url: '/emoticons/laugh.png', category: 'basic', isAnimated: true },
+      { id: 'cool', name: ':cool:', url: '/emoticons/cool.png', category: 'basic', isAnimated: false },
+      { id: 'fire', name: ':fire:', url: '/emoticons/fire.png', category: 'premium', isAnimated: true, cost: 10 },
+      { id: 'diamond', name: ':diamond:', url: '/emoticons/diamond.png', category: 'vip', isAnimated: true, cost: 50 },
+      { id: 'jackpot', name: ':jackpot:', url: '/emoticons/jackpot.png', category: 'premium', isAnimated: true, cost: 25 }
+    ];
+
+    mockEmoticons.forEach(emoticon => {
+      this.emoticons.set(emoticon.id, emoticon);
+    });
+
+    // Mock user badges
+    const mockBadges: UserBadge[] = [
+      { id: 'newbie', name: 'Newbie', icon: '🌟', color: '#4CAF50', requirement: 'Join your first live game' },
+      { id: 'regular', name: 'Regular', icon: '🎯', color: '#2196F3', requirement: 'Play 50 live games' },
+      { id: 'vip', name: 'VIP', icon: '👑', color: '#FF9800', requirement: 'Reach VIP status' },
+      { id: 'high_roller', name: 'High Roller', icon: '💎', color: '#E91E63', requirement: 'Bet over $1000', isRare: true },
+      { id: 'lucky', name: 'Lucky Winner', icon: '🍀', color: '#4CAF50', requirement: 'Win 10 games in a row', isRare: true }
+    ];
+
+    // Mock moderators
+    const mockModerators: Moderator[] = [
       {
-        id: 'msg-1',
-        chatId: streamId,
-        userId: 'viewer-1',
-        username: 'PokerFan123',
-        displayName: 'PokerFan123',
-        message: 'This final table is amazing! 🔥',
-        timestamp: new Date(Date.now() - 300000),
-        type: 'normal',
-        badges: [{ id: 'follower', name: 'Follower', description: 'Following this channel', imageUrl: '/badges/follower.png', priority: 1 }],
-        emoticons: [{ emoteId: 'fire', emoteName: '🔥', positions: [[34, 36]] }],
-        mentions: [],
-        isDeleted: false,
-        isModerated: false,
-        color: '#FF6B6B'
+        id: 'mod1',
+        username: 'LiveGamesMod',
+        level: 'moderator',
+        permissions: {
+          mute: true,
+          ban: false,
+          delete: true,
+          timeout: true,
+          announce: false,
+          moderateEmoticons: true,
+          viewUserDetails: true
+        }
       },
       {
-        id: 'msg-2',
-        chatId: streamId,
-        userId: 'viewer-2',
-        username: 'HighStakesPlayer',
-        displayName: 'HighStakesPlayer',
-        message: 'That was a sick bluff by Player3!',
-        timestamp: new Date(Date.now() - 240000),
-        type: 'normal',
-        badges: [
-          { id: 'vip', name: 'VIP', description: 'VIP member', imageUrl: '/badges/vip.png', priority: 2 },
-          { id: 'subscriber', name: 'Subscriber', description: 'Channel subscriber', imageUrl: '/badges/sub.png', priority: 3 }
-        ],
-        emoticons: [],
-        mentions: [],
-        isDeleted: false,
-        isModerated: false,
-        color: '#4ECDC4'
-      },
-      {
-        id: 'msg-3',
-        chatId: streamId,
-        userId: 'mod-1',
-        username: 'StreamModerator',
-        displayName: 'StreamModerator',
-        message: 'Welcome to the final table everyone! Please keep chat respectful.',
-        timestamp: new Date(Date.now() - 180000),
-        type: 'moderator',
-        badges: [
-          { id: 'moderator', name: 'Moderator', description: 'Channel moderator', imageUrl: '/badges/mod.png', priority: 5 }
-        ],
-        emoticons: [],
-        mentions: [],
-        isDeleted: false,
-        isModerated: false,
-        color: '#45B7D1'
+        id: 'admin1',
+        username: 'GameAdmin',
+        level: 'admin',
+        permissions: {
+          mute: true,
+          ban: true,
+          delete: true,
+          timeout: true,
+          announce: true,
+          moderateEmoticons: true,
+          viewUserDetails: true
+        }
       }
     ];
 
-    return {
-      id: streamId,
-      streamId,
-      messages: mockMessages,
-      moderators: ['mod-1', 'mod-2'],
-      settings: {
-        slowMode: false,
-        slowModeDelay: 5,
-        subscriberOnly: false,
-        followersOnly: false,
-        followersOnlyDuration: 10,
-        uniqueChat: false,
-        emotesOnly: false,
-        maxMessageLength: 500,
-        blockedWords: ['spam', 'promotion'],
-        allowedDomains: ['twitch.tv', 'youtube.com'],
-        autoModeration: true
-      },
-      statistics: {
-        totalMessages: 1247,
-        messagesPerMinute: 12.5,
-        uniqueChatters: 234,
-        topChatters: [
-          { userId: 'viewer-1', username: 'PokerFan123', messageCount: 45, isSubscriber: false },
-          { userId: 'viewer-2', username: 'HighStakesPlayer', messageCount: 38, isSubscriber: true }
-        ],
-        mostUsedEmotes: [
-          { emoteId: 'fire', emoteName: '🔥', usage: 67 },
-          { emoteId: 'gg', emoteName: 'GG', usage: 45 }
-        ],
-        peakActivity: new Date(Date.now() - 1800000)
-      },
-      emoticons: [
-        { id: 'fire', name: '🔥', url: '/emotes/fire.png', category: 'global', isAnimated: false, isLocked: false },
-        { id: 'gg', name: 'GG', url: '/emotes/gg.png', category: 'global', isAnimated: false, isLocked: false },
-        { id: 'vip-emote', name: 'VIPKappa', url: '/emotes/vip-kappa.gif', category: 'vip', isAnimated: true, isLocked: true, requiredBadge: 'vip' }
-      ],
-      commands: [
-        { command: '!rules', description: 'Show chat rules', permission: 'everyone', cooldown: 30, isEnabled: true },
-        { command: '!uptime', description: 'Show stream uptime', permission: 'everyone', cooldown: 10, isEnabled: true },
-        { command: '!timeout', description: 'Timeout a user', permission: 'moderators', cooldown: 0, isEnabled: true },
-        { command: '!clear', description: 'Clear chat', permission: 'moderators', cooldown: 0, isEnabled: true }
-      ]
-    };
+    mockModerators.forEach(mod => {
+      this.moderators.set(mod.id, mod);
+    });
+
+    // Mock chat filters
+    const mockFilters: ChatFilter[] = [
+      { id: 'profanity', type: 'word', pattern: 'badword|inappropriate', action: 'delete', severity: 'high', isActive: true },
+      { id: 'spam', type: 'spam', pattern: 'repeated_message', action: 'mute', severity: 'medium', isActive: true },
+      { id: 'caps', type: 'caps', pattern: 'ALL_CAPS_MESSAGE', action: 'warn', severity: 'low', isActive: true },
+      { id: 'links', type: 'links', pattern: 'http|www\\.', action: 'delete', severity: 'medium', isActive: true }
+    ];
+
+    mockFilters.forEach(filter => {
+      this.chatFilters.set(filter.id, filter);
+    });
+
+    // Generate mock chat messages
+    this.generateMockChatMessages();
   }
 
-  private calculateMessagesPerMinute(chat: LiveChat): number {
-    const oneMinuteAgo = new Date(Date.now() - 60000);
-    const recentMessages = chat.messages.filter(m => m.timestamp >= oneMinuteAgo);
-    return recentMessages.length;
-  }
-
-  private simulateRealTimeUpdates() {
-    setInterval(() => {
-      // Simulate viewer count changes
-      this.streams.forEach(stream => {
-        const change = Math.floor(Math.random() * 20) - 10;
-        stream.viewerCount = Math.max(0, stream.viewerCount + change);
-        stream.maxViewers = Math.max(stream.maxViewers, stream.viewerCount);
-      });
-
-      // Simulate new chat messages
-      if (Math.random() > 0.7) {
-        this.simulateRandomChatMessage();
-      }
-
-      // Update chat statistics
-      this.chats.forEach(chat => {
-        chat.statistics.messagesPerMinute = this.calculateMessagesPerMinute(chat);
-      });
-    }, 3000);
-  }
-
-  private simulateRandomChatMessage() {
-    const streamIds = Array.from(this.streams.keys());
-    if (streamIds.length === 0) return;
-
-    const randomStreamId = streamIds[Math.floor(Math.random() * streamIds.length)];
-    const chat = this.chats.get(randomStreamId);
-    if (!chat) return;
-
+  private generateMockChatMessages(): void {
+    const usernames = ['Player123', 'LuckyGamer', 'CardShark', 'BetMaster', 'VIPPlayer', 'CasinoFan'];
     const messages = [
-      'Great stream! 👍',
-      'Amazing play!',
-      'What a hand!',
-      'LET\'S GO! 🔥',
-      'That was insane!',
-      'GG everyone',
-      'Nice strategy',
-      'Incredible read',
-      'So close!',
-      'What are the odds?'
+      'Good luck everyone!',
+      'Nice win!',
+      'The dealer is on fire today!',
+      'Anyone else betting on red?',
+      'Great hand!',
+      'This table is lucky tonight',
+      'Time for a big bet!',
+      'The cards are hot!'
     ];
 
-    const usernames = ['StreamWatcher', 'GameFan', 'PokerLover', 'CasinoKing', 'LuckyPlayer', 'HighRoller'];
-
-    const message: ChatMessage = {
-      id: `msg_${Date.now()}_${Math.random()}`,
-      chatId: randomStreamId,
-      userId: `user_${Math.random().toString(36).substr(2, 9)}`,
-      username: usernames[Math.floor(Math.random() * usernames.length)],
-      displayName: usernames[Math.floor(Math.random() * usernames.length)],
-      message: messages[Math.floor(Math.random() * messages.length)],
-      timestamp: new Date(),
-      type: 'normal',
-      badges: [],
-      emoticons: [],
-      mentions: [],
-      isDeleted: false,
-      isModerated: false,
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
-    };
-
-    chat.messages.push(message);
-    chat.messages = chat.messages.slice(-500);
-    chat.statistics.totalMessages++;
+    this.streams.forEach((stream, streamId) => {
+      const streamMessages: ChatMessage[] = [];
+      
+      for (let i = 0; i < 50; i++) {
+        const username = usernames[Math.floor(Math.random() * usernames.length)];
+        const message = messages[Math.floor(Math.random() * messages.length)];
+        
+        streamMessages.push({
+          id: `msg_${streamId}_${i}`,
+          userId: `user_${Math.floor(Math.random() * 1000)}`,
+          username,
+          message,
+          timestamp: Date.now() - (50 - i) * 30000, // 30 seconds apart
+          type: Math.random() > 0.95 ? 'tip' : 'message',
+          badges: Math.random() > 0.7 ? ['regular'] : undefined,
+          color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`
+        });
+      }
+      
+      this.chatMessages.set(streamId, streamMessages);
+    });
   }
 
   // Public API methods
-  public getStreams(filters?: {
-    category?: StreamCategory;
-    status?: StreamStatus;
-    isLive?: boolean;
-    isFeatured?: boolean;
-    minViewers?: number;
-  }): LiveStream[] {
-    let streams = Array.from(this.streams.values());
-
-    if (filters) {
-      if (filters.category) {
-        streams = streams.filter(s => s.category === filters.category);
+  public async getActiveStreams(): Promise<StreamSource[]> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('get_active_streams', {});
+        return response.streams || [];
       }
-      if (filters.status) {
-        streams = streams.filter(s => s.status === filters.status);
-      }
-      if (filters.isLive !== undefined) {
-        streams = streams.filter(s => (s.status === 'live') === filters.isLive);
-      }
-      if (filters.isFeatured !== undefined) {
-        streams = streams.filter(s => s.isFeatured === filters.isFeatured);
-      }
-      if (filters.minViewers !== undefined) {
-        streams = streams.filter(s => s.viewerCount >= filters.minViewers);
-      }
+    } catch (error) {
+      console.warn('Failed to fetch active streams from server, using mock data');
     }
-
-    return streams.sort((a, b) => b.viewerCount - a.viewerCount);
+    
+    return Array.from(this.streams.values()).filter(stream => stream.isActive);
   }
 
-  public getStream(streamId: string): LiveStream | undefined {
-    return this.streams.get(streamId);
-  }
-
-  public getCurrentStream(): LiveStream | null {
-    return this.currentStream;
-  }
-
-  public joinStream(streamId: string): Promise<{ success: boolean; error?: string }> {
-    return new Promise((resolve) => {
-      const stream = this.streams.get(streamId);
-      if (!stream) {
-        resolve({ success: false, error: 'Stream not found' });
-        return;
+  public async getStreamById(streamId: string): Promise<StreamSource | null> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('get_stream', { streamId });
+        return response.stream || null;
       }
-
-      if (stream.status !== 'live') {
-        resolve({ success: false, error: 'Stream is not live' });
-        return;
-      }
-
-      this.currentStream = stream;
-      this.currentQuality = stream.currentQuality;
-
-      if (this.socket && this.socket.connected) {
-        this.socket.emit('join_stream', { streamId });
-      }
-
-      // Simulate joining
-      setTimeout(() => {
-        stream.viewerCount++;
-        resolve({ success: true });
-      }, 500);
-    });
-  }
-
-  public leaveStream(): void {
-    if (this.currentStream) {
-      if (this.socket && this.socket.connected) {
-        this.socket.emit('leave_stream', { streamId: this.currentStream.id });
-      }
-
-      this.currentStream.viewerCount = Math.max(0, this.currentStream.viewerCount - 1);
-      this.currentStream = null;
-      this.currentQuality = null;
+    } catch (error) {
+      console.warn('Failed to fetch stream from server, using mock data');
     }
+    
+    return this.streams.get(streamId) || null;
   }
 
-  public sendChatMessage(message: string, username: string): void {
-    if (!this.currentStream || !this.currentStream.chat) return;
+  public async joinStream(streamId: string): Promise<boolean> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('join_stream', { streamId });
+        return response.success || false;
+      }
+    } catch (error) {
+      console.warn('Failed to join stream on server, using mock behavior');
+    }
+    
+    // Mock successful join
+    const stream = this.streams.get(streamId);
+    if (stream) {
+      stream.viewers += 1;
+      return true;
+    }
+    return false;
+  }
 
-    const chatMessage: ChatMessage = {
+  public async leaveStream(streamId: string): Promise<boolean> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('leave_stream', { streamId });
+        return response.success || false;
+      }
+    } catch (error) {
+      console.warn('Failed to leave stream on server, using mock behavior');
+    }
+    
+    // Mock successful leave
+    const stream = this.streams.get(streamId);
+    if (stream && stream.viewers > 0) {
+      stream.viewers -= 1;
+      return true;
+    }
+    return false;
+  }
+
+  public async sendChatMessage(streamId: string, message: string, replyTo?: string): Promise<ChatMessage | null> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('send_message', { 
+          streamId, 
+          message, 
+          replyTo 
+        });
+        return response.message || null;
+      }
+    } catch (error) {
+      console.warn('Failed to send message to server, using mock behavior');
+    }
+    
+    // Mock message creation
+    const newMessage: ChatMessage = {
       id: `msg_${Date.now()}`,
-      chatId: this.currentStream.chat.id,
-      userId: 'current-user',
-      username,
-      displayName: username,
+      userId: 'current_user',
+      username: 'You',
       message,
-      timestamp: new Date(),
-      type: 'normal',
-      badges: [],
-      emoticons: [],
-      mentions: [],
-      isDeleted: false,
-      isModerated: false,
-      color: '#4ECDC4'
+      timestamp: Date.now(),
+      type: 'message',
+      color: '#4CAF50',
+      reply: replyTo ? {
+        messageId: replyTo,
+        username: 'SomeUser',
+        message: 'Previous message...'
+      } : undefined
     };
 
-    if (this.socket && this.socket.connected) {
-      this.socket.emit('chat_message', chatMessage);
-    } else {
-      // Add locally in development
-      this.currentStream.chat.messages.push(chatMessage);
-      this.currentStream.chat.messages = this.currentStream.chat.messages.slice(-500);
-      this.currentStream.chat.statistics.totalMessages++;
-    }
+    const messages = this.chatMessages.get(streamId) || [];
+    messages.push(newMessage);
+    this.chatMessages.set(streamId, messages);
+
+    return newMessage;
   }
 
-  public changeQuality(quality: StreamQuality): void {
-    if (this.currentStream) {
-      this.currentQuality = quality;
-      
-      if (this.socket && this.socket.connected) {
-        this.socket.emit('change_quality', { 
-          streamId: this.currentStream.id, 
-          quality 
+  public async getChatMessages(streamId: string, limit: number = 50): Promise<ChatMessage[]> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('get_chat_messages', { 
+          streamId, 
+          limit 
         });
+        return response.messages || [];
       }
+    } catch (error) {
+      console.warn('Failed to fetch chat messages from server, using mock data');
     }
-  }
-
-  public toggleFullscreen(): void {
-    this.isFullscreen = !this.isFullscreen;
-  }
-
-  public setVolume(volume: number): void {
-    this.playerVolume = Math.max(0, Math.min(100, volume));
-  }
-
-  public getVolume(): number {
-    return this.playerVolume;
-  }
-
-  public isStreamFullscreen(): boolean {
-    return this.isFullscreen;
-  }
-
-  public blockUser(userId: string): void {
-    this.blockedUsers.add(userId);
     
-    if (this.socket && this.socket.connected && this.currentStream) {
-      this.socket.emit('block_user', { 
-        chatId: this.currentStream.chat.id, 
-        userId 
-      });
-    }
+    const messages = this.chatMessages.get(streamId) || [];
+    return messages.slice(-limit);
   }
 
-  public unblockUser(userId: string): void {
-    this.blockedUsers.delete(userId);
+  public async getAvailableEmoticons(category?: string): Promise<Emoticon[]> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('get_emoticons', { category });
+        return response.emoticons || [];
+      }
+    } catch (error) {
+      console.warn('Failed to fetch emoticons from server, using mock data');
+    }
     
-    if (this.socket && this.socket.connected && this.currentStream) {
-      this.socket.emit('unblock_user', { 
-        chatId: this.currentStream.chat.id, 
-        userId 
-      });
+    const emoticons = Array.from(this.emoticons.values());
+    return category ? emoticons.filter(e => e.category === category) : emoticons;
+  }
+
+  public async purchaseEmoticon(emoticonId: string): Promise<boolean> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('purchase_emoticon', { emoticonId });
+        return response.success || false;
+      }
+    } catch (error) {
+      console.warn('Failed to purchase emoticon from server, using mock behavior');
     }
+    
+    // Mock successful purchase
+    return true;
   }
 
-  public muteUser(userId: string): void {
-    this.mutedUsers.add(userId);
-  }
-
-  public unmuteUser(userId: string): void {
-    this.mutedUsers.delete(userId);
-  }
-
-  public createClip(title: string, duration: number = 30): Promise<{ success: boolean; clipId?: string; error?: string }> {
-    return new Promise((resolve) => {
-      if (!this.currentStream) {
-        resolve({ success: false, error: 'No active stream' });
-        return;
+  public async tipDealer(streamId: string, dealerId: string, amount: number, message?: string): Promise<boolean> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('tip_dealer', { 
+          streamId, 
+          dealerId, 
+          amount, 
+          message 
+        });
+        return response.success || false;
       }
+    } catch (error) {
+      console.warn('Failed to send tip to server, using mock behavior');
+    }
+    
+    // Mock successful tip
+    const tipAlert: TipAlert = {
+      id: `tip_${Date.now()}`,
+      fromUser: 'You',
+      toDealer: 'Dealer Sarah',
+      amount,
+      message,
+      timestamp: Date.now(),
+      isVisible: true,
+      duration: 5000
+    };
 
-      if (!this.currentStream.settings.allowClips) {
-        resolve({ success: false, error: 'Clips are disabled for this stream' });
-        return;
-      }
+    this.handleTipAlert(tipAlert);
+    return true;
+  }
 
-      const clipId = `clip_${Date.now()}`;
-      
-      if (this.socket && this.socket.connected) {
-        this.socket.emit('create_clip', { 
-          streamId: this.currentStream.id, 
-          title, 
+  public async moderateUser(userId: string, action: string, reason: string, duration?: number): Promise<boolean> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('moderate_user', { 
+          userId, 
+          action, 
+          reason, 
           duration 
         });
+        return response.success || false;
       }
+    } catch (error) {
+      console.warn('Failed to moderate user on server, using mock behavior');
+    }
+    
+    // Mock successful moderation
+    return true;
+  }
 
-      // Simulate clip creation
-      setTimeout(() => {
-        this.currentStream!.statistics.clips++;
-        resolve({ success: true, clipId });
-      }, 1000);
+  public async changeStreamQuality(streamId: string, qualityId: string): Promise<boolean> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('change_quality', { 
+          streamId, 
+          qualityId 
+        });
+        return response.success || false;
+      }
+    } catch (error) {
+      console.warn('Failed to change quality on server, using mock behavior');
+    }
+    
+    // Mock successful quality change
+    return true;
+  }
+
+  public async getStreamStats(streamId: string): Promise<StreamStats | null> {
+    try {
+      if (this.socket?.connected) {
+        const response = await this.emitWithResponse('get_stream_stats', { streamId });
+        return response.stats || null;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch stream stats from server, using mock data');
+    }
+    
+    // Mock stream stats
+    const stream = this.streams.get(streamId);
+    if (!stream) return null;
+
+    return {
+      streamId,
+      viewers: {
+        current: stream.viewers,
+        peak: Math.floor(stream.viewers * 1.5),
+        total: Math.floor(stream.viewers * 10)
+      },
+      quality: {
+        current: stream.quality[1], // 1080p
+        switches: Math.floor(Math.random() * 10),
+        buffering: Math.floor(Math.random() * 5),
+        errors: Math.floor(Math.random() * 3)
+      },
+      chat: {
+        messages: this.chatMessages.get(streamId)?.length || 0,
+        activeUsers: Math.floor(stream.viewers * 0.3),
+        moderationActions: Math.floor(Math.random() * 5)
+      },
+      performance: {
+        latency: 150 + Math.floor(Math.random() * 100),
+        bitrate: 6000 + Math.floor(Math.random() * 1000),
+        fps: 60,
+        droppedFrames: Math.floor(Math.random() * 10)
+      }
+    };
+  }
+
+  public updateSettings(newSettings: Partial<StreamSettings>): void {
+    this.streamSettings = { ...this.streamSettings, ...newSettings };
+    
+    if (this.socket?.connected) {
+      this.socket.emit('update_settings', this.streamSettings);
+    }
+  }
+
+  public getSettings(): StreamSettings {
+    return { ...this.streamSettings };
+  }
+
+  public getUserBadges(userId: string): UserBadge[] {
+    return this.userBadges.get(userId) || [];
+  }
+
+  public getModerators(): Moderator[] {
+    return Array.from(this.moderators.values());
+  }
+
+  public getChatFilters(): ChatFilter[] {
+    return Array.from(this.chatFilters.values());
+  }
+
+  public isUserModerator(userId: string): boolean {
+    return this.moderators.has(userId);
+  }
+
+  public canUserChat(userId: string): boolean {
+    const status = this.userStatuses.get(userId);
+    return !status || status.permissions.canChat;
+  }
+
+  // Event handlers
+  private handleStreamUpdate(data: Partial<StreamSource>): void {
+    if (data.id) {
+      const existing = this.streams.get(data.id);
+      if (existing) {
+        this.streams.set(data.id, { ...existing, ...data });
+      }
+    }
+  }
+
+  private handleChatMessage(message: ChatMessage): void {
+    // Apply chat filters
+    if (this.shouldFilterMessage(message)) {
+      return;
+    }
+
+    // Process emoticons
+    message.emoticons = this.processEmoticons(message.message);
+
+    // Add to appropriate stream chat
+    const streamIds = Array.from(this.chatMessages.keys());
+    streamIds.forEach(streamId => {
+      const messages = this.chatMessages.get(streamId) || [];
+      messages.push(message);
+      
+      // Keep only recent messages
+      if (messages.length > 100) {
+        messages.splice(0, messages.length - 100);
+      }
+      
+      this.chatMessages.set(streamId, messages);
     });
   }
 
-  public reportUser(userId: string, reason: string): Promise<{ success: boolean; error?: string }> {
-    return new Promise((resolve) => {
-      if (this.socket && this.socket.connected && this.currentStream) {
-        this.socket.emit('report_user', { 
-          chatId: this.currentStream.chat.id, 
-          userId, 
-          reason 
+  private handleUserJoined(data: { streamId: string; username: string }): void {
+    const stream = this.streams.get(data.streamId);
+    if (stream) {
+      stream.viewers += 1;
+    }
+  }
+
+  private handleUserLeft(data: { streamId: string; username: string }): void {
+    const stream = this.streams.get(data.streamId);
+    if (stream && stream.viewers > 0) {
+      stream.viewers -= 1;
+    }
+  }
+
+  private handleModerationAction(action: ModerationAction): void {
+    // Update user status based on moderation action
+    const userId = action.userId;
+    let status = this.userStatuses.get(userId) || {
+      id: userId,
+      username: 'Unknown',
+      status: 'active',
+      permissions: {
+        canChat: true,
+        canTip: true,
+        canUseEmoticons: true
+      },
+      violations: 0,
+      lastActivity: Date.now()
+    };
+
+    switch (action.action) {
+      case 'mute':
+        status.status = 'muted';
+        status.permissions.canChat = false;
+        break;
+      case 'unmute':
+        status.status = 'active';
+        status.permissions.canChat = true;
+        break;
+      case 'ban':
+        status.status = 'banned';
+        status.permissions = {
+          canChat: false,
+          canTip: false,
+          canUseEmoticons: false
+        };
+        break;
+      case 'timeout':
+        status.status = 'timeout';
+        status.permissions.canChat = false;
+        status.timeoutUntil = Date.now() + (action.duration || 0) * 60000;
+        break;
+    }
+
+    this.userStatuses.set(userId, status);
+  }
+
+  private handleTipAlert(alert: TipAlert): void {
+    // Show tip alert notification
+    console.log(`Tip Alert: ${alert.fromUser} tipped ${alert.toDealer} ${alert.amount} SC`);
+    
+    // In a real implementation, this would trigger UI notifications
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('tipAlert', { detail: alert }));
+    }
+  }
+
+  private handleStreamNotification(notification: StreamNotification): void {
+    console.log(`Stream Notification: ${notification.title} - ${notification.message}`);
+    
+    // In a real implementation, this would trigger UI notifications
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('streamNotification', { detail: notification }));
+    }
+  }
+
+  // Helper methods
+  private shouldFilterMessage(message: ChatMessage): boolean {
+    const filters = Array.from(this.chatFilters.values()).filter(f => f.isActive);
+    
+    for (const filter of filters) {
+      if (this.messageMatchesFilter(message.message, filter)) {
+        this.applyFilterAction(message, filter);
+        return filter.action === 'delete';
+      }
+    }
+    
+    return false;
+  }
+
+  private messageMatchesFilter(message: string, filter: ChatFilter): boolean {
+    switch (filter.type) {
+      case 'word':
+        return new RegExp(filter.pattern, 'i').test(message);
+      case 'regex':
+        return new RegExp(filter.pattern).test(message);
+      case 'spam':
+        // Simple spam detection - same message repeated
+        return false; // Would need more complex logic
+      case 'caps':
+        return message === message.toUpperCase() && message.length > 10;
+      case 'links':
+        return new RegExp(filter.pattern, 'i').test(message);
+      default:
+        return false;
+    }
+  }
+
+  private applyFilterAction(message: ChatMessage, filter: ChatFilter): void {
+    const userId = message.userId;
+    
+    switch (filter.action) {
+      case 'warn':
+        console.log(`Warning user ${userId} for message: ${message.message}`);
+        break;
+      case 'mute':
+        this.moderateUser(userId, 'mute', `Automatic action: ${filter.type} filter`);
+        break;
+      case 'ban':
+        this.moderateUser(userId, 'ban', `Automatic action: ${filter.type} filter`);
+        break;
+      case 'delete':
+        console.log(`Deleting message from user ${userId}: ${message.message}`);
+        break;
+    }
+  }
+
+  private processEmoticons(message: string): Array<{ name: string; url: string; position: [number, number] }> {
+    const emoticons: Array<{ name: string; url: string; position: [number, number] }> = [];
+    const emoticonArray = Array.from(this.emoticons.values());
+    
+    emoticonArray.forEach(emoticon => {
+      const regex = new RegExp(emoticon.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+      let match;
+      
+      while ((match = regex.exec(message)) !== null) {
+        emoticons.push({
+          name: emoticon.name,
+          url: emoticon.url,
+          position: [match.index, match.index + match[0].length]
         });
       }
-
-      setTimeout(() => {
-        resolve({ success: true });
-      }, 500);
     });
+    
+    return emoticons;
   }
 
-  public followStreamer(streamerId: string): Promise<{ success: boolean; error?: string }> {
-    return new Promise((resolve) => {
-      if (this.socket && this.socket.connected) {
-        this.socket.emit('follow_streamer', { streamerId });
+  private async emitWithResponse(event: string, data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket?.connected) {
+        reject(new Error('Socket not connected'));
+        return;
       }
 
-      setTimeout(() => {
-        const stream = Array.from(this.streams.values()).find(s => s.streamer.id === streamerId);
-        if (stream) {
-          stream.streamer.followers++;
-          stream.statistics.followersGained++;
-        }
-        resolve({ success: true });
-      }, 500);
+      const timeout = setTimeout(() => {
+        reject(new Error('Request timeout'));
+      }, 10000);
+
+      this.socket.emit(event, data, (response: any) => {
+        clearTimeout(timeout);
+        resolve(response);
+      });
     });
   }
 
-  public getChatHistory(streamId: string): ChatMessage[] {
-    const chat = this.chats.get(streamId);
-    return chat ? chat.messages : [];
+  public connect(): void {
+    if (this.socket && !this.socket.connected) {
+      this.socket.connect();
+    }
   }
 
   public disconnect(): void {
-    if (this.currentStream) {
-      this.leaveStream();
-    }
-    
-    if (this.socket) {
+    if (this.socket?.connected) {
       this.socket.disconnect();
-      this.socket = null;
     }
+  }
+
+  public destroy(): void {
+    this.disconnect();
+    this.streams.clear();
+    this.chatMessages.clear();
+    this.moderators.clear();
+    this.userBadges.clear();
+    this.emoticons.clear();
+    this.chatFilters.clear();
+    this.userStatuses.clear();
   }
 }
 
+// Export singleton instance
 export const streamingService = new StreamingService();
+export default streamingService;

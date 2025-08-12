@@ -638,6 +638,24 @@ export default function Dashboard() {
                   </Link>
                 </CardContent>
               </Card>
+
+              <Card className="group hover:shadow-lg transition-all duration-300 border-green-500/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green/20 to-emerald/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Gift className="w-8 h-8 text-green-500" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Scratch Cards</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Instant win scratch cards with amazing prizes
+                  </p>
+                  <Link to="/scratch-cards">
+                    <Button className="w-full bg-green-500 hover:bg-green-600">
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Play Now
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 

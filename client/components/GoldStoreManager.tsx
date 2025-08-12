@@ -92,6 +92,7 @@ import {
   Smartphone,
   Monitor,
   Tablet,
+  Loader2,
 } from "lucide-react";
 import {
   goldStoreService,
@@ -197,12 +198,8 @@ export default function GoldStoreManager() {
   // Dialog states
   const [packageDialogOpen, setPackageDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(
-    null,
-  );
-  const [previewMode, setPreviewMode] = useState<
-    "desktop" | "tablet" | "mobile"
-  >("desktop");
+  const [selectedPackage, setSelectedPackage] = useState<GoldPackage | null>(null);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
 
   // Form state
   const [packageForm, setPackageForm] = useState<PackageFormData>({
@@ -235,7 +232,7 @@ export default function GoldStoreManager() {
       accentColor: "#FCD34D",
       borderColor: "#1D4ED8",
       shadowColor: "#3B82F6",
-      icon: "🌟",
+      icon: "����",
       animation: "none",
     },
     availability: {
@@ -309,10 +306,7 @@ export default function GoldStoreManager() {
     }
   };
 
-  const handleUpdatePackage = async (
-    id: string,
-    updates: Partial<GoldPackage>,
-  ) => {
+  const handleUpdatePackage = async (id: string, updates: Partial<GoldPackage>) => {
     try {
       const updatedPackage = await goldStoreService.updatePackage(id, updates);
       setPackages((prev) =>
@@ -638,6 +632,15 @@ export default function GoldStoreManager() {
       </div>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="w-8 h-8 animate-spin mr-2" />
+        <span>Loading store data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -1497,8 +1500,10 @@ export default function GoldStoreManager() {
                   <Button
                     onClick={
                       selectedPackage
-                        ? () =>
-                            handleUpdatePackage(selectedPackage.id, packageForm)
+                        ? () => {
+                            handleUpdatePackage(selectedPackage.id, packageForm);
+                            setPackageDialogOpen(false);
+                          }
                         : handleCreatePackage
                     }
                   >
@@ -1511,79 +1516,32 @@ export default function GoldStoreManager() {
           </div>
 
           {/* Packages Grid */}
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredPackages.map((pkg) => (
-              <Card key={pkg.id} className="relative">
-                <CardContent className="p-6">
+              <Card key={pkg.id} className="relative group">
+                <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="text-2xl">{pkg.design.icon}</div>
-                        <div>
-                          <h3 className="text-lg font-semibold">{pkg.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {pkg.description}
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant={getStatusColor(pkg.isActive)}>
-                            {pkg.isActive ? "Active" : "Inactive"}
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${getCategoryColor(pkg.category)}`} />
+                        {pkg.name}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant={getStatusColor(pkg.isActive)}>
+                          {pkg.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                        {pkg.popular && (
+                          <Badge variant="outline" className="text-yellow-600">
+                            Popular
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className={getCategoryColor(pkg.category)}
-                          >
-                            {pkg.category.toUpperCase()}
+                        )}
+                        {pkg.featured && (
+                          <Badge variant="outline" className="text-purple-600">
+                            Featured
                           </Badge>
-                          {pkg.popular && (
-                            <Badge className="bg-yellow-500">Popular</Badge>
-                          )}
-                          {pkg.featured && (
-                            <Badge className="bg-purple-500">Featured</Badge>
-                          )}
-                          {pkg.bestValue && (
-                            <Badge className="bg-green-500">Best Value</Badge>
-                          )}
-                          {pkg.limitedTime && (
-                            <Badge variant="destructive">Limited Time</Badge>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                        <div className="text-center">
-                          <div className="text-sm text-muted-foreground">
-                            Gold Coins
-                          </div>
-                          <div className="font-semibold">
-                            {pkg.goldCoins.toLocaleString()}
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-sm text-muted-foreground">
-                            Sweeps Coins
-                          </div>
-                          <div className="font-semibold">{pkg.sweepsCoins}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-sm text-muted-foreground">
-                            Price
-                          </div>
-                          <div className="font-semibold">
-                            ${pkg.price.toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-sm text-muted-foreground">
-                            Purchases
-                          </div>
-                          <div className="font-semibold">
-                            {pkg.analytics.purchases}
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
-
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm">
@@ -1595,35 +1553,15 @@ export default function GoldStoreManager() {
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDuplicatePackage(pkg.id)}
-                        >
+                        <DropdownMenuItem onClick={() => handleDuplicatePackage(pkg.id)}>
                           <Copy className="w-4 h-4 mr-2" />
                           Duplicate
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            handleUpdatePackage(pkg.id, {
-                              isActive: !pkg.isActive,
-                            })
-                          }
-                        >
-                          {pkg.isActive ? (
-                            <>
-                              <XCircle className="w-4 h-4 mr-2" />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Activate
-                            </>
-                          )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <DropdownMenuItem
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive"
                               onSelect={(e) => e.preventDefault()}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
@@ -1632,18 +1570,16 @@ export default function GoldStoreManager() {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Delete Package
-                              </AlertDialogTitle>
+                              <AlertDialogTitle>Delete Package</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{pkg.name}"?
-                                This action cannot be undone.
+                                Are you sure you want to delete "{pkg.name}"? This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => handleDeletePackage(pkg.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
                               </AlertDialogAction>
@@ -1653,52 +1589,92 @@ export default function GoldStoreManager() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {pkg.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-gold-400">
+                          {pkg.goldCoins.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">GC</div>
+                      </div>
+                      {pkg.sweepsCoins > 0 && (
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-casino-blue">
+                            {pkg.sweepsCoins}
+                          </div>
+                          <div className="text-xs text-muted-foreground">SC</div>
+                        </div>
+                      )}
+                      <div className="text-center">
+                        <div className="text-lg font-bold">
+                          {pkg.currency === "USD" ? "$" : pkg.currency === "EUR" ? "€" : pkg.currency === "GBP" ? "£" : "C$"}
+                          {pkg.price.toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Price</div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div>
+                        <div className="text-sm font-medium">
+                          {pkg.analytics.views}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Views</div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">
+                          {pkg.analytics.purchases}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Sales</div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">
+                          {pkg.analytics.conversionRate.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">CVR</div>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
-
-            {filteredPackages.length === 0 && (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">
-                    No packages found
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    {searchTerm || filterCategory !== "all"
-                      ? "Try adjusting your search or filter settings"
-                      : "Get started by creating your first package"}
-                  </p>
-                  {!searchTerm && filterCategory === "all" && (
-                    <Button
-                      onClick={() => {
-                        resetPackageForm();
-                        setPackageDialogOpen(true);
-                      }}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Your First Package
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
           </div>
+
+          {filteredPackages.length === 0 && (
+            <Card className="text-center p-8">
+              <CardContent>
+                <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No packages found</h3>
+                <p className="text-muted-foreground mb-4">
+                  No packages match your current search and filter criteria.
+                </p>
+                <Button onClick={() => {
+                  setSearchTerm("");
+                  setFilterCategory("all");
+                }}>
+                  Clear Filters
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
-          {analytics && (
+          {analytics ? (
             <>
-              {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">
-                          Total Revenue
-                        </p>
+                        <p className="text-sm text-muted-foreground">Total Revenue</p>
                         <p className="text-2xl font-bold">
                           ${analytics.totalRevenue.toLocaleString()}
                         </p>
@@ -1709,14 +1685,12 @@ export default function GoldStoreManager() {
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">
-                          Total Purchases
-                        </p>
+                        <p className="text-sm text-muted-foreground">Total Sales</p>
                         <p className="text-2xl font-bold">
-                          {analytics.totalPurchases.toLocaleString()}
+                          {analytics.totalSales.toLocaleString()}
                         </p>
                       </div>
                       <ShoppingCart className="w-8 h-8 text-blue-500" />
@@ -1725,14 +1699,12 @@ export default function GoldStoreManager() {
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">
-                          Avg Order Value
-                        </p>
+                        <p className="text-sm text-muted-foreground">Conversion Rate</p>
                         <p className="text-2xl font-bold">
-                          ${analytics.averageOrderValue.toFixed(2)}
+                          {analytics.conversionRate.toFixed(1)}%
                         </p>
                       </div>
                       <TrendingUp className="w-8 h-8 text-purple-500" />
@@ -1741,53 +1713,42 @@ export default function GoldStoreManager() {
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">
-                          Conversion Rate
-                        </p>
+                        <p className="text-sm text-muted-foreground">Avg Order Value</p>
                         <p className="text-2xl font-bold">
-                          {analytics.conversionRate.toFixed(1)}%
+                          ${analytics.averageOrderValue.toFixed(2)}
                         </p>
                       </div>
-                      <Target className="w-8 h-8 text-orange-500" />
+                      <BarChart3 className="w-8 h-8 text-orange-500" />
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Top Packages */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Top Performing Packages</CardTitle>
+                    <CardTitle>Top Packages</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {analytics.topPackages.map((pkg, index) => (
-                        <div
-                          key={pkg.packageId}
-                          className="flex items-center justify-between"
-                        >
+                        <div key={pkg.packageId} className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <span className="text-sm font-mono w-6">
-                              #{index + 1}
-                            </span>
+                            <div className="w-8 h-8 rounded-full bg-gold-500/10 flex items-center justify-center text-sm font-bold">
+                              {index + 1}
+                            </div>
                             <div>
                               <p className="font-medium">{pkg.name}</p>
                               <p className="text-sm text-muted-foreground">
-                                {pkg.purchases} purchases
+                                {pkg.sales} sales
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">
-                              ${pkg.revenue.toLocaleString()}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              revenue
-                            </p>
+                            <p className="font-bold">${pkg.revenue.toLocaleString()}</p>
                           </div>
                         </div>
                       ))}
@@ -1797,151 +1758,100 @@ export default function GoldStoreManager() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>User Demographics</CardTitle>
+                    <CardTitle>Payment Methods</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span>New Users</span>
-                        <span className="font-semibold">
-                          {analytics.userDemographics.newUsers}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span>Returning Users</span>
-                        <span className="font-semibold">
-                          {analytics.userDemographics.returningUsers}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span>VIP Users</span>
-                        <span className="font-semibold">
-                          {analytics.userDemographics.vipUsers}
-                        </span>
-                      </div>
+                      {analytics.paymentMethodStats.map((method) => (
+                        <div key={method.method} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="capitalize">{method.method.replace('_', ' ')}</span>
+                            <span className="font-medium">{method.percentage.toFixed(1)}%</span>
+                          </div>
+                          <Progress value={method.percentage} className="h-2" />
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Payment Methods */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Payment Methods</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.paymentMethods.map((method) => (
-                      <div key={method.method} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>{method.method}</span>
-                          <span>
-                            {method.percentage.toFixed(1)}% ({method.count})
-                          </span>
-                        </div>
-                        <Progress value={method.percentage} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
             </>
+          ) : (
+            <div className="text-center py-8">
+              <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Analytics Data</h3>
+              <p className="text-muted-foreground">Analytics data will appear here once available.</p>
+            </div>
           )}
         </TabsContent>
 
-        {/* Purchase History Tab */}
-        <TabsContent value="purchases" className="space-y-4">
+        {/* Purchases Tab */}
+        <TabsContent value="purchases" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Recent Purchases</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Latest gold coin package purchases and transaction details
-              </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {purchaseHistory.map((purchase) => (
-                  <div key={purchase.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-medium">
-                            {purchase.packageName}
-                          </h4>
-                          <Badge
-                            variant={
-                              purchase.paymentStatus === "completed"
-                                ? "default"
-                                : purchase.paymentStatus === "pending"
-                                  ? "secondary"
-                                  : purchase.paymentStatus === "failed"
-                                    ? "destructive"
-                                    : "outline"
-                            }
-                          >
-                            {purchase.paymentStatus.toUpperCase()}
-                          </Badge>
-                          <Badge variant="outline">
-                            {purchase.paymentMethod
-                              .replace("_", " ")
-                              .toUpperCase()}
-                          </Badge>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <div className="text-muted-foreground">Amount</div>
-                            <div className="font-medium">
-                              ${purchase.price} {purchase.currency}
+              {purchaseHistory.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-2">Customer</th>
+                        <th className="text-left p-2">Package</th>
+                        <th className="text-left p-2">Amount</th>
+                        <th className="text-left p-2">Payment</th>
+                        <th className="text-left p-2">Status</th>
+                        <th className="text-left p-2">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {purchaseHistory.slice(0, 10).map((purchase) => (
+                        <tr key={purchase.id} className="border-b border-border/50 hover:bg-muted/50">
+                          <td className="p-2">
+                            <div>
+                              <div className="font-medium">{purchase.userId}</div>
                             </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">
-                              Gold Coins
+                          </td>
+                          <td className="p-2">
+                            <div>
+                              <div className="font-medium">{purchase.packageName}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {purchase.goldCoins.toLocaleString()} GC + {purchase.sweepsCoins} SC
+                              </div>
                             </div>
-                            <div className="font-medium">
-                              {purchase.goldCoins.toLocaleString()}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">
-                              Sweeps Coins
-                            </div>
-                            <div className="font-medium">
-                              {purchase.sweepsCoins}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">Date</div>
-                            <div className="font-medium">
-                              {purchase.purchaseDate.toLocaleDateString()}
-                            </div>
-                          </div>
-                        </div>
-
-                        {purchase.bonusApplied && (
-                          <div className="mt-2">
-                            <Badge
-                              variant="outline"
-                              className="text-green-600 border-green-600"
+                          </td>
+                          <td className="p-2 font-mono">
+                            ${purchase.price.toFixed(2)} {purchase.currency}
+                          </td>
+                          <td className="p-2 capitalize">
+                            {purchase.paymentMethod.replace('_', ' ')}
+                          </td>
+                          <td className="p-2">
+                            <Badge 
+                              variant={
+                                purchase.paymentStatus === "completed" ? "default" :
+                                purchase.paymentStatus === "pending" ? "secondary" : "destructive"
+                              }
                             >
-                              <Gift className="w-3 h-3 mr-1" />
-                              {purchase.bonusApplied.description}
+                              {purchase.paymentStatus}
                             </Badge>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {purchaseHistory.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <ShoppingCart className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No purchases found</p>
-                  </div>
-                )}
-              </div>
+                          </td>
+                          <td className="p-2 text-sm">
+                            {new Date(purchase.purchaseDate).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No Purchases Yet</h3>
+                  <p className="text-muted-foreground">Purchase history will appear here once customers start buying packages.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -1961,24 +1871,24 @@ export default function GoldStoreManager() {
                       id="store-name"
                       value={settings.storeName}
                       onChange={(e) =>
-                        setSettings((prev) =>
-                          prev ? { ...prev, storeName: e.target.value } : null,
-                        )
+                        setSettings((prev) => prev ? {
+                          ...prev,
+                          storeName: e.target.value,
+                        } : prev)
                       }
                     />
                   </div>
-
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="store-description">Store Description</Label>
+                    <Label htmlFor="store-description">Description</Label>
                     <Textarea
                       id="store-description"
                       value={settings.storeDescription}
                       onChange={(e) =>
-                        setSettings((prev) =>
-                          prev
-                            ? { ...prev, storeDescription: e.target.value }
-                            : null,
-                        )
+                        setSettings((prev) => prev ? {
+                          ...prev,
+                          storeDescription: e.target.value,
+                        } : prev)
                       }
                       rows={3}
                     />
@@ -1989,15 +1899,14 @@ export default function GoldStoreManager() {
                     <Select
                       value={settings.defaultCurrency}
                       onValueChange={(value) =>
-                        setSettings((prev) =>
-                          prev
-                            ? { ...prev, defaultCurrency: value as any }
-                            : null,
-                        )
+                        setSettings((prev) => prev ? {
+                          ...prev,
+                          defaultCurrency: value as any,
+                        } : prev)
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select currency" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="USD">USD ($)</SelectItem>
@@ -2012,411 +1921,125 @@ export default function GoldStoreManager() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>UI Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="theme">Theme</Label>
-                    <Select
-                      value={settings.uiSettings.theme}
-                      onValueChange={(value) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                uiSettings: {
-                                  ...prev.uiSettings,
-                                  theme: value as any,
-                                },
-                              }
-                            : null,
-                        )
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select theme" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="casino">Casino</SelectItem>
-                        <SelectItem value="modern">Modern</SelectItem>
-                        <SelectItem value="classic">Classic</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="layout">Layout</Label>
-                    <Select
-                      value={settings.uiSettings.layout}
-                      onValueChange={(value) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                uiSettings: {
-                                  ...prev.uiSettings,
-                                  layout: value as any,
-                                },
-                              }
-                            : null,
-                        )
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select layout" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="grid">Grid</SelectItem>
-                        <SelectItem value="list">List</SelectItem>
-                        <SelectItem value="carousel">Carousel</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-4">
-                    {[
-                      { key: "showPrices", label: "Show Prices" },
-                      { key: "showSavings", label: "Show Savings" },
-                      {
-                        key: "showPopularBadges",
-                        label: "Show Popular Badges",
-                      },
-                      { key: "animationsEnabled", label: "Enable Animations" },
-                    ].map(({ key, label }) => (
-                      <div
-                        key={key}
-                        className="flex items-center justify-between"
-                      >
-                        <Label htmlFor={key}>{label}</Label>
-                        <Switch
-                          id={key}
-                          checked={
-                            settings.uiSettings[
-                              key as keyof typeof settings.uiSettings
-                            ] as boolean
-                          }
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) =>
-                              prev
-                                ? {
-                                    ...prev,
-                                    uiSettings: {
-                                      ...prev.uiSettings,
-                                      [key]: checked,
-                                    },
-                                  }
-                                : null,
-                            )
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
                   <CardTitle>Purchase Limits</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="daily-limit">Daily Limit ($)</Label>
-                    <Input
-                      id="daily-limit"
-                      type="number"
-                      value={settings.purchaseLimits.dailyLimit || ""}
-                      onChange={(e) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                purchaseLimits: {
-                                  ...prev.purchaseLimits,
-                                  dailyLimit:
-                                    parseInt(e.target.value) || undefined,
-                                },
-                              }
-                            : null,
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="weekly-limit">Weekly Limit ($)</Label>
-                    <Input
-                      id="weekly-limit"
-                      type="number"
-                      value={settings.purchaseLimits.weeklyLimit || ""}
-                      onChange={(e) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                purchaseLimits: {
-                                  ...prev.purchaseLimits,
-                                  weeklyLimit:
-                                    parseInt(e.target.value) || undefined,
-                                },
-                              }
-                            : null,
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="monthly-limit">Monthly Limit ($)</Label>
-                    <Input
-                      id="monthly-limit"
-                      type="number"
-                      value={settings.purchaseLimits.monthlyLimit || ""}
-                      onChange={(e) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                purchaseLimits: {
-                                  ...prev.purchaseLimits,
-                                  monthlyLimit:
-                                    parseInt(e.target.value) || undefined,
-                                },
-                              }
-                            : null,
-                        )
-                      }
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tax & Discount Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="tax-enabled">Enable Tax</Label>
-                    <Switch
-                      id="tax-enabled"
-                      checked={settings.taxSettings.enabled}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                taxSettings: {
-                                  ...prev.taxSettings,
-                                  enabled: checked,
-                                },
-                              }
-                            : null,
-                        )
-                      }
-                    />
-                  </div>
-
-                  {settings.taxSettings.enabled && (
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="tax-rate">Tax Rate (%)</Label>
+                      <Label htmlFor="min-purchase">Minimum Purchase</Label>
                       <Input
-                        id="tax-rate"
+                        id="min-purchase"
                         type="number"
-                        step="0.1"
-                        value={settings.taxSettings.rate}
+                        step="0.01"
+                        value={settings.minimumPurchaseAmount}
                         onChange={(e) =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  taxSettings: {
-                                    ...prev.taxSettings,
-                                    rate: parseFloat(e.target.value) || 0,
-                                  },
-                                }
-                              : null,
-                          )
+                          setSettings((prev) => prev ? {
+                            ...prev,
+                            minimumPurchaseAmount: parseFloat(e.target.value) || 0,
+                          } : prev)
                         }
                       />
                     </div>
-                  )}
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="max-purchase">Maximum Purchase</Label>
+                      <Input
+                        id="max-purchase"
+                        type="number"
+                        step="0.01"
+                        value={settings.maximumPurchaseAmount}
+                        onChange={(e) =>
+                          setSettings((prev) => prev ? {
+                            ...prev,
+                            maximumPurchaseAmount: parseFloat(e.target.value) || 0,
+                          } : prev)
+                        }
+                      />
+                    </div>
+                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="max-discount">Max Discount (%)</Label>
-                    <Input
-                      id="max-discount"
-                      type="number"
-                      value={settings.discountSettings.maxDiscountPercentage}
-                      onChange={(e) =>
-                        setSettings((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                discountSettings: {
-                                  ...prev.discountSettings,
-                                  maxDiscountPercentage:
-                                    parseInt(e.target.value) || 0,
-                                },
-                              }
-                            : null,
-                        )
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
+                    <Switch
+                      id="maintenance-mode"
+                      checked={settings.maintenanceMode}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => prev ? {
+                          ...prev,
+                          maintenanceMode: checked,
+                        } : prev)
                       }
                     />
                   </div>
+
+                  {settings.maintenanceMode && (
+                    <div className="space-y-2">
+                      <Label htmlFor="maintenance-message">Maintenance Message</Label>
+                      <Textarea
+                        id="maintenance-message"
+                        value={settings.maintenanceMessage}
+                        onChange={(e) =>
+                          setSettings((prev) => prev ? {
+                            ...prev,
+                            maintenanceMessage: e.target.value,
+                          } : prev)
+                        }
+                        placeholder="The store is temporarily under maintenance..."
+                        rows={2}
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
           )}
+
+          <div className="flex justify-end">
+            <Button onClick={() => {
+              if (settings) {
+                goldStoreService.updateStoreSettings(settings).then(() => {
+                  toast({
+                    title: "Success",
+                    description: "Store settings updated successfully.",
+                  });
+                }).catch(() => {
+                  toast({
+                    title: "Error",
+                    description: "Failed to update store settings.",
+                    variant: "destructive",
+                  });
+                });
+              }
+            }}>
+              <Save className="w-4 h-4 mr-2" />
+              Save Settings
+            </Button>
+          </div>
         </TabsContent>
 
         {/* Store Preview Tab */}
-        <TabsContent value="preview" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Store Preview</h3>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={previewMode === "desktop" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setPreviewMode("desktop")}
-              >
-                <Monitor className="w-4 h-4 mr-1" />
-                Desktop
-              </Button>
-              <Button
-                variant={previewMode === "tablet" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setPreviewMode("tablet")}
-              >
-                <Tablet className="w-4 h-4 mr-1" />
-                Tablet
-              </Button>
-              <Button
-                variant={previewMode === "mobile" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setPreviewMode("mobile")}
-              >
-                <Smartphone className="w-4 h-4 mr-1" />
-                Mobile
-              </Button>
-            </div>
-          </div>
-
+        <TabsContent value="preview" className="space-y-6">
           <Card>
-            <CardContent className="p-6">
-              <div className={`mx-auto ${getPreviewWidth()}`}>
-                <div className="border rounded-lg p-4 bg-background">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold mb-2">
-                      {settings?.storeName || "CoinKrazy Gold Store"}
-                    </h2>
-                    <p className="text-muted-foreground">
-                      {settings?.storeDescription ||
-                        "Premium gold coins and sweeps coins packages"}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`grid gap-4 ${
-                      previewMode === "mobile"
-                        ? "grid-cols-1"
-                        : previewMode === "tablet"
-                          ? "grid-cols-2"
-                          : "grid-cols-3"
-                    }`}
-                  >
-                    {packages
-                      .slice(
-                        0,
-                        previewMode === "mobile"
-                          ? 2
-                          : previewMode === "tablet"
-                            ? 4
-                            : 6,
-                      )
-                      .map((pkg) => (
-                        <div
-                          key={pkg.id}
-                          className="relative overflow-hidden rounded-lg border"
-                          style={{
-                            background: `linear-gradient(${pkg.design.backgroundGradient.direction}, ${pkg.design.backgroundGradient.from}, ${pkg.design.backgroundGradient.to})`,
-                            color: pkg.design.textColor,
-                            borderColor: pkg.design.borderColor,
-                          }}
-                        >
-                          <div className="p-4">
-                            {/* Badges */}
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex flex-wrap gap-1">
-                                {pkg.popular && (
-                                  <Badge
-                                    variant="default"
-                                    className="text-xs bg-yellow-500"
-                                  >
-                                    Popular
-                                  </Badge>
-                                )}
-                                {pkg.featured && (
-                                  <Badge
-                                    variant="default"
-                                    className="text-xs bg-purple-500"
-                                  >
-                                    Featured
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="text-xl">{pkg.design.icon}</div>
-                            </div>
-
-                            {/* Title */}
-                            <div className="text-center mb-3">
-                              <h3 className="font-bold text-sm">{pkg.name}</h3>
-                            </div>
-
-                            {/* Coins */}
-                            <div className="flex justify-around mb-3 text-xs">
-                              <div className="text-center">
-                                <div className="font-bold">
-                                  {pkg.goldCoins.toLocaleString()}
-                                </div>
-                                <div className="opacity-75">GC</div>
-                              </div>
-                              {pkg.sweepsCoins > 0 && (
-                                <div className="text-center">
-                                  <div className="font-bold">
-                                    {pkg.sweepsCoins}
-                                  </div>
-                                  <div className="opacity-75">SC</div>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Price */}
-                            <div className="text-center mb-3">
-                              <div
-                                className="font-bold"
-                                style={{ color: pkg.design.accentColor }}
-                              >
-                                ${pkg.price.toFixed(2)}
-                              </div>
-                            </div>
-
-                            {/* Button */}
-                            <Button
-                              size="sm"
-                              className="w-full text-xs"
-                              style={{
-                                backgroundColor: pkg.design.accentColor,
-                                color: "#000000",
-                              }}
-                            >
-                              Buy Now
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+            <CardHeader>
+              <CardTitle>Live Store Preview</CardTitle>
+              <div className="text-sm text-muted-foreground">
+                Preview how the store appears to customers
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-lg p-4 bg-muted/20">
+                <div className="text-center py-8">
+                  <Eye className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Store Preview</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This would show a live preview of the customer-facing store
+                  </p>
+                  <Button asChild>
+                    <a href="/store" target="_blank" rel="noopener noreferrer">
+                      <Eye className="w-4 h-4 mr-2" />
+                      Open Store in New Tab
+                    </a>
+                  </Button>
                 </div>
               </div>
             </CardContent>

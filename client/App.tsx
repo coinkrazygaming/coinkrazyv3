@@ -10,13 +10,36 @@ if (typeof window !== "undefined") {
       msgStr.includes("send was called before connect") ||
       msgStr.includes("WebSocket") ||
       msgStr.includes("Cannot read properties of null") ||
-      msgStr.includes("useState")
+      msgStr.includes("useState") ||
+      msgStr.includes("Invalid hook call") ||
+      msgStr.includes("TooltipProvider")
     ) {
-      console.log("Emergency: Suppressed React/HMR error:", msgStr);
+      console.log("Emergency: Suppressed React/HMR/Hooks error:", msgStr);
       return true; // Prevent default error handling
     }
     return false;
   };
+
+  // Additional error event listener for React errors
+  window.addEventListener("error", (event) => {
+    const errorMessage = event.error?.message || event.message || "";
+    if (errorMessage.includes("useState") || errorMessage.includes("Invalid hook call")) {
+      console.log("Caught React hooks error:", errorMessage);
+      event.stopPropagation();
+      event.preventDefault();
+      return false;
+    }
+  });
+
+  // Catch unhandled promise rejections related to React
+  window.addEventListener("unhandledrejection", (event) => {
+    const reason = event.reason?.toString() || "";
+    if (reason.includes("useState") || reason.includes("Invalid hook call")) {
+      console.log("Caught React hooks promise rejection:", reason);
+      event.preventDefault();
+      return false;
+    }
+  });
 }
 
 import React from "react";

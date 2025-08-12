@@ -69,7 +69,7 @@ import {
   BarChart3,
   Gamepad2,
   Zap,
-  Fire,
+  Flame,
   Sparkles,
   Info,
   History,

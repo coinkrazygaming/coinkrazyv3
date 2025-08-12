@@ -19,7 +19,7 @@ if (typeof window !== "undefined") {
   };
 }
 
-import React, { StrictMode, ErrorBoundary } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -61,6 +61,56 @@ import PublicRoute from "./components/PublicRoute";
 
 const queryClient = new QueryClient();
 
+// Error Boundary Component
+class AppErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.log("App Error Boundary caught error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <div className="text-center p-8">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+            <p className="text-gray-600 mb-4">Please refresh the page to continue.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Safe TooltipProvider wrapper
+const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
+  try {
+    return <TooltipProvider>{children}</TooltipProvider>;
+  } catch (error) {
+    console.log("TooltipProvider error, rendering without it:", error);
+    return <>{children}</>;
+  }
+};
+
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
     <ComplianceBanner />
@@ -73,8 +123,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+  <AppErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <SafeTooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
@@ -123,8 +174,9 @@ const App = () => (
           </Routes>
         </Layout>
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+      </SafeTooltipProvider>
+    </QueryClientProvider>
+  </AppErrorBoundary>
 );
 
 // Ensure root is only created once

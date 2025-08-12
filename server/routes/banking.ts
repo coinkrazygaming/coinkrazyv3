@@ -1,8 +1,43 @@
 import express from "express";
 import { bankingService } from "../services/bankingService.js";
 import { authenticateToken, requireAdmin } from "../middleware/auth.js";
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import databaseService from '../services/database.js';
 
 const router = express.Router();
+
+// ===== BANKING INITIALIZATION ENDPOINT =====
+
+// Initialize banking system (Admin only)
+router.post("/init", requireAdmin, async (req, res) => {
+  try {
+    // Read and execute banking schema
+    const schemaPath = join(process.cwd(), 'server', 'database', 'banking-schema.sql');
+    const schema = readFileSync(schemaPath, 'utf8');
+
+    // Split by semicolon and execute each statement
+    const statements = schema.split(';').filter(stmt => stmt.trim().length > 0);
+
+    for (const statement of statements) {
+      await databaseService.query(statement);
+    }
+
+    console.log("Banking schema initialized successfully");
+
+    res.json({
+      success: true,
+      message: "Banking system initialized successfully",
+    });
+  } catch (error) {
+    console.error("Error initializing banking system:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to initialize banking system",
+      details: error.message,
+    });
+  }
+});
 
 // ===== PAYMENT PROVIDERS ENDPOINTS =====
 

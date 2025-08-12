@@ -112,6 +112,7 @@ export default function Navigation() {
   const navItems = [
     { path: "/", label: "Home", icon: Crown },
     { path: "/games", label: "Games", icon: Coins },
+    { path: "/slots", label: "Slots", icon: Zap },
     { path: "/store", label: "Store", icon: Plus },
     {
       path: "/dashboard",

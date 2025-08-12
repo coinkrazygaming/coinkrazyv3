@@ -232,10 +232,16 @@ if (import.meta.hot) {
         globalThis.__APP_ROOT__.render(<App />);
       }
     } catch (error) {
-      // Fallback: recreate root if needed
-      if (!globalThis.__APP_ROOT__) {
+      console.log("HMR error, attempting recovery:", error);
+      // Force recreation of root to fix React hook issues
+      try {
+        const container = document.getElementById("root")!;
         globalThis.__APP_ROOT__ = createRoot(container);
         globalThis.__APP_ROOT__.render(<App />);
+      } catch (recoveryError) {
+        console.log("Recovery failed, forcing page reload:", recoveryError);
+        // As last resort, reload the page
+        setTimeout(() => window.location.reload(), 100);
       }
     }
   });

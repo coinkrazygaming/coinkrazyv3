@@ -265,11 +265,14 @@ class CMSService {
   // Pages Management
   async getAllPages(): Promise<CMSPage[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/pages`);
-      if (!response.ok) throw new Error("Failed to fetch pages");
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/pages`);
+      if (!response.ok) {
+        console.warn(`Pages API returned ${response.status}, using mock data`);
+        return this.getMockPages();
+      }
       return await this.safeJsonParse(response);
     } catch (error) {
-      console.error("Error fetching pages:", error);
+      console.warn("Error fetching pages, using mock data:", error);
       return this.getMockPages();
     }
   }

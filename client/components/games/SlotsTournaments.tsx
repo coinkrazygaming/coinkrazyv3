@@ -29,7 +29,7 @@ import {
   Award,
   ChevronRight,
   PlayCircle,
-  Fire
+  Flame
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {

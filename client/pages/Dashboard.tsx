@@ -574,6 +574,11 @@ export default function Dashboard() {
                   </Button>
                 </CardContent>
               </Card>
+
+              {/* Social Hub Widget */}
+              <div className="lg:col-span-1">
+                <SocialHubWidget />
+              </div>
             </div>
           </TabsContent>
 

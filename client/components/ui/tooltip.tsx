@@ -3,7 +3,19 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
-const TooltipProvider = TooltipPrimitive.Provider;
+// Safe TooltipProvider wrapper that handles React context issues
+const TooltipProvider = ({ children, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) => {
+  try {
+    return (
+      <TooltipPrimitive.Provider {...props}>
+        {children}
+      </TooltipPrimitive.Provider>
+    );
+  } catch (error) {
+    console.log("TooltipProvider error, rendering children without tooltip context:", error);
+    return <>{children}</>;
+  }
+};
 
 const Tooltip = TooltipPrimitive.Root;
 

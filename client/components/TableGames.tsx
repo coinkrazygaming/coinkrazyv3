@@ -74,7 +74,7 @@ import {
   XCircle,
   AlertCircle,
   Zap,
-  Fire,
+  Flame,
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";

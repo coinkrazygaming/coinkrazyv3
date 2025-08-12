@@ -32,16 +32,16 @@ import {
   Fire
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { 
-  ACTIVE_TOURNAMENTS, 
+import {
+  ACTIVE_TOURNAMENTS,
   SLOT_LEADERBOARDS,
   DAILY_CHALLENGES,
   slotsThemeService,
   SlotTournament,
   SlotLeaderboard,
   DailyChallenge
-} from '@/services/slotsThemes';
-import { slotsAnalyticsService } from '@/services/slotsAnalytics';
+} from '../../services/slotsThemes';
+import { slotsAnalyticsService } from '../../services/slotsAnalytics';
 
 export default function SlotsTournaments() {
   const { user } = useAuth();

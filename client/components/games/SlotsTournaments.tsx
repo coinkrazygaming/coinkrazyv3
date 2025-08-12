@@ -455,7 +455,7 @@ export default function SlotsTournaments() {
                       {game.gameId.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                     </CardTitle>
                     <Badge className="bg-red-500 text-white">
-                      <Fire className="w-3 h-3 mr-1" />
+                      <Flame className="w-3 h-3 mr-1" />
                       HOT
                     </Badge>
                   </div>

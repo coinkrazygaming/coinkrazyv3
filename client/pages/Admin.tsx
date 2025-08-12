@@ -1008,6 +1008,11 @@ export default function Admin() {
             <BankingAdmin />
           </TabsContent>
 
+          {/* Scratch Cards Administration */}
+          <TabsContent value="scratch-cards" className="mt-6">
+            <ScratchCardAdmin />
+          </TabsContent>
+
           {/* Enhanced Notifications */}
           <TabsContent value="notifications" className="mt-6">
             <AdminNotificationCenter

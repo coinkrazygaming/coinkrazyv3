@@ -46,19 +46,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-
-// Conditional import of TooltipProvider to prevent hooks errors
-let TooltipProvider: React.ComponentType<{ children: React.ReactNode }> | null = null;
-
-try {
-  // Only import TooltipProvider if React is stable
-  if (React && typeof React.useState === 'function' && process.env.NODE_ENV !== "development") {
-    const tooltipModule = await import("@/components/ui/tooltip");
-    TooltipProvider = tooltipModule.TooltipProvider;
-  }
-} catch (error) {
-  console.log("TooltipProvider import failed, will render without tooltips:", error);
-}
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";

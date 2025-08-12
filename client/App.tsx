@@ -236,7 +236,7 @@ const App = () => (
   </AppErrorBoundary>
 );
 
-// Ensure root is only created once
+// Ensure root is only created once with React availability check
 const container = document.getElementById("root")!;
 
 // Store root reference globally to persist across HMR updates
@@ -244,11 +244,36 @@ declare global {
   var __APP_ROOT__: any;
 }
 
-if (!globalThis.__APP_ROOT__) {
-  globalThis.__APP_ROOT__ = createRoot(container);
-}
+// Check React availability before creating root
+const initializeApp = () => {
+  if (!React || typeof React.useState !== 'function') {
+    console.log("React not ready, retrying in 10ms...");
+    setTimeout(initializeApp, 10);
+    return;
+  }
 
-globalThis.__APP_ROOT__.render(<App />);
+  try {
+    if (!globalThis.__APP_ROOT__) {
+      globalThis.__APP_ROOT__ = createRoot(container);
+    }
+
+    globalThis.__APP_ROOT__.render(<App />);
+    console.log("App successfully initialized with React context");
+  } catch (error) {
+    console.log("App initialization failed:", error);
+    // Retry once after a short delay
+    setTimeout(() => {
+      try {
+        globalThis.__APP_ROOT__ = createRoot(container);
+        globalThis.__APP_ROOT__.render(<App />);
+      } catch (retryError) {
+        console.log("App retry failed, manual refresh may be required:", retryError);
+      }
+    }, 100);
+  }
+};
+
+initializeApp();
 
 // HMR support with comprehensive error protection
 if (import.meta.hot) {

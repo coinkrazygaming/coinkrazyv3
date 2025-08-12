@@ -492,6 +492,14 @@ export default function Admin() {
               <span className="lg:hidden">Mgmt</span>
             </TabsTrigger>
             <TabsTrigger
+              value="slots-management"
+              className="flex-shrink-0 text-xs sm:text-sm"
+            >
+              <Coins className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden lg:inline">Slots Mgmt</span>
+              <span className="lg:hidden">Slots</span>
+            </TabsTrigger>
+            <TabsTrigger
               value="transactions"
               className="flex-shrink-0 text-xs sm:text-sm"
             >

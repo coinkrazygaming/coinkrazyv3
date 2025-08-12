@@ -12,6 +12,7 @@ import CurrencyToggle from "@/components/CurrencyToggle";
 import GamePlayer from "@/components/GamePlayer";
 import CoinKrazySlots from "@/components/games/CoinKrazySlots";
 import MiniGames from "@/components/games/MiniGames";
+import FreeSlotGames from "@/components/games/FreeSlotGames";
 import {
   Play,
   Search,

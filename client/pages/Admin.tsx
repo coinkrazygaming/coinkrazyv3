@@ -26,6 +26,7 @@ import GameManagement from "@/components/GameManagement";
 import AdminToolbar from "@/components/AdminToolbar";
 import AdminSettingsPanel from "@/components/AdminSettingsPanel";
 import AdminNotificationCenter from "@/components/AdminNotificationCenter";
+import Compliance from "./Compliance";
 import {
   Shield,
   Users,

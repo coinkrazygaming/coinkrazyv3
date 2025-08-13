@@ -603,7 +603,7 @@ export default function GoldStoreManager() {
                 className="text-3xl font-bold"
                 style={{ color: packageForm.design.accentColor }}
               >
-                ${Number(packageForm.price || 0).toFixed(2)}
+                ${formatPrice(packageForm.price)}
               </div>
             </div>
 

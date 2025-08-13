@@ -596,7 +596,7 @@ export default function GoldStoreManager() {
               {packageForm.originalPrice &&
                 packageForm.originalPrice > packageForm.price && (
                   <div className="line-through text-sm opacity-60">
-                    ${Number(packageForm.originalPrice || 0).toFixed(2)}
+                    ${formatPrice(packageForm.originalPrice)}
                   </div>
                 )}
               <div

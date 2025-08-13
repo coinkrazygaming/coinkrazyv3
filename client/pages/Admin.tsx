@@ -1007,7 +1007,7 @@ export default function Admin() {
 
           {/* Banking Administration */}
           <TabsContent value="banking" className="mt-6">
-            <BankingAdmin />
+            <BankingPaymentsAdmin />
           </TabsContent>
 
           {/* Scratch Cards Administration */}

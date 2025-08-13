@@ -124,7 +124,7 @@ class PaymentService {
         purchase_units: [{
           amount: {
             currency_code: 'USD',
-            value: Number(packageData.priceUsd).toFixed(2),
+            value: Number(packageData.priceUsd || 0).toFixed(2),
           },
           description: `${packageData.name} - ${packageData.goldCoins.toLocaleString()} Gold Coins`,
           custom_id: `pkg_${packageData.id}_user_${user.id}`,

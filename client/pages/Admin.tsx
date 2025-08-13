@@ -29,6 +29,8 @@ import SlotsGameManagement from "@/components/SlotsGameManagement";
 import AdminToolbar from "@/components/AdminToolbar";
 import AdminSettingsPanel from "@/components/AdminSettingsPanel";
 import AdminNotificationCenter from "@/components/AdminNotificationCenter";
+import BankingPaymentsAdmin from "@/components/admin/BankingPaymentsAdmin";
+import PackageEditor from "@/components/admin/PackageEditor";
 import Compliance from "./Compliance";
 import {
   Shield,

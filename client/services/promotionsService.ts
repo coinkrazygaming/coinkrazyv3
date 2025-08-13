@@ -1,1064 +1,853 @@
-import { authService } from "./authService";
+import { AdvancedAnalyticsService } from './advancedAnalyticsService';
 
-// Promotion Types
-export interface Promotion {
+export interface SeasonalEvent {
   id: string;
   name: string;
+  startDate: Date;
+  endDate: Date;
   description: string;
-  type: 'percentage_discount' | 'fixed_discount' | 'bonus_coins' | 'bundle_deal' | 'flash_sale' | 'seasonal';
-  status: 'draft' | 'scheduled' | 'active' | 'paused' | 'expired' | 'completed';
-  priority: number; // Higher priority promotions override lower ones
-  
-  // Timing
-  startDate: string;
-  endDate: string;
-  timezone: string;
-  
-  // Targeting
-  targetAudience: PromotionTargeting;
-  
-  // Discount Configuration
-  discount: DiscountConfig;
-  
-  // Usage Limits
-  usageLimits: UsageLimits;
-  
-  // Conditions
-  conditions: PromotionConditions;
-  
-  // Display
-  display: PromotionDisplay;
-  
-  // Analytics
-  analytics: PromotionAnalytics;
-  
-  // Metadata
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
+  type: 'holiday' | 'special' | 'weekly' | 'flash';
+  multiplier: number;
+  targetAudience?: string[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface PromotionTargeting {
-  userSegments: string[]; // 'new_users', 'vip_users', 'returning_users', etc.
-  geoTargeting: string[]; // Country codes
-  deviceTypes: string[]; // 'desktop', 'mobile', 'tablet'
-  packages: string[]; // Specific package IDs, empty array means all packages
-  userTags: string[]; // Custom user tags
-  minimumAccountAge?: number; // Days
-  maximumAccountAge?: number; // Days
-  minimumPurchaseHistory?: number; // Minimum previous purchases
-  excludeRecentPurchasers?: number; // Exclude users who purchased in last X days
-}
-
-export interface DiscountConfig {
-  // Percentage discount (e.g., 20 for 20% off)
-  percentageOff?: number;
-  
-  // Fixed amount discount
-  fixedAmountOff?: number;
-  
-  // Bonus coins configuration
-  bonusCoins?: {
-    type: 'fixed' | 'percentage';
-    amount: number; // Fixed number or percentage of purchased coins
-  };
-  
-  // Bundle deal configuration
-  bundleDeal?: {
-    buyQuantity: number;
-    getQuantity: number; // Get X additional items
-    discountPercentage?: number; // Or discount on bundle
-  };
-  
-  // Flash sale configuration
-  flashSale?: {
-    originalPrice: number;
-    salePrice: number;
-    hourlyReduction?: number; // Price reduces every hour
-    minimumPrice?: number;
-  };
-  
-  // Seasonal multipliers
-  seasonalMultiplier?: {
-    coinMultiplier: number; // Multiply coins by this factor
-    bonusMultiplier: number; // Multiply bonus by this factor
-  };
-}
-
-export interface UsageLimits {
-  totalUsageLimit?: number; // Max times promotion can be used globally
-  userUsageLimit?: number; // Max times per user
-  dailyLimit?: number; // Max uses per day
-  minimumPurchaseAmount?: number;
-  maximumDiscountAmount?: number;
-  usageCount: number; // Current usage count
-  userUsageCount: Record<string, number>; // Per-user usage tracking
-}
-
-export interface PromotionConditions {
-  minimumCartValue?: number;
-  requiredPackageTypes?: string[]; // Must include certain package types
-  firstPurchaseOnly?: boolean;
-  recurringCustomersOnly?: boolean;
-  deviceSpecific?: string[];
-  timeOfDayRestrictions?: {
-    startHour: number; // 0-23
-    endHour: number; // 0-23
-  };
-  dayOfWeekRestrictions?: number[]; // 0-6 (Sunday-Saturday)
-  requiresCouponCode?: string;
-  stackableWithOtherPromotions?: boolean;
-}
-
-export interface PromotionDisplay {
-  bannerText: string;
-  shortDescription: string;
-  longDescription?: string;
-  urgencyMessage?: string; // "Limited time!", "Only 2 hours left!"
-  badgeText?: string; // "SALE", "NEW", "LIMITED"
-  badgeColor: string;
-  ctaText: string; // "Shop Now", "Claim Deal"
-  images: {
-    banner?: string;
-    thumbnail?: string;
-    icon?: string;
-  };
-  showCountdown?: boolean;
-  highlightColor: string;
-  animation?: 'pulse' | 'glow' | 'bounce' | 'none';
-}
-
-export interface PromotionAnalytics {
-  views: number;
-  clicks: number;
-  conversions: number;
-  revenue: number;
-  conversionRate: number;
-  revenuePerView: number;
-  uniqueUsers: number;
-  averageOrderValue: number;
-  totalSavingsProvided: number;
-  topPerformingPackages: string[];
-}
-
-// Dynamic Pricing Types
 export interface DynamicPricing {
-  id: string;
   packageId: string;
-  packageName: string;
   basePrice: number;
   currentPrice: number;
+  demandMultiplier: number;
+  timeMultiplier: number;
+  seasonalMultiplier: number;
+  inventoryMultiplier: number;
+  userSegmentMultiplier: number;
+  lastUpdated: Date;
   priceHistory: PriceHistoryEntry[];
-  pricingRules: PricingRule[];
-  isActive: boolean;
-  lastUpdated: string;
-  nextUpdate?: string;
 }
 
 export interface PriceHistoryEntry {
   price: number;
-  timestamp: string;
-  reason: string; // Reason for price change
-  triggeredBy?: string; // Rule ID or manual change
+  timestamp: Date;
+  reason: string;
+  demandLevel: 'low' | 'medium' | 'high' | 'peak';
 }
 
-export interface PricingRule {
+export interface PromotionCampaign {
   id: string;
   name: string;
-  type: 'demand_based' | 'time_based' | 'inventory_based' | 'competitor_based' | 'seasonal';
-  priority: number;
-  isActive: boolean;
-  
-  // Rule conditions
-  conditions: PricingConditions;
-  
-  // Price adjustments
-  adjustment: PriceAdjustment;
-  
-  // Timing
-  schedule?: PricingSchedule;
-  
-  // Limits
-  limits: PricingLimits;
-}
-
-export interface PricingConditions {
-  // Demand-based conditions
-  demandThresholds?: {
-    lowDemand: { threshold: number; adjustment: number }; // Sales per hour
-    mediumDemand: { threshold: number; adjustment: number };
-    highDemand: { threshold: number; adjustment: number };
-  };
-  
-  // Time-based conditions
-  timeRanges?: {
-    startHour: number;
-    endHour: number;
-    daysOfWeek: number[];
-    adjustment: number;
-  }[];
-  
-  // Inventory-based conditions
-  inventoryLevels?: {
-    lowStock: { threshold: number; adjustment: number };
-    mediumStock: { threshold: number; adjustment: number };
-    highStock: { threshold: number; adjustment: number };
-  };
-  
-  // Competitor-based conditions
-  competitorPricing?: {
-    targetCompetitors: string[];
-    priceMatchStrategy: 'match' | 'undercut' | 'premium';
-    maxAdjustment: number;
-  };
-  
-  // Seasonal conditions
-  seasonalEvents?: {
-    eventName: string;
-    startDate: string;
-    endDate: string;
-    adjustment: number;
-  }[];
-}
-
-export interface PriceAdjustment {
-  type: 'percentage' | 'fixed_amount' | 'set_price';
+  type: 'percentage' | 'fixed' | 'bogo' | 'bundle';
   value: number;
-  rampUp?: {
-    duration: number; // Hours to reach full adjustment
-    steps: number; // Number of incremental changes
-  };
-}
-
-export interface PricingSchedule {
-  frequency: 'hourly' | 'daily' | 'weekly' | 'on_demand';
-  specificTimes?: string[]; // Specific times to run (e.g., "09:00", "18:00")
-  excludeDates?: string[]; // Dates to skip (holidays, maintenance)
-}
-
-export interface PricingLimits {
-  minimumPrice: number;
-  maximumPrice: number;
-  maxDailyChanges?: number;
-  minTimeBetweenChanges?: number; // Minutes
-  maxChangePercentage?: number; // Maximum change per adjustment
-}
-
-// Seasonal Events
-export interface SeasonalEvent {
-  id: string;
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  category: 'holiday' | 'gaming_event' | 'company_milestone' | 'cultural' | 'sports';
-  intensity: 'low' | 'medium' | 'high' | 'critical'; // Marketing intensity
-  globalEvent: boolean; // Worldwide vs regional
-  regions: string[]; // Applicable regions if not global
-  
-  // Event-specific configurations
-  promotionTemplates: PromotionTemplate[];
-  pricingStrategy: EventPricingStrategy;
-  marketingAssets: EventMarketingAssets;
-  
-  // Analytics
-  expectedLift: number; // Expected revenue increase %
-  actualLift?: number; // Actual performance
-  participationRate?: number; // % of users who engaged
-}
-
-export interface PromotionTemplate {
-  name: string;
-  description: string;
-  discountPercentage: number;
-  bonusCoinsMultiplier: number;
-  durationHours: number;
+  startDate: Date;
+  endDate: Date;
   targetPackages: string[];
+  targetUsers: UserTargeting;
+  conditions: PromotionConditions;
+  usage: PromotionUsage;
+  performance: PromotionPerformance;
+  isActive: boolean;
   priority: number;
 }
 
-export interface EventPricingStrategy {
-  strategy: 'discount' | 'premium' | 'dynamic' | 'flash_sales';
-  baseAdjustment: number; // Base price adjustment percentage
-  peakHours?: { start: number; end: number; multiplier: number }[];
-  flashSaleSchedule?: { hour: number; discount: number }[];
+export interface UserTargeting {
+  userSegments: string[];
+  minPurchaseHistory?: number;
+  maxPurchaseHistory?: number;
+  geolocation?: string[];
+  deviceTypes?: string[];
+  acquisitionChannels?: string[];
+  excludeUsers?: string[];
 }
 
-export interface EventMarketingAssets {
-  theme: {
-    primaryColor: string;
-    secondaryColor: string;
-    fontStyle: string;
-    iconSet: string;
+export interface PromotionConditions {
+  minPurchaseAmount?: number;
+  maxUsesPerUser?: number;
+  maxTotalUses?: number;
+  requiredPackages?: string[];
+  excludedPackages?: string[];
+  firstTimeUsersOnly?: boolean;
+  weekdaysOnly?: boolean;
+  timeRanges?: { start: string; end: string }[];
+}
+
+export interface PromotionUsage {
+  totalUses: number;
+  uniqueUsers: number;
+  totalRevenue: number;
+  averageOrderValue: number;
+  conversionRate: number;
+  usageByDay: Record<string, number>;
+  usageBySegment: Record<string, number>;
+}
+
+export interface PromotionPerformance {
+  roi: number;
+  revenueImpact: number;
+  customerAcquisition: number;
+  customerRetention: number;
+  marketShareGrowth: number;
+  competitiveAdvantage: number;
+  brandAwareness: number;
+}
+
+export interface MarketingCampaign {
+  id: string;
+  name: string;
+  type: 'email' | 'push' | 'sms' | 'social' | 'display';
+  audienceSegment: string;
+  content: CampaignContent;
+  schedule: CampaignSchedule;
+  targeting: CampaignTargeting;
+  performance: CampaignPerformance;
+  budget: CampaignBudget;
+  status: 'draft' | 'scheduled' | 'running' | 'paused' | 'completed';
+}
+
+export interface CampaignContent {
+  subject?: string;
+  title: string;
+  description: string;
+  ctaText: string;
+  ctaUrl: string;
+  imageUrl?: string;
+  template: string;
+  personalization: Record<string, string>;
+}
+
+export interface CampaignSchedule {
+  startDate: Date;
+  endDate?: Date;
+  frequency: 'once' | 'daily' | 'weekly' | 'monthly';
+  daysOfWeek?: number[];
+  timeOfDay?: string;
+  timezone: string;
+}
+
+export interface CampaignTargeting {
+  segments: string[];
+  demographics: Record<string, any>;
+  behavioral: Record<string, any>;
+  geographic: string[];
+  deviceTypes: string[];
+  excludeSegments?: string[];
+}
+
+export interface CampaignPerformance {
+  sent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  converted: number;
+  revenue: number;
+  unsubscribed: number;
+  bounced: number;
+  openRate: number;
+  clickRate: number;
+  conversionRate: number;
+  roas: number;
+  costPerAcquisition: number;
+}
+
+export interface CampaignBudget {
+  total: number;
+  spent: number;
+  costPerSend?: number;
+  costPerClick?: number;
+  costPerAcquisition?: number;
+  dailyLimit?: number;
+}
+
+export interface UserSegment {
+  id: string;
+  name: string;
+  description: string;
+  criteria: SegmentCriteria;
+  userCount: number;
+  averageValue: number;
+  conversionRate: number;
+  churnRate: number;
+  lastUpdated: Date;
+  isActive: boolean;
+}
+
+export interface SegmentCriteria {
+  demographics?: Record<string, any>;
+  behavioral?: {
+    totalPurchases?: { min?: number; max?: number };
+    totalSpent?: { min?: number; max?: number };
+    lastPurchaseDate?: { within?: number; before?: number };
+    averageOrderValue?: { min?: number; max?: number };
+    favoriteCategories?: string[];
+    purchaseFrequency?: 'low' | 'medium' | 'high';
   };
-  banners: {
-    header: string;
-    store: string;
-    popup: string;
+  geographic?: {
+    countries?: string[];
+    regions?: string[];
+    cities?: string[];
+    timezones?: string[];
   };
-  animations: {
-    type: 'confetti' | 'snow' | 'fireworks' | 'sparkles' | 'none';
-    intensity: 'low' | 'medium' | 'high';
+  engagement?: {
+    loginFrequency?: 'low' | 'medium' | 'high';
+    sessionDuration?: { min?: number; max?: number };
+    pageViews?: { min?: number; max?: number };
+    lastActiveDate?: { within?: number };
+  };
+  device?: {
+    types?: string[];
+    browsers?: string[];
+    operatingSystems?: string[];
+    screenSizes?: string[];
   };
 }
 
 class PromotionsService {
-  private static instance: PromotionsService;
-  private promotions: Map<string, Promotion> = new Map();
-  private dynamicPricing: Map<string, DynamicPricing> = new Map();
-  private seasonalEvents: Map<string, SeasonalEvent> = new Map();
-  private priceUpdateInterval: NodeJS.Timeout | null = null;
-
-  static getInstance(): PromotionsService {
-    if (!PromotionsService.instance) {
-      PromotionsService.instance = new PromotionsService();
-    }
-    return PromotionsService.instance;
-  }
+  private baseUrl: string;
+  private analyticsService: AdvancedAnalyticsService;
 
   constructor() {
-    this.loadPromotions();
-    this.loadDynamicPricing();
-    this.loadSeasonalEvents();
-    this.startPriceUpdateLoop();
+    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    this.analyticsService = new AdvancedAnalyticsService();
   }
 
-  // ===============================
-  // PROMOTION MANAGEMENT
-  // ===============================
-
-  /**
-   * Create a new promotion
-   */
-  async createPromotion(promotionData: Omit<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'analytics'>): Promise<Promotion> {
-    const user = authService.getCurrentUser();
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
-    const promotion: Promotion = {
-      ...promotionData,
-      id: `promo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdBy: user.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      analytics: {
-        views: 0,
-        clicks: 0,
-        conversions: 0,
-        revenue: 0,
-        conversionRate: 0,
-        revenuePerView: 0,
-        uniqueUsers: 0,
-        averageOrderValue: 0,
-        totalSavingsProvided: 0,
-        topPerformingPackages: [],
-      },
-    };
-
-    this.promotions.set(promotion.id, promotion);
-    await this.savePromotion(promotion);
-
-    // Schedule activation if needed
-    if (promotion.status === 'scheduled') {
-      this.schedulePromotionActivation(promotion);
-    }
-
-    return promotion;
-  }
-
-  /**
-   * Get active promotions for a user and package
-   */
-  async getActivePromotions(packageId?: string, userId?: string): Promise<Promotion[]> {
-    const now = new Date();
-    const activePromotions: Promotion[] = [];
-
-    for (const promotion of this.promotions.values()) {
-      // Check if promotion is active
-      if (promotion.status !== 'active') continue;
-      
-      // Check timing
-      const startDate = new Date(promotion.startDate);
-      const endDate = new Date(promotion.endDate);
-      if (now < startDate || now > endDate) continue;
-      
-      // Check package targeting
-      if (packageId && promotion.targetAudience.packages.length > 0) {
-        if (!promotion.targetAudience.packages.includes(packageId)) continue;
-      }
-      
-      // Check user targeting
-      if (userId && !this.userMatchesTargeting(userId, promotion.targetAudience)) {
-        continue;
-      }
-      
-      // Check usage limits
-      if (!this.checkUsageLimits(promotion, userId)) continue;
-      
-      activePromotions.push(promotion);
-    }
-
-    // Sort by priority (highest first)
-    return activePromotions.sort((a, b) => b.priority - a.priority);
-  }
-
-  /**
-   * Apply promotion to a purchase
-   */
-  async applyPromotion(promotionId: string, originalAmount: number, packageData: any, userId?: string): Promise<{
-    success: boolean;
-    discountAmount: number;
-    finalAmount: number;
-    bonusCoins: number;
-    appliedPromotion: Promotion;
-    error?: string;
-  }> {
-    const promotion = this.promotions.get(promotionId);
-    if (!promotion) {
-      return { success: false, discountAmount: 0, finalAmount: originalAmount, bonusCoins: 0, appliedPromotion: promotion!, error: 'Promotion not found' };
-    }
-
-    // Validate promotion can be applied
-    const validationResult = await this.validatePromotionApplication(promotion, originalAmount, packageData, userId);
-    if (!validationResult.valid) {
-      return { success: false, discountAmount: 0, finalAmount: originalAmount, bonusCoins: 0, appliedPromotion: promotion, error: validationResult.reason };
-    }
-
-    // Calculate discount
-    const result = this.calculateDiscount(promotion, originalAmount, packageData);
-    
-    // Update usage tracking
-    if (userId) {
-      this.trackPromotionUsage(promotionId, userId, result.discountAmount);
-    }
-
-    return {
-      success: true,
-      ...result,
-      appliedPromotion: promotion,
-    };
-  }
-
-  /**
-   * Track promotion engagement
-   */
-  async trackPromotionEvent(promotionId: string, eventType: 'view' | 'click' | 'conversion', data?: any): Promise<void> {
-    const promotion = this.promotions.get(promotionId);
-    if (!promotion) return;
-
-    switch (eventType) {
-      case 'view':
-        promotion.analytics.views++;
-        promotion.analytics.uniqueUsers++;
-        break;
-      case 'click':
-        promotion.analytics.clicks++;
-        break;
-      case 'conversion':
-        promotion.analytics.conversions++;
-        if (data?.revenue) {
-          promotion.analytics.revenue += data.revenue;
+  // Seasonal Events Management
+  async getSeasonalEvents(): Promise<SeasonalEvent[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/seasonal-events`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
         }
-        if (data?.packageId && !promotion.analytics.topPerformingPackages.includes(data.packageId)) {
-          promotion.analytics.topPerformingPackages.push(data.packageId);
-        }
-        break;
-    }
-
-    // Recalculate derived metrics
-    promotion.analytics.conversionRate = promotion.analytics.views > 0 
-      ? promotion.analytics.conversions / promotion.analytics.views 
-      : 0;
-    promotion.analytics.revenuePerView = promotion.analytics.views > 0 
-      ? promotion.analytics.revenue / promotion.analytics.views 
-      : 0;
-    promotion.analytics.averageOrderValue = promotion.analytics.conversions > 0 
-      ? promotion.analytics.revenue / promotion.analytics.conversions 
-      : 0;
-
-    promotion.updatedAt = new Date().toISOString();
-    await this.savePromotion(promotion);
-  }
-
-  private calculateDiscount(promotion: Promotion, originalAmount: number, packageData: any): {
-    discountAmount: number;
-    finalAmount: number;
-    bonusCoins: number;
-  } {
-    let discountAmount = 0;
-    let bonusCoins = 0;
-
-    const { discount } = promotion;
-
-    // Percentage discount
-    if (discount.percentageOff) {
-      discountAmount = originalAmount * (discount.percentageOff / 100);
-    }
-
-    // Fixed amount discount
-    if (discount.fixedAmountOff) {
-      discountAmount = Math.min(discount.fixedAmountOff, originalAmount);
-    }
-
-    // Bonus coins
-    if (discount.bonusCoins) {
-      if (discount.bonusCoins.type === 'fixed') {
-        bonusCoins = discount.bonusCoins.amount;
-      } else if (discount.bonusCoins.type === 'percentage') {
-        bonusCoins = Math.floor(packageData.goldCoins * (discount.bonusCoins.amount / 100));
-      }
-    }
-
-    // Seasonal multiplier
-    if (discount.seasonalMultiplier) {
-      bonusCoins = Math.floor(bonusCoins * discount.seasonalMultiplier.bonusMultiplier);
-    }
-
-    // Apply usage limits
-    if (promotion.usageLimits.maximumDiscountAmount) {
-      discountAmount = Math.min(discountAmount, promotion.usageLimits.maximumDiscountAmount);
-    }
-
-    const finalAmount = Math.max(0, originalAmount - discountAmount);
-
-    return { discountAmount, finalAmount, bonusCoins };
-  }
-
-  // ===============================
-  // DYNAMIC PRICING
-  // ===============================
-
-  /**
-   * Get current dynamic price for a package
-   */
-  async getDynamicPrice(packageId: string): Promise<number | null> {
-    const pricing = this.dynamicPricing.get(packageId);
-    if (!pricing || !pricing.isActive) {
-      return null;
-    }
-
-    return pricing.currentPrice;
-  }
-
-  /**
-   * Update dynamic pricing based on rules
-   */
-  async updateDynamicPricing(packageId: string): Promise<void> {
-    const pricing = this.dynamicPricing.get(packageId);
-    if (!pricing || !pricing.isActive) return;
-
-    let newPrice = pricing.basePrice;
-    let appliedRuleId: string | undefined;
-    let reason = 'Scheduled update';
-
-    // Process pricing rules in priority order
-    const activeRules = pricing.pricingRules
-      .filter(rule => rule.isActive)
-      .sort((a, b) => b.priority - a.priority);
-
-    for (const rule of activeRules) {
-      const adjustment = await this.evaluatePricingRule(rule, pricing);
-      if (adjustment !== null) {
-        newPrice = this.applyPriceAdjustment(pricing.basePrice, rule.adjustment, adjustment);
-        appliedRuleId = rule.id;
-        reason = `Applied rule: ${rule.name}`;
-        break; // Apply highest priority rule only
-      }
-    }
-
-    // Apply pricing limits
-    newPrice = Math.max(pricing.pricingRules[0]?.limits.minimumPrice || 0, newPrice);
-    newPrice = Math.min(pricing.pricingRules[0]?.limits.maximumPrice || Infinity, newPrice);
-
-    // Update price if changed significantly
-    const priceChangeThreshold = 0.01; // $0.01
-    if (Math.abs(newPrice - pricing.currentPrice) >= priceChangeThreshold) {
-      const historyEntry: PriceHistoryEntry = {
-        price: newPrice,
-        timestamp: new Date().toISOString(),
-        reason,
-        triggeredBy: appliedRuleId,
-      };
-
-      pricing.currentPrice = newPrice;
-      pricing.priceHistory.push(historyEntry);
-      pricing.lastUpdated = new Date().toISOString();
-
-      // Keep only last 100 history entries
-      if (pricing.priceHistory.length > 100) {
-        pricing.priceHistory = pricing.priceHistory.slice(-100);
-      }
-
-      await this.saveDynamicPricing(pricing);
-    }
-  }
-
-  private async evaluatePricingRule(rule: PricingRule, pricing: DynamicPricing): Promise<number | null> {
-    const { conditions } = rule;
-
-    // Demand-based pricing
-    if (rule.type === 'demand_based' && conditions.demandThresholds) {
-      const currentDemand = await this.getCurrentDemand(pricing.packageId);
-      const thresholds = conditions.demandThresholds;
-      
-      if (currentDemand >= thresholds.highDemand.threshold) {
-        return thresholds.highDemand.adjustment;
-      } else if (currentDemand >= thresholds.mediumDemand.threshold) {
-        return thresholds.mediumDemand.adjustment;
-      } else {
-        return thresholds.lowDemand.adjustment;
-      }
-    }
-
-    // Time-based pricing
-    if (rule.type === 'time_based' && conditions.timeRanges) {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentDay = now.getDay();
-
-      for (const timeRange of conditions.timeRanges) {
-        if (timeRange.daysOfWeek.includes(currentDay) &&
-            currentHour >= timeRange.startHour &&
-            currentHour <= timeRange.endHour) {
-          return timeRange.adjustment;
-        }
-      }
-    }
-
-    // Seasonal pricing
-    if (rule.type === 'seasonal' && conditions.seasonalEvents) {
-      const now = new Date();
-      
-      for (const event of conditions.seasonalEvents) {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        
-        if (now >= startDate && now <= endDate) {
-          return event.adjustment;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  private applyPriceAdjustment(basePrice: number, adjustment: PriceAdjustment, value: number): number {
-    switch (adjustment.type) {
-      case 'percentage':
-        return basePrice * (1 + value / 100);
-      case 'fixed_amount':
-        return basePrice + value;
-      case 'set_price':
-        return value;
-      default:
-        return basePrice;
-    }
-  }
-
-  // ===============================
-  // SEASONAL EVENTS
-  // ===============================
-
-  /**
-   * Get active seasonal events
-   */
-  async getActiveSeasonalEvents(): Promise<SeasonalEvent[]> {
-    const now = new Date();
-    const activeEvents: SeasonalEvent[] = [];
-
-    for (const event of this.seasonalEvents.values()) {
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
-      
-      if (now >= startDate && now <= endDate) {
-        activeEvents.push(event);
-      }
-    }
-
-    return activeEvents.sort((a, b) => {
-      const intensityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-      return intensityOrder[b.intensity] - intensityOrder[a.intensity];
-    });
-  }
-
-  /**
-   * Create seasonal promotions automatically
-   */
-  async createSeasonalPromotions(eventId: string): Promise<Promotion[]> {
-    const event = this.seasonalEvents.get(eventId);
-    if (!event) {
-      throw new Error('Seasonal event not found');
-    }
-
-    const createdPromotions: Promotion[] = [];
-
-    for (const template of event.promotionTemplates) {
-      const promotion = await this.createPromotion({
-        name: `${event.name} - ${template.name}`,
-        description: template.description,
-        type: 'seasonal',
-        status: 'scheduled',
-        priority: template.priority,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        timezone: 'UTC',
-        targetAudience: {
-          userSegments: ['all_users'],
-          geoTargeting: event.globalEvent ? [] : event.regions,
-          deviceTypes: ['desktop', 'mobile', 'tablet'],
-          packages: template.targetPackages,
-          userTags: [],
-        },
-        discount: {
-          percentageOff: template.discountPercentage,
-          bonusCoins: {
-            type: 'percentage',
-            amount: (template.bonusCoinsMultiplier - 1) * 100,
-          },
-        },
-        usageLimits: {
-          usageCount: 0,
-          userUsageCount: {},
-        },
-        conditions: {
-          stackableWithOtherPromotions: false,
-        },
-        display: {
-          bannerText: `${event.name} Special!`,
-          shortDescription: template.description,
-          urgencyMessage: 'Limited time offer!',
-          badgeText: event.name.toUpperCase(),
-          badgeColor: event.marketingAssets.theme.primaryColor,
-          ctaText: 'Get Deal Now',
-          images: event.marketingAssets.banners,
-          showCountdown: true,
-          highlightColor: event.marketingAssets.theme.primaryColor,
-          animation: event.marketingAssets.animations.type === 'none' ? 'none' : 'glow',
-        },
       });
-
-      createdPromotions.push(promotion);
-    }
-
-    return createdPromotions;
-  }
-
-  // ===============================
-  // UTILITY METHODS
-  // ===============================
-
-  private userMatchesTargeting(userId: string, targeting: PromotionTargeting): boolean {
-    // In production, this would check user properties against targeting criteria
-    // For now, return true for all users
-    return true;
-  }
-
-  private checkUsageLimits(promotion: Promotion, userId?: string): boolean {
-    const { usageLimits } = promotion;
-
-    // Check total usage limit
-    if (usageLimits.totalUsageLimit && usageLimits.usageCount >= usageLimits.totalUsageLimit) {
-      return false;
-    }
-
-    // Check user usage limit
-    if (userId && usageLimits.userUsageLimit) {
-      const userUsage = usageLimits.userUsageCount[userId] || 0;
-      if (userUsage >= usageLimits.userUsageLimit) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private async validatePromotionApplication(
-    promotion: Promotion, 
-    amount: number, 
-    packageData: any, 
-    userId?: string
-  ): Promise<{ valid: boolean; reason?: string }> {
-    const { conditions } = promotion;
-
-    // Check minimum cart value
-    if (conditions.minimumCartValue && amount < conditions.minimumCartValue) {
-      return { valid: false, reason: `Minimum purchase amount is $${conditions.minimumCartValue}` };
-    }
-
-    // Check first purchase only
-    if (conditions.firstPurchaseOnly && userId) {
-      // In production, check if user has made previous purchases
-      // For now, assume it's valid
-    }
-
-    // Check time of day restrictions
-    if (conditions.timeOfDayRestrictions) {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const { startHour, endHour } = conditions.timeOfDayRestrictions;
       
-      if (currentHour < startHour || currentHour > endHour) {
-        return { valid: false, reason: 'Promotion not available at this time' };
+      if (!response.ok) throw new Error('Failed to fetch seasonal events');
+      const events = await response.json();
+      
+      return events.map((event: any) => ({
+        ...event,
+        startDate: new Date(event.startDate),
+        endDate: new Date(event.endDate),
+        createdAt: new Date(event.createdAt),
+        updatedAt: new Date(event.updatedAt)
+      }));
+    } catch (error) {
+      console.error('Error fetching seasonal events:', error);
+      return this.getDefaultSeasonalEvents();
+    }
+  }
+
+  async createSeasonalEvent(event: Omit<SeasonalEvent, 'id' | 'createdAt' | 'updatedAt'>): Promise<SeasonalEvent> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/seasonal-events`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(event)
+      });
+      
+      if (!response.ok) throw new Error('Failed to create seasonal event');
+      const newEvent = await response.json();
+      
+      return {
+        ...newEvent,
+        startDate: new Date(newEvent.startDate),
+        endDate: new Date(newEvent.endDate),
+        createdAt: new Date(newEvent.createdAt),
+        updatedAt: new Date(newEvent.updatedAt)
+      };
+    } catch (error) {
+      console.error('Error creating seasonal event:', error);
+      throw error;
+    }
+  }
+
+  async updateSeasonalEvent(id: string, updates: Partial<SeasonalEvent>): Promise<SeasonalEvent> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/seasonal-events/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updates)
+      });
+      
+      if (!response.ok) throw new Error('Failed to update seasonal event');
+      const updatedEvent = await response.json();
+      
+      return {
+        ...updatedEvent,
+        startDate: new Date(updatedEvent.startDate),
+        endDate: new Date(updatedEvent.endDate),
+        createdAt: new Date(updatedEvent.createdAt),
+        updatedAt: new Date(updatedEvent.updatedAt)
+      };
+    } catch (error) {
+      console.error('Error updating seasonal event:', error);
+      throw error;
+    }
+  }
+
+  async deleteSeasonalEvent(id: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/seasonal-events/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete seasonal event');
+    } catch (error) {
+      console.error('Error deleting seasonal event:', error);
+      throw error;
+    }
+  }
+
+  // Dynamic Pricing Management
+  async getDynamicPricing(packageId?: string): Promise<DynamicPricing[]> {
+    try {
+      const url = packageId 
+        ? `${this.baseUrl}/api/promotions/dynamic-pricing/${packageId}`
+        : `${this.baseUrl}/api/promotions/dynamic-pricing`;
+        
+      const response = await fetch(url, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch dynamic pricing');
+      const pricing = await response.json();
+      
+      return Array.isArray(pricing) ? pricing : [pricing];
+    } catch (error) {
+      console.error('Error fetching dynamic pricing:', error);
+      return [];
+    }
+  }
+
+  async updateDynamicPricing(packageId: string, pricing: Partial<DynamicPricing>): Promise<DynamicPricing> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/dynamic-pricing/${packageId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pricing)
+      });
+      
+      if (!response.ok) throw new Error('Failed to update dynamic pricing');
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating dynamic pricing:', error);
+      throw error;
+    }
+  }
+
+  async calculateOptimalPrice(packageId: string, factors: {
+    demand?: number;
+    inventory?: number;
+    competition?: number;
+    userSegment?: string;
+    timeOfDay?: number;
+    dayOfWeek?: number;
+    seasonalEvent?: string;
+  }): Promise<number> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/calculate-price/${packageId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(factors)
+      });
+      
+      if (!response.ok) throw new Error('Failed to calculate optimal price');
+      const result = await response.json();
+      return result.optimalPrice;
+    } catch (error) {
+      console.error('Error calculating optimal price:', error);
+      
+      // Fallback calculation
+      return this.calculateFallbackPrice(packageId, factors);
+    }
+  }
+
+  // Promotion Campaigns Management
+  async getPromotionCampaigns(): Promise<PromotionCampaign[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/campaigns`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch promotion campaigns');
+      const campaigns = await response.json();
+      
+      return campaigns.map((campaign: any) => ({
+        ...campaign,
+        startDate: new Date(campaign.startDate),
+        endDate: new Date(campaign.endDate)
+      }));
+    } catch (error) {
+      console.error('Error fetching promotion campaigns:', error);
+      return [];
+    }
+  }
+
+  async createPromotionCampaign(campaign: Omit<PromotionCampaign, 'id'>): Promise<PromotionCampaign> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/campaigns`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(campaign)
+      });
+      
+      if (!response.ok) throw new Error('Failed to create promotion campaign');
+      const newCampaign = await response.json();
+      
+      return {
+        ...newCampaign,
+        startDate: new Date(newCampaign.startDate),
+        endDate: new Date(newCampaign.endDate)
+      };
+    } catch (error) {
+      console.error('Error creating promotion campaign:', error);
+      throw error;
+    }
+  }
+
+  async updatePromotionCampaign(id: string, updates: Partial<PromotionCampaign>): Promise<PromotionCampaign> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/campaigns/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updates)
+      });
+      
+      if (!response.ok) throw new Error('Failed to update promotion campaign');
+      const updatedCampaign = await response.json();
+      
+      return {
+        ...updatedCampaign,
+        startDate: new Date(updatedCampaign.startDate),
+        endDate: new Date(updatedCampaign.endDate)
+      };
+    } catch (error) {
+      console.error('Error updating promotion campaign:', error);
+      throw error;
+    }
+  }
+
+  // Marketing Campaigns Management
+  async getMarketingCampaigns(): Promise<MarketingCampaign[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/marketing-campaigns`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch marketing campaigns');
+      const campaigns = await response.json();
+      
+      return campaigns.map((campaign: any) => ({
+        ...campaign,
+        schedule: {
+          ...campaign.schedule,
+          startDate: new Date(campaign.schedule.startDate),
+          endDate: campaign.schedule.endDate ? new Date(campaign.schedule.endDate) : undefined
+        }
+      }));
+    } catch (error) {
+      console.error('Error fetching marketing campaigns:', error);
+      return [];
+    }
+  }
+
+  async createMarketingCampaign(campaign: Omit<MarketingCampaign, 'id'>): Promise<MarketingCampaign> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/marketing-campaigns`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(campaign)
+      });
+      
+      if (!response.ok) throw new Error('Failed to create marketing campaign');
+      const newCampaign = await response.json();
+      
+      return {
+        ...newCampaign,
+        schedule: {
+          ...newCampaign.schedule,
+          startDate: new Date(newCampaign.schedule.startDate),
+          endDate: newCampaign.schedule.endDate ? new Date(newCampaign.schedule.endDate) : undefined
+        }
+      };
+    } catch (error) {
+      console.error('Error creating marketing campaign:', error);
+      throw error;
+    }
+  }
+
+  // User Segments Management
+  async getUserSegments(): Promise<UserSegment[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/user-segments`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch user segments');
+      const segments = await response.json();
+      
+      return segments.map((segment: any) => ({
+        ...segment,
+        lastUpdated: new Date(segment.lastUpdated)
+      }));
+    } catch (error) {
+      console.error('Error fetching user segments:', error);
+      return this.getDefaultUserSegments();
+    }
+  }
+
+  async createUserSegment(segment: Omit<UserSegment, 'id' | 'userCount' | 'averageValue' | 'conversionRate' | 'churnRate' | 'lastUpdated'>): Promise<UserSegment> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/user-segments`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(segment)
+      });
+      
+      if (!response.ok) throw new Error('Failed to create user segment');
+      const newSegment = await response.json();
+      
+      return {
+        ...newSegment,
+        lastUpdated: new Date(newSegment.lastUpdated)
+      };
+    } catch (error) {
+      console.error('Error creating user segment:', error);
+      throw error;
+    }
+  }
+
+  // Analytics and Reporting
+  async getPromotionAnalytics(campaignId?: string, dateRange?: { start: Date; end: Date }): Promise<any> {
+    try {
+      const params = new URLSearchParams();
+      if (campaignId) params.append('campaignId', campaignId);
+      if (dateRange) {
+        params.append('startDate', dateRange.start.toISOString());
+        params.append('endDate', dateRange.end.toISOString());
+      }
+      
+      const response = await fetch(`${this.baseUrl}/api/promotions/analytics?${params}`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch promotion analytics');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching promotion analytics:', error);
+      return this.getDefaultAnalytics();
+    }
+  }
+
+  async getROIAnalysis(campaignId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/roi-analysis/${campaignId}`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch ROI analysis');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching ROI analysis:', error);
+      return { roi: 0, revenueImpact: 0, costEfficiency: 0 };
+    }
+  }
+
+  // Recommendation Engine
+  async getPromotionRecommendations(userId?: string, packageId?: string): Promise<any[]> {
+    try {
+      const params = new URLSearchParams();
+      if (userId) params.append('userId', userId);
+      if (packageId) params.append('packageId', packageId);
+      
+      const response = await fetch(`${this.baseUrl}/api/promotions/recommendations?${params}`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch promotion recommendations');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching promotion recommendations:', error);
+      return [];
+    }
+  }
+
+  async optimizeCampaign(campaignId: string, optimizationGoals: string[]): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/optimize/${campaignId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ goals: optimizationGoals })
+      });
+      
+      if (!response.ok) throw new Error('Failed to optimize campaign');
+      return await response.json();
+    } catch (error) {
+      console.error('Error optimizing campaign:', error);
+      throw error;
+    }
+  }
+
+  // Real-time Price Updates
+  async startPriceOptimization(packageIds: string[]): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/start-price-optimization`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ packageIds })
+      });
+      
+      if (!response.ok) throw new Error('Failed to start price optimization');
+    } catch (error) {
+      console.error('Error starting price optimization:', error);
+      throw error;
+    }
+  }
+
+  async stopPriceOptimization(packageIds: string[]): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/promotions/stop-price-optimization`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ packageIds })
+      });
+      
+      if (!response.ok) throw new Error('Failed to stop price optimization');
+    } catch (error) {
+      console.error('Error stopping price optimization:', error);
+      throw error;
+    }
+  }
+
+  // Helper Methods
+  private calculateFallbackPrice(packageId: string, factors: any): number {
+    // Basic fallback pricing algorithm
+    let basePrice = 100; // Default base price
+    let multiplier = 1;
+
+    // Demand factor (0.5 - 2.0)
+    if (factors.demand !== undefined) {
+      multiplier *= 0.8 + (factors.demand * 0.4);
+    }
+
+    // Time-based factor
+    if (factors.timeOfDay !== undefined) {
+      const hour = factors.timeOfDay;
+      if (hour >= 18 && hour <= 22) { // Peak hours
+        multiplier *= 1.2;
+      } else if (hour >= 2 && hour <= 6) { // Low hours
+        multiplier *= 0.8;
       }
     }
 
-    return { valid: true };
-  }
-
-  private trackPromotionUsage(promotionId: string, userId: string, discountAmount: number): void {
-    const promotion = this.promotions.get(promotionId);
-    if (!promotion) return;
-
-    promotion.usageLimits.usageCount++;
-    promotion.usageLimits.userUsageCount[userId] = (promotion.usageLimits.userUsageCount[userId] || 0) + 1;
-    promotion.analytics.totalSavingsProvided += discountAmount;
-    
-    this.savePromotion(promotion);
-  }
-
-  private async getCurrentDemand(packageId: string): Promise<number> {
-    // Mock demand calculation - in production, calculate from recent sales data
-    return Math.random() * 10; // 0-10 sales per hour
-  }
-
-  private schedulePromotionActivation(promotion: Promotion): void {
-    const startTime = new Date(promotion.startDate).getTime();
-    const now = Date.now();
-    
-    if (startTime > now) {
-      setTimeout(() => {
-        promotion.status = 'active';
-        this.savePromotion(promotion);
-      }, startTime - now);
-    }
-  }
-
-  private startPriceUpdateLoop(): void {
-    // Update prices every 5 minutes
-    this.priceUpdateInterval = setInterval(() => {
-      for (const packageId of this.dynamicPricing.keys()) {
-        this.updateDynamicPricing(packageId);
+    // Day of week factor
+    if (factors.dayOfWeek !== undefined) {
+      const day = factors.dayOfWeek;
+      if (day === 5 || day === 6) { // Friday/Saturday
+        multiplier *= 1.15;
+      } else if (day === 1) { // Monday
+        multiplier *= 0.9;
       }
-    }, 5 * 60 * 1000);
-  }
-
-  // ===============================
-  // PERSISTENCE (Mock Implementation)
-  // ===============================
-
-  private async loadPromotions(): Promise<void> {
-    // Load some default seasonal events and promotions
-    this.createDefaultSeasonalEvents();
-    this.createDefaultPromotions();
-  }
-
-  private async loadDynamicPricing(): Promise<void> {
-    // Initialize with some sample dynamic pricing
-    const samplePricing: DynamicPricing = {
-      id: 'dp_starter_pack',
-      packageId: 'starter-pack',
-      packageName: 'Starter Pack',
-      basePrice: 9.99,
-      currentPrice: 9.99,
-      priceHistory: [],
-      pricingRules: [
-        {
-          id: 'weekend_discount',
-          name: 'Weekend Discount',
-          type: 'time_based',
-          priority: 1,
-          isActive: true,
-          conditions: {
-            timeRanges: [{
-              startHour: 0,
-              endHour: 23,
-              daysOfWeek: [5, 6], // Friday, Saturday
-              adjustment: -10, // 10% discount
-            }],
-          },
-          adjustment: {
-            type: 'percentage',
-            value: -10,
-          },
-          limits: {
-            minimumPrice: 7.99,
-            maximumPrice: 12.99,
-          },
-        },
-      ],
-      isActive: true,
-      lastUpdated: new Date().toISOString(),
-    };
-
-    this.dynamicPricing.set(samplePricing.packageId, samplePricing);
-  }
-
-  private async loadSeasonalEvents(): Promise<void> {
-    // Events are created in createDefaultSeasonalEvents
-  }
-
-  private createDefaultSeasonalEvents(): void {
-    const events: SeasonalEvent[] = [
-      {
-        id: 'winter_holidays_2024',
-        name: 'Winter Holidays',
-        description: 'Christmas and New Year celebration',
-        startDate: '2024-12-20T00:00:00Z',
-        endDate: '2025-01-02T23:59:59Z',
-        category: 'holiday',
-        intensity: 'high',
-        globalEvent: true,
-        regions: [],
-        promotionTemplates: [
-          {
-            name: 'Holiday Bonus',
-            description: 'Extra coins for the holidays!',
-            discountPercentage: 25,
-            bonusCoinsMultiplier: 2.0,
-            durationHours: 336, // 14 days
-            targetPackages: [],
-            priority: 10,
-          },
-        ],
-        pricingStrategy: {
-          strategy: 'discount',
-          baseAdjustment: -15,
-        },
-        marketingAssets: {
-          theme: {
-            primaryColor: '#DC2626',
-            secondaryColor: '#059669',
-            fontStyle: 'festive',
-            iconSet: 'holiday',
-          },
-          banners: {
-            header: '/assets/banners/winter-header.jpg',
-            store: '/assets/banners/winter-store.jpg',
-            popup: '/assets/banners/winter-popup.jpg',
-          },
-          animations: {
-            type: 'snow',
-            intensity: 'medium',
-          },
-        },
-        expectedLift: 40,
-      },
-    ];
-
-    for (const event of events) {
-      this.seasonalEvents.set(event.id, event);
     }
+
+    // Inventory factor
+    if (factors.inventory !== undefined) {
+      if (factors.inventory < 10) {
+        multiplier *= 1.3; // Low inventory, higher price
+      } else if (factors.inventory > 100) {
+        multiplier *= 0.9; // High inventory, lower price
+      }
+    }
+
+    return Math.round(basePrice * multiplier * 100) / 100;
   }
 
-  private createDefaultPromotions(): void {
-    // Create some sample promotions
+  private getDefaultSeasonalEvents(): SeasonalEvent[] {
     const now = new Date();
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const currentYear = now.getFullYear();
     
-    const flashSale: Promotion = {
-      id: 'flash_sale_weekend',
-      name: 'Weekend Flash Sale',
-      description: '30% off all packages this weekend!',
-      type: 'flash_sale',
-      status: 'active',
-      priority: 5,
-      startDate: now.toISOString(),
-      endDate: tomorrow.toISOString(),
-      timezone: 'UTC',
-      targetAudience: {
-        userSegments: ['all_users'],
-        geoTargeting: [],
-        deviceTypes: ['desktop', 'mobile', 'tablet'],
-        packages: [],
-        userTags: [],
+    return [
+      {
+        id: 'new-year-2024',
+        name: 'New Year Celebration',
+        startDate: new Date(currentYear, 0, 1),
+        endDate: new Date(currentYear, 0, 7),
+        description: 'Ring in the new year with special promotions!',
+        type: 'holiday',
+        multiplier: 1.5,
+        targetAudience: ['all'],
+        isActive: true,
+        createdAt: now,
+        updatedAt: now
       },
-      discount: {
-        percentageOff: 30,
+      {
+        id: 'valentines-2024',
+        name: 'Valentine\'s Day Special',
+        startDate: new Date(currentYear, 1, 10),
+        endDate: new Date(currentYear, 1, 14),
+        description: 'Love is in the air! Special packages for couples.',
+        type: 'holiday',
+        multiplier: 1.3,
+        targetAudience: ['couples', 'romantic'],
+        isActive: true,
+        createdAt: now,
+        updatedAt: now
       },
-      usageLimits: {
-        usageCount: 0,
-        userUsageCount: {},
+      {
+        id: 'weekend-flash',
+        name: 'Weekend Flash Sale',
+        startDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+        endDate: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2),
+        description: 'Limited time weekend deals!',
+        type: 'flash',
+        multiplier: 0.8,
+        targetAudience: ['impulse-buyers'],
+        isActive: true,
+        createdAt: now,
+        updatedAt: now
+      }
+    ];
+  }
+
+  private getDefaultUserSegments(): UserSegment[] {
+    const now = new Date();
+    
+    return [
+      {
+        id: 'high-value',
+        name: 'High Value Customers',
+        description: 'Customers with high lifetime value',
+        criteria: {
+          behavioral: {
+            totalSpent: { min: 1000 },
+            purchaseFrequency: 'high'
+          }
+        },
+        userCount: 1250,
+        averageValue: 2500,
+        conversionRate: 0.85,
+        churnRate: 0.05,
+        lastUpdated: now,
+        isActive: true
       },
-      conditions: {
-        stackableWithOtherPromotions: false,
+      {
+        id: 'new-users',
+        name: 'New Users',
+        description: 'Recently registered users',
+        criteria: {
+          behavioral: {
+            totalPurchases: { max: 1 },
+            lastPurchaseDate: { within: 30 }
+          }
+        },
+        userCount: 3200,
+        averageValue: 150,
+        conversionRate: 0.15,
+        churnRate: 0.45,
+        lastUpdated: now,
+        isActive: true
       },
-      display: {
-        bannerText: 'Flash Sale - 30% Off!',
-        shortDescription: 'Limited time weekend sale',
-        urgencyMessage: 'Ends tomorrow!',
-        badgeText: 'FLASH SALE',
-        badgeColor: '#EF4444',
-        ctaText: 'Shop Now',
-        images: {},
-        showCountdown: true,
-        highlightColor: '#EF4444',
-        animation: 'pulse',
+      {
+        id: 'mobile-users',
+        name: 'Mobile Users',
+        description: 'Users primarily accessing via mobile',
+        criteria: {
+          device: {
+            types: ['mobile', 'tablet']
+          }
+        },
+        userCount: 8500,
+        averageValue: 420,
+        conversionRate: 0.28,
+        churnRate: 0.22,
+        lastUpdated: now,
+        isActive: true
+      }
+    ];
+  }
+
+  private getDefaultAnalytics(): any {
+    return {
+      totalRevenue: 125000,
+      totalConversions: 850,
+      averageOrderValue: 147,
+      conversionRate: 0.24,
+      customerAcquisitionCost: 25,
+      returnOnAdSpend: 4.2,
+      topPerformingCampaigns: [
+        { id: 'weekend-flash', name: 'Weekend Flash Sale', revenue: 45000, conversions: 320 },
+        { id: 'new-year-2024', name: 'New Year Celebration', revenue: 38000, conversions: 280 },
+        { id: 'valentines-2024', name: 'Valentine\'s Day Special', revenue: 22000, conversions: 150 }
+      ],
+      revenueBySegment: {
+        'high-value': 65000,
+        'new-users': 25000,
+        'mobile-users': 35000
       },
-      analytics: {
-        views: 1250,
-        clicks: 180,
-        conversions: 45,
-        revenue: 1800.55,
-        conversionRate: 0.036,
-        revenuePerView: 1.44,
-        uniqueUsers: 1100,
-        averageOrderValue: 40.01,
-        totalSavingsProvided: 771.67,
-        topPerformingPackages: ['starter-pack', 'value-pack'],
-      },
-      createdBy: 'system',
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString(),
+      campaignPerformance: {
+        email: { openRate: 0.32, clickRate: 0.08, conversionRate: 0.22 },
+        push: { openRate: 0.45, clickRate: 0.12, conversionRate: 0.18 },
+        sms: { openRate: 0.78, clickRate: 0.25, conversionRate: 0.35 }
+      }
     };
-
-    this.promotions.set(flashSale.id, flashSale);
-  }
-
-  private async savePromotion(promotion: Promotion): Promise<void> {
-    // In production, save to database
-    console.log(`Saved promotion: ${promotion.name}`);
-  }
-
-  private async saveDynamicPricing(pricing: DynamicPricing): Promise<void> {
-    // In production, save to database
-    console.log(`Updated dynamic pricing for ${pricing.packageName}: $${pricing.currentPrice}`);
-  }
-
-  // ===============================
-  // PUBLIC API METHODS
-  // ===============================
-
-  /**
-   * Get all promotions (admin)
-   */
-  async getAllPromotions(): Promise<Promotion[]> {
-    return Array.from(this.promotions.values());
-  }
-
-  /**
-   * Get all dynamic pricing rules (admin)
-   */
-  async getAllDynamicPricing(): Promise<DynamicPricing[]> {
-    return Array.from(this.dynamicPricing.values());
-  }
-
-  /**
-   * Get all seasonal events (admin)
-   */
-  async getAllSeasonalEvents(): Promise<SeasonalEvent[]> {
-    return Array.from(this.seasonalEvents.values());
-  }
-
-  /**
-   * Cleanup
-   */
-  cleanup(): void {
-    if (this.priceUpdateInterval) {
-      clearInterval(this.priceUpdateInterval);
-      this.priceUpdateInterval = null;
-    }
   }
 }
 
-export const promotionsService = PromotionsService.getInstance();
+export const promotionsService = new PromotionsService();
+export default promotionsService;

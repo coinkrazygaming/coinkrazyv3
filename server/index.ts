@@ -6,6 +6,7 @@ import apiRoutes from "./routes/api";
 import authRoutes from "./routes/auth";
 import initAdminRoutes from "./routes/init-admin";
 import seedRoutes from "./routes/seed";
+import paymentRoutes from "./routes/payments";
 
 export function createServer() {
   const app = express();

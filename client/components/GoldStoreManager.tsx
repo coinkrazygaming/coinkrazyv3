@@ -101,6 +101,7 @@ import {
   StoreAnalytics,
   StoreSettings,
 } from "@/services/goldStoreService";
+import { formatCurrency, formatPrice } from "@/utils/priceUtils";
 
 interface PackageFormData {
   name: string;

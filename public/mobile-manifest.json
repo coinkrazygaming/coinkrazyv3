@@ -11,12 +11,7 @@
   "background_color": "#111827",
   "lang": "en-US",
   "dir": "ltr",
-  "categories": [
-    "games",
-    "entertainment",
-    "casino",
-    "shopping"
-  ],
+  "categories": ["games", "entertainment", "casino", "shopping"],
   "icons": [
     {
       "src": "/icon-72x72.png",

@@ -85,6 +85,7 @@ import Profile from "./pages/Profile";
 import ScratchCards from "./pages/ScratchCards";
 import Slots from "./pages/Slots";
 import SlotsHub from "./pages/SlotsHub";
+import GoldCoinStore from "./pages/GoldCoinStore";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 

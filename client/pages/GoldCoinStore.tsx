@@ -489,7 +489,7 @@ export default function GoldCoinStore() {
         purchase_units: [{
           amount: {
             currency_code: 'USD',
-            value: Number(checkoutModal.totalPrice).toFixed(2),
+            value: Number(checkoutModal.totalPrice || 0).toFixed(2),
           },
           description: `${checkoutModal.package.packageName} - ${checkoutModal.package.goldCoins.toLocaleString()} Gold Coins`,
           custom_id: `pkg_${checkoutModal.package.id}_user_${checkoutModal.userId}`,

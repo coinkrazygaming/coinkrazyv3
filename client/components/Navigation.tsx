@@ -155,7 +155,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" showText={true} />
+            <AnimatedLogo size="md" showText={true} animated={true} />
           </Link>
 
           {/* Desktop Navigation */}

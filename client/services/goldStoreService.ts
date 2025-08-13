@@ -260,7 +260,7 @@ class GoldStoreService {
       description: dbPkg.description || "Premium gold coins package",
       goldCoins: totalGoldCoins,
       sweepsCoins: totalSweepsCoins,
-      price: Number(dbPkg.price_usd),
+      price: priceUsd,
       currency: "USD",
       popular: isPopular,
       featured: isFeatured,

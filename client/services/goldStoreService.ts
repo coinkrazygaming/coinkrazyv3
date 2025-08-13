@@ -219,20 +219,21 @@ class GoldStoreService {
     // Determine category based on price
     let category: GoldPackage["category"] = "starter";
     let tier: GoldPackage["tier"] = 1;
+    const priceUsd = Number(dbPkg.price_usd);
 
-    if (dbPkg.price_usd >= 50) {
+    if (priceUsd >= 50) {
       category = "ultimate";
       tier = 6;
-    } else if (dbPkg.price_usd >= 25) {
+    } else if (priceUsd >= 25) {
       category = "mega";
       tier = 5;
-    } else if (dbPkg.price_usd >= 15) {
+    } else if (priceUsd >= 15) {
       category = "elite";
       tier = 4;
-    } else if (dbPkg.price_usd >= 10) {
+    } else if (priceUsd >= 10) {
       category = "premium";
       tier = 3;
-    } else if (dbPkg.price_usd >= 5) {
+    } else if (priceUsd >= 5) {
       category = "standard";
       tier = 2;
     }

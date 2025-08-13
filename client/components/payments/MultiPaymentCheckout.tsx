@@ -239,7 +239,7 @@ export default function MultiPaymentCheckout({
       displayItems: [
         {
           label: selectedPackage.packageName,
-          amount: Number(selectedPackage.priceUsd).toFixed(2),
+          amount: Number(selectedPackage.priceUsd || 0).toFixed(2),
         },
       ],
       total: {

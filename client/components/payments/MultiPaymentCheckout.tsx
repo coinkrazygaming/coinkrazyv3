@@ -812,7 +812,7 @@ export default function MultiPaymentCheckout({
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Package Price</span>
-                    <span>${Number(selectedPackage.priceUsd).toFixed(2)}</span>
+                    <span>${Number(selectedPackage.priceUsd || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Processing Fee</span>

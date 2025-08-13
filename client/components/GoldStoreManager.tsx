@@ -1640,7 +1640,7 @@ export default function GoldStoreManager() {
                               : pkg.currency === "GBP"
                                 ? "£"
                                 : "C$"}
-                          {Number(pkg.price || 0).toFixed(2)}
+                          {formatPrice(pkg.price)}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           Price

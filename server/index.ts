@@ -36,5 +36,8 @@ export function createServer() {
   // Database seeding route
   app.use("/api", seedRoutes);
 
+  // Payment processing routes
+  app.use("/api/payments", paymentRoutes);
+
   return app;
 }

@@ -1884,7 +1884,7 @@ export default function GoldStoreManager() {
                             </div>
                           </td>
                           <td className="p-2 font-mono">
-                            ${purchase.price.toFixed(2)} {purchase.currency}
+                            ${Number(purchase.price).toFixed(2)} {purchase.currency}
                           </td>
                           <td className="p-2 capitalize">
                             {purchase.paymentMethod.replace("_", " ")}

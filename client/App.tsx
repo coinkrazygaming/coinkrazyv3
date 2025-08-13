@@ -210,6 +210,7 @@ const App = () => (
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/store" element={<Store />} />
+                <Route path="/gold-store" element={<GoldCoinStore />} />
                 <Route path="/sportsbook" element={<Sportsbook />} />
                 <Route path="/pick-cards" element={<PickCards />} />
                 <Route path="/bingo" element={<Bingo />} />

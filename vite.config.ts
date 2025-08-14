@@ -48,7 +48,6 @@ export default defineConfig(({ mode }) => ({
     include: ['react', 'react-dom'],
     force: true,
   },
-  cacheDir: 'node_modules/.vite-new',
 }));
 
 function expressPlugin(): Plugin {

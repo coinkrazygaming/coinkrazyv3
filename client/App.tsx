@@ -46,7 +46,7 @@ const LazyApp = React.lazy(async () => {
     
     const [
       { Toaster },
-      { Toaster as Sonner },
+      SonnerModule,
       { TooltipProvider },
       { QueryClient, QueryClientProvider },
       { BrowserRouter, Routes, Route },

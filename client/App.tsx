@@ -6,7 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Simple working components first
 const Header = () => (
   <header className="bg-blue-600 text-white p-4">
-    <h1 className="text-2xl font-bold">CoinKrazy - Social Casino</h1>
+    <div className="flex items-center justify-between">
+      <h1 className="text-2xl font-bold">CoinKrazy</h1>
+      <nav className="flex space-x-4">
+        <a href="/" className="hover:text-blue-200">Home</a>
+        <a href="/games" className="hover:text-blue-200">Games</a>
+        <a href="/store" className="hover:text-blue-200">Store</a>
+        <a href="/login" className="hover:text-blue-200">Login</a>
+      </nav>
+    </div>
   </header>
 );
 

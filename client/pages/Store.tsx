@@ -16,6 +16,7 @@ export default function Store() {
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
         <p>Redirecting to Gold Coin Store...</p>
+        {/* Cache buster: {Date.now()} */}
       </div>
     </div>
   );

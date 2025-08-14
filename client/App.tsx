@@ -89,7 +89,7 @@ const LazyApp = React.lazy(async () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <SonnerModule.Toaster />
           <BrowserRouter>
             <Layout>
               <Routes>

@@ -28,6 +28,9 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ['react', 'react-dom'],
   },
+  define: {
+    __DEV__: mode === 'development',
+  },
   optimizeDeps: {
     exclude: ['@vite/client'],
     include: ['react', 'react-dom'],

@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       port: 24678,
     },
     headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
     },
   },
   build: {
@@ -28,9 +28,9 @@ export default defineConfig(({ mode }) => ({
       output: {
         entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
         chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
-        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`
-      }
-    }
+        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`,
+      },
+    },
   },
   plugins: [react(), expressPlugin()],
   resolve: {
@@ -38,14 +38,14 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
-    dedupe: ['react', 'react-dom'],
+    dedupe: ["react", "react-dom"],
   },
   define: {
-    __DEV__: mode === 'development',
+    __DEV__: mode === "development",
   },
   optimizeDeps: {
-    exclude: ['@vite/client'],
-    include: ['react', 'react-dom'],
+    exclude: ["@vite/client"],
+    include: ["react", "react-dom"],
     force: true,
   },
 }));

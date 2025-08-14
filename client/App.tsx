@@ -9,10 +9,18 @@ const Header = () => (
     <div className="flex items-center justify-between">
       <h1 className="text-2xl font-bold">CoinKrazy</h1>
       <nav className="flex space-x-4">
-        <a href="/" className="hover:text-blue-200">Home</a>
-        <a href="/games" className="hover:text-blue-200">Games</a>
-        <a href="/store" className="hover:text-blue-200">Store</a>
-        <a href="/login" className="hover:text-blue-200">Login</a>
+        <a href="/" className="hover:text-blue-200">
+          Home
+        </a>
+        <a href="/games" className="hover:text-blue-200">
+          Games
+        </a>
+        <a href="/store" className="hover:text-blue-200">
+          Store
+        </a>
+        <a href="/login" className="hover:text-blue-200">
+          Login
+        </a>
       </nav>
     </div>
   </header>
@@ -58,12 +66,20 @@ const App = () => (
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="*" element={
-          <div className="p-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Page Not Found</h1>
-            <p>Return to <a href="/" className="text-blue-600 underline">homepage</a></p>
-          </div>
-        } />
+        <Route
+          path="*"
+          element={
+            <div className="p-8 text-center">
+              <h1 className="text-2xl font-bold mb-4">Page Not Found</h1>
+              <p>
+                Return to{" "}
+                <a href="/" className="text-blue-600 underline">
+                  homepage
+                </a>
+              </p>
+            </div>
+          }
+        />
       </Routes>
     </Layout>
   </BrowserRouter>

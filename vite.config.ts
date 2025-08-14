@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
+    dedupe: ['react', 'react-dom'],
   },
   define: {
     __DEV__: mode === 'development',

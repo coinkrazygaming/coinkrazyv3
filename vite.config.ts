@@ -16,6 +16,11 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
       port: 24678,
     },
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    },
   },
   build: {
     outDir: "dist/spa",

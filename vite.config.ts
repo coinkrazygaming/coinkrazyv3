@@ -46,7 +46,9 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     exclude: ['@vite/client'],
     include: ['react', 'react-dom'],
+    force: true,
   },
+  cacheDir: 'node_modules/.vite-new',
 }));
 
 function expressPlugin(): Plugin {

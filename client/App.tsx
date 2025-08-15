@@ -224,6 +224,58 @@ const SafeSonner = () => {
   }
 };
 
+// Safe ComplianceBanner wrapper
+const SafeComplianceBanner = () => {
+  try {
+    if (!React || typeof React.useState !== 'function') {
+      return null;
+    }
+    return <ComplianceBanner />;
+  } catch (error) {
+    console.log("ComplianceBanner error, disabling banner:", error);
+    return null;
+  }
+};
+
+// Safe TickerDisplay wrapper
+const SafeTickerDisplay = () => {
+  try {
+    if (!React || typeof React.useState !== 'function') {
+      return null;
+    }
+    return <TickerDisplay />;
+  } catch (error) {
+    console.log("TickerDisplay error, disabling ticker:", error);
+    return null;
+  }
+};
+
+// Safe Footer wrapper
+const SafeFooter = () => {
+  try {
+    if (!React || typeof React.useState !== 'function') {
+      return <div className="bg-muted/50 py-8 text-center text-sm text-muted-foreground">CoinKrazy © 2024</div>;
+    }
+    return <Footer />;
+  } catch (error) {
+    console.log("Footer error, using simple fallback:", error);
+    return <div className="bg-muted/50 py-8 text-center text-sm text-muted-foreground">CoinKrazy © 2024</div>;
+  }
+};
+
+// Safe AIAssistant wrapper
+const SafeAIAssistant = () => {
+  try {
+    if (!React || typeof React.useState !== 'function') {
+      return null;
+    }
+    return <AIAssistant />;
+  } catch (error) {
+    console.log("AIAssistant error, disabling assistant:", error);
+    return null;
+  }
+};
+
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
     <ComplianceBanner />

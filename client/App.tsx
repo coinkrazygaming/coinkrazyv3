@@ -448,67 +448,10 @@ if (import.meta.hot) {
   };
 
   import.meta.hot.accept(() => {
-    try {
-      // Check if React is properly available
-      if (!React || typeof React.useState !== 'function') {
-        console.log("React not available during HMR, forcing context recreation");
-        throw new Error("React context unavailable");
-      }
-
-      if (globalThis.__APP_ROOT__) {
-        globalThis.__APP_ROOT__.render(<App />);
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.log("HMR error, attempting recovery:", errorMessage);
-
-      // Enhanced recovery for React hooks errors
-      if (errorMessage.includes("useState") || errorMessage.includes("useContext") || errorMessage.includes("React context")) {
-        console.log("React hooks error detected, performing full context recreation");
-
-        try {
-          // Clear React's internal state and recreate everything
-          const container = document.getElementById("root")!;
-
-          // Unmount existing root if it exists
-          if (globalThis.__APP_ROOT__) {
-            try {
-              globalThis.__APP_ROOT__.unmount();
-            } catch (unmountError) {
-              console.log("Unmount failed, continuing with recreation");
-            }
-          }
-
-          // Force garbage collection of React context
-          globalThis.__APP_ROOT__ = null;
-
-          // Small delay to allow React cleanup
-          setTimeout(() => {
-            try {
-              globalThis.__APP_ROOT__ = createRoot(container);
-              globalThis.__APP_ROOT__.render(<App />);
-              console.log("React context successfully recreated");
-            } catch (delayedError) {
-              console.log("Delayed recreation failed, forcing page reload");
-              window.location.reload();
-            }
-          }, 50);
-
-        } catch (recreationError) {
-          console.log("Context recreation failed, forcing page reload:", recreationError);
-          setTimeout(() => window.location.reload(), 100);
-        }
-      } else {
-        // Standard recovery for other errors
-        try {
-          const container = document.getElementById("root")!;
-          globalThis.__APP_ROOT__ = createRoot(container);
-          globalThis.__APP_ROOT__.render(<App />);
-        } catch (recoveryError) {
-          console.log("Standard recovery failed, forcing page reload:", recoveryError);
-          setTimeout(() => window.location.reload(), 100);
-        }
-      }
-    }
+    // Simplified and safer HMR accept - just reload the page to avoid React context corruption
+    console.log("HMR update detected, performing safe page reload to prevent React hooks corruption");
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   });
 }

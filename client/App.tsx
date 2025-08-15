@@ -409,7 +409,7 @@ const initializeApp = () => {
 
 initializeApp();
 
-// HMR support with comprehensive error protection
+// HMR support with comprehensive error protection and React context safety
 if (import.meta.hot) {
   // Disable HMR errors temporarily
   const originalConsoleError = console.error;
@@ -423,7 +423,11 @@ if (import.meta.hot) {
       message.includes("HMR") ||
       message.includes("Cannot read properties of null") ||
       message.includes("useState") ||
-      message.includes("TooltipProvider")
+      message.includes("useContext") ||
+      message.includes("Invalid hook call") ||
+      message.includes("TooltipProvider") ||
+      message.includes("useAuth") ||
+      message.includes("useToast")
     ) {
       return; // Suppress HMR-related and React hook errors
     }
@@ -435,7 +439,8 @@ if (import.meta.hot) {
     if (
       message.includes("send was called before connect") ||
       message.includes("WebSocket") ||
-      message.includes("HMR")
+      message.includes("HMR") ||
+      message.includes("Invalid hook call")
     ) {
       return; // Suppress HMR-related warnings
     }

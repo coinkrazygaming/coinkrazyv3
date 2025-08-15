@@ -160,12 +160,68 @@ class AppErrorBoundary extends React.Component<
   }
 }
 
-// Safe TooltipProvider wrapper - completely disabled in development to prevent React hooks errors
+// Safe wrapper components to prevent React hooks context corruption
 const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
-  // For now, completely bypass TooltipProvider to prevent React hooks corruption
-  // This ensures the app works without tooltip functionality until the React context issue is resolved
   console.log("Rendering without TooltipProvider to prevent React hooks errors");
   return <>{children}</>;
+};
+
+// Safe Navigation wrapper
+const SafeNavigation = () => {
+  try {
+    // Check if React hooks are available
+    if (!React || typeof React.useState !== 'function') {
+      return (
+        <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-16">
+              <div className="text-xl font-bold">CoinKrazy</div>
+              <div className="text-sm">Loading...</div>
+            </div>
+          </div>
+        </nav>
+      );
+    }
+    return <Navigation />;
+  } catch (error) {
+    console.log("Navigation error, using fallback:", error);
+    return (
+      <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="text-xl font-bold">CoinKrazy</div>
+            <div className="text-sm">Navigation Error - Refresh Page</div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+};
+
+// Safe Toaster wrapper
+const SafeToaster = () => {
+  try {
+    if (!React || typeof React.useState !== 'function') {
+      return null;
+    }
+    return <Toaster />;
+  } catch (error) {
+    console.log("Toaster error, disabling toasts:", error);
+    return null;
+  }
+};
+
+// Safe Sonner wrapper
+const SafeSonner = () => {
+  try {
+    if (!React || typeof React.useState !== 'function' || typeof React.useContext !== 'function') {
+      return null;
+    }
+    return <Sonner />;
+  } catch (error) {
+    console.log("Sonner error, disabling notifications:", error);
+    return null;
+  }
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => (

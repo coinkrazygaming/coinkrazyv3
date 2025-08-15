@@ -228,7 +228,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
     <ComplianceBanner />
     <TickerDisplay />
-    <Navigation />
+    <SafeNavigation />
     <main className="flex-1">{children}</main>
     <Footer />
     <AIAssistant />

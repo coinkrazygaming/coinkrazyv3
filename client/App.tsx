@@ -240,8 +240,8 @@ const App = () => (
     <AppErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeTooltipProvider>
-        <Toaster />
-        <Sonner />
+        <SafeToaster />
+        <SafeSonner />
         <BrowserRouter>
           <Layout>
             <Routes>

@@ -28,7 +28,6 @@ import {
 import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
-  console.log("🔍 Navigation component is rendering...");
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

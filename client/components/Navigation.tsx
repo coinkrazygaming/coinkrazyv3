@@ -41,7 +41,7 @@ export default function Navigation() {
   const [playerCount, setPlayerCount] = useState<number>(0);
 
   // Real user authentication state
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, logout, getBalance, isLoading: authLoading } = useAuth();
 
   // Handle logout with redirect
   const handleLogout = async () => {

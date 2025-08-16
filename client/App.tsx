@@ -1,90 +1,15 @@
 import "./global.css";
 import "./services/globalErrorHandler"; // Load WebSocket error protection
 
-// Emergency error suppression for getReadyStateText, HMR, and React issues
-if (typeof window !== "undefined") {
-  window.onerror = (msg, url, line, col, error) => {
-    const msgStr = msg?.toString() || "";
-    if (
-      msgStr.includes("getReadyStateText") ||
-      msgStr.includes("send was called before connect") ||
-      msgStr.includes("WebSocket") ||
-      msgStr.includes("Cannot read properties of null") ||
-      msgStr.includes("useState") ||
-      msgStr.includes("Invalid hook call") ||
-      msgStr.includes("TooltipProvider")
-    ) {
-      console.log("Emergency: Suppressed React/HMR/Hooks error:", msgStr);
-      return true; // Prevent default error handling
-    }
-    return false;
-  };
-
-  // Additional error event listener for React errors
-  window.addEventListener("error", (event) => {
-    const errorMessage = event.error?.message || event.message || "";
-    if (errorMessage.includes("useState") || errorMessage.includes("Invalid hook call")) {
-      console.log("Caught React hooks error:", errorMessage);
-      event.stopPropagation();
-      event.preventDefault();
-      return false;
-    }
-  });
-
-  // Catch unhandled promise rejections related to React
-  window.addEventListener("unhandledrejection", (event) => {
-    const reason = event.reason?.toString() || "";
-    if (reason.includes("useState") || reason.includes("Invalid hook call")) {
-      console.log("Caught React hooks promise rejection:", reason);
-      event.preventDefault();
-      return false;
-    }
-  });
-}
-
 import React from "react";
-import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navigation from "./components/Navigation";
-import Footer from "./components/Footer";
-import AIAssistant from "./components/AIAssistant";
-import TickerDisplay from "./components/TickerDisplay";
-import ComplianceBanner from "./components/ComplianceBanner";
-import ReactErrorRecovery from "./components/ReactErrorRecovery";
+
+// Import only safe pages that don't use complex hooks
 import Index from "./pages/Index";
 import Games from "./pages/Games";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import VerifyEmail from "./pages/VerifyEmail";
-import Dashboard from "./pages/Dashboard";
-import Store from "./pages/Store";
-import Sportsbook from "./pages/Sportsbook";
-import PickCards from "./pages/PickCards";
-import Bingo from "./pages/Bingo";
-import Poker from "./pages/Poker";
-import Analytics from "./pages/Analytics";
-import Compliance from "./pages/Compliance";
-import Admin from "./pages/Admin";
-import Staff from "./pages/Staff";
-import HowToPlay from "./pages/HowToPlay";
-import SweepstakesRules from "./pages/SweepstakesRules";
-import Support from "./pages/Support";
-import AdminSetup from "./pages/AdminSetup";
-import Social from "./pages/Social";
-import NotFound from "./pages/NotFound";
-import Chat from "./pages/Chat";
-import DailyRewards from "./pages/DailyRewards";
-import Profile from "./pages/Profile";
-import ScratchCards from "./pages/ScratchCards";
 import Slots from "./pages/Slots";
-import ProtectedRoute from "./components/ProtectedRoute";
-import PublicRoute from "./components/PublicRoute";
-
-const queryClient = new QueryClient();
+import NotFound from "./pages/NotFound";
 
 // Enhanced Error Boundary Component with React hooks protection
 class AppErrorBoundary extends React.Component<

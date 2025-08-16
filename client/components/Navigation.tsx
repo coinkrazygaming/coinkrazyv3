@@ -159,16 +159,18 @@ export default function Navigation() {
               <div className="flex items-center gap-3">
                 {/* Currency Toggle */}
                 <div className="flex items-center gap-2 text-sm">
-                  <span className={`${selectedCurrency === "GC" ? "text-gold-400 font-medium" : "text-muted-foreground"}`}>
-                    GC (FUN)
+                  <span className={`${selectedCurrency === "GC" ? "text-gold-400 font-medium" : "text-muted-foreground"} transition-colors`}>
+                    GC
                   </span>
+                  <span className="text-xs text-muted-foreground">FUN</span>
                   <Switch
                     checked={selectedCurrency === "SC"}
                     onCheckedChange={(checked) => setSelectedCurrency(checked ? "SC" : "GC")}
                     className="data-[state=checked]:bg-green-500"
                   />
-                  <span className={`${selectedCurrency === "SC" ? "text-green-400 font-medium" : "text-muted-foreground"}`}>
-                    SC (REAL)
+                  <span className="text-xs text-muted-foreground">REAL</span>
+                  <span className={`${selectedCurrency === "SC" ? "text-green-400 font-medium" : "text-muted-foreground"} transition-colors`}>
+                    SC
                   </span>
                 </div>
 

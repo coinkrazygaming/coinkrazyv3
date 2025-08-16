@@ -41,8 +41,10 @@ const App = () => (
 );
 
 const container = document.getElementById("root");
+let root: any = null;
+
 if (container) {
-  const root = createRoot(container);
+  root = createRoot(container);
   root.render(<App />);
   console.log("✅ CoinKrazy app mounted successfully");
 } else {
@@ -51,8 +53,7 @@ if (container) {
 
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
-    if (container) {
-      const root = createRoot(container);
+    if (root) {
       root.render(<App />);
     }
   });

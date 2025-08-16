@@ -1,9 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import AnimatedLogo from "@/components/ui/AnimatedLogo";
 import { playerCountService } from "@/services/playerCountService";
-import EnhancedWalletBalance from "@/components/EnhancedWalletBalance";
 import MyAccountDropdown from "@/components/MyAccountDropdown";
 import {
   Coins,

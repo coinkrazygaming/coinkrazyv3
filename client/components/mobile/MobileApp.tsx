@@ -8,7 +8,7 @@ import MobileCheckout from "./MobileCheckout";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { useToast } from "../../hooks/use-toast";
-import { useMobile } from "../../hooks/use-mobile";
+import { useIsMobile } from "../../hooks/use-mobile";
 
 interface Package {
   id: string;

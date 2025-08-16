@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Import Navigation
-import TestNavigation from "./components/TestNavigation";
+import Navigation from "./components/Navigation";
 
 // Import pages
 import Index from "./pages/Index";

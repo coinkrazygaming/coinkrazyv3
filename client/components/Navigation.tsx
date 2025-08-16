@@ -279,13 +279,6 @@ export default function Navigation() {
           </div>
         )}
 
-        {/* Click outside to close wallet dropdown */}
-        {showWalletCurrency && (
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowWalletCurrency(false)}
-          />
-        )}
       </div>
     </nav>
   );

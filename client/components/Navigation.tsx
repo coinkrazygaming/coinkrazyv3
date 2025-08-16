@@ -30,10 +30,10 @@ import { useAuth } from "../hooks/useAuth";
 export default function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [realTimeData, setRealTimeData] = React.useState<RealTimeData | null>(null);
-  const [selectedCurrency, setSelectedCurrency] = React.useState<"GC" | "SC">("GC");
-  const [playerCount, setPlayerCount] = React.useState<number>(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
+  const [playerCount, setPlayerCount] = useState<number>(0);
 
   // Real user authentication state
   const { user, logout, getBalance, isLoading: authLoading } = useAuth();

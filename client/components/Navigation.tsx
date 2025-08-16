@@ -216,21 +216,42 @@ export default function Navigation() {
           <div className="md:hidden py-4 border-t border-border/50">
             <div className="space-y-2">
               {/* Mobile real-time stats */}
-              <div className="px-3 py-2 text-center">
+              <div className="px-3 py-2 text-center space-y-2">
                 <Badge
                   variant="outline"
-                  className="border-gold-500 text-gold-400 mb-2"
+                  className="border-purple-500 text-purple-400"
                 >
                   <Users className="w-3 h-3 mr-1" />
-                  {realTimeData
-                    ? realTimeData.playersOnline.toLocaleString()
-                    : "..."}{" "}
-                  Online
+                  {playerCount > 0 ? playerCount.toLocaleString() : "..."} Online
                 </Badge>
-                {user?.isLoggedIn && walletBalance && (
-                  <div className="text-xs text-muted-foreground">
-                    Balance:{" "}
-                    {formatCurrency(walletBalance.usdBalance, currentCurrency)}
+
+                {/* Mobile Currency Toggle and Balance */}
+                {user?.isLoggedIn && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-center gap-2 text-xs">
+                      <span className={`${selectedCurrency === "GC" ? "text-gold-400 font-medium" : "text-muted-foreground"}`}>
+                        GC (FUN)
+                      </span>
+                      <Switch
+                        checked={selectedCurrency === "SC"}
+                        onCheckedChange={(checked) => setSelectedCurrency(checked ? "SC" : "GC")}
+                        className="data-[state=checked]:bg-green-500 scale-75"
+                      />
+                      <span className={`${selectedCurrency === "SC" ? "text-green-400 font-medium" : "text-muted-foreground"}`}>
+                        SC (REAL)
+                      </span>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={`${
+                        selectedCurrency === "GC"
+                          ? "border-gold-500 text-gold-400 bg-gold-500/10"
+                          : "border-green-500 text-green-400 bg-green-500/10"
+                      } font-mono text-xs`}
+                    >
+                      <Wallet className="w-3 h-3 mr-1" />
+                      {formatBalance(getBalance(selectedCurrency), selectedCurrency)}
+                    </Badge>
                   </div>
                 )}
               </div>

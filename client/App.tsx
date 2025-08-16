@@ -166,62 +166,46 @@ const SafeTooltipProvider = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Safe Navigation wrapper
+// Safe Navigation wrapper - completely disabled during development to prevent React hooks errors
 const SafeNavigation = () => {
-  try {
-    // Check if React hooks are available
-    if (!React || typeof React.useState !== 'function') {
-      return (
-        <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <div className="text-xl font-bold">CoinKrazy</div>
-              <div className="text-sm">Loading...</div>
+  // Always return fallback navigation during development to prevent hooks errors
+  return (
+    <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-gold-500 rounded-full flex items-center justify-center text-white font-bold">
+              🎰
+            </div>
+            <div className="text-xl font-bold bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">
+              CoinKrazy
             </div>
           </div>
-        </nav>
-      );
-    }
-    return <Navigation />;
-  } catch (error) {
-    console.log("Navigation error, using fallback:", error);
-    return (
-      <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="text-xl font-bold">CoinKrazy</div>
-            <div className="text-sm">Navigation Error - Refresh Page</div>
+          <div className="hidden md:flex items-center gap-6">
+            <a href="/" className="text-muted-foreground hover:text-foreground">Home</a>
+            <a href="/games" className="text-muted-foreground hover:text-foreground">Games</a>
+            <a href="/slots" className="text-muted-foreground hover:text-foreground">Slots</a>
+            <a href="/store" className="text-muted-foreground hover:text-foreground">Store</a>
           </div>
+          <div className="text-sm text-muted-foreground">Safe Mode</div>
         </div>
-      </nav>
-    );
-  }
+      </div>
+    </nav>
+  );
 };
 
-// Safe Toaster wrapper
+// Safe Toaster wrapper - completely disabled to prevent hooks errors
 const SafeToaster = () => {
-  try {
-    if (!React || typeof React.useState !== 'function') {
-      return null;
-    }
-    return <Toaster />;
-  } catch (error) {
-    console.log("Toaster error, disabling toasts:", error);
-    return null;
-  }
+  // Return null to completely disable toasts and prevent useToast hook errors
+  console.log("Toaster disabled in safe mode to prevent React hooks errors");
+  return null;
 };
 
-// Safe Sonner wrapper
+// Safe Sonner wrapper - completely disabled to prevent hooks errors
 const SafeSonner = () => {
-  try {
-    if (!React || typeof React.useState !== 'function' || typeof React.useContext !== 'function') {
-      return null;
-    }
-    return <Sonner />;
-  } catch (error) {
-    console.log("Sonner error, disabling notifications:", error);
-    return null;
-  }
+  // Return null to completely disable sonner and prevent useContext hook errors
+  console.log("Sonner disabled in safe mode to prevent React hooks errors");
+  return null;
 };
 
 // Safe ComplianceBanner wrapper

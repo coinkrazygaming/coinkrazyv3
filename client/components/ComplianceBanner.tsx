@@ -21,7 +21,7 @@ import {
 import { Shield, AlertTriangle, CheckCircle, X } from "lucide-react";
 import { complianceService } from "../services/complianceService";
 
-const ComplianceBanner: React.FC = () => {
+const ComplianceBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
   const [showAgeDialog, setShowAgeDialog] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false);

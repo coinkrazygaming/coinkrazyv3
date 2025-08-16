@@ -12,7 +12,7 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 
-// Import all pages with full functionality
+// Import only existing pages
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -21,21 +21,25 @@ import Slots from "./pages/Slots";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import AdminSetup from "./pages/AdminSetup";
 import GoldCoinStore from "./pages/GoldCoinStore";
+import Store from "./pages/Store";
 import Bingo from "./pages/Bingo";
 import Chat from "./pages/Chat";
 import Analytics from "./pages/Analytics";
-import Banking from "./pages/Banking";
 import Compliance from "./pages/Compliance";
 import DailyRewards from "./pages/DailyRewards";
-import LiveGames from "./pages/LiveGames";
 import Poker from "./pages/Poker";
-import Promotions from "./pages/Promotions";
-import Settings from "./pages/Settings";
-import SportsBook from "./pages/SportsBook";
+import Sportsbook from "./pages/Sportsbook";
 import Support from "./pages/Support";
-import Tournaments from "./pages/Tournaments";
-import VIP from "./pages/VIP";
+import ScratchCards from "./pages/ScratchCards";
+import PickCards from "./pages/PickCards";
+import Social from "./pages/Social";
+import Staff from "./pages/Staff";
+import SlotsHub from "./pages/SlotsHub";
+import HowToPlay from "./pages/HowToPlay";
+import SweepstakesRules from "./pages/SweepstakesRules";
+import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
 // Full-featured app with complete functionality restored
@@ -50,26 +54,30 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/games" element={<Games />} />
               <Route path="/slots" element={<Slots />} />
+              <Route path="/slots-hub" element={<SlotsHub />} />
+              <Route path="/scratch-cards" element={<ScratchCards />} />
+              <Route path="/pick-cards" element={<PickCards />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin-setup" element={<AdminSetup />} />
+              <Route path="/store" element={<Store />} />
               <Route path="/gold-store" element={<GoldCoinStore />} />
               <Route path="/bingo" element={<Bingo />} />
+              <Route path="/poker" element={<Poker />} />
+              <Route path="/sportsbook" element={<Sportsbook />} />
               <Route path="/chat" element={<Chat />} />
+              <Route path="/social" element={<Social />} />
               <Route path="/analytics" element={<Analytics />} />
-              <Route path="/banking" element={<Banking />} />
               <Route path="/compliance" element={<Compliance />} />
               <Route path="/daily-rewards" element={<DailyRewards />} />
-              <Route path="/live-games" element={<LiveGames />} />
-              <Route path="/poker" element={<Poker />} />
-              <Route path="/promotions" element={<Promotions />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/sportsbook" element={<SportsBook />} />
               <Route path="/support" element={<Support />} />
-              <Route path="/tournaments" element={<Tournaments />} />
-              <Route path="/vip" element={<VIP />} />
+              <Route path="/staff" element={<Staff />} />
+              <Route path="/how-to-play" element={<HowToPlay />} />
+              <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

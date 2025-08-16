@@ -36,8 +36,12 @@ export default function Navigation() {
   const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
   const [playerCount, setPlayerCount] = useState<number>(0);
 
-  // Real user authentication state
-  const { user, logout, getBalance, isLoading: authLoading } = useAuth();
+  // Real user authentication state - temporarily disabled for debugging
+  // const { user, logout, getBalance, isLoading: authLoading } = useAuth();
+  const user = null; // temporary mock
+  const logout = async () => {}; // temporary mock
+  const getBalance = () => 0; // temporary mock
+  const authLoading = false; // temporary mock
 
   // Handle logout with redirect
   const handleLogout = async () => {

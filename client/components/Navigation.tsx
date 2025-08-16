@@ -45,7 +45,7 @@ export default function Navigation() {
   };
 
   // Debug logging
-  useEffect(() => {
+  React.useEffect(() => {
     console.log("Navigation: Auth state changed", {
       user: user
         ? {

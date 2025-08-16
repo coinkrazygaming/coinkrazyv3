@@ -45,7 +45,7 @@ export default function Navigation() {
   };
 
   // Debug logging
-  React.useEffect(() => {
+  useEffect(() => {
     console.log("Navigation: Auth state changed", {
       user: user
         ? {
@@ -59,7 +59,7 @@ export default function Navigation() {
     });
   }, [user, authLoading]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Subscribe to real-time analytics data
     const unsubscribeAnalytics = analyticsService.subscribe(
       "navigation",

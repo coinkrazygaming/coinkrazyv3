@@ -96,49 +96,10 @@ const safeInitialize = () => {
 
 safeInitialize();
 
-// HMR support with comprehensive error protection and React context safety
+// Disable HMR completely to prevent React context corruption
 if (import.meta.hot) {
-  // Disable HMR errors temporarily
-  const originalConsoleError = console.error;
-  const originalConsoleWarn = console.warn;
-
-  console.error = (...args) => {
-    const message = args.join(" ");
-    if (
-      message.includes("send was called before connect") ||
-      message.includes("WebSocket") ||
-      message.includes("HMR") ||
-      message.includes("Cannot read properties of null") ||
-      message.includes("useState") ||
-      message.includes("useContext") ||
-      message.includes("Invalid hook call") ||
-      message.includes("TooltipProvider") ||
-      message.includes("useAuth") ||
-      message.includes("useToast")
-    ) {
-      return; // Suppress HMR-related and React hook errors
-    }
-    originalConsoleError.apply(console, args);
-  };
-
-  console.warn = (...args) => {
-    const message = args.join(" ");
-    if (
-      message.includes("send was called before connect") ||
-      message.includes("WebSocket") ||
-      message.includes("HMR") ||
-      message.includes("Invalid hook call")
-    ) {
-      return; // Suppress HMR-related warnings
-    }
-    originalConsoleWarn.apply(console, args);
-  };
-
   import.meta.hot.accept(() => {
-    // Simplified and safer HMR accept - just reload the page to avoid React context corruption
-    console.log("HMR update detected, performing safe page reload to prevent React hooks corruption");
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    console.log("HMR disabled in safe mode - refreshing page");
+    setTimeout(() => window.location.reload(), 100);
   });
 }

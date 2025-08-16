@@ -47,8 +47,11 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     exclude: ["@vite/client"],
-    include: ["react", "react-dom"],
+    include: ["react", "react-dom", "react/jsx-runtime"],
     force: true,
+    esbuildOptions: {
+      resolveExtensions: [".tsx", ".ts", ".jsx", ".js"],
+    },
   },
 }));
 

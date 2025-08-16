@@ -36,7 +36,7 @@ const MobileApp: React.FC<MobileAppProps> = ({ className }) => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isAppMode, setIsAppMode] = useState(false);
   const { toast } = useToast();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     initializeMobileApp();

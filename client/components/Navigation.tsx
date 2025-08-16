@@ -225,17 +225,19 @@ export default function Navigation() {
                 {/* Mobile Currency Toggle and Balance */}
                 {user?.isLoggedIn && (
                   <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-2 text-xs">
-                      <span className={`${selectedCurrency === "GC" ? "text-gold-400 font-medium" : "text-muted-foreground"}`}>
-                        GC (FUN)
+                    <div className="flex items-center justify-center gap-1 text-xs">
+                      <span className={`${selectedCurrency === "GC" ? "text-gold-400 font-medium" : "text-muted-foreground"} transition-colors`}>
+                        GC
                       </span>
+                      <span className="text-[10px] text-muted-foreground">FUN</span>
                       <Switch
                         checked={selectedCurrency === "SC"}
                         onCheckedChange={(checked) => setSelectedCurrency(checked ? "SC" : "GC")}
-                        className="data-[state=checked]:bg-green-500 scale-75"
+                        className="data-[state=checked]:bg-green-500 scale-75 mx-1"
                       />
-                      <span className={`${selectedCurrency === "SC" ? "text-green-400 font-medium" : "text-muted-foreground"}`}>
-                        SC (REAL)
+                      <span className="text-[10px] text-muted-foreground">REAL</span>
+                      <span className={`${selectedCurrency === "SC" ? "text-green-400 font-medium" : "text-muted-foreground"} transition-colors`}>
+                        SC
                       </span>
                     </div>
                     <Badge

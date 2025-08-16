@@ -62,67 +62,39 @@ const App = () => (
   </BrowserRouter>
 );
 
-// Ensure root is only created once with React availability check
+// Safe initialization
 const container = document.getElementById("root")!;
 
-// Store root reference globally to persist across HMR updates
-declare global {
-  var __APP_ROOT__: any;
-}
-
-// Check React availability before creating root
-const initializeApp = () => {
-  // Validate React and React-DOM are properly loaded
-  if (!React || !createRoot || typeof React.useState !== 'function') {
-    console.log("React not ready, retrying in 10ms...");
-    setTimeout(initializeApp, 10);
-    return;
-  }
-
-  // Additional validation for React version compatibility
+// Create and render the minimal app
+const safeInitialize = () => {
   try {
-    // Test React hooks in a safe way
-    const testElement = React.createElement('div');
-    if (!testElement) {
-      throw new Error("React.createElement not working");
+    if (!React || typeof React.createElement !== 'function') {
+      console.log("React not ready, retrying...");
+      setTimeout(safeInitialize, 100);
+      return;
     }
 
-    if (!globalThis.__APP_ROOT__) {
-      globalThis.__APP_ROOT__ = createRoot(container);
-    }
-
-    globalThis.__APP_ROOT__.render(<App />);
-    console.log("App successfully initialized with React context");
+    const root = createRoot(container);
+    root.render(<App />);
+    console.log("Minimal app initialized successfully in safe mode");
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.log("App initialization failed:", errorMessage);
-
-    // Specific handling for React hooks errors
-    if (errorMessage.includes("useState") || errorMessage.includes("Invalid hook call")) {
-      console.log("React hooks error detected during initialization, waiting before retry...");
-      setTimeout(() => {
-        try {
-          globalThis.__APP_ROOT__ = createRoot(container);
-          globalThis.__APP_ROOT__.render(<App />);
-        } catch (retryError) {
-          console.log("App retry failed, React context may be corrupted:", retryError);
-        }
-      }, 200);
-    } else {
-      // Standard retry for other errors
-      setTimeout(() => {
-        try {
-          globalThis.__APP_ROOT__ = createRoot(container);
-          globalThis.__APP_ROOT__.render(<App />);
-        } catch (retryError) {
-          console.log("App retry failed, manual refresh may be required:", retryError);
-        }
-      }, 100);
-    }
+    console.log("Minimal app initialization error:", error);
+    // Show fallback HTML
+    container.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif;">
+        <div style="text-align: center; padding: 2rem;">
+          <h1 style="color: #dc2626; margin-bottom: 1rem;">CoinKrazy - Safe Mode</h1>
+          <p style="color: #6b7280; margin-bottom: 1rem;">React context is recovering...</p>
+          <button onclick="window.location.reload()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    `;
   }
 };
 
-initializeApp();
+safeInitialize();
 
 // HMR support with comprehensive error protection and React context safety
 if (import.meta.hot) {

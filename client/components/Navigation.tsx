@@ -187,7 +187,7 @@ export default function Navigation() {
                   } font-mono`}
                 >
                   <Wallet className="w-3 h-3 mr-1" />
-                  {formatBalance(user.getBalance(selectedCurrency), selectedCurrency)}
+                  {formatBalance(getBalance(selectedCurrency), selectedCurrency)}
                 </Badge>
               </div>
             )}

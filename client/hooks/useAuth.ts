@@ -24,10 +24,10 @@ interface AuthHook {
 }
 
 export function useAuth(): AuthHook {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Get initial user from auth service
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);

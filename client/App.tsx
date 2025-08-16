@@ -22,6 +22,11 @@ const App = () => (
   <BrowserRouter>
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
+      <header className="bg-purple-600 text-white p-4 sticky top-0 z-50">
+        <div className="container mx-auto">
+          <h1 className="text-xl font-bold">CoinKrazy - Header Test</h1>
+        </div>
+      </header>
       <Navigation />
       <main>
         <Routes>

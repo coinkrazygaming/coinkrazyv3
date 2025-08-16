@@ -27,7 +27,7 @@ const App = () => (
           <h1 className="text-xl font-bold">CoinKrazy - Header Test</h1>
         </div>
       </header>
-      <Navigation />
+      <TestNavigation />
       <main>
         <Routes>
           <Route path="/" element={<Index />} />

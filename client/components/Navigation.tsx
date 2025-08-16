@@ -24,7 +24,6 @@ import { useNavigate } from "react-router-dom";
 import {
   analyticsService,
   type RealTimeData,
-  type UserWalletBalance,
 } from "../services/realTimeAnalytics";
 import { useAuth } from "../hooks/useAuth";
 

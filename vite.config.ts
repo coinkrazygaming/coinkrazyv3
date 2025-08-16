@@ -32,7 +32,12 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-  plugins: [react(), expressPlugin()],
+  plugins: [
+    react({
+      jsxRuntime: 'classic'
+    }),
+    expressPlugin()
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),

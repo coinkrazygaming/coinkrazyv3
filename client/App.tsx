@@ -3,16 +3,40 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Import the actual pages
+// Import Navigation
+import Navigation from "./components/Navigation";
+
+// Import pages
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Games from "./pages/Games";
+import Slots from "./pages/Slots";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
+import GoldCoinStore from "./pages/GoldCoinStore";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
   <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/slots" element={<Slots />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/gold-store" element={<GoldCoinStore />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </div>
   </BrowserRouter>
 );
 

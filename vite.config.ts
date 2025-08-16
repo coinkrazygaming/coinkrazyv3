@@ -16,9 +16,21 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
       port: 24678,
     },
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
   },
   build: {
     outDir: "dist/spa",
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`,
+      },
+    },
   },
   plugins: [react(), expressPlugin()],
   resolve: {
@@ -26,9 +38,15 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
+    dedupe: ["react", "react-dom"],
+  },
+  define: {
+    __DEV__: mode === "development",
   },
   optimizeDeps: {
-    exclude: ['@vite/client'],
+    exclude: ["@vite/client"],
+    include: ["react", "react-dom"],
+    force: true,
   },
 }));
 

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Logo from "@/components/ui/Logo";
+import AnimatedLogo from "@/components/ui/AnimatedLogo";
 import { playerCountService } from "@/services/playerCountService";
 import EnhancedWalletBalance from "@/components/EnhancedWalletBalance";
 import MyAccountDropdown from "@/components/MyAccountDropdown";
@@ -114,7 +114,7 @@ export default function Navigation() {
     { path: "/", label: "Home", icon: Crown },
     { path: "/games", label: "Games", icon: Coins },
     { path: "/slots", label: "Slots", icon: Zap },
-    { path: "/store", label: "Store", icon: Plus },
+    { path: "/gold-store", label: "Gold Store", icon: Plus },
     {
       path: "/dashboard",
       label: "Dashboard",
@@ -155,7 +155,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" showText={true} />
+            <AnimatedLogo size="md" showText={true} animated={true} />
           </Link>
 
           {/* Desktop Navigation */}

@@ -101,6 +101,7 @@ import {
   StoreAnalytics,
   StoreSettings,
 } from "@/services/goldStoreService";
+import { formatCurrency, formatPrice } from "@/utils/priceUtils";
 
 interface PackageFormData {
   name: string;
@@ -595,14 +596,14 @@ export default function GoldStoreManager() {
               {packageForm.originalPrice &&
                 packageForm.originalPrice > packageForm.price && (
                   <div className="line-through text-sm opacity-60">
-                    ${packageForm.originalPrice.toFixed(2)}
+                    ${formatPrice(packageForm.originalPrice)}
                   </div>
                 )}
               <div
                 className="text-3xl font-bold"
                 style={{ color: packageForm.design.accentColor }}
               >
-                ${packageForm.price.toFixed(2)}
+                ${formatPrice(packageForm.price)}
               </div>
             </div>
 
@@ -1639,7 +1640,7 @@ export default function GoldStoreManager() {
                               : pkg.currency === "GBP"
                                 ? "£"
                                 : "C$"}
-                          {pkg.price.toFixed(2)}
+                          {formatPrice(pkg.price)}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           Price
@@ -1884,7 +1885,7 @@ export default function GoldStoreManager() {
                             </div>
                           </td>
                           <td className="p-2 font-mono">
-                            ${purchase.price.toFixed(2)} {purchase.currency}
+                            ${formatPrice(purchase.price)} {purchase.currency}
                           </td>
                           <td className="p-2 capitalize">
                             {purchase.paymentMethod.replace("_", " ")}

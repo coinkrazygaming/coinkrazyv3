@@ -32,7 +32,7 @@ import {
   Ban,
   MessageSquare,
   RefreshCw,
-  MarkAsRead,
+  CheckCircle2,
   Trash2,
   Eye,
   Settings,

@@ -29,6 +29,8 @@ import SlotsGameManagement from "@/components/SlotsGameManagement";
 import AdminToolbar from "@/components/AdminToolbar";
 import AdminSettingsPanel from "@/components/AdminSettingsPanel";
 import AdminNotificationCenter from "@/components/AdminNotificationCenter";
+import BankingPaymentsAdmin from "@/components/admin/BankingPaymentsAdmin";
+import PackageEditor from "@/components/admin/PackageEditor";
 import Compliance from "./Compliance";
 import {
   Shield,
@@ -1005,7 +1007,7 @@ export default function Admin() {
 
           {/* Banking Administration */}
           <TabsContent value="banking" className="mt-6">
-            <BankingAdmin />
+            <BankingPaymentsAdmin />
           </TabsContent>
 
           {/* Scratch Cards Administration */}
@@ -1055,7 +1057,7 @@ export default function Admin() {
 
           {/* Gold Coin Store Management */}
           <TabsContent value="store" className="mt-6">
-            <GoldStoreManager />
+            <PackageEditor />
           </TabsContent>
 
           {/* Bonus Management */}

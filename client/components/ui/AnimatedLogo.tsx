@@ -11,7 +11,7 @@ interface AnimatedLogoProps {
   showCoins?: boolean;
 }
 
-const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
+const AnimatedLogo = ({
   size = "md",
   showText = true,
   className = "",

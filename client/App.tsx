@@ -1,76 +1,18 @@
 import "./global.css";
-<<<<<<< HEAD
 import "./services/globalErrorHandler"; // Load WebSocket error protection
 
-=======
->>>>>>> refs/remotes/origin/main
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-<<<<<<< HEAD
-// Import only safe pages that don't use any React hooks
-import Index from "./pages/Index.safe";
-import Games from "./pages/Games.safe";
-import Slots from "./pages/Slots.safe";
-import NotFound from "./pages/NotFound.safe";
-
-// Minimal safe layout without any hook-using components
-const MinimalLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen flex flex-col">
-    {/* Simple header without hooks */}
-    <nav className="bg-gradient-to-r from-card/80 via-purple-900/10 to-card/80 backdrop-blur-sm border-b border-purple-500/30 sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-gold-500 rounded-full flex items-center justify-center text-white font-bold">
-              😎
-            </div>
-            <div className="text-xl font-bold bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">
-              CoinKrazy
-            </div>
-          </div>
-          <div className="hidden md:flex items-center gap-6">
-            <a
-              href="/"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Home
-            </a>
-            <a
-              href="/games"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Games
-            </a>
-            <a
-              href="/slots"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Slots
-            </a>
-          </div>
-          <div className="text-sm text-green-400 font-medium">Safe Mode ✅</div>
-        </div>
-      </div>
-    </nav>
-
-    {/* Main content */}
-    <main className="flex-1">{children}</main>
-
-    {/* Simple footer without hooks */}
-    <footer className="bg-muted/50 py-8 text-center text-sm text-muted-foreground border-t">
-      <div className="container mx-auto px-4">
-        <p>CoinKrazy © 2024 - Safe Mode Active</p>
-      </div>
-    </footer>
-  </div>
-);
-=======
-// Import Navigation
+// Import Navigation and other components
 import Navigation from "./components/Navigation";
+import { AuthProvider } from "./hooks/useAuth";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { Toaster } from "./components/ui/toaster";
+import { Toaster as Sonner } from "./components/ui/sonner";
 
-// Import pages
+// Import all pages with full functionality
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -80,99 +22,82 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import GoldCoinStore from "./pages/GoldCoinStore";
+import Bingo from "./pages/Bingo";
+import Chat from "./pages/Chat";
+import Analytics from "./pages/Analytics";
+import Banking from "./pages/Banking";
+import Compliance from "./pages/Compliance";
+import DailyRewards from "./pages/DailyRewards";
+import LiveGames from "./pages/LiveGames";
+import Poker from "./pages/Poker";
+import Promotions from "./pages/Promotions";
+import Settings from "./pages/Settings";
+import SportsBook from "./pages/SportsBook";
+import Support from "./pages/Support";
+import Tournaments from "./pages/Tournaments";
+import VIP from "./pages/VIP";
 import NotFound from "./pages/NotFound";
->>>>>>> refs/remotes/origin/main
 
-// Minimal app without any hook-using components
+// Full-featured app with complete functionality restored
 const App = () => (
   <BrowserRouter>
-<<<<<<< HEAD
-    <MinimalLayout>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/games" element={<Games />} />
-        <Route path="/slots" element={<Slots />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </MinimalLayout>
-  </BrowserRouter>
-);
-
-// Safe initialization
-const container = document.getElementById("root")!;
-
-// Create and render the minimal app
-const safeInitialize = () => {
-  try {
-    if (!React || typeof React.createElement !== "function") {
-      console.log("React not ready, retrying...");
-      setTimeout(safeInitialize, 100);
-      return;
-    }
-
-    const root = createRoot(container);
-    root.render(<App />);
-    console.log("Minimal app initialized successfully in safe mode");
-  } catch (error) {
-    console.log("Minimal app initialization error:", error);
-    // Show fallback HTML
-    container.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif;">
-        <div style="text-align: center; padding: 2rem;">
-          <h1 style="color: #dc2626; margin-bottom: 1rem;">CoinKrazy - Safe Mode</h1>
-          <p style="color: #6b7280; margin-bottom: 1rem;">React context is recovering...</p>
-          <button onclick="window.location.reload()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">
-            Refresh Page
-          </button>
+    <AuthProvider>
+      <TooltipProvider>
+        <div className="min-h-screen bg-background">
+          <Navigation />
+          <main>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/slots" element={<Slots />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/gold-store" element={<GoldCoinStore />} />
+              <Route path="/bingo" element={<Bingo />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/banking" element={<Banking />} />
+              <Route path="/compliance" element={<Compliance />} />
+              <Route path="/daily-rewards" element={<DailyRewards />} />
+              <Route path="/live-games" element={<LiveGames />} />
+              <Route path="/poker" element={<Poker />} />
+              <Route path="/promotions" element={<Promotions />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/sportsbook" element={<SportsBook />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/tournaments" element={<Tournaments />} />
+              <Route path="/vip" element={<VIP />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Toaster />
+          <Sonner />
         </div>
-      </div>
-    `;
-  }
-};
-
-safeInitialize();
-
-// Disable HMR completely to prevent React context corruption
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    console.log("HMR disabled in safe mode - refreshing page");
-    setTimeout(() => window.location.reload(), 100);
-=======
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/slots" element={<Slots />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/gold-store" element={<GoldCoinStore />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-    </div>
+      </TooltipProvider>
+    </AuthProvider>
   </BrowserRouter>
 );
 
+// Initialize the full-featured application
 const container = document.getElementById("root");
 if (container) {
   const root = createRoot(container);
   root.render(<App />);
-  console.log("✅ CoinKrazy app mounted successfully");
+  console.log("✅ CoinKrazy app initialized successfully - Full functionality restored");
 } else {
   console.error("❌ Root container not found");
 }
 
+// HMR for development
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
     if (container) {
       const root = createRoot(container);
       root.render(<App />);
+      console.log("🔄 HMR update applied - Full functionality active");
     }
->>>>>>> refs/remotes/origin/main
   });
 }

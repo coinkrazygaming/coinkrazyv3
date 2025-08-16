@@ -107,22 +107,12 @@ export default function Navigation() {
     return true;
   });
 
-  const formatCurrency = (amount: number, currency: string) => {
-    switch (currency) {
-      case "BTC":
-        return `₿${(amount / 45000).toFixed(6)}`; // Rough BTC conversion
-      case "ETH":
-        return `Ξ${(amount / 2500).toFixed(4)}`; // Rough ETH conversion
-      default:
-        return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatBalance = (amount: number, currency: "GC" | "SC") => {
+    if (currency === "GC") {
+      return `${amount.toLocaleString()} GC`;
+    } else {
+      return `${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SC`;
     }
-  };
-
-  const toggleCurrency = () => {
-    const currencies: ("USD" | "BTC" | "ETH")[] = ["USD", "BTC", "ETH"];
-    const currentIndex = currencies.indexOf(currentCurrency);
-    const nextIndex = (currentIndex + 1) % currencies.length;
-    setCurrentCurrency(currencies[nextIndex]);
   };
 
   return (

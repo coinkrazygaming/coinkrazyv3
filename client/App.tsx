@@ -5,11 +5,11 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Import only safe pages that don't use complex hooks
-import Index from "./pages/Index";
-import Games from "./pages/Games";
-import Slots from "./pages/Slots";
-import NotFound from "./pages/NotFound";
+// Import only safe pages that don't use any React hooks
+import Index from "./pages/Index.safe";
+import Games from "./pages/Games.safe";
+import Slots from "./pages/Slots.safe";
+import NotFound from "./pages/NotFound.safe";
 
 // Minimal safe layout without any hook-using components
 const MinimalLayout = ({ children }: { children: React.ReactNode }) => (

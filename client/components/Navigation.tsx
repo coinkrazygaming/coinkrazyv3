@@ -80,33 +80,11 @@ export default function Navigation() {
       },
     );
 
-    // Load wallet balance if user is logged in
-    if (user?.isLoggedIn) {
-      loadWalletBalance();
-      const walletInterval = setInterval(loadWalletBalance, 5000); // Update every 5 seconds
-      return () => {
-        clearInterval(walletInterval);
-        unsubscribeAnalytics();
-        unsubscribePlayers();
-      };
-    }
-
     return () => {
       unsubscribeAnalytics();
       unsubscribePlayers();
     };
   }, [user?.isLoggedIn, user?.id]);
-
-  const loadWalletBalance = async () => {
-    if (!user?.id) return;
-
-    try {
-      const balance = await analyticsService.getUserWalletBalance(user.id);
-      setWalletBalance(balance);
-    } catch (error) {
-      console.error("Failed to load wallet balance:", error);
-    }
-  };
 
   const navItems = [
     { path: "/", label: "Home", icon: Crown },

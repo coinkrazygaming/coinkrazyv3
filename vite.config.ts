@@ -52,8 +52,18 @@ export default defineConfig(({ mode }) => ({
     __DEV__: mode === "development",
   },
   optimizeDeps: {
-    include: ["react", "react-dom"],
+    include: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime"
+    ],
     force: true,
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    }
   },
 }));
 

@@ -30,14 +30,14 @@ import {
 import Logo from "@/components/ui/Logo";
 
 export default function Index() {
-  const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [playerCount, setPlayerCount] = useState<number>(0);
-  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(
+  const [realTimeData, setRealTimeData] = React.useState<RealTimeData | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [playerCount, setPlayerCount] = React.useState<number>(0);
+  const [platformStats, setPlatformStats] = React.useState<PlatformStats | null>(
     null,
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Subscribe to real-time analytics updates
     const unsubscribeAnalytics = analyticsService.subscribe(
       "homepage",

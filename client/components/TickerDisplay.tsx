@@ -18,7 +18,7 @@ interface TickerDisplayProps {
   className?: string;
 }
 
-const TickerDisplay: React.FC<TickerDisplayProps> = ({ className = "" }) => {
+const TickerDisplay = ({ className = "" }: TickerDisplayProps) => {
   const [messages, setMessages] = useState<TickerMessage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);

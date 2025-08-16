@@ -41,20 +41,10 @@ const App = () => (
 );
 
 const container = document.getElementById("root");
-let root: any = null;
-
 if (container) {
-  root = createRoot(container);
+  const root = createRoot(container);
   root.render(<App />);
   console.log("✅ CoinKrazy app mounted successfully");
 } else {
   console.error("❌ Root container not found");
-}
-
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    if (root) {
-      root.render(<App />);
-    }
-  });
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import * as React from "react";
 import { Link } from "react-router-dom";
 import DebugAuth from "@/components/DebugAuth";
 import { Button } from "@/components/ui/button";

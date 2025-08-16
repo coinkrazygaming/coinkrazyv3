@@ -159,8 +159,38 @@ export default function Navigation() {
               </Badge>
             </div>
 
-            {/* Enhanced Wallet Balance (logged in users only) */}
-            {user && <EnhancedWalletBalance showExchange={true} />}
+            {/* Currency Toggle and Balance (logged in users only) */}
+            {user && (
+              <div className="flex items-center gap-3">
+                {/* Currency Toggle */}
+                <div className="flex items-center gap-2 text-sm">
+                  <span className={`${selectedCurrency === "GC" ? "text-gold-400 font-medium" : "text-muted-foreground"}`}>
+                    GC (FUN)
+                  </span>
+                  <Switch
+                    checked={selectedCurrency === "SC"}
+                    onCheckedChange={(checked) => setSelectedCurrency(checked ? "SC" : "GC")}
+                    className="data-[state=checked]:bg-green-500"
+                  />
+                  <span className={`${selectedCurrency === "SC" ? "text-green-400 font-medium" : "text-muted-foreground"}`}>
+                    SC (REAL)
+                  </span>
+                </div>
+
+                {/* Balance Display */}
+                <Badge
+                  variant="outline"
+                  className={`${
+                    selectedCurrency === "GC"
+                      ? "border-gold-500 text-gold-400 bg-gold-500/10"
+                      : "border-green-500 text-green-400 bg-green-500/10"
+                  } font-mono`}
+                >
+                  <Wallet className="w-3 h-3 mr-1" />
+                  {formatBalance(user.getBalance(selectedCurrency), selectedCurrency)}
+                </Badge>
+              </div>
+            )}
 
             {/* Contact Phone */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

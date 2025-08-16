@@ -27,7 +27,7 @@ export default function GamesSafe() {
       category: "slots",
       image: "🎰",
       color: "gold",
-      href: "/slots"
+      href: "/slots",
     },
     {
       name: "Mini Games",
@@ -35,7 +35,7 @@ export default function GamesSafe() {
       category: "mini",
       image: "🎲",
       color: "purple",
-      href: "/games"
+      href: "/games",
     },
     {
       name: "Lucky Scratch Gold",
@@ -43,7 +43,7 @@ export default function GamesSafe() {
       category: "scratch",
       image: "🪙",
       color: "gold",
-      href: "/games"
+      href: "/games",
     },
     {
       name: "Bingo Hall",
@@ -51,8 +51,8 @@ export default function GamesSafe() {
       category: "bingo",
       image: "🎯",
       color: "blue",
-      href: "/bingo"
-    }
+      href: "/bingo",
+    },
   ];
 
   const gameCategories = [
@@ -61,29 +61,29 @@ export default function GamesSafe() {
       count: "25+",
       icon: Zap,
       color: "gold",
-      description: "Premium slot machines with progressive jackpots"
+      description: "Premium slot machines with progressive jackpots",
     },
     {
       title: "Live Games",
       count: "24/7",
       icon: Trophy,
       color: "casino-blue",
-      description: "Real-time multiplayer games"
+      description: "Real-time multiplayer games",
     },
     {
       title: "Table Games",
       count: "10+",
       icon: Spade,
       color: "green",
-      description: "Classic casino table games"
+      description: "Classic casino table games",
     },
     {
       title: "Mini Games",
       count: "15+",
       icon: Dice1,
       color: "purple",
-      description: "Quick play arcade style games"
-    }
+      description: "Quick play arcade style games",
+    },
   ];
 
   return (
@@ -92,9 +92,7 @@ export default function GamesSafe() {
       <div className="bg-gradient-to-r from-casino-blue/10 via-gold/5 to-casino-blue/10 py-12">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              Game Lobby
-            </h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">Game Lobby</h1>
             <p className="text-muted-foreground text-lg">
               Premium Games • Real-Time Jackpots • Instant Play
             </p>
@@ -114,7 +112,8 @@ export default function GamesSafe() {
                     Welcome to CoinKrazy! Start playing with free Gold Coins.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Safe Mode: All games available for viewing • Create account to start playing
+                    Safe Mode: All games available for viewing • Create account
+                    to start playing
                   </p>
                 </div>
               </div>
@@ -152,7 +151,10 @@ export default function GamesSafe() {
                       <Badge className="bg-gold-500/20 text-gold-400 border-gold-500/30">
                         Featured
                       </Badge>
-                      <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
+                      <Button
+                        size="sm"
+                        className="bg-gold-500 hover:bg-gold-600 text-black"
+                      >
                         Play
                       </Button>
                     </div>
@@ -168,13 +170,19 @@ export default function GamesSafe() {
           <h2 className="text-2xl font-bold mb-4">Game Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {gameCategories.map((category, index) => (
-              <Card key={index} className="text-center p-6 hover:shadow-lg transition-all duration-300 border-border/50 hover:border-gold-500/50">
+              <Card
+                key={index}
+                className="text-center p-6 hover:shadow-lg transition-all duration-300 border-border/50 hover:border-gold-500/50"
+              >
                 <category.icon
                   className={`w-12 h-12 mx-auto mb-4 ${
-                    category.color === "gold" ? "text-gold-500" : 
-                    category.color === "casino-blue" ? "text-blue-500" :
-                    category.color === "green" ? "text-green-500" :
-                    "text-purple-500"
+                    category.color === "gold"
+                      ? "text-gold-500"
+                      : category.color === "casino-blue"
+                        ? "text-blue-500"
+                        : category.color === "green"
+                          ? "text-green-500"
+                          : "text-purple-500"
                   }`}
                 />
                 <h3 className="text-xl font-bold mb-2">{category.title}</h3>
@@ -207,7 +215,10 @@ export default function GamesSafe() {
                       🎰
                     </div>
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Button size="sm" className="bg-gold-500 hover:bg-gold-600 text-black">
+                      <Button
+                        size="sm"
+                        className="bg-gold-500 hover:bg-gold-600 text-black"
+                      >
                         <Play className="w-4 h-4 mr-1" />
                         Play
                       </Button>

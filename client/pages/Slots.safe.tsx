@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Coins,
   Crown,
@@ -18,55 +18,299 @@ import {
   Eye,
   Zap,
   Target,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function SlotsSafe() {
   // Static slot games data
   const slotGames = [
-    { id: 1, name: "Coin Krazy Classic", theme: "Classic Slots", rtp: 96.8, volatility: "Medium", minBet: { GC: 20, SC: 0.20 }, emoji: "🎰" },
-    { id: 2, name: "Golden Fortune", theme: "Treasure Hunt", rtp: 97.2, volatility: "High", minBet: { GC: 50, SC: 0.50 }, emoji: "💰" },
-    { id: 3, name: "Neon Nights", theme: "Cyberpunk", rtp: 96.5, volatility: "Medium", minBet: { GC: 30, SC: 0.30 }, emoji: "🌆" },
-    { id: 4, name: "Pirate's Treasure", theme: "Adventure", rtp: 96.9, volatility: "High", minBet: { GC: 40, SC: 0.40 }, emoji: "🏴‍☠️" },
-    { id: 5, name: "Egyptian Riches", theme: "Ancient Egypt", rtp: 97.1, volatility: "Medium", minBet: { GC: 25, SC: 0.25 }, emoji: "🏺" },
-    { id: 6, name: "Space Adventure", theme: "Sci-Fi", rtp: 96.7, volatility: "Low", minBet: { GC: 15, SC: 0.15 }, emoji: "🚀" },
-    { id: 7, name: "Wild West Gold", theme: "Western", rtp: 96.8, volatility: "High", minBet: { GC: 35, SC: 0.35 }, emoji: "🤠" },
-    { id: 8, name: "Dragon's Luck", theme: "Fantasy", rtp: 97.0, volatility: "Medium", minBet: { GC: 30, SC: 0.30 }, emoji: "🐉" },
-    { id: 9, name: "Ocean Deep", theme: "Underwater", rtp: 96.6, volatility: "Low", minBet: { GC: 20, SC: 0.20 }, emoji: "🌊" },
-    { id: 10, name: "Mystical Forest", theme: "Nature", rtp: 96.9, volatility: "Medium", minBet: { GC: 25, SC: 0.25 }, emoji: "🌲" },
-    { id: 11, name: "Diamond Dreams", theme: "Luxury", rtp: 97.3, volatility: "High", minBet: { GC: 60, SC: 0.60 }, emoji: "💎" },
-    { id: 12, name: "Fruit Fiesta", theme: "Classic Fruit", rtp: 96.4, volatility: "Low", minBet: { GC: 10, SC: 0.10 }, emoji: "🍒" },
-    { id: 13, name: "Lucky Leprechaun", theme: "Irish Luck", rtp: 96.8, volatility: "Medium", minBet: { GC: 25, SC: 0.25 }, emoji: "🍀" },
-    { id: 14, name: "Viking Voyage", theme: "Norse Mythology", rtp: 97.0, volatility: "High", minBet: { GC: 45, SC: 0.45 }, emoji: "⚔️" },
-    { id: 15, name: "Candy Castle", theme: "Sweet Treats", rtp: 96.7, volatility: "Low", minBet: { GC: 15, SC: 0.15 }, emoji: "🍭" },
-    { id: 16, name: "Lightning Strike", theme: "Storm", rtp: 96.9, volatility: "High", minBet: { GC: 40, SC: 0.40 }, emoji: "⚡" },
-    { id: 17, name: "Ancient Temples", theme: "Archaeological", rtp: 96.8, volatility: "Medium", minBet: { GC: 30, SC: 0.30 }, emoji: "🏛️" },
-    { id: 18, name: "Racing Thunder", theme: "Motor Sports", rtp: 96.6, volatility: "High", minBet: { GC: 35, SC: 0.35 }, emoji: "🏎️" },
-    { id: 19, name: "Royal Crown", theme: "Monarchy", rtp: 97.2, volatility: "Medium", minBet: { GC: 50, SC: 0.50 }, emoji: "👑" },
-    { id: 20, name: "Safari Quest", theme: "African Safari", rtp: 96.7, volatility: "Low", minBet: { GC: 20, SC: 0.20 }, emoji: "🦁" },
-    { id: 21, name: "Crystal Caverns", theme: "Underground", rtp: 96.9, volatility: "Medium", minBet: { GC: 25, SC: 0.25 }, emoji: "💠" },
-    { id: 22, name: "Firebird Phoenix", theme: "Mythical", rtp: 97.1, volatility: "High", minBet: { GC: 45, SC: 0.45 }, emoji: "🔥" },
-    { id: 23, name: "Winter Wonderland", theme: "Seasonal", rtp: 96.5, volatility: "Low", minBet: { GC: 15, SC: 0.15 }, emoji: "❄️" },
-    { id: 24, name: "Samurai Honor", theme: "Japanese", rtp: 97.0, volatility: "Medium", minBet: { GC: 35, SC: 0.35 }, emoji: "⚔️" },
-    { id: 25, name: "Cosmic Jackpot", theme: "Space", rtp: 97.4, volatility: "High", minBet: { GC: 100, SC: 1.00 }, emoji: "🌌" }
+    {
+      id: 1,
+      name: "Coin Krazy Classic",
+      theme: "Classic Slots",
+      rtp: 96.8,
+      volatility: "Medium",
+      minBet: { GC: 20, SC: 0.2 },
+      emoji: "🎰",
+    },
+    {
+      id: 2,
+      name: "Golden Fortune",
+      theme: "Treasure Hunt",
+      rtp: 97.2,
+      volatility: "High",
+      minBet: { GC: 50, SC: 0.5 },
+      emoji: "💰",
+    },
+    {
+      id: 3,
+      name: "Neon Nights",
+      theme: "Cyberpunk",
+      rtp: 96.5,
+      volatility: "Medium",
+      minBet: { GC: 30, SC: 0.3 },
+      emoji: "🌆",
+    },
+    {
+      id: 4,
+      name: "Pirate's Treasure",
+      theme: "Adventure",
+      rtp: 96.9,
+      volatility: "High",
+      minBet: { GC: 40, SC: 0.4 },
+      emoji: "🏴‍☠️",
+    },
+    {
+      id: 5,
+      name: "Egyptian Riches",
+      theme: "Ancient Egypt",
+      rtp: 97.1,
+      volatility: "Medium",
+      minBet: { GC: 25, SC: 0.25 },
+      emoji: "🏺",
+    },
+    {
+      id: 6,
+      name: "Space Adventure",
+      theme: "Sci-Fi",
+      rtp: 96.7,
+      volatility: "Low",
+      minBet: { GC: 15, SC: 0.15 },
+      emoji: "🚀",
+    },
+    {
+      id: 7,
+      name: "Wild West Gold",
+      theme: "Western",
+      rtp: 96.8,
+      volatility: "High",
+      minBet: { GC: 35, SC: 0.35 },
+      emoji: "🤠",
+    },
+    {
+      id: 8,
+      name: "Dragon's Luck",
+      theme: "Fantasy",
+      rtp: 97.0,
+      volatility: "Medium",
+      minBet: { GC: 30, SC: 0.3 },
+      emoji: "🐉",
+    },
+    {
+      id: 9,
+      name: "Ocean Deep",
+      theme: "Underwater",
+      rtp: 96.6,
+      volatility: "Low",
+      minBet: { GC: 20, SC: 0.2 },
+      emoji: "🌊",
+    },
+    {
+      id: 10,
+      name: "Mystical Forest",
+      theme: "Nature",
+      rtp: 96.9,
+      volatility: "Medium",
+      minBet: { GC: 25, SC: 0.25 },
+      emoji: "🌲",
+    },
+    {
+      id: 11,
+      name: "Diamond Dreams",
+      theme: "Luxury",
+      rtp: 97.3,
+      volatility: "High",
+      minBet: { GC: 60, SC: 0.6 },
+      emoji: "💎",
+    },
+    {
+      id: 12,
+      name: "Fruit Fiesta",
+      theme: "Classic Fruit",
+      rtp: 96.4,
+      volatility: "Low",
+      minBet: { GC: 10, SC: 0.1 },
+      emoji: "🍒",
+    },
+    {
+      id: 13,
+      name: "Lucky Leprechaun",
+      theme: "Irish Luck",
+      rtp: 96.8,
+      volatility: "Medium",
+      minBet: { GC: 25, SC: 0.25 },
+      emoji: "🍀",
+    },
+    {
+      id: 14,
+      name: "Viking Voyage",
+      theme: "Norse Mythology",
+      rtp: 97.0,
+      volatility: "High",
+      minBet: { GC: 45, SC: 0.45 },
+      emoji: "⚔️",
+    },
+    {
+      id: 15,
+      name: "Candy Castle",
+      theme: "Sweet Treats",
+      rtp: 96.7,
+      volatility: "Low",
+      minBet: { GC: 15, SC: 0.15 },
+      emoji: "🍭",
+    },
+    {
+      id: 16,
+      name: "Lightning Strike",
+      theme: "Storm",
+      rtp: 96.9,
+      volatility: "High",
+      minBet: { GC: 40, SC: 0.4 },
+      emoji: "⚡",
+    },
+    {
+      id: 17,
+      name: "Ancient Temples",
+      theme: "Archaeological",
+      rtp: 96.8,
+      volatility: "Medium",
+      minBet: { GC: 30, SC: 0.3 },
+      emoji: "🏛️",
+    },
+    {
+      id: 18,
+      name: "Racing Thunder",
+      theme: "Motor Sports",
+      rtp: 96.6,
+      volatility: "High",
+      minBet: { GC: 35, SC: 0.35 },
+      emoji: "🏎️",
+    },
+    {
+      id: 19,
+      name: "Royal Crown",
+      theme: "Monarchy",
+      rtp: 97.2,
+      volatility: "Medium",
+      minBet: { GC: 50, SC: 0.5 },
+      emoji: "👑",
+    },
+    {
+      id: 20,
+      name: "Safari Quest",
+      theme: "African Safari",
+      rtp: 96.7,
+      volatility: "Low",
+      minBet: { GC: 20, SC: 0.2 },
+      emoji: "🦁",
+    },
+    {
+      id: 21,
+      name: "Crystal Caverns",
+      theme: "Underground",
+      rtp: 96.9,
+      volatility: "Medium",
+      minBet: { GC: 25, SC: 0.25 },
+      emoji: "💠",
+    },
+    {
+      id: 22,
+      name: "Firebird Phoenix",
+      theme: "Mythical",
+      rtp: 97.1,
+      volatility: "High",
+      minBet: { GC: 45, SC: 0.45 },
+      emoji: "🔥",
+    },
+    {
+      id: 23,
+      name: "Winter Wonderland",
+      theme: "Seasonal",
+      rtp: 96.5,
+      volatility: "Low",
+      minBet: { GC: 15, SC: 0.15 },
+      emoji: "❄️",
+    },
+    {
+      id: 24,
+      name: "Samurai Honor",
+      theme: "Japanese",
+      rtp: 97.0,
+      volatility: "Medium",
+      minBet: { GC: 35, SC: 0.35 },
+      emoji: "⚔️",
+    },
+    {
+      id: 25,
+      name: "Cosmic Jackpot",
+      theme: "Space",
+      rtp: 97.4,
+      volatility: "High",
+      minBet: { GC: 100, SC: 1.0 },
+      emoji: "🌌",
+    },
   ];
 
   const categories = [
-    { id: 'all', name: 'All Games', icon: <Gamepad2 className="w-5 h-5" />, count: 25 },
-    { id: 'featured', name: 'Featured', icon: <Star className="w-5 h-5" />, count: 8 },
-    { id: 'popular', name: 'Popular', icon: <TrendingUp className="w-5 h-5" />, count: 12 },
-    { id: 'new', name: 'New', icon: <Sparkles className="w-5 h-5" />, count: 6 },
-    { id: 'high-rtp', name: 'High RTP', icon: <Trophy className="w-5 h-5" />, count: 9 },
-    { id: 'jackpot', name: 'Jackpots', icon: <Crown className="w-5 h-5" />, count: 7 },
-    { id: 'bonus', name: 'Bonus Features', icon: <Gift className="w-5 h-5" />, count: 15 },
-    { id: 'classic', name: 'Classic', icon: <Gem className="w-5 h-5" />, count: 5 },
+    {
+      id: "all",
+      name: "All Games",
+      icon: <Gamepad2 className="w-5 h-5" />,
+      count: 25,
+    },
+    {
+      id: "featured",
+      name: "Featured",
+      icon: <Star className="w-5 h-5" />,
+      count: 8,
+    },
+    {
+      id: "popular",
+      name: "Popular",
+      icon: <TrendingUp className="w-5 h-5" />,
+      count: 12,
+    },
+    {
+      id: "new",
+      name: "New",
+      icon: <Sparkles className="w-5 h-5" />,
+      count: 6,
+    },
+    {
+      id: "high-rtp",
+      name: "High RTP",
+      icon: <Trophy className="w-5 h-5" />,
+      count: 9,
+    },
+    {
+      id: "jackpot",
+      name: "Jackpots",
+      icon: <Crown className="w-5 h-5" />,
+      count: 7,
+    },
+    {
+      id: "bonus",
+      name: "Bonus Features",
+      icon: <Gift className="w-5 h-5" />,
+      count: 15,
+    },
+    {
+      id: "classic",
+      name: "Classic",
+      icon: <Gem className="w-5 h-5" />,
+      count: 5,
+    },
   ];
 
   const getVolatilityColor = (volatility: string): string => {
     switch (volatility) {
-      case 'Low': return 'text-green-500';
-      case 'Medium': return 'text-yellow-500';
-      case 'High': return 'text-red-500';
-      default: return 'text-muted-foreground';
+      case "Low":
+        return "text-green-500";
+      case "Medium":
+        return "text-yellow-500";
+      case "High":
+        return "text-red-500";
+      default:
+        return "text-muted-foreground";
     }
   };
 
@@ -78,7 +322,7 @@ export default function SlotsSafe() {
         <Badge key="featured" className="bg-gold-500 text-black">
           <Star className="w-3 h-3 mr-1" />
           Featured
-        </Badge>
+        </Badge>,
       );
     }
 
@@ -86,7 +330,7 @@ export default function SlotsSafe() {
       badges.push(
         <Badge key="high-rtp" className="bg-green-500 text-white">
           High RTP
-        </Badge>
+        </Badge>,
       );
     }
 
@@ -94,7 +338,7 @@ export default function SlotsSafe() {
       badges.push(
         <Badge key="new" className="bg-blue-500 text-white">
           New
-        </Badge>
+        </Badge>,
       );
     }
 
@@ -103,7 +347,7 @@ export default function SlotsSafe() {
         <Badge key="jackpot" className="bg-purple-500 text-white">
           <Crown className="w-3 h-3 mr-1" />
           Jackpot
-        </Badge>
+        </Badge>,
       );
     }
 
@@ -127,7 +371,8 @@ export default function SlotsSafe() {
                 </Badge>
               </CardTitle>
               <p className="text-muted-foreground mt-2">
-                Premium slot games with real gameplay mechanics • Win with GC/SC coins • Jackpots available
+                Premium slot games with real gameplay mechanics • Win with GC/SC
+                coins • Jackpots available
               </p>
             </div>
 
@@ -183,12 +428,8 @@ export default function SlotsSafe() {
               placeholder="Search games, themes, or features..."
               className="flex-1 bg-transparent border-none outline-none"
             />
-            <Button variant="outline">
-              Reset
-            </Button>
-            <Button variant="outline">
-              Random
-            </Button>
+            <Button variant="outline">Reset</Button>
+            <Button variant="outline">Random</Button>
           </div>
         </CardContent>
       </Card>
@@ -223,9 +464,7 @@ export default function SlotsSafe() {
             <div className="relative">
               {/* Game Thumbnail */}
               <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-gold-500/20 flex items-center justify-center text-6xl">
-                <div className="text-4xl">
-                  {game.emoji}
-                </div>
+                <div className="text-4xl">{game.emoji}</div>
               </div>
 
               {/* Game Badges */}
@@ -265,13 +504,19 @@ export default function SlotsSafe() {
                 </Badge>
               </div>
 
-              <p className="text-sm text-muted-foreground mb-1">CoinKrazy Studios</p>
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-1">{game.theme}</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                CoinKrazy Studios
+              </p>
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-1">
+                {game.theme}
+              </p>
 
               <div className="space-y-2 text-sm mb-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">RTP:</span>
-                  <span className="text-green-400 font-medium">{game.rtp}%</span>
+                  <span className="text-green-400 font-medium">
+                    {game.rtp}%
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Min Bet:</span>
@@ -301,11 +546,7 @@ export default function SlotsSafe() {
                   Play with GC
                 </Button>
 
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  size="sm"
-                >
+                <Button variant="outline" className="w-full" size="sm">
                   <Eye className="w-4 h-4 mr-2" />
                   Demo Play
                 </Button>
@@ -321,7 +562,8 @@ export default function SlotsSafe() {
           <Target className="w-8 h-8 text-blue-500 mx-auto mb-2" />
           <h3 className="text-lg font-bold mb-2">Safe Mode Active</h3>
           <p className="text-muted-foreground">
-            All 25 slot games are available for viewing. Create an account to start playing with real currency.
+            All 25 slot games are available for viewing. Create an account to
+            start playing with real currency.
           </p>
         </CardContent>
       </Card>

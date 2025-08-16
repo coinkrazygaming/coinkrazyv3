@@ -27,9 +27,24 @@ const MinimalLayout = ({ children }: { children: React.ReactNode }) => (
             </div>
           </div>
           <div className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</a>
-            <a href="/games" className="text-muted-foreground hover:text-foreground transition-colors">Games</a>
-            <a href="/slots" className="text-muted-foreground hover:text-foreground transition-colors">Slots</a>
+            <a
+              href="/"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="/games"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Games
+            </a>
+            <a
+              href="/slots"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Slots
+            </a>
           </div>
           <div className="text-sm text-green-400 font-medium">Safe Mode ✅</div>
         </div>
@@ -68,7 +83,7 @@ const container = document.getElementById("root")!;
 // Create and render the minimal app
 const safeInitialize = () => {
   try {
-    if (!React || typeof React.createElement !== 'function') {
+    if (!React || typeof React.createElement !== "function") {
       console.log("React not ready, retrying...");
       setTimeout(safeInitialize, 100);
       return;

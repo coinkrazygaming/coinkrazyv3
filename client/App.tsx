@@ -19,27 +19,25 @@ import GoldCoinStore from "./pages/GoldCoinStore";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
-  <React.StrictMode>
-    <BrowserRouter>
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <main>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/slots" element={<Slots />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/gold-store" element={<GoldCoinStore />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/slots" element={<Slots />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/gold-store" element={<GoldCoinStore />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </div>
+  </BrowserRouter>
 );
 
 const container = document.getElementById("root");

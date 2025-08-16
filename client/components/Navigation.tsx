@@ -33,10 +33,6 @@ export default function Navigation() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
-  const [walletBalance, setWalletBalance] = useState<UserWalletBalance | null>(
-    null,
-  );
-  const [showWalletCurrency, setShowWalletCurrency] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
   const [playerCount, setPlayerCount] = useState<number>(0);
 

@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 const App = () => (
   <BrowserRouter>
     <div className="min-h-screen bg-background">
+      {/* Navigation Header */}
       <Navigation />
       <main>
         <Routes>

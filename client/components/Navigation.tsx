@@ -59,7 +59,7 @@ export default function Navigation() {
     });
   }, [user, authLoading]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Subscribe to real-time analytics data
     const unsubscribeAnalytics = analyticsService.subscribe(
       "navigation",

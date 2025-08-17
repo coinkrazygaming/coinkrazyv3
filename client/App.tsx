@@ -44,26 +44,6 @@ import NotFound from "./pages/NotFound";
 // Full-featured app with complete functionality restored
 const App = () => (
   <BrowserRouter>
-<<<<<<< HEAD
-    <div className="min-h-screen bg-background">
-      {/* Navigation Header */}
-      <Navigation />
-      <main>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/slots" element={<Slots />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/gold-store" element={<GoldCoinStore />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-    </div>
-=======
     <TooltipProvider>
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -103,7 +83,6 @@ const App = () => (
         <Sonner />
       </div>
     </TooltipProvider>
->>>>>>> refs/remotes/origin/main
   </BrowserRouter>
 );
 
@@ -118,8 +97,6 @@ if (container) {
 } else {
   console.error("❌ Root container not found");
 }
-<<<<<<< HEAD
-=======
 
 // HMR for development
 if (import.meta.hot) {
@@ -131,4 +108,3 @@ if (import.meta.hot) {
     }
   });
 }
->>>>>>> refs/remotes/origin/main

@@ -35,11 +35,6 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: "react",
-      babel: {
-        plugins: [
-          ["@babel/plugin-proposal-decorators", { legacy: true }],
-        ],
-      },
     }),
     expressPlugin()
   ],

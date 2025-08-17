@@ -27,23 +27,10 @@ import {
 import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
-  // Safe Router hooks with error handling
-  const [location, setLocation] = React.useState({ pathname: "/" });
-  const [navigate, setNavigate] = React.useState<((path: string) => void) | null>(null);
+  // Use Router hooks at the top level - they should work now with fixed App structure
+  const location = useLocation();
+  const navigate = useNavigate();
   
-  React.useEffect(() => {
-    try {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const loc = useLocation();
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const nav = useNavigate();
-      setLocation(loc);
-      setNavigate(() => nav);
-    } catch (error) {
-      console.warn("Router context not available:", error);
-    }
-  }, []);
-
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [realTimeData, setRealTimeData] = React.useState<RealTimeData | null>(null);
   const [selectedCurrency, setSelectedCurrency] = React.useState<"GC" | "SC">("GC");
@@ -55,11 +42,7 @@ export default function Navigation() {
   // Handle logout with redirect
   const handleLogout = async () => {
     await logout();
-    if (navigate) {
-      navigate("/");
-    } else {
-      window.location.href = "/";
-    }
+    navigate("/");
   };
 
   // Debug logging

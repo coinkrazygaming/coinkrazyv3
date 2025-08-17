@@ -46,7 +46,8 @@ import NotFound from "./pages/NotFound";
 // Full-featured app with complete functionality restored
 const App = () => (
   <BrowserRouter>
-    <TooltipProvider>
+    <MobileOptimizer>
+      <TooltipProvider>
       <div className="min-h-screen bg-background">
         <Navigation />
         <main>
@@ -84,7 +85,8 @@ const App = () => (
         <Toaster />
         <Sonner />
       </div>
-    </TooltipProvider>
+      </TooltipProvider>
+    </MobileOptimizer>
   </BrowserRouter>
 );
 

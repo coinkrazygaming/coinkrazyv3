@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import * as React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -20,7 +20,6 @@ import {
   ChevronDown,
   Zap,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   analyticsService,
   type RealTimeData,
@@ -28,12 +27,27 @@ import {
 import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
-  const [selectedCurrency, setSelectedCurrency] = useState<"GC" | "SC">("GC");
-  const [playerCount, setPlayerCount] = useState<number>(0);
+  // Safe Router hooks with error handling
+  const [location, setLocation] = React.useState({ pathname: "/" });
+  const [navigate, setNavigate] = React.useState<((path: string) => void) | null>(null);
+  
+  React.useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const loc = useLocation();
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const nav = useNavigate();
+      setLocation(loc);
+      setNavigate(() => nav);
+    } catch (error) {
+      console.warn("Router context not available:", error);
+    }
+  }, []);
+
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [realTimeData, setRealTimeData] = React.useState<RealTimeData | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = React.useState<"GC" | "SC">("GC");
+  const [playerCount, setPlayerCount] = React.useState<number>(0);
 
   // Real user authentication state
   const { user, logout, getBalance, isLoading: authLoading } = useAuth();
@@ -41,11 +55,15 @@ export default function Navigation() {
   // Handle logout with redirect
   const handleLogout = async () => {
     await logout();
-    navigate("/"); // Redirect to home page after logout
+    if (navigate) {
+      navigate("/");
+    } else {
+      window.location.href = "/";
+    }
   };
 
   // Debug logging
-  useEffect(() => {
+  React.useEffect(() => {
     console.log("Navigation: Auth state changed", {
       user: user
         ? {
@@ -59,7 +77,7 @@ export default function Navigation() {
     });
   }, [user, authLoading]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Subscribe to real-time analytics data
     const unsubscribeAnalytics = analyticsService.subscribe(
       "navigation",

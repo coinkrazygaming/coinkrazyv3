@@ -46,47 +46,47 @@ import NotFound from "./pages/NotFound";
 // Full-featured app with complete functionality restored
 const App = () => (
   <BrowserRouter>
-    <MobileOptimizer>
-      <TooltipProvider>
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <main>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/slots" element={<Slots />} />
-            <Route path="/slots-hub" element={<SlotsHub />} />
-            <Route path="/scratch-cards" element={<ScratchCards />} />
-            <Route path="/pick-cards" element={<PickCards />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin-setup" element={<AdminSetup />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/gold-store" element={<GoldCoinStore />} />
-            <Route path="/bingo" element={<Bingo />} />
-            <Route path="/poker" element={<Poker />} />
-            <Route path="/sportsbook" element={<Sportsbook />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/social" element={<Social />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/compliance" element={<Compliance />} />
-            <Route path="/daily-rewards" element={<DailyRewards />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/how-to-play" element={<HowToPlay />} />
-            <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Toaster />
-        <Sonner />
-      </div>
-      </TooltipProvider>
-    </MobileOptimizer>
+    <TooltipProvider>
+      <MobileOptimizer>
+        <div className="min-h-screen bg-background">
+          <Navigation />
+          <main>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/slots" element={<Slots />} />
+              <Route path="/slots-hub" element={<SlotsHub />} />
+              <Route path="/scratch-cards" element={<ScratchCards />} />
+              <Route path="/pick-cards" element={<PickCards />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin-setup" element={<AdminSetup />} />
+              <Route path="/store" element={<Store />} />
+              <Route path="/gold-store" element={<GoldCoinStore />} />
+              <Route path="/bingo" element={<Bingo />} />
+              <Route path="/poker" element={<Poker />} />
+              <Route path="/sportsbook" element={<Sportsbook />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/social" element={<Social />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/compliance" element={<Compliance />} />
+              <Route path="/daily-rewards" element={<DailyRewards />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/staff" element={<Staff />} />
+              <Route path="/how-to-play" element={<HowToPlay />} />
+              <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Toaster />
+          <Sonner />
+        </div>
+      </MobileOptimizer>
+    </TooltipProvider>
   </BrowserRouter>
 );
 

@@ -1,5 +1,6 @@
 import "./global.css";
 import "./services/globalErrorHandler"; // Load WebSocket error protection
+import { capacitorService } from "./services/capacitorService"; // Initialize Capacitor for mobile
 
 import React from "react";
 import { createRoot } from "react-dom/client";

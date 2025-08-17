@@ -7,31 +7,63 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Import components
 import Navigation from "./components/Navigation";
 
-// Import UI components with error boundaries
-let TooltipProvider: React.ComponentType<{ children: React.ReactNode }> = ({ children }) => <>{children}</>;
-let Toaster: React.ComponentType = () => null;
-let Sonner: React.ComponentType = () => null;
+// Safe component imports with fallbacks
+const SafeTooltipProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [TooltipProvider, setTooltipProvider] = React.useState<React.ComponentType<{ children: React.ReactNode }> | null>(null);
 
-try {
-  const tooltipModule = await import("./components/ui/tooltip");
-  TooltipProvider = tooltipModule.TooltipProvider;
-} catch (error) {
-  console.warn("TooltipProvider failed to load:", error);
-}
+  React.useEffect(() => {
+    import("./components/ui/tooltip").then(module => {
+      setTooltipProvider(() => module.TooltipProvider);
+    }).catch(error => {
+      console.warn("TooltipProvider failed to load:", error);
+      setTooltipProvider(() => ({ children }: { children: React.ReactNode }) => <>{children}</>);
+    });
+  }, []);
 
-try {
-  const toasterModule = await import("./components/ui/toaster");
-  Toaster = toasterModule.Toaster;
-} catch (error) {
-  console.warn("Toaster failed to load:", error);
-}
+  if (!TooltipProvider) {
+    return <>{children}</>;
+  }
 
-try {
-  const sonnerModule = await import("./components/ui/sonner");
-  Sonner = sonnerModule.Toaster;
-} catch (error) {
-  console.warn("Sonner failed to load:", error);
-}
+  return <TooltipProvider>{children}</TooltipProvider>;
+};
+
+const SafeToaster: React.FC = () => {
+  const [Toaster, setToaster] = React.useState<React.ComponentType | null>(null);
+
+  React.useEffect(() => {
+    import("./components/ui/toaster").then(module => {
+      setToaster(() => module.Toaster);
+    }).catch(error => {
+      console.warn("Toaster failed to load:", error);
+      setToaster(() => () => null);
+    });
+  }, []);
+
+  if (!Toaster) {
+    return null;
+  }
+
+  return <Toaster />;
+};
+
+const SafeSonner: React.FC = () => {
+  const [Sonner, setSonner] = React.useState<React.ComponentType | null>(null);
+
+  React.useEffect(() => {
+    import("./components/ui/sonner").then(module => {
+      setSonner(() => module.Toaster);
+    }).catch(error => {
+      console.warn("Sonner failed to load:", error);
+      setSonner(() => () => null);
+    });
+  }, []);
+
+  if (!Sonner) {
+    return null;
+  }
+
+  return <Sonner />;
+};
 
 // Import pages
 import Index from "./pages/Index";
@@ -63,10 +95,10 @@ import SweepstakesRules from "./pages/SweepstakesRules";
 import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
-// App with gradual component addition
+// App with Router context properly established
 const App = () => (
   <BrowserRouter>
-    <TooltipProvider>
+    <SafeTooltipProvider>
       <div className="min-h-screen bg-background">
         <Navigation />
         <main>
@@ -101,10 +133,10 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
-        <Toaster />
-        <Sonner />
+        <SafeToaster />
+        <SafeSonner />
       </div>
-    </TooltipProvider>
+    </SafeTooltipProvider>
   </BrowserRouter>
 );
 

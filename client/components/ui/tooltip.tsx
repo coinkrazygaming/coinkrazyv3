@@ -5,6 +5,26 @@ import { cn } from "@/lib/utils";
 
 // Safe TooltipProvider wrapper that handles React context issues
 const TooltipProvider = ({ children, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) => {
+  // Check if React context is available before rendering
+  const [hasContext, setHasContext] = React.useState(true);
+
+  React.useEffect(() => {
+    try {
+      // Test if React hooks are working properly
+      const testRef = React.useRef(null);
+      if (!testRef) {
+        setHasContext(false);
+      }
+    } catch (error) {
+      console.warn("React context not available, rendering without tooltips:", error);
+      setHasContext(false);
+    }
+  }, []);
+
+  if (!hasContext) {
+    return <>{children}</>;
+  }
+
   try {
     return (
       <TooltipPrimitive.Provider {...props}>
@@ -12,7 +32,7 @@ const TooltipProvider = ({ children, ...props }: React.ComponentProps<typeof Too
       </TooltipPrimitive.Provider>
     );
   } catch (error) {
-    console.log("TooltipProvider error, rendering children without tooltip context:", error);
+    console.warn("TooltipProvider error, rendering children without tooltip context:", error);
     return <>{children}</>;
   }
 };

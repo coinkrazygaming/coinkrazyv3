@@ -3,7 +3,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 const config: CapacitorConfig = {
   appId: "com.coinkrazy.casino",
   appName: "CoinKrazy Casino",
-  webDir: "dist",
+  webDir: "dist/spa",
   server: {
     androidScheme: "https",
   },

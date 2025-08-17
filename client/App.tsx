@@ -4,8 +4,34 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Import only essential components
+// Import components
 import Navigation from "./components/Navigation";
+
+// Import UI components with error boundaries
+let TooltipProvider: React.ComponentType<{ children: React.ReactNode }> = ({ children }) => <>{children}</>;
+let Toaster: React.ComponentType = () => null;
+let Sonner: React.ComponentType = () => null;
+
+try {
+  const tooltipModule = await import("./components/ui/tooltip");
+  TooltipProvider = tooltipModule.TooltipProvider;
+} catch (error) {
+  console.warn("TooltipProvider failed to load:", error);
+}
+
+try {
+  const toasterModule = await import("./components/ui/toaster");
+  Toaster = toasterModule.Toaster;
+} catch (error) {
+  console.warn("Toaster failed to load:", error);
+}
+
+try {
+  const sonnerModule = await import("./components/ui/sonner");
+  Sonner = sonnerModule.Toaster;
+} catch (error) {
+  console.warn("Sonner failed to load:", error);
+}
 
 // Import pages
 import Index from "./pages/Index";
@@ -37,44 +63,48 @@ import SweepstakesRules from "./pages/SweepstakesRules";
 import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
-// Ultra-minimal app structure with just Router and Navigation
+// App with gradual component addition
 const App = () => (
   <BrowserRouter>
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/slots" element={<Slots />} />
-          <Route path="/slots-hub" element={<SlotsHub />} />
-          <Route path="/scratch-cards" element={<ScratchCards />} />
-          <Route path="/pick-cards" element={<PickCards />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin-setup" element={<AdminSetup />} />
-          <Route path="/store" element={<Store />} />
-          <Route path="/gold-store" element={<GoldCoinStore />} />
-          <Route path="/bingo" element={<Bingo />} />
-          <Route path="/poker" element={<Poker />} />
-          <Route path="/sportsbook" element={<Sportsbook />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/social" element={<Social />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/compliance" element={<Compliance />} />
-          <Route path="/daily-rewards" element={<DailyRewards />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/staff" element={<Staff />} />
-          <Route path="/how-to-play" element={<HowToPlay />} />
-          <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-    </div>
+    <TooltipProvider>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/games" element={<Games />} />
+            <Route path="/slots" element={<Slots />} />
+            <Route path="/slots-hub" element={<SlotsHub />} />
+            <Route path="/scratch-cards" element={<ScratchCards />} />
+            <Route path="/pick-cards" element={<PickCards />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
+            <Route path="/store" element={<Store />} />
+            <Route path="/gold-store" element={<GoldCoinStore />} />
+            <Route path="/bingo" element={<Bingo />} />
+            <Route path="/poker" element={<Poker />} />
+            <Route path="/sportsbook" element={<Sportsbook />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/social" element={<Social />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/compliance" element={<Compliance />} />
+            <Route path="/daily-rewards" element={<DailyRewards />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/staff" element={<Staff />} />
+            <Route path="/how-to-play" element={<HowToPlay />} />
+            <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Toaster />
+        <Sonner />
+      </div>
+    </TooltipProvider>
   </BrowserRouter>
 );
 

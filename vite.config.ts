@@ -33,21 +33,42 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [
-    react(),
+    react({
+      jsxImportSource: "react",
+      babel: {
+        plugins: [
+          ["@babel/plugin-proposal-decorators", { legacy: true }],
+        ],
+      },
+    }),
     expressPlugin()
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
+      // Ensure consistent React imports
+      "react": path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
     dedupe: ["react", "react-dom"],
   },
   define: {
     __DEV__: mode === "development",
+    // Ensure React globals are available
+    global: "globalThis",
   },
   optimizeDeps: {
-    include: ["react", "react-dom"],
+    include: [
+      "react", 
+      "react-dom", 
+      "react/jsx-runtime",
+      "@radix-ui/react-tooltip"
+    ],
+    force: true,
+  },
+  esbuild: {
+    jsxInject: `import React from 'react'`,
   },
 }));
 

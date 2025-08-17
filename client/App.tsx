@@ -1,9 +1,9 @@
 import "./global.css";
 import "./services/globalErrorHandler"; // Load WebSocket error protection
-import { capacitorService } from "./services/capacitorService"; // Initialize Capacitor for mobile
 
+// Explicit React imports to ensure proper context
 import React from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Import Navigation and other components
@@ -43,61 +43,98 @@ import SweepstakesRules from "./pages/SweepstakesRules";
 import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
-// Full-featured app with complete functionality restored
-const App = () => (
-  <BrowserRouter>
-    <TooltipProvider>
-      <MobileOptimizer>
-        <div className="min-h-screen bg-background">
-          <Navigation />
-          <main>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/games" element={<Games />} />
-              <Route path="/slots" element={<Slots />} />
-              <Route path="/slots-hub" element={<SlotsHub />} />
-              <Route path="/scratch-cards" element={<ScratchCards />} />
-              <Route path="/pick-cards" element={<PickCards />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin-setup" element={<AdminSetup />} />
-              <Route path="/store" element={<Store />} />
-              <Route path="/gold-store" element={<GoldCoinStore />} />
-              <Route path="/bingo" element={<Bingo />} />
-              <Route path="/poker" element={<Poker />} />
-              <Route path="/sportsbook" element={<Sportsbook />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/social" element={<Social />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/compliance" element={<Compliance />} />
-              <Route path="/daily-rewards" element={<DailyRewards />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/staff" element={<Staff />} />
-              <Route path="/how-to-play" element={<HowToPlay />} />
-              <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Toaster />
-          <Sonner />
-        </div>
-      </MobileOptimizer>
-    </TooltipProvider>
-  </BrowserRouter>
-);
+// Initialize Capacitor after React is ready
+let capacitorInitialized = false;
 
-// Initialize the full-featured application
+function initializeCapacitor() {
+  if (!capacitorInitialized) {
+    Promise.resolve().then(async () => {
+      try {
+        const { capacitorService } = await import("./services/capacitorService");
+        await capacitorService.initialize?.();
+        capacitorInitialized = true;
+        console.log("✅ Capacitor initialized successfully");
+      } catch (error) {
+        console.log("⚠️ Capacitor initialization skipped (web mode):", error);
+      }
+    });
+  }
+}
+
+// Main App component with proper React context handling
+const App: React.FC = () => {
+  React.useEffect(() => {
+    initializeCapacitor();
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <TooltipProvider>
+        <MobileOptimizer>
+          <div className="min-h-screen bg-background">
+            <Navigation />
+            <main>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/games" element={<Games />} />
+                <Route path="/slots" element={<Slots />} />
+                <Route path="/slots-hub" element={<SlotsHub />} />
+                <Route path="/scratch-cards" element={<ScratchCards />} />
+                <Route path="/pick-cards" element={<PickCards />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin-setup" element={<AdminSetup />} />
+                <Route path="/store" element={<Store />} />
+                <Route path="/gold-store" element={<GoldCoinStore />} />
+                <Route path="/bingo" element={<Bingo />} />
+                <Route path="/poker" element={<Poker />} />
+                <Route path="/sportsbook" element={<Sportsbook />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="/social" element={<Social />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/compliance" element={<Compliance />} />
+                <Route path="/daily-rewards" element={<DailyRewards />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/staff" element={<Staff />} />
+                <Route path="/how-to-play" element={<HowToPlay />} />
+                <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Toaster />
+            <Sonner />
+          </div>
+        </MobileOptimizer>
+      </TooltipProvider>
+    </BrowserRouter>
+  );
+};
+
+// Initialize the application with error handling
 const container = document.getElementById("root");
 if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-  console.log(
-    "✅ CoinKrazy app initialized successfully - Full functionality restored",
-  );
+  try {
+    const root = ReactDOM.createRoot(container);
+    root.render(<App />);
+    console.log("✅ CoinKrazy app initialized successfully");
+  } catch (error) {
+    console.error("❌ Failed to initialize app:", error);
+    // Fallback: try with legacy render method
+    try {
+      import("react-dom").then((ReactDOMLegacy) => {
+        if (ReactDOMLegacy.render) {
+          ReactDOMLegacy.render(<App />, container);
+          console.log("✅ CoinKrazy app initialized with legacy render");
+        }
+      });
+    } catch (legacyError) {
+      console.error("❌ Legacy render also failed:", legacyError);
+    }
+  }
 } else {
   console.error("❌ Root container not found");
 }
@@ -106,9 +143,13 @@ if (container) {
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
     if (container) {
-      const root = createRoot(container);
-      root.render(<App />);
-      console.log("🔄 HMR update applied - Full functionality active");
+      try {
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+        console.log("🔄 HMR update applied successfully");
+      } catch (error) {
+        console.error("❌ HMR update failed:", error);
+      }
     }
   });
 }

@@ -2,143 +2,76 @@ import "./global.css";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
-// Import components
-import Navigation from "./components/Navigation";
-
-// Safe component imports with fallbacks
-const SafeTooltipProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [TooltipProvider, setTooltipProvider] = React.useState<React.ComponentType<{ children: React.ReactNode }> | null>(null);
-
-  React.useEffect(() => {
-    import("./components/ui/tooltip").then(module => {
-      setTooltipProvider(() => module.TooltipProvider);
-    }).catch(error => {
-      console.warn("TooltipProvider failed to load:", error);
-      setTooltipProvider(() => ({ children }: { children: React.ReactNode }) => <>{children}</>);
-    });
-  }, []);
-
-  if (!TooltipProvider) {
-    return <>{children}</>;
+// Simple Navigation component that uses Router hooks
+const SimpleNavigation = () => {
+  try {
+    const location = useLocation();
+    const navigate = useNavigate();
+    
+    return (
+      <nav className="bg-gray-800 text-white p-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold">CoinKrazy</h1>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => navigate("/")}
+              className={`px-3 py-1 rounded ${location.pathname === "/" ? "bg-blue-600" : "bg-gray-600"}`}
+            >
+              Home
+            </button>
+            <button 
+              onClick={() => navigate("/games")}
+              className={`px-3 py-1 rounded ${location.pathname === "/games" ? "bg-blue-600" : "bg-gray-600"}`}
+            >
+              Games
+            </button>
+            <button 
+              onClick={() => navigate("/login")}
+              className={`px-3 py-1 rounded ${location.pathname === "/login" ? "bg-blue-600" : "bg-gray-600"}`}
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      </nav>
+    );
+  } catch (error) {
+    console.error("Navigation error:", error);
+    return (
+      <nav className="bg-red-800 text-white p-4">
+        <h1>Navigation Error - Router Context Missing</h1>
+      </nav>
+    );
   }
-
-  return <TooltipProvider>{children}</TooltipProvider>;
 };
 
-const SafeToaster: React.FC = () => {
-  const [Toaster, setToaster] = React.useState<React.ComponentType | null>(null);
+// Simple page components to test routing
+const HomePage = () => <div className="p-8"><h1>Home Page</h1><p>Welcome to CoinKrazy!</p></div>;
+const GamesPage = () => <div className="p-8"><h1>Games Page</h1><p>Choose your games!</p></div>;
+const LoginPage = () => <div className="p-8"><h1>Login Page</h1><p>Please login</p></div>;
 
-  React.useEffect(() => {
-    import("./components/ui/toaster").then(module => {
-      setToaster(() => module.Toaster);
-    }).catch(error => {
-      console.warn("Toaster failed to load:", error);
-      setToaster(() => () => null);
-    });
-  }, []);
-
-  if (!Toaster) {
-    return null;
-  }
-
-  return <Toaster />;
-};
-
-const SafeSonner: React.FC = () => {
-  const [Sonner, setSonner] = React.useState<React.ComponentType | null>(null);
-
-  React.useEffect(() => {
-    import("./components/ui/sonner").then(module => {
-      setSonner(() => module.Toaster);
-    }).catch(error => {
-      console.warn("Sonner failed to load:", error);
-      setSonner(() => () => null);
-    });
-  }, []);
-
-  if (!Sonner) {
-    return null;
-  }
-
-  return <Sonner />;
-};
-
-// Import pages
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Games from "./pages/Games";
-import Slots from "./pages/Slots";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import Admin from "./pages/Admin";
-import AdminSetup from "./pages/AdminSetup";
-import GoldCoinStore from "./pages/GoldCoinStore";
-import Store from "./pages/Store";
-import Bingo from "./pages/Bingo";
-import Chat from "./pages/Chat";
-import Analytics from "./pages/Analytics";
-import Compliance from "./pages/Compliance";
-import DailyRewards from "./pages/DailyRewards";
-import Poker from "./pages/Poker";
-import Sportsbook from "./pages/Sportsbook";
-import Support from "./pages/Support";
-import ScratchCards from "./pages/ScratchCards";
-import PickCards from "./pages/PickCards";
-import Social from "./pages/Social";
-import Staff from "./pages/Staff";
-import SlotsHub from "./pages/SlotsHub";
-import HowToPlay from "./pages/HowToPlay";
-import SweepstakesRules from "./pages/SweepstakesRules";
-import VerifyEmail from "./pages/VerifyEmail";
-import NotFound from "./pages/NotFound";
-
-// App with Router context properly established
-const App = () => (
-  <BrowserRouter>
-    <SafeTooltipProvider>
-      <div className="min-h-screen bg-background">
-        <Navigation />
+// Ultra-simple App structure
+const App = () => {
+  console.log("App rendering...");
+  
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-100">
+        <SimpleNavigation />
         <main>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/slots" element={<Slots />} />
-            <Route path="/slots-hub" element={<SlotsHub />} />
-            <Route path="/scratch-cards" element={<ScratchCards />} />
-            <Route path="/pick-cards" element={<PickCards />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin-setup" element={<AdminSetup />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/gold-store" element={<GoldCoinStore />} />
-            <Route path="/bingo" element={<Bingo />} />
-            <Route path="/poker" element={<Poker />} />
-            <Route path="/sportsbook" element={<Sportsbook />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/social" element={<Social />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/compliance" element={<Compliance />} />
-            <Route path="/daily-rewards" element={<DailyRewards />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/how-to-play" element={<HowToPlay />} />
-            <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/games" element={<GamesPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="*" element={<div className="p-8">Page not found</div>} />
           </Routes>
         </main>
-        <SafeToaster />
-        <SafeSonner />
       </div>
-    </SafeTooltipProvider>
-  </BrowserRouter>
-);
+    </BrowserRouter>
+  );
+};
 
 // Initialize app
 const container = document.getElementById("root");
@@ -146,14 +79,15 @@ if (!container) {
   throw new Error("Root container not found");
 }
 
+console.log("Initializing app...");
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
-
-console.log("✅ CoinKrazy app initialized");
+console.log("✅ CoinKrazy minimal app initialized");
 
 // HMR support
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
+    console.log("HMR update...");
     root.render(<App />);
   });
 }

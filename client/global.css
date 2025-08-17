@@ -1,134 +1,377 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  /**
-   * Tailwind CSS theme
-   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
-  */
-  :root {
-    --background: 218 25% 8%;
-    --foreground: 0 0% 100%;
-
-    --card: 218 30% 12%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 218 30% 12%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 45 100% 60%;
-    --primary-foreground: 218 25% 8%;
-
-    --secondary: 218 15% 25%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 218 15% 20%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: 45 100% 60%;
-    --accent-foreground: 218 25% 8%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 218 15% 25%;
-    --input: 218 15% 25%;
-    --ring: 45 100% 60%;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 218 30% 10%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 45 100% 60%;
-    --sidebar-primary-foreground: 218 25% 8%;
-    --sidebar-accent: 218 15% 20%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 218 15% 25%;
-    --sidebar-ring: 45 100% 60%;
-
-    /* CoinKrazy Brand Colors */
-    --gold: 45 100% 60%;
-    --gold-50: 48 100% 96%;
-    --gold-100: 47 100% 91%;
-    --gold-200: 46 100% 82%;
-    --gold-300: 45 100% 70%;
-    --gold-400: 44 100% 60%;
-    --gold-500: 43 100% 50%;
-    --gold-600: 40 100% 45%;
-    --gold-700: 36 100% 40%;
-    --gold-800: 32 100% 35%;
-    --gold-900: 28 100% 30%;
-    --gold-foreground: 218 25% 8%;
-
-    --casino-blue: 218 100% 60%;
-    --casino-blue-dark: 218 100% 35%;
-    --casino-blue-light: 218 100% 85%;
-    --casino-white: 0 0% 100%;
-    --casino-black: 218 25% 8%;
-  }
-
-  .dark {
-    --background: 218 30% 6%;
-    --foreground: 0 0% 100%;
-
-    --card: 218 35% 8%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 218 35% 8%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 45 100% 65%;
-    --primary-foreground: 218 30% 6%;
-
-    --secondary: 218 20% 15%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 218 20% 12%;
-    --muted-foreground: 0 0% 65%;
-
-    --accent: 45 100% 65%;
-    --accent-foreground: 218 30% 6%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 218 20% 15%;
-    --input: 218 20% 15%;
-    --ring: 45 100% 65%;
-
-    --sidebar-background: 218 35% 5%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 45 100% 65%;
-    --sidebar-primary-foreground: 218 30% 6%;
-    --sidebar-accent: 218 20% 12%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 218 20% 15%;
-    --sidebar-ring: 45 100% 65%;
-  }
+/* McLuck Dark Theme Variables */
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --border-primary: #30363d;
+  --text-primary: #f0f6fc;
+  --text-secondary: #c9d1d9;
+  --text-muted: #8b949e;
+  --accent-gold: #ffd700;
+  --accent-purple: #7c3aed;
+  --accent-green: #28a745;
+  --accent-red: #dc3545;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
+/* Base Styles */
+* {
+  box-sizing: border-box;
 }
 
-/* Ticker Marquee Animation */
-@keyframes marquee {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* McLuck-style scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Game card hover effects */
+.game-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(255, 215, 0, 0.15);
+}
+
+.game-card:hover .play-button {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.play-button {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-gold), #ffed4a);
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #ffed4a, var(--accent-gold));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-primary);
+  border-color: var(--text-muted);
+}
+
+/* Input styles */
+.input-primary {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.input-primary:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.input-primary::placeholder {
+  color: var(--text-muted);
+}
+
+/* Badge styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-gold {
+  background-color: var(--accent-gold);
+  color: #000;
+}
+
+.badge-purple {
+  background-color: var(--accent-purple);
+  color: white;
+}
+
+.badge-green {
+  background-color: var(--accent-green);
+  color: white;
+}
+
+.badge-outline {
+  background-color: transparent;
+  border: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+}
+
+/* Card styles */
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+/* Navigation styles */
+.nav-item {
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background-color: var(--bg-tertiary);
+  color: var(--accent-gold);
+  border-left: 3px solid var(--accent-gold);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Links */
+a {
+  color: var(--accent-gold);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #ffed4a;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--accent-gold);
+  color: #000;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+/* Loading animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* McLuck-specific gradient text */
+.gradient-text {
+  background: linear-gradient(45deg, var(--accent-gold), #ffed4a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sidebar {
     transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+  }
+  
+  .top-bar {
+    left: 0 !important;
+  }
+  
+  .bottom-bar {
+    left: 0 !important;
   }
 }
 
-.animate-marquee {
-  animation: marquee 30s linear infinite;
+/* Custom utility classes */
+.text-gradient {
+  background: linear-gradient(45deg, var(--accent-gold), #ffed4a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-gradient {
+  border: 1px solid;
+  border-image: linear-gradient(45deg, var(--accent-gold), #ffed4a) 1;
+}
+
+.shadow-gold {
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Game grid responsive */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .game-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Coin balance styles */
+.coin-balance {
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+  border: 1px solid var(--border-primary);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.coin-balance:hover {
+  border-color: var(--accent-gold);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
+}
+
+/* McLuck brand colors */
+.text-gold { color: var(--accent-gold); }
+.text-purple { color: var(--accent-purple); }
+.text-green { color: var(--accent-green); }
+.text-red { color: var(--accent-red); }
+
+.bg-gold { background-color: var(--accent-gold); }
+.bg-purple { background-color: var(--accent-purple); }
+.bg-green { background-color: var(--accent-green); }
+.bg-red { background-color: var(--accent-red); }
+
+/* Casino-specific animations */
+@keyframes jackpot-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--accent-gold); }
+  50% { box-shadow: 0 0 20px var(--accent-gold), 0 0 30px var(--accent-gold); }
+}
+
+.jackpot-glow {
+  animation: jackpot-glow 2s ease-in-out infinite;
+}
+
+@keyframes coin-flip {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+.coin-flip {
+  animation: coin-flip 1s ease-in-out;
 }

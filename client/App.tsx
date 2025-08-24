@@ -605,7 +605,7 @@ const BottomBar = () => {
 // Main App Component (McLuck Clone)
 const App = () => {
   React.useEffect(() => {
-    console.log("🎰 McLuck Clone loaded successfully - " + new Date().toISOString());
+    console.log("🎰 CoinKrazy.com loaded successfully - " + new Date().toISOString());
     
     // Set dark theme body styles
     document.body.style.backgroundColor = '#0d1117';

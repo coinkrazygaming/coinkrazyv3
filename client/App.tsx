@@ -179,7 +179,7 @@ const McLuckSidebar = () => {
             justifyContent: 'center',
             fontSize: '1rem'
           }}>
-            👤
+            ����
           </div>
           <div>
             <div style={{ color: '#f0f6fc', fontSize: '0.875rem', fontWeight: '600' }}>
@@ -650,7 +650,7 @@ const App = () => {
   );
 };
 
-// Initialize McLuck clone
+// Initialize CoinKrazy.com application
 const container = document.getElementById("root");
 if (!container) throw new Error("Root container not found");
 

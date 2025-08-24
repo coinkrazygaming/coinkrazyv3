@@ -102,7 +102,7 @@ const McLuckSidebar = () => {
           WebkitTextFillColor: 'transparent',
           margin: 0
         }}>
-          McLuck
+          CoinKrazy.com
         </h1>
         <p style={{
           color: '#8b949e',

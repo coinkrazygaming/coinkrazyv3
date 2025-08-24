@@ -602,7 +602,7 @@ const BottomBar = () => {
   );
 };
 
-// Main App Component (McLuck Clone)
+// Main App Component (CoinKrazy.com)
 const App = () => {
   React.useEffect(() => {
     console.log("🎰 CoinKrazy.com loaded successfully - " + new Date().toISOString());

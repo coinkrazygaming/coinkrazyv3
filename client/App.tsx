@@ -657,7 +657,7 @@ if (!container) throw new Error("Root container not found");
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
 
-console.log("✅ McLuck Clone initialized - " + new Date().toISOString());
+console.log("✅ CoinKrazy.com initialized - " + new Date().toISOString());
 
 // HMR support
 if (import.meta.hot) {

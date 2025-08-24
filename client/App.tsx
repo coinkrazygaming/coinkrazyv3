@@ -67,7 +67,7 @@ const McLuckSidebar = () => {
     { path: "/table-games", label: "Table Games", icon: "🃏" },
     { path: "/live-games", label: "Live Games", icon: "📺" },
     { path: "/promotions", label: "Promotions", icon: "🎁" },
-    { path: "/loyalty", label: "McLuck Club", icon: "👑" },
+    { path: "/loyalty", label: "CoinKrazy Club", icon: "👑" },
     { path: "/shop", label: "Coin Shop", icon: "💰" },
     { path: "/prizes", label: "Prize Redemption", icon: "🏆" },
     { path: "/account", label: "My Account", icon: "👤" },
